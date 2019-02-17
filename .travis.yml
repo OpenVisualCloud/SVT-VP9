@@ -16,3 +16,37 @@ jobs:
    - name: Build
      script:
      - ./Build/linux/build.sh release
+   # General macOS build job
+   - name: macOS build
+     os: osx
+     script:
+     - cd Build/linux
+     - ./build.sh release     
+   # Coveralls test job
+   - name: Coveralls
+     before_install:
+     - pip install --user cpp-coveralls
+     script:
+     - cd Build/linux
+     - ./build.sh release
+     after_success:
+     - coveralls
+     
+   # FFmpeg interation build
+   - name: FFmpeg patch
+     script:
+     # Build and install SVT-VP9
+     - cd $TRAVIS_BUILD_DIR
+     - cd Build
+     - cmake ..
+     - make -j$(nproc)
+     - sudo make install
+     # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
+     - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
+     - cd ffmpeg
+     - git checkout release/4.1
+     - git apply $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
+     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
+     - ./configure --enable-libsvtvp9
+     - make --quiet -j$(nproc)
