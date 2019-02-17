@@ -15,7 +15,8 @@ jobs:
    # General Linux build job
    - name: Build
      script:
-     - ./Build/linux/build.sh release
+     - cd Build/linux
+     - ./build.sh release   
    # General macOS build job
    - name: macOS build
      os: osx
