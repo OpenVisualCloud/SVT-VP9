@@ -1,4 +1,5 @@
 # Scalable Video Technology for VP9 Encoder (SVT-VP9 Encoder)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/OpenVisualCloud/SVT-VP9?branch=master&svg=true)](https://ci.appveyor.com/project/OpenVisualCloud/SVT-VP9)
 
 The Scalable Video Technology for VP9 Encoder (SVT-VP9 Encoder) is a VP9-compliant encoder library core. The SVT-VP9 Encoder development is a work-in-progress targeting performance levels applicable to both VOD and Live encoding/transcoding video applications.
 
