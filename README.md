@@ -1,4 +1,5 @@
 # Scalable Video Technology for VP9 Encoder (SVT-VP9 Encoder)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/OpenVisualCloud/SVT-VP9?branch=master&svg=true)](https://ci.appveyor.com/project/OpenVisualCloud/SVT-VP9)
 [![Travis Build Status](https://travis-ci.org/OpenVisualCloud/SVT-VP9.svg?branch=master)](https://travis-ci.org/OpenVisualCloud/SVT-VP9)
 [![Coverage Status](https://coveralls.io/repos/github/OpenVisualCloud/SVT-VP9/badge.svg?branch=master)](https://coveralls.io/github/OpenVisualCloud/SVT-VP9?branch=master)
 
