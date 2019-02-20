@@ -86,13 +86,15 @@
  **********************************/
 static void set_cfg_input_file (const char *value, EbConfig *cfg)
 {
-    if (cfg->input_file){
-        if (cfg->input_file == stdin)
-            cfg->input_file = (FILE*)NULL;
-        else
-            fclose(cfg->input_file);
+    if (cfg->input_file && cfg->input_file != stdin) {
+        fclose(cfg->input_file);
     }
-    FOPEN(cfg->input_file, value, "rb");
+    if (!strcmp(value, "stdin")) {
+        cfg->input_file = stdin;
+    }
+    else {
+        FOPEN(cfg->input_file, value, "rb");
+    }
 };
 static void set_cfg_stream_file (const char *value, EbConfig *cfg)
 {
@@ -363,7 +365,8 @@ void eb_config_dtor(EbConfig *config_ptr)
     }
 
     if (config_ptr->input_file) {
-        fclose(config_ptr->input_file);
+        if (config_ptr->input_file != stdin)
+            fclose(config_ptr->input_file);
         config_ptr->input_file = (FILE *) NULL;
     }
 
