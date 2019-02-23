@@ -1,53 +1,80 @@
 language: c
 dist: xenial
 
+matrix:
+  allow_failures:
+    - name: windows Ninja Debug build
+
 addons:
   apt:
     packages:
-     - cmake
-     - yasm
+      - cmake
+      - yasm
   homebrew:
     packages:
       - yasm
 
 jobs:
   include:
-   # General Linux build job
-   - name: Build
-     script:
-     - cd Build/linux
-     - ./build.sh release   
-   # General macOS build job
-   - name: macOS build
-     os: osx
-     script:
-     - cd Build/linux
-     - ./build.sh release     
-   # Coveralls test job
-   - name: Coveralls
-     before_install:
-     - pip install --user cpp-coveralls
-     script:
-     - cd Build/linux
-     - ./build.sh release
-     after_success:
-     - coveralls
-     
-   # FFmpeg interation build
-   - name: FFmpeg patch
-     script:
-     # Build and install SVT-VP9
-     - cd $TRAVIS_BUILD_DIR
-     - cd Build
-     - cmake ..
-     - make -j$(nproc)
-     - sudo make install
-     # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
-     - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
-     - cd ffmpeg
-     - git checkout release/4.1
-     - git apply $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
-     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
-     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
-     - ./configure --enable-libsvtvp9
-     - make --quiet -j$(nproc)
+    # General Linux build job
+    - name: Build
+      script:
+        - cd Build/linux
+        - ./build.sh release
+    # General macOS build job
+    - name: macOS build
+      os: osx
+      script:
+        - cd Build/linux
+        - ./build.sh release
+    # Windows build jobs
+    - name: windows MSVC build
+      os: windows
+      before_install:
+        - choco install -y yasm
+      script:
+        - 'PATH=$PATH:/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin'
+        - cd Build/windows
+        - cmake ../.. -G"Visual Studio 15 2017 Win64" -DCMAKE_ASM_NASM_COMPILER="yasm.exe" -DCMAKE_BUILD_TYPE="Release"
+        - MSBuild.exe //m ./svt-vp9.sln
+        - cd ../../Bin/Release/Debug
+        - ./SvtVp9EncApp.exe -help
+    - name: windows Ninja Debug build
+      os: windows
+      before_install:
+        - choco install -y yasm
+      script:
+        - 'PATH=$PATH:/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja'
+        - cd Build/windows
+        - cmake ../.. -G"Ninja" -DCMAKE_ASM_NASM_COMPILER="yasm.exe" -DCMAKE_BUILD_TYPE=Debug
+        - ninja
+        - cd ../../Bin/Debug/Debug
+        - ./SvtVp9EncApp.exe -help
+    # Coveralls test job
+    - name: Coveralls
+      before_install:
+        - pip install --user cpp-coveralls
+      script:
+        - cd Build/linux
+        - ./build.sh release
+      after_success:
+        - coveralls
+
+    # FFmpeg interation build
+    - name: FFmpeg patch
+      script:
+        # Build and install SVT-VP9
+        - cd $TRAVIS_BUILD_DIR
+        - cd Build
+        - cmake ..
+        - make -j$(nproc)
+        - sudo make install
+        # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
+        - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
+        - cd ffmpeg
+        - git checkout release/4.1
+        - git apply $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+        - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
+        - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
+        - ./configure --enable-libsvtvp9
+        - make --quiet -j$(nproc)
