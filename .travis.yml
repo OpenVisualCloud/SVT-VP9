@@ -4,50 +4,68 @@ dist: xenial
 addons:
   apt:
     packages:
-     - cmake
-     - yasm
+      - cmake
+      - yasm
   homebrew:
     packages:
       - yasm
-
-jobs:
+matrix:
+  allow_failures:
+    - name: windows Ninja build
+    - name: FFmpeg patch
+    - name: macOS build
+  fast_finish: true
   include:
-   # General Linux build job
-   - name: Build
-     script:
-     - cd Build/linux
-     - ./build.sh release   
-   # General macOS build job
-   - name: macOS build
-     os: osx
-     script:
-     - cd Build/linux
-     - ./build.sh release     
-   # Coveralls test job
-   - name: Coveralls
-     before_install:
-     - pip install --user cpp-coveralls
-     script:
-     - cd Build/linux
-     - ./build.sh release
-     after_success:
-     - coveralls
-     
-   # FFmpeg interation build
-   - name: FFmpeg patch
-     script:
-     # Build and install SVT-VP9
-     - cd $TRAVIS_BUILD_DIR
-     - cd Build
-     - cmake ..
-     - make -j$(nproc)
-     - sudo make install
-     # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
-     - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
-     - cd ffmpeg
-     - git checkout release/4.1
-     - git apply $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
-     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
-     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
-     - ./configure --enable-libsvtvp9
-     - make --quiet -j$(nproc)
+    # General Linux build job
+    - Linux & Coveralls:
+      before_script: pip install --user cpp-coveralls
+      name: Linux & Coveralls build
+      env: CMAKE_ASSEMBLER=yasm GCC_COMPILER=gcc AR_COMPILER=gcc-ar RANLIB_COMPILER=gcc-ranlib CMAKE_COMPILER=$GCC_COMPILER
+      script:
+        - cd Build
+        - PATH=$PATH:/usr/local/bin/
+        - cmake $TRAVIS_BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$CMAKE_COMPILER -DCMAKE_ASM_NASM_COMPILER=$CMAKE_ASSEMBLER -DCMAKE_AR=`which $AR_COMPILER` -DCMAKE_RANLIB=`which $RANLIB_COMPILER`
+        - make -j SvtVp9EncApp
+        - $TRAVIS_BUILD_DIR/Bin/Release/SvtVp9EncApp -help
+      after_success: coveralls
+    # General macOS build job
+    - MacOS:
+      name: macOS build
+      os: osx
+      env: CMAKE_ASSEMBLER=yasm GCC_COMPILER=gcc AR_COMPILER=gcc-ar RANLIB_COMPILER=gcc-ranlib CMAKE_COMPILER=$GCC_COMPILER
+      script:
+        - cd Build
+        - PATH=$PATH:/usr/local/bin/
+        - cmake $TRAVIS_BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$CMAKE_COMPILER -DCMAKE_ASM_NASM_COMPILER=$CMAKE_ASSEMBLER -DCMAKE_AR=`which $AR_COMPILER` -DCMAKE_RANLIB=`which $RANLIB_COMPILER`
+        - make -j SvtVp9EncApp
+        - $TRAVIS_BUILD_DIR/Bin/Release/SvtVp9EncApp -help
+    # Windows Ninja build
+    - Windows:
+      name: windows Ninja build
+      os: windows
+      before_install:
+        - choco install -y yasm
+      script:
+        - PATH=$PATH:/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja
+        - cd Build
+        - cmake $TRAVIS_BUILD_DIR -G"Ninja" -DCMAKE_BUILD_TYPE=Release
+        - ninja
+        - $TRAVIS_BUILD_DIR/Bin/Release/Release/SvtVp9EncApp.exe -help
+      after_failure: cat $TRAVIS_BUILD_DIR/Build/windows/CMakeFiles/CMakeOutput.log
+    # FFmpeg interation build
+    - FFmpeg:
+      name: FFmpeg patch
+      script:
+        # Build and install SVT-VP9
+        - cd $TRAVIS_BUILD_DIR/Build
+        - cmake ..
+        - make -j$(nproc)
+        - sudo make install
+        # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
+        - git clone https://github.com/FFmpeg/FFmpeg ffmpeg && cd ffmpeg
+        - git checkout release/4.1
+        - git apply $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+        - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
+        - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
+        - ./configure --enable-libsvtvp9
+        - make --quiet -j$(nproc)
