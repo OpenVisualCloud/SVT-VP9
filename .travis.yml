@@ -11,7 +11,7 @@ addons:
       - yasm
 matrix:
   allow_failures:
-    - name: windows Ninja build
+    - os: windows
     - name: FFmpeg patch
     - name: macOS build
   fast_finish: true
@@ -40,16 +40,34 @@ matrix:
         - make -j SvtVp9EncApp
         - $TRAVIS_BUILD_DIR/Bin/Release/SvtVp9EncApp -help
     # Windows Ninja build
-    - Windows:
-      name: windows Ninja build
+    - Windows GCC:
+      name: windows mingw-gcc build
       os: windows
       before_install:
-        - choco install -y yasm
+        - choco install -y yasm ninja
       script:
-        - PATH=$PATH:/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja
         - cd Build
         - cmake $TRAVIS_BUILD_DIR -G"Ninja" -DCMAKE_BUILD_TYPE=Release
-        - ninja
+        - ninja -j0
+        - $TRAVIS_BUILD_DIR/Bin/Release/Release/SvtVp9EncApp.exe -help
+      after_failure: cat $TRAVIS_BUILD_DIR/Build/windows/CMakeFiles/CMakeOutput.log
+    - Windows Clang:
+      name: windows mingw-clang build
+      os: windows
+      cache:
+        directories:
+          - $TRAVIS_BUILD_DIR/msys64/var/cache
+      before_install:
+        - curl http://repo.msys2.org/distrib/msys2-x86_64-latest.tar.xz -o $TRAVIS_BUILD_DIR/msys2-base.tar.xz
+        - 7z x -aoa $TRAVIS_BUILD_DIR/msys2-base.tar.xz
+        - tar -xf $TRAVIS_BUILD_DIR/msys2-base.tar
+        - echo -e "Start-Process -NoNewWindow -Wait -FilePath \$env:TRAVIS_BUILD_DIR/msys64/usr/bin/bash.exe -ArgumentList \"-lc exit\".Split(' ')\nStart-Process -NoNewWindow -Wait -FilePath \$env:TRAVIS_BUILD_DIR/msys64/usr/bin/bash.exe -ArgumentList  \"-lc 'pacman -Syyu --noconfirm --ask=20 --needed'\".Split(' ')\nStart-Process -NoNewWindow -Wait -FilePath \$env:TRAVIS_BUILD_DIR/msys64/usr/bin/bash.exe -ArgumentList  \"-lc 'pacman -S --noconfirm --ask=20 --needed mingw-w64-x86_64-toolchain bsdtar coreutils glib2 icu libpcre32 libpcrecpp libpcreposix pcre mingw-w64-x86_64-clang mingw-w64-x86_64-yasm'\".Split(' ')"> $TRAVIS_BUILD_DIR/bash.ps1
+        - powershell -NoProfile -NoLogo -ExecutionPolicy bypass $TRAVIS_BUILD_DIR/bash.ps1
+        - PATH=$TRAVIS_BUILD_DIR/msys64/mingw64/bin:$PATH
+      script:
+        - cd Build
+        - cmake $TRAVIS_BUILD_DIR -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_MAKE_PROGRAM=mingw32-make.exe
+        - mingw32-make -j
         - $TRAVIS_BUILD_DIR/Bin/Release/Release/SvtVp9EncApp.exe -help
       after_failure: cat $TRAVIS_BUILD_DIR/Build/windows/CMakeFiles/CMakeOutput.log
     # FFmpeg interation build
