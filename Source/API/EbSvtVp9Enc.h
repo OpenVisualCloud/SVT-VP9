@@ -170,7 +170,7 @@ typedef struct EbSvtVp9EncConfiguration
     * encoded pictures in display order. In other words, pictures with display
     * order N can only be referenced by pictures with display order greater than
     * N, and it can only refer pictures with picture order lower than N. The Low
-    * Delay structure can be flat structured (e.g. IPPPPPPP…) or hierarchically
+    * Delay structure can be flat structured (e.g. IPPPPPPPâ€¦) or hierarchically
     * structured. B/b pictures can be used instead of P/p pictures. However, the
     * reference picture list 0 and the reference picture list 1 will contain the
     * same reference picture.
@@ -207,13 +207,13 @@ typedef struct EbSvtVp9EncConfiguration
     * Default is 25. */
     uint32_t                 frame_rate;
 
-    /* Frame rate numerator. When zero, the encoder will use –fps if
+    /* Frame rate numerator. When zero, the encoder will use â€“fps if
     * FrameRateDenominator is also zero, otherwise an error is returned.
     * [0 - 2^64-1]
     * Default is 0. */
     uint32_t                 frame_rate_numerator;
 
-    /* Frame rate denominator. When zero, the encoder will use –fps if
+    /* Frame rate denominator. When zero, the encoder will use â€“fps if
     * FrameRateNumerator is also zero, otherwise an error is returned.
     * [0 - 2^64 - 1]
     * Default is 0. */
@@ -319,7 +319,7 @@ typedef struct EbSvtVp9EncConfiguration
     /* Flag to enable the Speed Control functionality to achieve the real-time
     * encoding speed defined by dynamically changing the encoding preset to meet
     * the average speed defined in injectorFrameRate. When this parameter is set
-    * to 1 it forces –inj to be 1 -inj-frm-rt to be set to the –fps.
+    * to 1 it forces â€“inj to be 1 -inj-frm-rt to be set to the â€“fps.
     * Default is 0. */
     uint32_t                 speed_control_flag;
 
@@ -352,9 +352,21 @@ typedef struct EbSvtVp9EncConfiguration
     uint32_t                 recon_file;
 
 
-
     // Input stride
     uint32_t               input_picture_stride; // Includes padding
+
+	// VBV Parameters
+    /* Sets the maximum rate the VBV buffer should be assumed to refill at
+    *
+	*  Default is 0. */
+	uint32_t                    vbv_max_rate;
+
+	/* Sets the size of the VBV buffer in bits.
+	*
+	*  Default is 0. */
+	uint32_t                    vbv_buf_size;
+
+    uint64_t                    frames_to_be_encoded;
 
 } EbSvtVp9EncConfiguration;
 
