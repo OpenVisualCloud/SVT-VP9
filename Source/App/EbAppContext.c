@@ -174,6 +174,8 @@ EbErrorType  copy_configuration_parameters(
     callback_data->eb_enc_parameters.max_qp_allowed = config->max_qp_allowed;
     callback_data->eb_enc_parameters.min_qp_allowed = config->min_qp_allowed;
     callback_data->eb_enc_parameters.qp = config->qp;
+	callback_data->eb_enc_parameters.vbvMaxrate = config->vbvMaxrate;
+	callback_data->eb_enc_parameters.vbvBufsize = config->vbvBufsize;
     callback_data->eb_enc_parameters.use_qp_file = (uint8_t)config->use_qp_file;
     callback_data->eb_enc_parameters.loop_filter = (uint8_t)config->loop_filter;
     callback_data->eb_enc_parameters.use_default_me_hme = (uint8_t)config->use_default_me_hme;

@@ -356,6 +356,12 @@ typedef struct EbSvtVp9EncConfiguration
     // Input stride
     uint32_t               input_picture_stride; // Includes padding
 
+	/* VBV MaxRate and BufSize, only applicable when rate control mode is
+	*set to 1(VBR mode)
+	*/
+	uint32_t                vbvMaxrate;
+	uint32_t                vbvBufsize;
+
 } EbSvtVp9EncConfiguration;
 
 /* STEP 1: Call the library to construct a Component Handle.

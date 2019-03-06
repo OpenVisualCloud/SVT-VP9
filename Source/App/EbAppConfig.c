@@ -58,6 +58,8 @@
 #define HDR_INPUT_TOKEN                 "-hdr"
 #define RATE_CONTROL_ENABLE_TOKEN       "-rc"
 #define TARGET_BIT_RATE_TOKEN           "-tbr"
+#define VBV_MAX_RATE_TOKEN              "-vbv-maxrate"
+#define VBV_BUFFER_SIZE_TOKEN           "-vbv-bufsize"
 #define MAX_QP_TOKEN                    "-max-qp"
 #define MIN_QP_TOKEN                    "-min-qp"
 #define INJECTOR_TOKEN                  "-inj"  // no Eval
@@ -149,6 +151,8 @@ static void set_cfg_use_qp_file                        (const char *value, EbCon
 static void set_loop_filter                            (const char *value, EbConfig *cfg) {cfg->loop_filter                         = (uint8_t)strtoul(value, NULL, 0);};
 static void set_enable_hme_flag                        (const char *value, EbConfig *cfg) {cfg->enable_hme_flag                     = (uint8_t)strtoul(value, NULL, 0);};
 static void set_rate_control_mode                      (const char *value, EbConfig *cfg) {cfg->rate_control_mode                   = strtoul(value, NULL, 0);};
+static void SetVbvMaxrate							   (const char *value, EbConfig *cfg) { cfg->vbvMaxrate                         = strtoul(value, NULL, 0); };
+static void SetVbvBufsize                              (const char *value, EbConfig *cfg) { cfg->vbvBufsize                         = strtoul(value, NULL, 0); };
 static void set_target_bit_rate                        (const char *value, EbConfig *cfg) {cfg->target_bit_rate                     = strtoul(value, NULL, 0);};
 static void set_max_qp_allowed                         (const char *value, EbConfig *cfg) {cfg->max_qp_allowed                      = strtoul(value, NULL, 0);};
 static void set_min_qp_allowed                         (const char *value, EbConfig *cfg) {cfg->min_qp_allowed                      = strtoul(value, NULL, 0);};
@@ -234,7 +238,8 @@ ConfigEntry config_entry[] = {
     { SINGLE_INPUT, TARGET_BIT_RATE_TOKEN, "TargetBitRate", set_target_bit_rate },
     { SINGLE_INPUT, MAX_QP_TOKEN, "MaxQpAllowed", set_max_qp_allowed },
     { SINGLE_INPUT, MIN_QP_TOKEN, "MinQpAllowed", set_min_qp_allowed },
-
+	{ SINGLE_INPUT, VBV_MAX_RATE_TOKEN, "vbvMaxRate", SetVbvMaxrate },
+	{ SINGLE_INPUT, VBV_BUFFER_SIZE_TOKEN, "vbvBufsize", SetVbvBufsize },
 
     // Loop Filter
     { SINGLE_INPUT, LOOP_FILTER_TOKEN, "LoopFilter", set_loop_filter },
@@ -299,7 +304,8 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     config_ptr->rate_control_mode                                = 0;
     config_ptr->target_bit_rate                                  = 7000000;
-
+	config_ptr->vbvMaxrate										 = 0;
+	config_ptr->vbvBufsize										 = 0;
     config_ptr->max_qp_allowed                                   = 63;
     config_ptr->min_qp_allowed                                   = 10;
     config_ptr->base_layer_switch_mode                           = 0;
