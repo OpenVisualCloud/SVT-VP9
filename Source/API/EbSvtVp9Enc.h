@@ -3,8 +3,8 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
-#ifndef EbApi_h
-#define EbApi_h
+#ifndef EbSvtVp9Enc_h
+#define EbSvtVp9Enc_h
 
 #include <stdint.h>
 
@@ -353,7 +353,7 @@ typedef struct EbSvtVp9EncConfiguration
 * @ *p_app_data      Callback data.
 * @ *config_ptr     Pointer passed back to the client during callbacks, it will be
 *                  loaded with default params from the library. */
-EB_API EbErrorType eb_svt_init_handle(
+EB_API EbErrorType eb_vp9_svt_init_handle(
     EbComponentType** p_handle,
     void* p_app_data,
     EbSvtVp9EncConfiguration  *config_ptr); // config_ptr will be loaded with default params from the library
@@ -363,7 +363,7 @@ EB_API EbErrorType eb_svt_init_handle(
 * Parameter:
 * @ *svt_enc_component              Encoder handler.
 * @ *pComponentParameterStructure  Encoder and buffer configurations will be copied to the library. */
-EB_API EbErrorType eb_svt_enc_set_parameter(
+EB_API EbErrorType eb_vp9_svt_enc_set_parameter(
     EbComponentType           *svt_enc_component,
     EbSvtVp9EncConfiguration    *p_component_parameter_structure); // pComponentParameterStructure contents will be copied to the library
 
@@ -371,7 +371,7 @@ EB_API EbErrorType eb_svt_enc_set_parameter(
 *
 * Parameter:
 * @ *svt_enc_component  Encoder handler. */
-EB_API EbErrorType eb_init_encoder(
+EB_API EbErrorType eb_vp9_init_encoder(
     EbComponentType *svt_enc_component);
 
 /* OPTIONAL: Get stream headers at init time.
@@ -379,7 +379,7 @@ EB_API EbErrorType eb_init_encoder(
 * Parameter:
 * @ *svt_enc_component   Encoder handler.
 * @ **output_stream_ptr  Output buffer. */
-EB_API EbErrorType eb_svt_enc_stream_header(
+EB_API EbErrorType eb_vp9_svt_enc_stream_header(
     EbComponentType           *svt_enc_component,
     EbBufferHeaderType       **output_stream_ptr);
 
@@ -388,7 +388,7 @@ EB_API EbErrorType eb_svt_enc_stream_header(
 * Parameter:
 * @ *svt_enc_component  Encoder handler.
 * @ **output_stream_ptr  Output stream. */
-EB_API EbErrorType eb_svt_enc_eos_nal(
+EB_API EbErrorType eb_vp9_svt_enc_eos_nal(
     EbComponentType           *svt_enc_component,
     EbBufferHeaderType       **output_stream_ptr);
 
@@ -397,7 +397,7 @@ EB_API EbErrorType eb_svt_enc_eos_nal(
 * Parameter:
 * @ *svt_enc_component  Encoder handler.
 * @ *p_buffer           Header pointer, picture buffer. */
-EB_API EbErrorType eb_svt_enc_send_picture(
+EB_API EbErrorType eb_vp9_svt_enc_send_picture(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType   *p_buffer);
 
@@ -407,7 +407,7 @@ EB_API EbErrorType eb_svt_enc_send_picture(
 * @ **p_buffer          Header pointer to return packet with.
 * @ pic_send_done       Flag to signal that all input pictures have been sent, this call becomes locking one this signal is 1.
 * Non-locking call, returns EB_ErrorMax for an encode error, EB_NoErrorEmptyQueue when the library does not have any available packets.*/
-EB_API EbErrorType eb_svt_get_packet(
+EB_API EbErrorType eb_vp9_svt_get_packet(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType  **p_buffer,
     uint8_t                pic_send_done);
@@ -416,7 +416,7 @@ EB_API EbErrorType eb_svt_get_packet(
 *
 * Parameter:
 * @ **p_buffer          Header pointer that contains the output packet to be released. */
-EB_API void eb_svt_release_out_buffer(
+EB_API void eb_vp9_svt_release_out_buffer(
     EbBufferHeaderType  **p_buffer);
 
 /* OPTIONAL: Fill buffer with reconstructed picture.
@@ -424,7 +424,7 @@ EB_API void eb_svt_release_out_buffer(
 * Parameter:
 * @ *svt_enc_component  Encoder handler.
 * @ *p_buffer           Output buffer. */
-EB_API EbErrorType eb_svt_get_recon(
+EB_API EbErrorType eb_vp9_svt_get_recon(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType   *p_buffer);
 
@@ -432,18 +432,18 @@ EB_API EbErrorType eb_svt_get_recon(
 *
 * Parameter:
 * @ *svt_enc_component  Encoder handler. */
-EB_API EbErrorType eb_deinit_encoder(
+EB_API EbErrorType eb_vp9_deinit_encoder(
     EbComponentType *svt_enc_component);
 
 /* STEP 7: Deconstruct encoder handler.
 *
 * Parameter:
 * @ *svt_enc_component  Encoder handler. */
-EB_API EbErrorType eb_deinit_handle(
+EB_API EbErrorType eb_vp9_deinit_handle(
     EbComponentType  *svt_enc_component);
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-#endif // EbApi_h
+#endif // EbSvtVp9Enc_h

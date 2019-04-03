@@ -409,7 +409,7 @@ EbErrorType init_encoder(
 
     ///************************* LIBRARY INIT [START] *********************///
     // STEP 1: Call the library to construct a Component Handle
-    return_error = eb_svt_init_handle(&callback_data->svt_encoder_handle, callback_data, &callback_data->eb_enc_parameters);
+    return_error = eb_vp9_svt_init_handle(&callback_data->svt_encoder_handle, callback_data, &callback_data->eb_enc_parameters);
 
     if (return_error != EB_ErrorNone) {
         return return_error;
@@ -427,7 +427,7 @@ EbErrorType init_encoder(
 
     // STEP 4: Send over all configuration parameters
     // Set the Parameters
-    return_error = eb_svt_enc_set_parameter(
+    return_error = eb_vp9_svt_enc_set_parameter(
                        callback_data->svt_encoder_handle,
                        &callback_data->eb_enc_parameters);
 
@@ -436,7 +436,7 @@ EbErrorType init_encoder(
     }
 
     // STEP 5: Init Encoder
-    return_error = eb_init_encoder(callback_data->svt_encoder_handle);
+    return_error = eb_vp9_init_encoder(callback_data->svt_encoder_handle);
     if (return_error != EB_ErrorNone) { return return_error; }
 
     ///************************* LIBRARY INIT [END] *********************///
@@ -503,7 +503,7 @@ EbErrorType de_init_encoder(
     EbMemoryMapEntry*   memory_entry     = (EbMemoryMapEntry*)0;
 
     if (((EbComponentType*)(callback_data_ptr->svt_encoder_handle)) != NULL) {
-            return_error = eb_deinit_encoder(callback_data_ptr->svt_encoder_handle);
+            return_error = eb_vp9_deinit_encoder(callback_data_ptr->svt_encoder_handle);
     }
 
     // Destruct the buffer memory pool
@@ -526,7 +526,7 @@ EbErrorType de_init_encoder(
     free(app_memory_map_all_channels[instance_index]);
 
     // Destruct the component
-    eb_deinit_handle(callback_data_ptr->svt_encoder_handle);
+    eb_vp9_deinit_handle(callback_data_ptr->svt_encoder_handle);
 
     return return_error;
 }

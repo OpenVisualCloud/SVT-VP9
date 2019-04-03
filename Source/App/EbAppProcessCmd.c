@@ -12,8 +12,8 @@
 
 #include "EbAppContext.h"
 #include "EbAppConfig.h"
-#include "EbErrorCodes.h"
-#include "EbTime.h"
+#include "EbSvtVp9ErrorCodes.h"
+#include "EbSvtVp9Time.h"
 
 /***************************************
  * Macros
@@ -510,7 +510,7 @@ AppExitConditionType process_input_buffer(
         header_ptr->flags = 0;
 
         // Send the picture
-        eb_svt_enc_send_picture(component_handle, header_ptr);
+        eb_vp9_svt_enc_send_picture(component_handle, header_ptr);
 
         if ((config->processed_frame_count == (uint64_t)config->frames_to_be_encoded) || config->stop_encoder) {
 
@@ -522,7 +522,7 @@ AppExitConditionType process_input_buffer(
             header_ptr->p_buffer       = NULL;
             header_ptr->pic_type       = EB_INVALID_PICTURE;
 
-            eb_svt_enc_send_picture(component_handle, header_ptr);
+            eb_vp9_svt_enc_send_picture(component_handle, header_ptr);
 
         }
 
@@ -624,7 +624,7 @@ AppExitConditionType process_output_stream_buffer(
     uint64_t               finishu_time     = 0;
 
     // non-blocking call until all input frames are sent
-    stream_status = eb_svt_get_packet(component_handle, &header_ptr, pic_send_done);
+    stream_status = eb_vp9_svt_get_packet(component_handle, &header_ptr, pic_send_done);
 
     if (stream_status == EB_ErrorMax) {
         printf("\n");
@@ -686,7 +686,7 @@ AppExitConditionType process_output_stream_buffer(
         return_value = (header_ptr->flags & EB_BUFFERFLAG_EOS) ? APP_ExitConditionFinished : APP_ExitConditionNone;
 
         // Release the output buffer
-        eb_svt_release_out_buffer(&header_ptr);
+        eb_vp9_svt_release_out_buffer(&header_ptr);
 
 #if DEADLOCK_DEBUG
         ++frame_count;
@@ -723,7 +723,7 @@ AppExitConditionType process_output_recon_buffer(
     EbErrorType             recon_status     = EB_ErrorNone;
     int32_t                 fseek_return_val;
     // non-blocking call until all input frames are sent
-    recon_status = eb_svt_get_recon(component_handle, header_ptr);
+    recon_status = eb_vp9_svt_get_recon(component_handle, header_ptr);
 
     if (recon_status == EB_ErrorMax) {
         printf("\n");

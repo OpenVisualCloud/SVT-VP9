@@ -11,7 +11,7 @@
 #include <gst/video/video.h>
 #include <gst/video/gstvideoencoder.h>
 
-#include <EbApi.h>
+#include <EbSvtVp9Enc.h>
 
 
 G_BEGIN_DECLS

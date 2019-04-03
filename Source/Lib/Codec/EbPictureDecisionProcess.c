@@ -18,7 +18,7 @@
 #include "EbComputeSAD.h"
 #include "EbMeSadCalculation.h"
 
-#include "EbErrorCodes.h"
+#include "EbSvtVp9ErrorCodes.h"
 #include "vp9_pred_common.h"
 
 /************************************************
