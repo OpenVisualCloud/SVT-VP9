@@ -356,11 +356,18 @@ typedef struct EbSvtVp9EncConfiguration
     // Input stride
     uint32_t               input_picture_stride; // Includes padding
 
-	/* VBV MaxRate and BufSize, only applicable when rate control mode is
-	*set to 1(VBR mode)
-	*/
+	// VBV Parameters
+   /* Sets the maximum rate the VBV buffer should be assumed to refill at
+	*
+	* Default is 0. */
 	uint32_t                vbvMaxrate;
+
+   /* Sets the size of the VBV buffer in bits.
+	*
+	* Default is 0. */
 	uint32_t                vbvBufsize;
+
+	int64_t                 frames_to_be_encoded;
 
 } EbSvtVp9EncConfiguration;
 
