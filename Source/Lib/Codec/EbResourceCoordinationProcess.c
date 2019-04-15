@@ -17,7 +17,7 @@
 
 #include "EbResourceCoordinationResults.h"
 #include "EbReferenceObject.h"
-#include "EbTime.h"
+#include "EbSvtVp9Time.h"
 
 #include "vp9_alloccommon.h"
 #include "vp9_common.h"

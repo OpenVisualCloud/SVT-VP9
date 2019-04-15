@@ -11,7 +11,7 @@
 #include "EbSequenceControlSet.h"
 #include "EbPictureControlSet.h"
 #include "EbUtility.h"
-#include "EbErrorCodes.h"
+#include "EbSvtVp9ErrorCodes.h"
 
 #include "EbRateControlResults.h"
 #include "EbRateControlTasks.h"

@@ -14,7 +14,7 @@
 #include "EbUtility.h"
 #include "EbRateDistortionCost.h"
 #include "EbPictureOperators.h"
-#include "EbErrorCodes.h"
+#include "EbSvtVp9ErrorCodes.h"
 #include "EbComputeSAD.h"
 #include "EbPictureControlSet.h"
 #include "EbCodingUnit.h"

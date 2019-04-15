@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include "EbAppConfig.h"
 #include "EbAppContext.h"
-#include "EbTime.h"
+#include "EbSvtVp9Time.h"
 #ifdef _WIN32
 #include <Windows.h>
 #else

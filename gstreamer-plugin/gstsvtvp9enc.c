@@ -329,9 +329,9 @@ gst_svtvp9enc_init (GstSvtVp9Enc * svtvp9enc)
   svtvp9enc->dts_offset = 0;
 
   EbErrorType res =
-      eb_svt_init_handle(&svtvp9enc->svt_encoder, NULL, svtvp9enc->svt_config);
+      eb_vp9_svt_init_handle(&svtvp9enc->svt_encoder, NULL, svtvp9enc->svt_config);
   if (res != EB_ErrorNone) {
-    GST_ERROR_OBJECT (svtvp9enc, "eb_svt_init_handle failed with error %d", res);
+    GST_ERROR_OBJECT (svtvp9enc, "eb_vp9_svt_init_handle failed with error %d", res);
     GST_OBJECT_UNLOCK (svtvp9enc);
     return;
   }
@@ -529,7 +529,7 @@ gst_svtvp9enc_finalize (GObject * object)
   GST_DEBUG_OBJECT (svtvp9enc, "finalizing svtvp9enc");
 
   GST_OBJECT_LOCK (svtvp9enc);
-  eb_deinit_handle(svtvp9enc->svt_encoder);
+  eb_vp9_deinit_handle(svtvp9enc->svt_encoder);
   svtvp9enc->svt_encoder = NULL;
   g_free (svtvp9enc->svt_config);
   GST_OBJECT_UNLOCK (svtvp9enc);
@@ -611,9 +611,9 @@ gst_svtvp9enc_configure_svt (GstSvtVp9Enc * svtvp9enc)
   //}
 
   EbErrorType res =
-      eb_svt_enc_set_parameter(svtvp9enc->svt_encoder, svtvp9enc->svt_config);
+      eb_vp9_svt_enc_set_parameter(svtvp9enc->svt_encoder, svtvp9enc->svt_config);
   if (res != EB_ErrorNone) {
-    GST_ERROR_OBJECT (svtvp9enc, "eb_svt_enc_set_parameter failed with error %d", res);
+    GST_ERROR_OBJECT (svtvp9enc, "eb_vp9_svt_enc_set_parameter failed with error %d", res);
     return FALSE;
   }
   return TRUE;
@@ -623,11 +623,11 @@ gboolean
 gst_svtvp9enc_start_svt (GstSvtVp9Enc * svtvp9enc)
 {
   G_LOCK (init_mutex);
-  EbErrorType res = eb_init_encoder(svtvp9enc->svt_encoder);
+  EbErrorType res = eb_vp9_init_encoder(svtvp9enc->svt_encoder);
   G_UNLOCK (init_mutex);
 
   if (res != EB_ErrorNone) {
-    GST_ERROR_OBJECT (svtvp9enc, "eb_init_encoder failed with error %d", res);
+    GST_ERROR_OBJECT (svtvp9enc, "eb_vp9_init_encoder failed with error %d", res);
     return FALSE;
   }
   return TRUE;
@@ -760,7 +760,7 @@ gst_svtvp9enc_encode (GstSvtVp9Enc * svtvp9enc, GstVideoCodecFrame * frame)
     input_buffer->pic_type = EB_IDR_PICTURE;
   }
 
-  res = eb_svt_enc_send_picture(svtvp9enc->svt_encoder, input_buffer);
+  res = eb_vp9_svt_enc_send_picture(svtvp9enc->svt_encoder, input_buffer);
   if (res != EB_ErrorNone) {
     GST_ERROR_OBJECT (svtvp9enc, "Issue %d sending picture to SVT-VP9.", res);
     ret = GST_FLOW_ERROR;
@@ -783,7 +783,7 @@ gst_svtvp9enc_send_eos (GstSvtVp9Enc * svtvp9enc)
   input_buffer.flags = EB_BUFFERFLAG_EOS;
   input_buffer.p_buffer = NULL;
 
-  ret = eb_svt_enc_send_picture(svtvp9enc->svt_encoder, &input_buffer);
+  ret = eb_vp9_svt_enc_send_picture(svtvp9enc->svt_encoder, &input_buffer);
 
   if (ret != EB_ErrorNone) {
     GST_ERROR_OBJECT (svtvp9enc, "couldn't send EOS frame.");
@@ -826,7 +826,7 @@ gst_svtvp9enc_dequeue_encoded_frames (GstSvtVp9Enc * svtvp9enc,
     EbBufferHeaderType *output_buf = NULL;
 
     res =
-        eb_svt_get_packet(svtvp9enc->svt_encoder, &output_buf,
+        eb_vp9_svt_get_packet(svtvp9enc->svt_encoder, &output_buf,
         done_sending_pics);
 
     if (output_buf != NULL)
@@ -889,7 +889,7 @@ gst_svtvp9enc_dequeue_encoded_frames (GstSvtVp9Enc * svtvp9enc,
           G_GINT64_FORMAT " SliceType:%d\n", svtvp9enc->frame_count,
            (frame->dts), (frame->pts), output_buf->pic_type);
 
-      eb_svt_release_out_buffer(&output_buf);
+      eb_vp9_svt_release_out_buffer(&output_buf);
       output_buf = NULL;
 
       ret = gst_video_encoder_finish_frame (GST_VIDEO_ENCODER (svtvp9enc), frame);
@@ -963,7 +963,7 @@ gst_svtvp9enc_stop (GstVideoEncoder * encoder)
   GST_OBJECT_UNLOCK (svtvp9enc);
 
   GST_OBJECT_LOCK (svtvp9enc);
-  eb_deinit_encoder(svtvp9enc->svt_encoder);
+  eb_vp9_deinit_encoder(svtvp9enc->svt_encoder);
   /* Destruct the buffer memory pool */
   gst_svthevenc_deallocate_svt_buffers (svtvp9enc);
   GST_OBJECT_UNLOCK (svtvp9enc);

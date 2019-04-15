@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #include "EbDefinitions.h"
-#include "EbApi.h"
+#include "EbSvtVp9Enc.h"
 #include "EbThreads.h"
 #include "EbUtility.h"
 #include "EbEncHandle.h"
@@ -695,7 +695,7 @@ static EbErrorType eb_output_buffer_header_ctor(
 #if __linux
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType  eb_init_encoder(EbComponentType *svt_enc_component) {
+EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
 
     EbEncHandle *enc_handle_ptr = (EbEncHandle*)svt_enc_component->p_component_private;
     EbErrorType  return_error = EB_ErrorNone;
@@ -1495,7 +1495,7 @@ EB_API EbErrorType  eb_init_encoder(EbComponentType *svt_enc_component) {
 #if __linux
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType  eb_deinit_encoder(EbComponentType *svt_enc_component)
+EB_API EbErrorType  eb_vp9_deinit_encoder(EbComponentType *svt_enc_component)
 {
     EbEncHandle *enc_handle_ptr = (EbEncHandle*)svt_enc_component->p_component_private;
     EbErrorType  return_error = EB_ErrorNone;
@@ -1547,7 +1547,7 @@ EB_API EbErrorType  eb_deinit_encoder(EbComponentType *svt_enc_component)
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API void eb_svt_release_out_buffer(
+EB_API void eb_vp9_svt_release_out_buffer(
     EbBufferHeaderType  **p_buffer)
 {
     if (p_buffer && (*p_buffer)->wrapper_ptr)
@@ -1625,7 +1625,7 @@ EbErrorType eb_svt_enc_init_parameter(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_init_handle(
+EB_API EbErrorType eb_vp9_svt_init_handle(
     EbComponentType          **p_handle,      // Function to be called in the future for manipulating the component
     void                      *p_app_data,
     EbSvtVp9EncConfiguration  *config_ptr) {   // Pointer passed back to the client during callbacks
@@ -1645,7 +1645,7 @@ EB_API EbErrorType eb_svt_init_handle(
 
         }
         else if (return_error == EB_ErrorInsufficientResources) {
-            eb_deinit_encoder((EbComponentType*)NULL);
+            eb_vp9_deinit_encoder((EbComponentType*)NULL);
             *p_handle = (EbComponentType*)NULL;
         }
         else {
@@ -1685,7 +1685,7 @@ static EbErrorType eb_svt_enc_component_de_init(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_deinit_handle(
+EB_API EbErrorType eb_vp9_deinit_handle(
     EbComponentType  *svt_enc_component)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -2423,7 +2423,7 @@ static void print_lib_params(
 #if __linux
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType  eb_svt_enc_set_parameter(
+EB_API EbErrorType  eb_vp9_svt_enc_set_parameter(
     EbComponentType             *svt_enc_component,
     EbSvtVp9EncConfiguration    *p_component_parameter_structure){
 
@@ -2587,7 +2587,7 @@ static void copy_output_recon_buffer(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_get_recon(
+EB_API EbErrorType eb_vp9_svt_get_recon(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType   *p_buffer){
 
@@ -2631,7 +2631,7 @@ EB_API EbErrorType eb_svt_get_recon(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_enc_send_picture(
+EB_API EbErrorType eb_vp9_svt_enc_send_picture(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType   *p_buffer)
 {
@@ -2661,7 +2661,7 @@ EB_API EbErrorType eb_svt_enc_send_picture(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_get_packet(
+EB_API EbErrorType eb_vp9_svt_get_packet(
     EbComponentType      *svt_enc_component,
     EbBufferHeaderType  **p_buffer,
     unsigned char         pic_send_done){
@@ -2737,7 +2737,7 @@ EbErrorType  eb_buffer_header_ctor(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_enc_stream_header(
+EB_API EbErrorType eb_vp9_svt_enc_stream_header(
     EbComponentType           *svt_enc_component,
     EbBufferHeaderType        **output_stream_ptr) {
 
@@ -2750,7 +2750,7 @@ EB_API EbErrorType eb_svt_enc_stream_header(
 #if defined(__linux__) || defined(__APPLE__)
 __attribute__((visibility("default")))
 #endif
-EB_API EbErrorType eb_svt_enc_eos_nal(
+EB_API EbErrorType eb_vp9_svt_enc_eos_nal(
     EbComponentType           *svt_enc_component,
     EbBufferHeaderType       **output_stream_ptr
 )

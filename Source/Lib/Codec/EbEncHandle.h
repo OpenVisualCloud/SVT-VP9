@@ -7,7 +7,7 @@
 #define EbEncHandle_h
 
 #include "EbDefinitions.h"
-#include "EbApi.h"
+#include "EbSvtVp9Enc.h"
 
 #include "EbPictureBufferDesc.h"
 #include "EbSystemResourceManager.h"

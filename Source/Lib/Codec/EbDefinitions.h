@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "EbApi.h"
+#include "EbSvtVp9Enc.h"
 #include "vp9_enums.h"
 #ifdef __cplusplus
 extern "C" {
