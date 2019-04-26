@@ -9,8 +9,10 @@ Signed-off-by: Jing Sun <jing.a.sun@intel.com>
  configure               |   4 +
  libavcodec/Makefile     |   1 +
  libavcodec/allcodecs.c  |   1 +
- libavcodec/libsvt_vp9.c | 458 ++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 464 insertions(+)
+ libavcodec/avcodec.h    |   2 +
+ libavcodec/libsvt_vp9.c | 474 ++++++++++++++++++++++++++++++++++++++++++++++++
+ libavformat/ivfenc.c    |  34 +++-
+ 6 files changed, 513 insertions(+), 3 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -73,12 +75,25 @@ index c6c203e..3d20d9c 100644
  extern AVCodec ff_libtheora_encoder;
  extern AVCodec ff_libtwolame_encoder;
  extern AVCodec ff_libvo_amrwbenc_encoder;
+diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
+index b749946..1f504af 100644
+--- a/libavcodec/avcodec.h
++++ b/libavcodec/avcodec.h
+@@ -1526,6 +1526,8 @@ typedef struct AVPacket {
+  */
+ #define AV_PKT_FLAG_DISPOSABLE 0x0010
+ 
++#define AV_PKT_FLAG_SVT_VP9_EXT_ON  0x10000 // Indicating SVT VP9 frame header ext on
++#define AV_PKT_FLAG_SVT_VP9_EXT_OFF 0x20000 // Indicating SVT VP9 frame header ext off
+ 
+ enum AVSideDataParamChangeFlags {
+     AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000..1951f61
+index 0000000..f7e3bc3
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,458 @@
+@@ -0,0 +1,474 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -113,6 +128,12 @@ index 0000000..1951f61
 +#include "internal.h"
 +#include "avcodec.h"
 +
++typedef enum eos_status {
++    EOS_NOT_REACHED = 0,
++    EOS_REACHED,
++    EOS_TOTRIGGER
++}EOS_STATUS;
++
 +typedef struct SvtContext {
 +    AVClass     *class;
 +
@@ -122,7 +143,7 @@ index 0000000..1951f61
 +    EbBufferHeaderType         *in_buf;
 +    int                         raw_size;
 +
-+    int         eos_flag;
++    EOS_STATUS eos_flag;
 +
 +    // User options.
 +    int enc_mode;
@@ -295,7 +316,7 @@ index 0000000..1951f61
 +    SvtContext   *svt_enc = avctx->priv_data;
 +    EbErrorType svt_ret;
 +
-+    svt_enc->eos_flag = 0;
++    svt_enc->eos_flag = EOS_NOT_REACHED;
 +
 +    svt_ret = eb_vp9_svt_init_handle(&svt_enc->svt_handle, svt_enc, &svt_enc->enc_params);
 +    if (svt_ret != EB_ErrorNone) {
@@ -381,7 +402,7 @@ index 0000000..1951f61
 +        headerPtrLast.flags      = EB_BUFFERFLAG_EOS;
 +
 +        eb_vp9_svt_enc_send_picture(svt_enc->svt_handle, &headerPtrLast);
-+        svt_enc->eos_flag = 1;
++        svt_enc->eos_flag = EOS_REACHED;
 +        av_log(avctx, AV_LOG_DEBUG, "Finish sending frames!!!\n");
 +        return 0;
 +    }
@@ -417,6 +438,11 @@ index 0000000..1951f61
 +    EbErrorType          svt_ret;
 +    int ret;
 +
++    if (EOS_TOTRIGGER == svt_enc->eos_flag) {
++        pkt = NULL;
++        return AVERROR_EOF;
++    }
++
 +    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
 +    if (svt_ret == EB_NoErrorEmptyQueue)
 +        return AVERROR(EAGAIN);
@@ -435,11 +461,16 @@ index 0000000..1951f61
 +    if (headerPtr->pic_type == EB_NON_REF_PICTURE)
 +        pkt->flags |= AV_PKT_FLAG_DISPOSABLE;
 +
-+    ret = (headerPtr->flags & EB_BUFFERFLAG_EOS) ? AVERROR_EOF : 0;
++    if (headerPtr->flags & EB_BUFFERFLAG_SHOW_EXT)
++        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_ON;
++    else
++        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_OFF;
++
++    if (EB_BUFFERFLAG_EOS == headerPtr->flags)
++        svt_enc->eos_flag = EOS_TOTRIGGER;
 +
 +    eb_vp9_svt_release_out_buffer(&headerPtr);
-+
-+    return ret;
++    return 0;
 +}
 +
 +static av_cold int eb_enc_close(AVCodecContext *avctx)
@@ -537,6 +568,57 @@ index 0000000..1951f61
 +    .caps_internal  = FF_CODEC_CAP_INIT_CLEANUP,
 +    .wrapper_name   = "libsvt_vp9",
 +};
+diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
+index adf7211..05f0813 100644
+--- a/libavformat/ivfenc.c
++++ b/libavformat/ivfenc.c
+@@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
+     AVIOContext *pb = s->pb;
+     IVFEncContext *ctx = s->priv_data;
+ 
+-    avio_wl32(pb, pkt->size);
+-    avio_wl64(pb, pkt->pts);
+-    avio_write(pb, pkt->data, pkt->size);
++    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
++        avio_wl32(pb, pkt->size - 4);
++        avio_wl64(pb, pkt->pts);
++        avio_write(pb, pkt->data, pkt->size - 4);
++
++        avio_wl32(pb, 1);
++        avio_wl64(pb, pkt->pts - 2);
++        avio_write(pb, pkt->data + pkt->size - 4, 1);
++
++        avio_wl32(pb, 1);
++        avio_wl64(pb, pkt->pts - 1);
++        avio_write(pb, pkt->data + pkt->size - 3, 1);
++
++        avio_wl32(pb, 1);
++        avio_wl64(pb, pkt->pts);
++        avio_write(pb, pkt->data + pkt->size - 2, 1);
++
++        avio_wl32(pb, 1);
++        avio_wl64(pb, pkt->pts + 1);
++        avio_write(pb, pkt->data + pkt->size - 1, 1);
++    }
++    else {
++        avio_wl32(pb, pkt->size);
++        avio_wl64(pb, pkt->pts);
++        avio_write(pb, pkt->data, pkt->size);
++    }
++
+     if (ctx->frame_cnt)
+         ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
+     ctx->frame_cnt++;
+@@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+     int ret = 1;
+     AVStream *st = s->streams[pkt->stream_index];
+ 
++    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
++       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
++        return 0;
++
+     if (st->codecpar->codec_id == AV_CODEC_ID_VP9)
+         ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
+     else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
 -- 
 1.8.3.1
-
