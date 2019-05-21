@@ -17,18 +17,18 @@ SVT-VP9 Encoder also supports 3 modes:
 
 - An VMAF optimized mode for VMAF benchmarking (-tune 2)
 
-# License
+## License
 
 SVT-VP9 Encoder is licensed under the OSI-approved BSD+Patent license. See [LICENSE](LICENSE.md) for details.
 
-# Documentation
+## Documentation
 
 More details about the SVT-VP9 Encoder usage can be found under:
 -   [svt-vp9-encoder-user-guide](Docs/svt-vp9_encoder_user_guide.md)
 
-# System Requirements
+## System Requirements
 
-## Operating System
+### Operating System
 
 SVT-VP9 Encoder may run on any Windows* or Linux* 64 bit operating systems. The list below represents the operating systems that the encoder application and library were tested and validated on:
 
@@ -43,7 +43,7 @@ SVT-VP9 Encoder may run on any Windows* or Linux* 64 bit operating systems. The 
     -  Ubuntu* 18.04 Server LTS
 
 
-## Hardware
+### Hardware
 
 The SVT-VP9 Encoder library supports the x86 architecture
 
@@ -63,9 +63,9 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
 |        720p             |            3          |
 |        480p             |            2          |
 
-# Build and Install
+## Build and Install
 
-## Windows* Operating Systems (64-bit):
+### Windows* Operating Systems (64-bit):
 
 * __Build Requirements__
     -    Visual Studio* 2017 (can be downloaded [here](https://www.visualstudio.com/vs/older-downloads/))
@@ -92,7 +92,7 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
     -    Sample application supports reading from pipe. E.g: 
         > ffmpeg -i [input.mp4] -nostdin -f rawvideo -pix_fmt yuv420p - | SvtVp9EncApp.exe -i stdin -n [number_of_frames_to_encode] -w [width] -h [height].
 
-## Linux* Operating Systems (64-bit):
+### Linux* Operating Systems (64-bit):
 
 * __Build Requirements__
      -    GCC 5.4.0 or later
@@ -116,16 +116,16 @@ For the binaries to operate properly on your system, the following conditions ha
     -    Sample application supports reading from pipe. E.g:  
         >ffmpeg -i [input.mp4] -nostdin -f rawvideo -pix_fmt yuv420p - | ./SvtVp9EncApp -i stdin -n [number_of_frames_to_encode] -w [width] -h [height].
 
-# Demo features and limitations
+## Demo features and limitations
 
 -  **Multi-instance support:** The multi-instance functionality is a demo feature implemented in the SVT-VP9 Encoder sample application as an example of one sample application using multiple encoding libraries. Encoding using the multi-instance support is limited to only 6 simultaneous streams. For example two channels encoding on Windows: SvtVp9EncApp.exe -nch 2 -c firstchannel.cfg secondchannel.cfg
 -  **Features enabled:** The library will display an error message any feature combination that is not currently supported. 
 
-# How to Contribute
+## How to Contribute
 
 We welcome community contributions to the SVT-VP9 Encoder. Thank you for your time! By contributing to the project, you agree to the license and copyright terms in the OSI-approved BSD+Patent license and to the release of your contribution under these terms. See [LICENSE](LICENSE.md) for details.
 
-## Contribution process
+### Contribution process
 
 -  Follow the [coding guidelines](STYLE.md)
 
@@ -135,10 +135,14 @@ We welcome community contributions to the SVT-VP9 Encoder. Thank you for your ti
 
 -  Submit a pull request for review to the maintainer
 
-# How to Report Bugs and Provide Feedback
+## How to Report Bugs and Provide Feedback
 
 Use the "Issues" tab on Github. To avoid duplicate issues, please make sure you go through the existing issues before logging a new one.
 
-# Notices and Disclaimers
+## IRC
+
+`#svt` on Freenode. Join via [Freenode Webchat](https://webchat.freenode.net/?channels=svt) or use your favorite IRC client.
+
+## Notices and Disclaimers
 
 The notices and disclaimers can be found [here](NOTICES.md)
