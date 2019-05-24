@@ -2080,8 +2080,8 @@ static EbErrorType  verify_settings(
         return_error = EB_ErrorBadParameter;
     }
 
-    if (sequence_control_set_ptr->max_input_luma_width % 8 != 0 && config->encoder_bit_depth == 10) {
-        SVT_LOG("Error instance %u: Source Width a multiple of 8 for 10 bit video\n", channel_number + 1);
+    if (sequence_control_set_ptr->max_input_luma_width % 8 != 0) {
+        SVT_LOG("Error instance %u: Source Width a multiple of 8\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
 
@@ -2089,9 +2089,9 @@ static EbErrorType  verify_settings(
         SVT_LOG("Error instance %u: Source Height must be less than 4320\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
-
-    if (sequence_control_set_ptr->max_input_luma_height % 8 != 0 && config->encoder_bit_depth == 10) {
-        SVT_LOG("Error instance %u: Source Height a multiple of 8 for 10 bit video\n", channel_number + 1);
+    
+    if (sequence_control_set_ptr->max_input_luma_height % 8 != 0) {
+        SVT_LOG("Error instance %u: Source height must be a multiple of 8\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
 
