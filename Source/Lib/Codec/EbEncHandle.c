@@ -2081,7 +2081,7 @@ static EbErrorType  verify_settings(
     }
 
     if (sequence_control_set_ptr->max_input_luma_width % 8 != 0) {
-        SVT_LOG("Error instance %u: Source Width a multiple of 8\n", channel_number + 1);
+        SVT_LOG("Error instance %u: Source Width must be a multiple of 8\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
 
