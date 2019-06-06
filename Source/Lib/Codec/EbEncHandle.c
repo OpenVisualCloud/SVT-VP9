@@ -240,7 +240,7 @@ static int32_t can_use_intel_avx512()
 // Using bit-fields, the fastest function will always be selected based on the available functions in the function arrays
 uint32_t get_cpu_asm_type()
 {
-    uint32_t asm_type = 0;
+    uint32_t asm_type = 7; //This fixes the case where AVX2 is not getting invoked even when AVX2 is supported in the platform.
 
     if (can_use_intel_avx512() == 1)
         asm_type = 7; // bit-field
