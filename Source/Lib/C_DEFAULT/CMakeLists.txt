@@ -22,7 +22,7 @@ file(GLOB all_files
 )
 
 # Utility Source Files
-add_library(C_DEFAULT STATIC
+add_library(${SVT_COMMON_LIBRARY_PREFIX}C_DEFAULT STATIC
        ${all_files}
 )
 

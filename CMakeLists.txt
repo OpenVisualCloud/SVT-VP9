@@ -86,6 +86,10 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_C_FLAGS_DEBUG "-O0 -g")
 endif()
 
+# CMake requires target names to be globally unique, but SVT-AV1/HEVC/VP9 include
+# some common libraries with the same name. Use this as a prefix.
+set(SVT_COMMON_LIBRARY_PREFIX VP9_)
+
 # Add Subdirectories
 add_subdirectory (Source/Lib)
 add_subdirectory (Source/App)

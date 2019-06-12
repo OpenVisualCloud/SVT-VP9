@@ -32,7 +32,7 @@ file(GLOB all_files
     "*.asm"
 )
 
-add_library(ASM_SSE2 STATIC
+add_library(${SVT_COMMON_LIBRARY_PREFIX}ASM_SSE2 STATIC
        ${all_files}
 )
 
