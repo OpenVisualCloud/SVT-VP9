@@ -128,7 +128,7 @@ PaBlockStats  * pa_get_block_stats(int block_index)
  *  Leading Zeros (NLZ) algorithm to get
  *  the log2f of a 64-bit number
  *****************************************/
-inline uint64_t log2f64(uint64_t x)
+inline uint64_t log2f64adaption(uint64_t x)
 {
     uint64_t y;
     int64_t n = 64, c = 32;
@@ -164,7 +164,7 @@ uint32_t endian_swap(uint32_t ui)
 uint64_t log2f_high_precision(uint64_t x, uint8_t precision)
 {
 
-    uint64_t sig_bit_location = log2f64(x);
+    uint64_t sig_bit_location = log2f64adaption(x);
     uint64_t remainder = x - ((uint64_t)1 << (uint8_t) sig_bit_location);
     uint64_t result;
 
