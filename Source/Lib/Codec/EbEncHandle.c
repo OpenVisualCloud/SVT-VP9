@@ -60,6 +60,8 @@
 #if __linux__
 #include <pthread.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #endif
 
 #define RTCD_C
@@ -253,16 +255,17 @@ uint32_t get_cpu_asm_type()
     return asm_type;
 }
 
-//Get Number of processes
+//Get Number of logical processors
 uint32_t get_num_cores() {
-#ifdef WIN32
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    return sysinfo.dwNumberOfProcessors;
+#ifdef _WIN32
+   SYSTEM_INFO sysinfo;
+   GetSystemInfo(&sysinfo);
+   return num_groups == 1 ? sysinfo.dwNumberOfProcessors : sysinfo.dwNumberOfProcessors << 1;
 #else
-    return sysconf(_SC_NPROCESSORS_ONLN);
+   return sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 }
+
 /*****************************************
  * Process Input Ports Config
  *****************************************/
@@ -535,43 +538,89 @@ static EbErrorType  eb_enc_handle_ctor(
     return EB_ErrorNone;
 }
 
-void eb_set_thread_management_parameters(
-    EbSvtVp9EncConfiguration *config_ptr){
+#ifdef _WIN32
+uint64_t get_affinity_mask(uint32_t lpnum) {
+	uint64_t mask = 0x1;
+	for (uint32_t i = lpnum - 1; i > 0; i--)
+		mask += (uint64_t)1 << i;
+	return mask;
+}
+#endif
 
-#ifdef _MSC_VER 
-    alternate_groups = 0;
-    if (config_ptr->use_round_robin_thread_assignment == EB_TRUE) {
-        if (num_groups == 2 && config_ptr->active_channel_count > 1) {
-            if ((config_ptr->active_channel_count % 2) && (config_ptr->active_channel_count - 1 == config_ptr->channel_id)) {
-                alternate_groups = 1;
-                group_affinity.Group = 0;
-            }
-            else if (config_ptr->channel_id % 2) {
-                alternate_groups = 0;
-                group_affinity.Group = 1;
-            }
-            else {
-                alternate_groups = 0;
-                group_affinity.Group = 0;
-            }
-        }
-        else if (num_groups == 2 && config_ptr->active_channel_count == 1) {
-            alternate_groups = 1;
-            group_affinity.Group = 0;
-        }
-        else {
-            alternate_groups = 0;
-            num_groups = 1;
-        }
-    }
-    else {
-        alternate_groups = 0;
-        num_groups = 1;
-    }
-#else
-    alternate_groups = 0;
-    num_groups = 1;
-    (void)config_ptr;
+void eb_set_thread_management_parameters( EbSvtVp9EncConfiguration *config_ptr){
+
+	uint32_t num_logical_processors = get_num_cores();
+#ifdef _WIN32
+	// For system with a single processor group(no more than 64 logic processors all together)
+	// Affinity of the thread can be set to one or more logical processors
+	if (num_groups == 1) {
+		uint32_t lps = config_ptr->logical_processors == 0 ? num_logical_processors :
+			config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors : num_logical_processors;
+		group_affinity.Mask = get_affinity_mask(lps);
+	}
+	else if (num_groups > 1) { // For system with multiple processor group
+		if (config_ptr->logical_processors == 0) {
+			if (config_ptr->target_socket != -1)
+				group_affinity.Group = config_ptr->target_socket;
+		}
+		else {
+			uint32_t num_lp_per_group = num_logical_processors / num_groups;
+			if (config_ptr->target_socket == -1) {
+				if (config_ptr->logical_processors > num_lp_per_group) {
+					alternate_groups = EB_TRUE;
+					SVT_LOG("SVT [WARNING]: -lp(logical processors) setting is ignored. Run on both sockets. \n");
+				}
+				else
+					group_affinity.Mask = get_affinity_mask(config_ptr->logical_processors);
+			}
+			else {
+				uint32_t lps = config_ptr->logical_processors == 0 ? num_lp_per_group :
+					config_ptr->logical_processors < num_lp_per_group ? config_ptr->logical_processors : num_lp_per_group;
+				group_affinity.Mask = get_affinity_mask(lps);
+				group_affinity.Group = config_ptr->target_socket;
+			}
+		}
+	}
+#elif defined(__linux__)
+	CPU_ZERO(&group_affinity);
+
+	if (num_groups == 1) {
+		uint32_t lps = config_ptr->logical_processors == 0 ? num_logical_processors :
+			config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors : num_logical_processors;
+		for (uint32_t i = 0; i < lps; i++)
+			CPU_SET(lp_group[0].group[i], &group_affinity);
+	}
+	else if (num_groups > 1) {
+		uint32_t num_lp_per_group = num_logical_processors / num_groups;
+		if (config_ptr->logical_processors == 0) {
+			if (config_ptr->target_socket != -1) {
+				for (uint32_t i = 0; i < lp_group[config_ptr->target_socket].num; i++)
+					CPU_SET(lp_group[config_ptr->target_socket].group[i], &group_affinity);
+			}
+		}
+		else {
+			if (config_ptr->target_socket == -1) {
+				uint32_t lps = config_ptr->logical_processors == 0 ? num_logical_processors :
+					config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors : num_logical_processors;
+				if (lps > num_lp_per_group) {
+					for (uint32_t i = 0; i < lp_group[0].num; i++)
+						CPU_SET(lp_group[0].group[i], &group_affinity);
+					for (uint32_t i = 0; i < (lps - lp_group[0].num); i++)
+						CPU_SET(lp_group[1].group[i], &group_affinity);
+				}
+				else {
+					for (uint32_t i = 0; i < lps; i++)
+						CPU_SET(lp_group[0].group[i], &group_affinity);
+				}
+			}
+			else {
+				uint32_t lps = config_ptr->logical_processors == 0 ? num_lp_per_group :
+					config_ptr->logical_processors < num_lp_per_group ? config_ptr->logical_processors : num_lp_per_group;
+				for (uint32_t i = 0; i < lps; i++)
+					CPU_SET(lp_group[config_ptr->target_socket].group[i], &group_affinity);
+			}
+		}
+	}
 #endif
 }
 
@@ -1721,7 +1770,30 @@ void load_default_buffer_configuration_settings(
     uint32_t enc_dec_seg_h  = ((sequence_control_set_ptr->max_input_luma_height + 32) / MAX_SB_SIZE);
     uint32_t enc_dec_seg_w  = ((sequence_control_set_ptr->max_input_luma_width + 32) / MAX_SB_SIZE);
     uint32_t input_pic      = set_parent_pcs(&sequence_control_set_ptr->static_config);
-    unsigned int core_count = get_num_cores();
+
+	unsigned int lp_count = get_num_cores();
+	unsigned int core_count = lp_count;
+#if defined(_WIN32) || defined(__linux__)
+	if (sequence_control_set_ptr->static_config.target_socket != -1)
+		core_count /= num_groups;
+	if (sequence_control_set_ptr->static_config.logical_processors != 0)
+		core_count = sequence_control_set_ptr->static_config.logical_processors < core_count ?
+		sequence_control_set_ptr->static_config.logical_processors : core_count;
+#endif
+
+#ifdef _WIN32
+	//Handle special case on Windows
+	//By default, on Windows an application is constrained to a single group
+	if (sequence_control_set_ptr->static_config.target_socket == -1 &&
+		sequence_control_set_ptr->static_config.logical_processors == 0)
+		core_count /= num_groups;
+
+	//Affininty can only be set by group on Windows.
+	//Run on both sockets if -lp is larger than logical processor per group.
+	if (sequence_control_set_ptr->static_config.target_socket == -1 &&
+		sequence_control_set_ptr->static_config.logical_processors > lp_count / num_groups)
+		core_count = lp_count;
+#endif
 
     // ME segments
     sequence_control_set_ptr->me_segment_row_count_array[0] = me_seg_h;
@@ -1918,7 +1990,9 @@ void copy_api_from_app(
 
     sequence_control_set_ptr->static_config.channel_id = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->channel_id;
     sequence_control_set_ptr->static_config.active_channel_count = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->active_channel_count;
-    sequence_control_set_ptr->static_config.use_round_robin_thread_assignment = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->use_round_robin_thread_assignment;
+
+	sequence_control_set_ptr->static_config.logical_processors = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->logical_processors;
+	sequence_control_set_ptr->static_config.target_socket = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->target_socket;
 
     sequence_control_set_ptr->static_config.frame_rate_denominator = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->frame_rate_denominator;
     sequence_control_set_ptr->static_config.frame_rate_numerator = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->frame_rate_numerator;
@@ -2294,11 +2368,10 @@ static EbErrorType  verify_settings(
         return_error = EB_ErrorBadParameter;
     }
 
-    // use_round_robin_thread_assignment
-    if (config->use_round_robin_thread_assignment != 0 && config->use_round_robin_thread_assignment != 1) {
-        SVT_LOG("Error instance %u: Invalid use_round_robin_thread_assignment [0 - 1]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
+	if (config->target_socket != -1 && config->target_socket != 0 && config->target_socket != 1) {
+		SVT_LOG("Error instance %u: Invalid target_socket. target_socket must be [-1 - 1] \n", channel_number + 1);
+		return_error = EB_ErrorBadParameter;
+	}
 
 
     return return_error;

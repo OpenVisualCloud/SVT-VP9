@@ -120,9 +120,8 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **MaxQpAllowed** | -max-qp | [0 - 63] | 63 | Maximum QP value allowed for rate control use. Only used when RateControlMode is set to 1. Has to be > MinQpAllowed |
 | **MinQpAllowed** | -min-qp | [0 - 63] | 10 | Minimum QP value allowed for rate control use. Only used when RateControlMode is set to 1. Has to be < MaxQpAllowed |
 | **AsmType** | -asm | [0 - 1] | 1 | Assembly instruction set (0 = C Only, 1 = Automatically select highest assembly instruction set supported) |
-| **UseRoundRobinThreadAssignment** | -rr  | [0, total number of logical processor] | 0 | The number of logical processor which encoder threads run on.|
-| **TargetSocket** | -ss | [0 - 1] | -1 | For dual socket systems, this can specify which socket the encoder runs on.|
-| **SwitchThreadsToRtPriority** | -rt | [0 - 1] | 1 | Enables or disables threads to real time priority, 0 = OFF, 1 = ON (only works on Linux) |
+| **LogicalProcessorNumber** | -lp | [0, total number of logical processor] | 0 | The number of logical processor which encoder threads run on.Refer to Appendix A.1 |
+| **TargetSocket** | -ss | [-1,1] | -1 | For dual socket systems, this can specify which socket the encoder runs on.Refer to Appendix A.1 || **SwitchThreadsToRtPriority** | -rt | [0 - 1] | 1 | Enables or disables threads to real time priority, 0 = OFF, 1 = ON (only works on Linux) |
 | **Profile** | -profile | [0] | 0 | 0 = 8-bit 4:2:0 |
 | **Level** | -level | [1, 2, 2.1,3, 3.1, 4, 4.1, 5, 5.1, 5.2, 6, 6.1, 6.2] | 0 | 0 to 6.2 [0 for auto determine Level] |
 
@@ -178,6 +177,25 @@ For example, in order to run a 2-stream 4kp60 simultaneous encode on a dual sock
 
 <br>
 Where 0xFFFFC0000FFFFC0000 and 0x00003FFFF00003FFFF are masks for sockets 0 and 1 respectively on a dual 6140 system.
+
+## Appendix A Encoder Parameters
+### 1. Thread management parameters
+
+LogicalProcessorNumber (-lp) and TargetSocket (-ss) parameters are used to management thread affinity on Windows and Ubuntu OS. These are some examples how you use them together.
+
+If LogicalProcessorNumber and TargetSocket are not set, threads are managed by OS thread scheduler.
+
+>SvtVp9EncApp.exe -i in.yuv -w 3840 -h 2160 –lp 40
+If only LogicalProcessorNumber is set, threads run on 40 logical processors. Threads may run on dual sockets if 40 is larger than logical processor number of a socket.
+
+NOTE: On Windows, thread affinity can be set only by group on system with more than 64 logical processors. So, if 40 is larger than logical processor number of a single socket, threads run on all logical processors of both sockets.
+
+>SvtVp9EncApp.exe -i in.yuv -w 3840 -h 2160 –ss 1
+If only TargetSocket is set, threads run on all the logical processors of socket 1.
+
+>SvtVp9EncApp.exe -i in.yuv -w 3840 -h 2160 –lp 20 –ss 0
+If both LogicalProcessorNumber and TargetSocket are set, threads run on 20 logical processors of socket 0. Threads guaranteed to run only on socket 0 if 20 is larger than logical processor number of socket 0.
+
 
 ## Legal Disclaimer
 
