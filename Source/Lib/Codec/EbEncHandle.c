@@ -367,7 +367,7 @@ static uint32_t enc_dec_port_total_count(void)
     return total_count;
 }
 
-void init_thread_managment_params() {
+EbErrorType init_thread_managment_params() {
 #ifdef _MSC_VER 
     // Initialize group_affinity structure with Current thread info
     GetThreadGroupAffinity(GetCurrentThread(), &group_affinity);
@@ -409,7 +409,7 @@ void init_thread_managment_params() {
 		fclose(fin);
 	}
 #endif
-	return;
+	return EB_ErrorNone;
 }
 
 
@@ -469,7 +469,9 @@ static EbErrorType  eb_enc_handle_ctor(
         return EB_ErrorInsufficientResources;
     }
 
-    init_thread_managment_params();
+	return_error = init_thread_managment_params();
+	if (return_error == EB_ErrorInsufficientResources)
+		return EB_ErrorInsufficientResources;
 
     enc_handle_ptr->encode_instance_total_count = EB_EncodeInstancesTotalCount;
 
