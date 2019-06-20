@@ -190,8 +190,8 @@ EbErrorType  copy_configuration_parameters(
     callback_data->eb_enc_parameters.injector_frame_rate = config->injector_frame_rate;
     callback_data->eb_enc_parameters.speed_control_flag = config->speed_control_flag;
     callback_data->eb_enc_parameters.asm_type = config->asm_type;
-	callback_data->eb_enc_parameters.logical_processors = config->logical_processors;
-	callback_data->eb_enc_parameters.target_socket = config->target_socket;
+    callback_data->eb_enc_parameters.logical_processors = config->logical_processors;
+    callback_data->eb_enc_parameters.target_socket = config->target_socket;
 
     return return_error;
 

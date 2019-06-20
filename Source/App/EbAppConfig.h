@@ -291,7 +291,7 @@ typedef struct EbConfig
     ****************************************/
     uint32_t        channel_id;
     uint32_t        active_channel_count;
-	int32_t         target_socket;
+    int32_t         target_socket;
 	uint32_t        logical_processors;
     uint8_t         stop_encoder;         // to signal CTRL+C Event, need to stop encoding.
 

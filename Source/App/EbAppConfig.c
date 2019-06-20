@@ -253,7 +253,7 @@ ConfigEntry config_entry[] = {
 
     // Thread Management
     { SINGLE_INPUT, TARGET_SOCKET, "TargetSocket", set_target_socket },
-	{ SINGLE_INPUT, THREAD_MGMNT, "LogicalProcessors", set_logical_processors },
+    { SINGLE_INPUT, THREAD_MGMNT, "LogicalProcessors", set_logical_processors },
 
     // Latency
     { SINGLE_INPUT, INJECTOR_TOKEN, "Injector", set_injector },
@@ -345,7 +345,7 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     config_ptr->stop_encoder                                     = EB_FALSE;
     config_ptr->target_socket                                    = -1;
-	config_ptr->logical_processors                                = 0;
+    config_ptr->logical_processors                                = 0;
 
     config_ptr->processed_frame_count                            = 0;
     config_ptr->processed_byte_count                             = 0;
