@@ -344,7 +344,7 @@ void eb_config_ctor(EbConfig *config_ptr)
     config_ptr->asm_type                                         = 1;
 
     config_ptr->stop_encoder                                     = EB_FALSE;
-    config_ptr->target_socket                                    = -1;
+    config_ptr->target_socket                                     = -1;
     config_ptr->logical_processors                                = 0;
 
     config_ptr->processed_frame_count                            = 0;
