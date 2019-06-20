@@ -100,6 +100,8 @@ extern    EB_BOOL           alternate_groups;
 #define _GNU_SOURCE
 #include <sched.h>
 #include <pthread.h>
+#undef _GNU_SOURCE
+#undef __USE_GNU
 extern    cpu_set_t                   group_affinity;
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
     pointer = eb_create_thread(thread_function, thread_context); \
