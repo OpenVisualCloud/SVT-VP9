@@ -117,6 +117,8 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **SearchAreaHeight** | -search-h | [1 - 256] | Depends on input resolution | Search Area in Height |
 | **RateControlMode** | -rc | [0 - 2] | 0 | 0 = CQP , 1 = VBR , 2 = CBR|
 | **TargetBitRate** | -tbr | Any Number | 7000000 | Target bitrate in bits / second. Only used when RateControlMode is set to 1 |
+| **vbvMaxrate** | -vbv-maxrate | Any Number | 0 | VBVMaxrate in bits / second. Only used when RateControlMode is set to 1 |
+| **vbvBufsize** | -vbv-bufsize | Any Number | 0 | VBV BufferSize in bits / second. Only used when RateControlMode is set to 1 |
 | **MaxQpAllowed** | -max-qp | [0 - 63] | 63 | Maximum QP value allowed for rate control use. Only used when RateControlMode is set to 1. Has to be > MinQpAllowed |
 | **MinQpAllowed** | -min-qp | [0 - 63] | 10 | Minimum QP value allowed for rate control use. Only used when RateControlMode is set to 1. Has to be < MaxQpAllowed |
 | **AsmType** | -asm | [0 - 1] | 1 | Assembly instruction set (0 = C Only, 1 = Automatically select highest assembly instruction set supported) |
