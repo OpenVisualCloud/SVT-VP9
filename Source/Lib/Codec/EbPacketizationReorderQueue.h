@@ -37,7 +37,7 @@ typedef struct PacketizationReorderEntry
     EB_BOOL           show_frame;
     int               show_existing_frame;
     uint8_t           show_existing_frame_index_array[4];
-
+	uint64_t          actualBits;
 } PacketizationReorderEntry;   
 
 extern EbErrorType packetization_reorder_entry_ctor(   

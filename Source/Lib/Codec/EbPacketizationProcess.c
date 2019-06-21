@@ -32,7 +32,7 @@ struct vpx_write_bit_buffer *wb; // needs to be here
 
 #include "vp9_bitstream.h"
 #include "mem_ops.h"
-
+#define RC_PRECISION                16
 EbErrorType packetization_context_ctor(
     PacketizationContext **context_dbl_ptr,
     EbFifo                *entropy_coding_input_fifo_ptr,
@@ -415,6 +415,7 @@ void* packetization_kernel(void *input_ptr)
 
         // Send the number of bytes per frame to RC
         picture_control_set_ptr->parent_pcs_ptr->total_num_bits = output_stream_ptr->n_filled_len << 3;
+		queue_entry_ptr->actualBits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
         queue_entry_ptr->total_num_bits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
 
 #if  VP9_RC
@@ -628,7 +629,19 @@ void* packetization_kernel(void *input_ptr)
                 &latency);
 
             output_stream_ptr->n_tick_count = (uint32_t)latency;
-            
+		
+			/* update VBV plan */
+			if (encode_context_ptr->vbvMaxrate && encode_context_ptr->vbvBufsize)
+			{
+				int64_t bufferfill_temp = (int64_t)(encode_context_ptr->bufferFill);
+
+				bufferfill_temp -= queue_entry_ptr->actualBits;
+				bufferfill_temp = MAX(bufferfill_temp, 0);
+				bufferfill_temp = (int64_t)(bufferfill_temp + (encode_context_ptr->vbvMaxrate * (1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION))));
+				bufferfill_temp = MIN(bufferfill_temp, encode_context_ptr->vbvBufsize);
+				encode_context_ptr->bufferFill = (uint64_t)(bufferfill_temp);
+				//printf("totalNumBits = %lld \t bufferFill = %lld \t pictureNumber = %lld \n", queue_entry_ptr->actualBits, encode_context_ptr->bufferFill, picture_control_set_ptr->picture_number);
+			}
             // Release the Bitstream wrapper object
             eb_post_full_object(output_stream_wrapper_ptr);
             // Reset the Reorder Queue Entry
