@@ -65,9 +65,6 @@ extern    uint32_t         *memory_map_index;          // library memory index
 extern    uint64_t         *total_lib_memory;          // library Memory malloc'd
 
 #ifdef _WIN32
-extern    GROUP_AFFINITY    group_affinity;
-extern    uint8_t           num_groups;
-extern    EB_BOOL           alternate_groups;
 
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
     pointer = eb_create_thread(thread_function, thread_context); \
@@ -96,13 +93,6 @@ extern    EB_BOOL           alternate_groups;
     } \
     lib_thread_count++;
 #elif defined(__linux__)
-#define __USE_GNU
-#define _GNU_SOURCE
-#include <sched.h>
-#include <pthread.h>
-#undef _GNU_SOURCE
-#undef __USE_GNU
-extern    cpu_set_t                   group_affinity;
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
     pointer = eb_create_thread(thread_function, thread_context); \
     if (pointer == (type)EB_NULL) { \
