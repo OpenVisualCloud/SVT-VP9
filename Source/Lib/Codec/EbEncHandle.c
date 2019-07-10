@@ -399,12 +399,12 @@ EbErrorType init_thread_managment_params() {
             if (strncmp(line, PROCESSORID, processor_id_len) == 0) {
                 char* p = line + processor_id_len;
                 while (*p < '0' || *p > '9') p++;
-                    processor_id = strtol(p, NULL, 0);
+                processor_id = strtol(p, NULL, 0);
             }
             if (strncmp(line, PHYSICALID, physical_id_len) == 0) {
                 char* p = line + physical_id_len;
                 while (*p < '0' || *p > '9') p++;
-                    socket_id = strtol(p, NULL, 0);
+                socket_id = strtol(p, NULL, 0);
                 if (socket_id < 0 || socket_id > 15) {
                     fclose(fin);
                 return EB_ErrorInsufficientResources;
