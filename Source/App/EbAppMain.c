@@ -146,7 +146,7 @@ int32_t main(int32_t argc, char* argv[])
         if (return_error == EB_ErrorNone) {
 
             // Set main thread affinity
-            if (configs[0]->target_socket < 2)
+            if (configs[0]->target_socket != -1)
                 AssignAppThreadGroup(configs[0]->target_socket);
 
             // Init the Encoder

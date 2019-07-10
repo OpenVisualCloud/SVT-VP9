@@ -96,7 +96,9 @@ extern "C" {
 #else
     // *Note -- fseeko and ftello are already defined for linux
 #ifndef __cplusplus
+#ifndef __USE_LARGEFILE
 #define __USE_LARGEFILE
+#endif
 #endif
 #endif
 

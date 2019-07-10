@@ -64,7 +64,7 @@
 #define INJECTOR_FRAMERATE_TOKEN        "-inj-frm-rt" // no Eval
 #define SPEED_CONTROL_TOKEN             "-speed-ctrl"
 #define ASM_TYPE_TOKEN                  "-asm" // no Eval
-#define RR_THREAD_MGMNT                 "-rr"
+#define THREAD_MGMNT                    "-lp"
 #define TARGET_SOCKET                   "-ss"
 #define CONFIG_FILE_COMMENT_CHAR        '#'
 #define CONFIG_FILE_NEWLINE_CHAR        '\n'
@@ -177,9 +177,8 @@ static void set_injector_frame_rate(const char *value, EbConfig *cfg) {
 }
 
 static void set_asm_type                           (const char *value, EbConfig *cfg)  { cfg->asm_type                          = (uint8_t)strtoul(value, NULL, 0); };
-static void set_use_round_robin_thread_assignment  (const char *value, EbConfig *cfg) {cfg->use_round_robin_thread_assignment   = (uint8_t)strtol(value, NULL, 0);};
-static void set_target_socket                      (const char *value, EbConfig *cfg)  { cfg->target_socket                     = (uint8_t)strtoul(value, NULL, 0); };
-
+static void set_target_socket                      (const char *value, EbConfig *cfg)  { cfg->target_socket                     = (int32_t)strtoul(value, NULL, 0); };
+static void set_logical_processors                 (const char *value, EbConfig *cfg)  { cfg->logical_processors                = (uint32_t)strtoul(value, NULL, 0); };
 enum CfgType{
     SINGLE_INPUT,   // Configuration parameters that have only 1 value input
     ARRAY_INPUT     // Configuration parameters that have multiple values as input
@@ -252,9 +251,9 @@ ConfigEntry config_entry[] = {
     // Tune
     { SINGLE_INPUT, TUNE_TOKEN, "Tune", set_cfg_tune },
 
-    // Windows Manual Thread Management
-    { SINGLE_INPUT, RR_THREAD_MGMNT, "UseRoundRobinThreadAssignment", set_use_round_robin_thread_assignment },
+    // Thread Management
     { SINGLE_INPUT, TARGET_SOCKET, "TargetSocket", set_target_socket },
+    { SINGLE_INPUT, THREAD_MGMNT, "LogicalProcessors", set_logical_processors },
 
     // Latency
     { SINGLE_INPUT, INJECTOR_TOKEN, "Injector", set_injector },
@@ -343,9 +342,10 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     // ASM Type
     config_ptr->asm_type                                         = 1;
+
     config_ptr->stop_encoder                                     = EB_FALSE;
-    config_ptr->use_round_robin_thread_assignment                = EB_FALSE;
-    config_ptr->target_socket                                    = 1;
+    config_ptr->target_socket                                     = -1;
+    config_ptr->logical_processors                                = 0;
 
     config_ptr->processed_frame_count                            = 0;
     config_ptr->processed_byte_count                             = 0;
@@ -658,15 +658,9 @@ static EbErrorType verify_settings(EbConfig *config, uint32_t channel_number)
         return_error = EB_ErrorBadParameter;
     }
 
-    // use_round_robin_thread_assignment
-    if (config->use_round_robin_thread_assignment != 0 && config->use_round_robin_thread_assignment != 1) {
-        fprintf(config->error_log_file, "Error instance %u: Invalid use_round_robin_thread_assignment [0 - 1]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-
     // target_socket
-    if (config->target_socket != 0 && config->target_socket != 1) {
-        fprintf(config->error_log_file, "Error instance %u: Invalid target_socket [0 - 1]\n", channel_number + 1);
+    if (config->target_socket != -1 && config->target_socket != 0  && config->target_socket != 1) {
+        fprintf(config->error_log_file, "Error instance %u: Invalid target_socket [-1 - 1]\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
 
