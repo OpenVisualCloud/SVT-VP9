@@ -5,7 +5,7 @@
 
 #include "EbDefinitions.h"
 #include "EbCombinedAveragingSAD_Intrinsic_AVX512.h"
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <intrin.h>
 #endif
 
@@ -87,7 +87,7 @@ void bi_pred_average_kernel_avx512_intrin(
             }
         }
         else
-        {  
+        {
             uint32_t src0Stride1 = src0_stride << 1;
             uint32_t src1Stride1 = src1_stride << 1;
             uint32_t dstStride1 = dst_stride << 1;
@@ -101,7 +101,7 @@ void bi_pred_average_kernel_avx512_intrin(
                 _mm512_storeu_si512((__m512i *)dst, xmm_avg1_512);
                 _mm512_storeu_si512((__m512i *)(dst + dst_stride), xmm_avg3_512);
             }
-            
+
         }
     }
     else

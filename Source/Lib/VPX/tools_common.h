@@ -13,8 +13,8 @@
 #include <stdio.h>
 
 #define INLINE __inline
-#include <stdint.h>
 #include "vpx_codec.h"
+#include <stdint.h>
 
 #if CONFIG_ENCODERS
 #include "./y4minput.h"
@@ -41,7 +41,7 @@ typedef long FileOffset; /* NOLINT */
 #endif /* CONFIG_OS_SUPPORT */
 
 #if CONFIG_OS_SUPPORT
-#if defined(_MSC_VER)
+#ifdef _WIN32
 #include <io.h> /* NOLINT */
 #define isatty _isatty
 #define fileno _fileno
@@ -161,4 +161,4 @@ void vpx_img_truncate_16_to_8(vpx_image_t *dst, vpx_image_t *src);
 } /* extern "C" */
 #endif
 
-#endif  // VPX_TOOLS_COMMON_H_
+#endif // VPX_TOOLS_COMMON_H_

@@ -11,17 +11,14 @@
 #ifndef VPX_VPX_PORTS_BITOPS_H_
 #define VPX_VPX_PORTS_BITOPS_H_
 
-
 #define INLINE __inline
 
 #include <assert.h>
 #include <stdint.h>
 
-#ifdef _MSC_VER
-#if defined(_M_X64) || defined(_M_IX86)
+#if defined(_WIN32) && (defined(_M_X64) || defined(_M_IX86))
 #include <intrin.h>
 #define USE_MSC_INTRINSICS
-#endif
 #endif
 
 #ifdef __cplusplus
@@ -33,7 +30,7 @@ extern "C" {
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 
 // use GNU builtins where available.
-#if defined(__GNUC__) && \
+#if defined(__GNUC__) &&                                                       \
     ((__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || __GNUC__ >= 4)
 static INLINE int get_msb(unsigned int n) {
   assert(n != 0);
@@ -71,7 +68,7 @@ static INLINE int get_msb(unsigned int n) {
 #endif
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VPX_PORTS_BITOPS_H_
+#endif // VPX_VPX_PORTS_BITOPS_H_
