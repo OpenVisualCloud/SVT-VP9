@@ -29,4 +29,4 @@ file(GLOB
      "*.c"
      "*.asm")
 
-add_library(ASM_SSE4_1 OBJECT ${all_files})
+add_library(VP9_ASM_SSE4_1 OBJECT ${all_files})
