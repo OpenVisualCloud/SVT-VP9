@@ -1,47 +1,42 @@
-﻿# 
-# Copyright(c) 2018 Intel Corporation
+﻿# ~~~
+# Copyright(c) 2019 Intel Corporation
 # SPDX - License - Identifier: BSD - 2 - Clause - Patent
-# 
+# ~~~
 
 # ASM_AVX2 Directory CMakeLists.txt
 
 # Include Encoder Subdirectories
-include_directories(${PROJECT_SOURCE_DIR}/Source/API/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/Codec/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/C_DEFAULT/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE2/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSSE3/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE4_1/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/ASM_AVX2/)
-include_directories(${PROJECT_SOURCE_DIR}/Source/Lib/VPX/)
+include_directories(${PROJECT_SOURCE_DIR}/Source/API
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/Codec
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/C_DEFAULT
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE2
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSSE3
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE4_1
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_AVX2
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/VPX)
 
-link_directories(${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSSE3/)
+set(flags_to_test -mavx2)
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx2")
-    if(CMAKE_C_COMPILER_VERSION VERSION_EQUAL 5.4)
-        string(REPLACE "-flto" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+if(CMAKE_C_COMPILER_ID STREQUAL "Intel")
+    if(WIN32)
+        # Intel Windows (*Note - The Warning level /W0 should be made to /W4 at
+        # some point)
+        list(APPEND flags_to_test /Qdiag-disable:10010,10148,10157 /W0)
+    else()
+        list(APPEND flags_to_test -static-intel -w)
     endif()
 endif()
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /arch:AVX2")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP /arch:AVX2")   
-endif(MSVC)
-
-if(CMAKE_C_COMPILER_ID STREQUAL "Intel")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -static-intel /W0 /Qwd10148 /Qwd10010 /Qwd10157")
+    list(APPEND flags_to_test /arch:AVX2)
 endif()
 
-file(GLOB all_files
-    "*.h"
-    "*.c"
-    "*.asm"
-)
+test_apply_compiler_flags(${flags_to_test})
 
-add_library(ASM_AVX2 STATIC
-       ${all_files}
-)
+file(GLOB
+     all_files
+     "*.h"
+     "*.c"
+     "*.asm")
 
-
-
+add_library(VP9_ASM_AVX2 OBJECT ${all_files})
