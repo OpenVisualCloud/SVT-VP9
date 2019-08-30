@@ -82,7 +82,7 @@ extern "C" {
 #define FORCE_INLINE            __inline __attribute__((always_inline))
 #endif // __cplusplus
 
-#define __popcnt                __builtin_popcount
+//#define __popcnt                __builtin_popcount
 #define EB_MESSAGE(m)           __FILE__ "(" EB_SRC_LINE_NUM "): message: " m
 
 #endif // _MSC_VER
