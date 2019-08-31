@@ -2982,16 +2982,6 @@ static EbErrorType init_svt_vp9_encoder_handle(
 #define sldebug_printf(...)
 #endif
 
-#ifndef _RSIZE_T_DEFINED
-typedef size_t rsize_t;
-#define _RSIZE_T_DEFINED
-#endif  /* _RSIZE_T_DEFINED */
-
-#ifndef _ERRNO_T_DEFINED
-#define _ERRNO_T_DEFINED
-typedef int Errno;
-#endif  /* _ERRNO_T_DEFINED */
-
 /*
 * Function used by the libraries to invoke the registered
 * runtime-constraint handler. Always needed.
