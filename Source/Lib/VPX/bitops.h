@@ -30,7 +30,7 @@ extern "C" {
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 
 // use GNU builtins where available.
-#if defined(__GNUC__) &&                                                       \
+#if defined(__GNUC__) && \
     ((__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || __GNUC__ >= 4)
 static INLINE int get_msb(unsigned int n) {
   assert(n != 0);
