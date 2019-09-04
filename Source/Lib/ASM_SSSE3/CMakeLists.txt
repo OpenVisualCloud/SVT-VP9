@@ -1,44 +1,32 @@
-﻿# 
-# Copyright(c) 2018 Intel Corporation
+﻿# ~~~
+# Copyright(c) 2019 Intel Corporation
 # SPDX - License - Identifier: BSD - 2 - Clause - Patent
-# 
+# ~~~
 
 # ASM_SSSE3 Directory CMakeLists.txt
 
 # Include Encoder Subdirectories
-include_directories (${PROJECT_SOURCE_DIR}/Source/API/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/Codec/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/VPX/)
+include_directories(${PROJECT_SOURCE_DIR}/Source/API
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/Codec
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/VPX
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/C_DEFAULT
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE2
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSSE3
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE4_1
+                    ${PROJECT_SOURCE_DIR}/Source/Lib/ASM_AVX2)
 
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/C_DEFAULT/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE2/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSSE3/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/ASM_SSE4_1/)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Lib/ASM_AVX2/)
+set(flags_to_test -mssse3)
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mssse3")
+if(CMAKE_C_COMPILER_ID STREQUAL "Intel" AND NOT WIN32)
+    list(APPEND flags_to_test -static-intel -w)
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "Intel")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -static-intel -w")
-endif()
+test_apply_compiler_flags(${flags_to_test})
 
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")   
-endif(MSVC)
+file(GLOB
+     all_files
+     "*.h"
+     "*.c"
+     "*.asm")
 
-
-file(GLOB all_files
-    "*.h"
-    "*.c"
-    "*.asm"
-)
-
-add_library(ASM_SSSE3 STATIC
-       ${all_files}
-)
-
-
-
+add_library(VP9_ASM_SSSE3 OBJECT ${all_files})
