@@ -9,7 +9,7 @@
 #include "EbDefinitions.h"
 #include "EbDefinitions.h"
 
-#ifdef _MSC_VER 
+#ifdef _WIN32
 #include <Windows.h>
 #endif
 

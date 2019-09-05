@@ -100,7 +100,7 @@
 #define EB_OUTPUTRECONBUFFERSIZE                        (MAX_PICTURE_WIDTH_SIZE*MAX_PICTURE_HEIGHT_SIZE*2)   // Recon Slice Size
 #define EB_OUTPUTSTREAMQUANT                            27
 #define EB_OUTPUTSTATISTICSBUFFERSIZE                   0x30            // 6X8 (8 Bytes for Y, U, V, number of bits, picture number, QP)
-#define EB_OUTPUTSTREAMBUFFERSIZE_MACRO(ResolutionSize)                ((ResolutionSize) < (INPUT_SIZE_1080i_TH) ? 0x1E8480 : (ResolutionSize) < (INPUT_SIZE_1080p_TH) ? 0x2DC6C0 : (ResolutionSize) < (INPUT_SIZE_4K_TH) ? 0x2DC6C0 : 0x2DC6C0  )   
+#define EB_OUTPUTSTREAMBUFFERSIZE_MACRO(ResolutionSize)                ((ResolutionSize) < (INPUT_SIZE_1080i_TH) ? 0x1E8480 : (ResolutionSize) < (INPUT_SIZE_1080p_TH) ? 0x2DC6C0 : (ResolutionSize) < (INPUT_SIZE_4K_TH) ? 0x2DC6C0 : 0x2DC6C0  )
 
 static uint64_t max_luma_picture_size[TOTAL_LEVEL_COUNT] = { 36864U, 122880U, 245760U, 552960U, 983040U, 2228224U, 2228224U, 8912896U, 8912896U, 8912896U, 35651584U, 35651584U, 35651584U };
 static uint64_t max_luma_sample_rate[TOTAL_LEVEL_COUNT] = { 552960U, 3686400U, 7372800U, 16588800U, 33177600U, 66846720U, 133693440U, 267386880U, 534773760U, 1069547520U, 1069547520U, 2139095040U, 4278190080U };
@@ -143,12 +143,12 @@ processorGroup                   lp_group[MAX_PROCESSOR_GROUP];
 * Instruction Set Support
 **************************************/
 #include <stdint.h>
-#if defined(_MSC_VER)
+#ifdef _WIN32
 # include <intrin.h>
 #endif
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
-#if defined(_MSC_VER)
+#ifdef _WIN32
     __cpuidex(abcd, eax, ecx);
 #else
     uint32_t ebx, edx;
@@ -166,7 +166,7 @@ void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 int check_xcr0_ymm()
 {
     uint32_t xcr0;
-#if defined(_MSC_VER)
+#ifdef _WIN32
     xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
 #else
     __asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
@@ -214,7 +214,7 @@ int check_xcr0_zmm()
 {
     uint32_t xcr0;
     uint32_t zmm_ymm_xmm = (7 << 5) | (1 << 2) | (1 << 1);
-#if defined(_MSC_VER)
+#ifdef _WIN32
     xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
 #else
     __asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
@@ -265,7 +265,7 @@ uint32_t get_cpu_asm_type()
     else
         if (can_use_intel_core4th_gen_features() == 1)
             asm_type = 3; // bit-field
-        else 
+        else
             asm_type = 1; // bit-field
 
     return asm_type;
@@ -304,7 +304,7 @@ typedef struct
 #define ENCDEC_INPUT_PORT_ENCDEC   1
 #define ENCDEC_INPUT_PORT_INVALID -1
 
-// EncDec 
+// EncDec
 static EncDecPorts enc_dec_ports[] = {
     {ENCDEC_INPUT_PORT_MDC,        0},
     {ENCDEC_INPUT_PORT_ENCDEC,     0},
@@ -330,7 +330,7 @@ static uint32_t rate_control_port_lookup(
     return (port_count + port_type_index);
 }
 
-// EncDec 
+// EncDec
 static uint32_t enc_dec_port_lookup(
     int32_t   type,
     uint32_t  port_type_index)
@@ -376,7 +376,7 @@ static uint32_t enc_dec_port_total_count(void)
 }
 
 EbErrorType init_thread_managment_params() {
-#ifdef _MSC_VER 
+#ifdef _WIN32
     // Initialize group_affinity structure with Current thread info
     GetThreadGroupAffinity(GetCurrentThread(), &group_affinity);
     num_groups = (uint8_t)GetActiveProcessorGroupCount();
@@ -464,7 +464,7 @@ static EbErrorType  eb_enc_handle_ctor(
     enc_handle_ptr->memory_map_index = 0;
     enc_handle_ptr->total_lib_memory = sizeof(EbEncHandle) + sizeof(EbMemoryMapEntry) * MAX_NUM_PTR;
 
-    // Save Memory Map Pointers 
+    // Save Memory Map Pointers
     total_lib_memory = &enc_handle_ptr->total_lib_memory;
     memory_map = enc_handle_ptr->memory_map;
     memory_map_index = &enc_handle_ptr->memory_map_index;
@@ -498,7 +498,7 @@ static EbErrorType  eb_enc_handle_ctor(
     enc_handle_ptr->reference_picture_pool_ptr_array                      = (EbSystemResource**)EB_NULL;
     enc_handle_ptr->pa_reference_picture_pool_ptr_array                   = (EbSystemResource**)EB_NULL;
 
-    // Picture Buffer Producer Fifos  
+    // Picture Buffer Producer Fifos
     enc_handle_ptr->reference_picture_pool_producer_fifo_ptr_dbl_array    = (EbFifo***)EB_NULL;
     enc_handle_ptr->pa_reference_picture_pool_producer_fifo_ptr_dbl_array = (EbFifo***)EB_NULL;
 
@@ -760,7 +760,7 @@ EbErrorType eb_output_recon_buffer_header_ctor(
     // Initialize Header
     recon_buffer->size = sizeof(EbBufferHeaderType);
 
-    // Assign the variables 
+    // Assign the variables
     EB_MALLOC(uint8_t*, recon_buffer->p_buffer, frame_size, EB_N_PTR);
 
     recon_buffer->n_alloc_len = frame_size;
@@ -931,11 +931,11 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
      * Picture Buffers
      ************************************/
 
-     // Allocate Resource Arrays 
+     // Allocate Resource Arrays
     EB_MALLOC(EbSystemResource**, enc_handle_ptr->reference_picture_pool_ptr_array, sizeof(EbSystemResource*) * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
     EB_MALLOC(EbSystemResource**, enc_handle_ptr->pa_reference_picture_pool_ptr_array, sizeof(EbSystemResource*) * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
 
-    // Allocate Producer Fifo Arrays   
+    // Allocate Producer Fifo Arrays
     EB_MALLOC(EbFifo***, enc_handle_ptr->reference_picture_pool_producer_fifo_ptr_dbl_array, sizeof(EbFifo**) * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
     EB_MALLOC(EbFifo***, enc_handle_ptr->pa_reference_picture_pool_producer_fifo_ptr_dbl_array, sizeof(EbFifo**) * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
 
@@ -1044,7 +1044,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         return EB_ErrorInsufficientResources;
     }
 
-    // Set the SequenceControlSet Picture Pool Fifo Ptrs      
+    // Set the SequenceControlSet Picture Pool Fifo Ptrs
     scs_ptr->encode_context_ptr->reference_picture_pool_fifo_ptr = (enc_handle_ptr->reference_picture_pool_producer_fifo_ptr_dbl_array[0])[0];
     scs_ptr->encode_context_ptr->pa_reference_picture_pool_fifo_ptr = (enc_handle_ptr->pa_reference_picture_pool_producer_fifo_ptr_dbl_array[0])[0];
 
@@ -1068,7 +1068,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     if (return_error == EB_ErrorInsufficientResources) {
         return EB_ErrorInsufficientResources;
     }
-    // EbBufferHeaderType Output Stream    
+    // EbBufferHeaderType Output Stream
     EB_MALLOC(EbSystemResource**, enc_handle_ptr->output_stream_buffer_resource_ptr_array, sizeof(EbSystemResource*) * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
     EB_MALLOC(EbFifo***, enc_handle_ptr->output_stream_buffer_producer_fifo_ptr_dbl_array, sizeof(EbFifo**)          * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
     EB_MALLOC(EbFifo***, enc_handle_ptr->output_stream_buffer_consumer_fifo_ptr_dbl_array, sizeof(EbFifo**)          * enc_handle_ptr->encode_instance_total_count, EB_N_PTR);
@@ -1225,7 +1225,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         }
     }
 
-    // Rate Control Tasks 
+    // Rate Control Tasks
     {
         RateControlTasksInitData rate_control_tasks_init_data;
 
@@ -1550,7 +1550,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     // Initial Rate Control
     EB_CREATETHREAD(EbHandle, enc_handle_ptr->initial_rate_control_thread_handle, sizeof(EbHandle), EB_THREAD, initial_rate_control_kernel, enc_handle_ptr->initial_rate_control_context_ptr);
 
-    // Source Based Oprations 
+    // Source Based Oprations
     EB_MALLOC(EbHandle*, enc_handle_ptr->source_based_operations_thread_handle_array, sizeof(EbHandle) * scs_ptr->source_based_operations_process_init_count, EB_N_PTR);
 
     for (process_index = 0; process_index < scs_ptr->source_based_operations_process_init_count; ++process_index) {
@@ -1864,7 +1864,7 @@ void load_default_buffer_configuration_settings(
     sequence_control_set_ptr->me_segment_column_count_array[3] = me_seg_w;
     sequence_control_set_ptr->me_segment_column_count_array[4] = me_seg_w;
     sequence_control_set_ptr->me_segment_column_count_array[5] = me_seg_w;
-    // EncDec segments     
+    // EncDec segments
     sequence_control_set_ptr->enc_dec_segment_row_count_array[0] = enc_dec_seg_h;
     sequence_control_set_ptr->enc_dec_segment_row_count_array[1] = enc_dec_seg_h;
     sequence_control_set_ptr->enc_dec_segment_row_count_array[2] = enc_dec_seg_h;
@@ -2738,7 +2738,7 @@ EB_API EbErrorType eb_vp9_svt_get_recon(
 
             if (p_buffer->flags != EB_BUFFERFLAG_EOS && p_buffer->flags != 0)
                 return_error = EB_ErrorMax;
-            
+
             eb_release_object((EbObjectWrapper  *)eb_wrapper_ptr);
         }
         else {
@@ -2899,9 +2899,9 @@ static EbErrorType init_svt_vp9_encoder_handle(
     EbComponentType  *svt_enc_component = (EbComponentType*)h_component;
 
     SVT_LOG("SVT [version]\t: SVT-VP9 Encoder Lib v%d.%d.%d\n", SVT_VERSION_MAJOR, SVT_VERSION_MINOR, SVT_VERSION_PATCHLEVEL);
-#if ( defined( _MSC_VER ) && (_MSC_VER < 1910) ) 
+#if ( defined( _MSC_VER ) && (_MSC_VER < 1910) )
     SVT_LOG("SVT [build]\t: Visual Studio 2013");
-#elif ( defined( _MSC_VER ) && (_MSC_VER >= 1910) ) 
+#elif ( defined( _MSC_VER ) && (_MSC_VER >= 1910) )
     SVT_LOG("SVT [build]\t: Visual Studio 2017");
 #elif defined(__GNUC__)
     SVT_LOG("SVT [build]\t: GCC %d.%d.%d\t", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
@@ -2982,16 +2982,6 @@ static EbErrorType init_svt_vp9_encoder_handle(
 #define sldebug_printf(...)
 #endif
 
-#ifndef _RSIZE_T_DEFINED
-typedef size_t Rsize;
-#define _RSIZE_T_DEFINED
-#endif  /* _RSIZE_T_DEFINED */
-
-#ifndef _ERRNO_T_DEFINED
-#define _ERRNO_T_DEFINED
-typedef int Errno;
-#endif  /* _ERRNO_T_DEFINED */
-
 /*
 * Function used by the libraries to invoke the registered
 * runtime-constraint handler. Always needed.
@@ -3012,7 +3002,7 @@ extern void invoke_safe_str_constraint_handler(
     Errno error);
 
 
-static inline void handle_error(char *orig_dest, Rsize orig_dmax,
+static inline void handle_error(char *orig_dest, rsize_t orig_dmax,
     char *err_msg, Errno err_code)
 {
     (void)orig_dmax;
@@ -3048,9 +3038,9 @@ void ignore_handler_s(const char *msg, void *ptr, Errno error)
 EXPORT_SYMBOL(ignore_handler_s)
 
 Errno
-strncpy_ss(char *dest, Rsize dmax, const char *src, Rsize slen)
+strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
 {
-    Rsize orig_dmax;
+    rsize_t orig_dmax;
     char *orig_dest;
     const char *overlap_bumper;
 
@@ -3173,9 +3163,9 @@ strncpy_ss(char *dest, Rsize dmax, const char *src, Rsize slen)
 EXPORT_SYMBOL(strncpy_ss)
 
 Errno
-strcpy_ss(char *dest, Rsize dmax, const char *src)
+strcpy_ss(char *dest, rsize_t dmax, const char *src)
 {
-    Rsize orig_dmax;
+    rsize_t orig_dmax;
     char *orig_dest;
     const char *overlap_bumper;
 
@@ -3267,10 +3257,10 @@ strcpy_ss(char *dest, Rsize dmax, const char *src)
 }
 EXPORT_SYMBOL(strcpy_ss)
 
-Rsize
-strnlen_ss(const char *dest, Rsize dmax)
+rsize_t
+strnlen_ss(const char *dest, rsize_t dmax)
 {
-    Rsize count;
+    rsize_t count;
 
     if (dest == NULL) {
         return RCNEGATE(0);

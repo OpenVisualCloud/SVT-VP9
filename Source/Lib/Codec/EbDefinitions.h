@@ -82,19 +82,17 @@ extern "C" {
 #define FORCE_INLINE            __inline __attribute__((always_inline))
 #endif // __cplusplus
 
-#define __popcnt                __builtin_popcount
+//#define __popcnt                __builtin_popcount
 #define EB_MESSAGE(m)           __FILE__ "(" EB_SRC_LINE_NUM "): message: " m
 
 #endif // _MSC_VER
 
     // Define Cross-Platform 64-bit fseek() and ftell()
-#ifdef _MSC_VER
+#ifdef _WIN32
     typedef __int64 Off64;
 #define fseeko64 _fseeki64
 #define ftello64 _ftelli64
-#elif _WIN32 // MinGW
-#else
-    // *Note -- fseeko and ftello are already defined for linux
+#else // *Note -- fseeko and ftello are already defined for linux
 #ifndef __cplusplus
 #ifndef __USE_LARGEFILE
 #define __USE_LARGEFILE
@@ -148,9 +146,9 @@ extern "C" {
 #define    Log2f                              Log2f_SSE2
 
 #ifndef _RSIZE_T_DEFINED
-    typedef size_t Rsize;
+    typedef size_t rsize_t;
 #define _RSIZE_T_DEFINED
-#endif  /* _RSIZE_T_DEFINED */
+#endif /* _RSIZE_T_DEFINED */
 
 #ifndef _ERRNO_T_DEFINED
 #define _ERRNO_T_DEFINED
@@ -160,7 +158,7 @@ extern "C" {
     // *Note - This work around is needed for the windows visual studio compiler
     //  (MSVC) because it doesn't support the C99 header file stdint.h.
     //  All other compilers should support the stdint.h C99 standard types.
-    typedef enum AttributePacked 
+    typedef enum AttributePacked
     {
         PART_N,
         PART_H,
@@ -192,7 +190,7 @@ The pointer is word aligned and the buffer is byte aligned.
 
 /** The EbBitDepth type is used to describe the bit_depth of video data.
 */
-    typedef enum EbBitDepth 
+    typedef enum EbBitDepth
     {
         EB_8BIT = 8,
         EB_10BIT = 10,
@@ -204,7 +202,7 @@ The pointer is word aligned and the buffer is byte aligned.
 
     /** Assembly Types
     */
-    typedef enum EbAsm 
+    typedef enum EbAsm
     {
         ASM_NON_AVX2,
         ASM_AVX2,
@@ -293,9 +291,9 @@ static const uint32_t me2_nx2_n_offset[4]    = { 0, 1, 5, 21 };
 
 // The EB_QP_OFFSET_MODE type is used to describe the QP offset
 #define EB_FRAME_CARACTERICTICS uint8_t
-#define EB_FRAME_CARAC_0           0        
-#define EB_FRAME_CARAC_1           1        
-#define EB_FRAME_CARAC_2           2        
+#define EB_FRAME_CARAC_0           0
+#define EB_FRAME_CARAC_1           1
+#define EB_FRAME_CARAC_2           2
 
 
 
@@ -312,19 +310,19 @@ static const uint32_t me2_nx2_n_offset[4]    = { 0, 1, 5, 21 };
 #define OIS_COMPLEX_MODE         3
 #define OIS_VERY_COMPLEX_MODE    4
 
-#define _MVXT(mv) ( (int16_t)((mv) &  0xFFFF) ) 
-#define _MVYT(mv) ( (int16_t)((mv) >> 16    ) ) 
+#define _MVXT(mv) ( (int16_t)((mv) &  0xFFFF) )
+#define _MVYT(mv) ( (int16_t)((mv) >> 16    ) )
 
 //WEIGHTED PREDICTION
 
-#define  WP_SHIFT1D_10BIT      2   
+#define  WP_SHIFT1D_10BIT      2
 #define  WP_OFFSET1D_10BIT     (-32768)
 
-#define  WP_SHIFT2D_10BIT      6   
+#define  WP_SHIFT2D_10BIT      6
 
 #define  WP_IF_OFFSET_10BIT    8192//2^(14-1)
 
-#define  WP_SHIFT_10BIT        4   // 14 - 10 
+#define  WP_SHIFT_10BIT        4   // 14 - 10
 #define  WP_BI_SHIFT_10BIT     5
 
 // Will contain the EbEncApi which will live in the EncHandle class
@@ -336,17 +334,17 @@ typedef struct EbH265DynEncConfiguration {
 
 /** The EbIntraRefreshType is used to describe the intra refresh type.
 */
-typedef enum EbIntraRefreshType 
+typedef enum EbIntraRefreshType
 {
     NO_REFRESH = 0,
     CRA_REFRESH = 1,
     IDR_REFRESH = 2
 } EbIntraRefreshType;
 
-#if defined(_MSC_VER)
-#define EB_ALIGN(n) __declspec(align(n))
-#elif defined(__GNUC__)
+#ifdef __GNUC__
 #define EB_ALIGN(n) __attribute__((__aligned__(n)))
+#elif defined(_MSC_VER)
+#define EB_ALIGN(n) __declspec(align(n))
 #else
 #define EB_ALIGN(n)
 #endif
@@ -422,8 +420,7 @@ typedef struct EbMemoryMapEntry
 
 
 /* string length */
-extern Rsize
-strnlen_ss(const char *s, Rsize smax);
+extern rsize_t strnlen_ss(const char *s, rsize_t smax);
 
 // TODO EbUtility.h is probably a better place for it, would require including EbUtility.h
 
@@ -546,7 +543,7 @@ extern    uint32_t          lib_semaphore_count;
 extern    uint32_t          lib_mutex_count;
 
 
-#ifdef _MSC_VER 
+#ifdef _WIN32
 #define EB_ALLIGN_MALLOC(type, pointer, n_elements, pointer_class) \
     pointer = (type) _aligned_malloc(n_elements,ALVALUE); \
     if (pointer == (type)EB_NULL) { \
@@ -586,7 +583,7 @@ extern    uint32_t          lib_mutex_count;
     if (*(memory_map_index) >= MAX_NUM_PTR) { \
         return EB_ErrorInsufficientResources; \
         } \
-    lib_malloc_count++;     
+    lib_malloc_count++;
 #endif
 
 
@@ -707,14 +704,14 @@ typedef struct EbCallback
 
 } EbCallback;
 
-typedef enum DistCalcType 
+typedef enum DistCalcType
 {
     DIST_CALC_RESIDUAL = 0,    // SSE(Coefficients - ReconCoefficients)
     DIST_CALC_PREDICTION = 1,    // SSE(Coefficients) *Note - useful in modes that don't send residual coeff bits
     DIST_CALC_TOTAL = 2
 } DistCalcType;
 
-typedef enum EbSei 
+typedef enum EbSei
 {
     BUFFERING_PERIOD = 0,
     PICTURE_TIMING = 1,
@@ -786,7 +783,7 @@ Groups of Pictures (GOP) units.
 #define VAR_BASED_DETAIL_PRESERVATION_SELECTOR_THRSLHD         (64*64)
 
 
-#define MAX_BITS_PER_FRAME            8000000    
+#define MAX_BITS_PER_FRAME            8000000
 
 #define MEAN_DIFF_THRSHOLD              10
 #define VAR_DIFF_THRSHOLD               10
@@ -837,7 +834,7 @@ Groups of Pictures (GOP) units.
 #define MAX_SB_ROWS                                ((MAX_PICTURE_HEIGHT_SIZE) / (MAX_SB_SIZE))
 
 #define MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE       ((MAX_PICTURE_WIDTH_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) * \
-                                                   ((MAX_PICTURE_HEIGHT_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) 
+                                                   ((MAX_PICTURE_HEIGHT_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE)
 
 
 
@@ -846,7 +843,7 @@ Groups of Pictures (GOP) units.
 #define MAX_HIERARCHICAL_LEVEL                      6
 #define MAX_REF_IDX                                 1        // Set MAX_REF_IDX as 1 to avoid sending extra refPicIdc for each PU in IPPP flat GOP structure.
 #define INVALID_POC                                 (((uint32_t) (~0)) - (((uint32_t) (~0)) >> 1))
-#define MAX_ELAPSED_IDR_COUNT                       1024                       
+#define MAX_ELAPSED_IDR_COUNT                       1024
 
 
 //***HME***
@@ -865,15 +862,15 @@ Groups of Pictures (GOP) units.
 
 #define UNUSED(a) (void) a
 
-#define _MVXT(mv) ( (int16_t)((mv) &  0xFFFF) ) 
-#define _MVYT(mv) ( (int16_t)((mv) >> 16    ) ) 
+#define _MVXT(mv) ( (int16_t)((mv) &  0xFFFF) )
+#define _MVYT(mv) ( (int16_t)((mv) >> 16    ) )
 
 
 //***MCP***
 #define MaxChromaFilterTag          4
 
-#define MCPXPaddingOffset           16                                    // to be modified 
-#define MCPYPaddingOffset           16                                    // to be modified 
+#define MCPXPaddingOffset           16                                    // to be modified
+#define MCPYPaddingOffset           16                                    // to be modified
 
 #define InternalBitDepth            8                                     // to be modified
 #define MAX_Sample_Value            ((1 << InternalBitDepth) - 1)
@@ -947,13 +944,13 @@ Groups of Pictures (GOP) units.
 * 10bit case
 *********************************************************/
 
-#define  SHIFT1D_10BIT      6  
+#define  SHIFT1D_10BIT      6
 #define  OFFSET1D_10BIT     32
 
-#define  SHIFT2D1_10BIT     2  
+#define  SHIFT2D1_10BIT     2
 #define  OFFSET2D1_10BIT    (-32768)
 
-#define  SHIFT2D2_10BIT     10  
+#define  SHIFT2D2_10BIT     10
 #define  OFFSET2D2_10BIT    524800
 
     //BIPRED
@@ -974,14 +971,14 @@ Groups of Pictures (GOP) units.
 #define  EB_PICNOISE_CLASS    uint8_t
 #define  PIC_NOISE_CLASS_INV  0 //not computed
 #define  PIC_NOISE_CLASS_1    1 //No Noise
-#define  PIC_NOISE_CLASS_2    2 
-#define  PIC_NOISE_CLASS_3    3 
-#define  PIC_NOISE_CLASS_3_1  4 
-#define  PIC_NOISE_CLASS_4    5 
-#define  PIC_NOISE_CLASS_5    6 
-#define  PIC_NOISE_CLASS_6    7 
-#define  PIC_NOISE_CLASS_7    8 
-#define  PIC_NOISE_CLASS_8    9 
+#define  PIC_NOISE_CLASS_2    2
+#define  PIC_NOISE_CLASS_3    3
+#define  PIC_NOISE_CLASS_3_1  4
+#define  PIC_NOISE_CLASS_4    5
+#define  PIC_NOISE_CLASS_5    6
+#define  PIC_NOISE_CLASS_6    7
+#define  PIC_NOISE_CLASS_7    8
+#define  PIC_NOISE_CLASS_8    9
 #define  PIC_NOISE_CLASS_9    10
 #define  PIC_NOISE_CLASS_10   11 //Extreme Noise
 
@@ -994,10 +991,10 @@ Groups of Pictures (GOP) units.
 #define NON_MOVING_SCORE_3    30
 #define INVALID_NON_MOVING_SCORE (uint8_t) ~0
 
-#define CLASS_1_REGION_SPLIT_PER_WIDTH        2    
+#define CLASS_1_REGION_SPLIT_PER_WIDTH        2
 #define CLASS_1_REGION_SPLIT_PER_HEIGHT        2
 
-#define HIGHER_THAN_CLASS_1_REGION_SPLIT_PER_WIDTH        4    
+#define HIGHER_THAN_CLASS_1_REGION_SPLIT_PER_WIDTH        4
 #define HIGHER_THAN_CLASS_1_REGION_SPLIT_PER_HEIGHT        4
 
 // Dynamic GOP activity TH - to tune
@@ -1005,8 +1002,8 @@ Groups of Pictures (GOP) units.
 
 // The EB_AURA_STATUS type is used to describe the aura status
 #define EB_AURA_STATUS       uint8_t
-#define AURA_STATUS_0        0        
-#define AURA_STATUS_1        1        
+#define AURA_STATUS_0        0
+#define AURA_STATUS_1        1
 #define INVALID_AURA_STATUS  128
 
 // Aura detection definitions
@@ -1044,29 +1041,29 @@ static const int32_t global_motion_threshold[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORA
 #define NOISE_DETECT_FULL_PRECISION      2     // Use Full-pel decimated input to detect noise
 
 #define EB_SB_COMPLEXITY_STATUS uint8_t
-#define SB_COMPLEXITY_STATUS_0                  0  
-#define SB_COMPLEXITY_STATUS_1                  1  
-#define SB_COMPLEXITY_STATUS_2                  2  
+#define SB_COMPLEXITY_STATUS_0                  0
+#define SB_COMPLEXITY_STATUS_1                  1
+#define SB_COMPLEXITY_STATUS_2                  2
 #define SB_COMPLEXITY_STATUS_INVALID   (uint8_t) ~0
 
-#define SB_COMPLEXITY_NON_MOVING_INDEX_TH_0 30 
+#define SB_COMPLEXITY_NON_MOVING_INDEX_TH_0 30
 #define SB_COMPLEXITY_NON_MOVING_INDEX_TH_1 29
 #define SB_COMPLEXITY_NON_MOVING_INDEX_TH_2 23
 
 
-typedef enum EbCu16x16Mode 
+typedef enum EbCu16x16Mode
 {
     CU_16x16_MODE_0 = 0,  // Perform OIS, Full_Search, Fractional_Search & Bipred for CU_16x16
     CU_16x16_MODE_1 = 1   // Perform OIS and only Full_Search for CU_16x16
 } EbCu16x16Mode;
 
-typedef enum EbCu8x8Mode 
+typedef enum EbCu8x8Mode
 {
     CU_8x8_MODE_0 = 0,  // Perform OIS, Full_Search, Fractional_Search & Bipred for CU_8x8
     CU_8x8_MODE_1 = 1   // Do not perform OIS @ P/B Slices and only Full_Search for CU_8x8
 } EbCu8x8Mode;
 
-typedef enum EbPictureDepthMode 
+typedef enum EbPictureDepthMode
 {
     PIC_SB_SWITCH_DEPTH_MODE    = 0,
     PIC_FULL85_DEPTH_MODE       = 1,
@@ -1083,28 +1080,28 @@ typedef enum EbPictureDepthMode
 #define SB_LIGHT_BDP_DEPTH_MODE             4
 #define SB_OPEN_LOOP_DEPTH_MODE             5
 #define SB_LIGHT_OPEN_LOOP_DEPTH_MODE       6
-#define SB_AVC_DEPTH_MODE                   7                     
+#define SB_AVC_DEPTH_MODE                   7
 #define SB_LIGHT_AVC_DEPTH_MODE             8
 #define SB_PRED_OPEN_LOOP_DEPTH_MODE        9
 #define SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE 10
 
 
-typedef enum EbAdpDepthSensitivePicClass 
+typedef enum EbAdpDepthSensitivePicClass
 {
     DEPTH_SENSITIVE_PIC_CLASS_0 = 0,    // Normal picture
     DEPTH_SENSITIVE_PIC_CLASS_1 = 1,    // High complex picture
     DEPTH_SENSITIVE_PIC_CLASS_2 = 2     // Moderate complex picture
 } EbAdpDepthSensitivePicClass;
 
-   
-typedef enum EbAdpRefinementMode 
+
+typedef enum EbAdpRefinementMode
 {
     ADP_REFINEMENT_OFF = 0,  // Off
     ADP_MODE_0         = 1,  // Light AVC (only 16x16)
     ADP_MODE_1         = 2   // AVC (only 8x8 & 16x16 @ the Open Loop Search)
 } EbAdpRefinementMode;
 
-typedef enum EbMdStage 
+typedef enum EbMdStage
 {
     MDC_STAGE                 = 0,
     BDP_PILLAR_STAGE          = 1,
@@ -1120,7 +1117,7 @@ static const int32_t hme_level_0_search_area_multiplier_x[MAX_HIERARCHICAL_LEVEL
     { 100, 100, 100 },
     { 200, 140, 100,  70 },
     { 350, 200, 100, 100, 100 },
-    { 525, 350, 200, 100, 100, 100 }     
+    { 525, 350, 200, 100, 100, 100 }
 };
 
 static const int32_t hme_level_0_search_area_multiplier_y[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORAL_LAYERS] = { // [Highest Temporal Layer] [Temporal Layer Index]
@@ -1132,7 +1129,7 @@ static const int32_t hme_level_0_search_area_multiplier_y[MAX_HIERARCHICAL_LEVEL
     { 525, 350, 200, 100, 100, 100 }
 };
 
-typedef enum PaRasterScanCuIndex 
+typedef enum PaRasterScanCuIndex
 {
      // 2Nx2N [85 partitions]
      PA_RASTER_SCAN_CU_INDEX_64x64 = 0,
@@ -1243,7 +1240,7 @@ static const uint32_t pa_raster_scan_cu_x[PA_BLOCK_MAX_COUNT] =
 
 static const uint32_t pa_raster_scan_cu_y[PA_BLOCK_MAX_COUNT] =
 {
-    0,                                          
+    0,
     0, 0,
     32, 32,
     0, 0, 0, 0,
@@ -1296,7 +1293,7 @@ static const uint32_t pa_raster_scan_cu_depth[PA_BLOCK_MAX_COUNT] =
     3, 3, 3, 3, 3, 3, 3, 3
 };
 
-static const uint32_t pa_parent_block_index[85] = { 
+static const uint32_t pa_parent_block_index[85] = {
 0, 0, 0, 2, 2, 2, 2, 0, 7, 7, 7, 7, 0, 12, 12, 12, 12, 0, 17, 17, 17, 17, 0, 0,
 23, 23, 23, 23, 0, 28, 28, 28, 28, 0, 33, 33, 33, 33, 0, 38, 38, 38, 38, 0, 0,
 44, 44, 44, 44, 0, 49, 49, 49, 49, 0, 54, 54, 54, 54, 0, 59, 59, 59, 59, 0, 0,
@@ -1323,7 +1320,7 @@ static const uint32_t raster_scan_to_md_scan[PA_BLOCK_MAX_COUNT] =
 
 // VP9 lookup tables
 
-typedef enum EpRasterScanBlockIndex 
+typedef enum EpRasterScanBlockIndex
 {
     // 64x64
     EP_RASTER_SCAN_BLOCK_INDEX_64x64 = 0,
@@ -1331,7 +1328,7 @@ typedef enum EpRasterScanBlockIndex
     EP_RASTER_SCAN_BLOCK_INDEX_64x32_1 = 2,
     EP_RASTER_SCAN_BLOCK_INDEX_32x64_0 = 3,
     EP_RASTER_SCAN_BLOCK_INDEX_32x64_1 = 4,
-    // 32x32    
+    // 32x32
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_0 = 5,
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_1 = 6,
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_2 = 7,
@@ -2218,12 +2215,12 @@ static const uint32_t ep_raster_scan_block_width[EP_BLOCK_MAX_COUNT] =
     // 16x32
     16, 16, 16, 16,
     16, 16, 16, 16,
-    // 16x16        
+    // 16x16
     16, 16, 16, 16,
     16, 16, 16, 16,
     16, 16, 16, 16,
     16, 16, 16, 16,
-    // 16x8    
+    // 16x8
     16, 16, 16, 16,
     16, 16, 16, 16,
     16, 16, 16, 16,
@@ -2237,7 +2234,7 @@ static const uint32_t ep_raster_scan_block_width[EP_BLOCK_MAX_COUNT] =
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
-    // 8x8      
+    // 8x8
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
@@ -2246,7 +2243,7 @@ static const uint32_t ep_raster_scan_block_width[EP_BLOCK_MAX_COUNT] =
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
-    // 8x4 
+    // 8x4
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
@@ -2310,12 +2307,12 @@ static const uint32_t ep_raster_scan_block_height[EP_BLOCK_MAX_COUNT] =
     // 16x32
     32, 32, 32, 32,
     32, 32, 32, 32,
-    // 16x16        
+    // 16x16
     16, 16, 16, 16,
     16, 16, 16, 16,
     16, 16, 16, 16,
     16, 16, 16, 16,
-    // 16x8    
+    // 16x8
     8, 8, 8, 8,
     8, 8, 8, 8,
     8, 8, 8, 8,
@@ -2329,7 +2326,7 @@ static const uint32_t ep_raster_scan_block_height[EP_BLOCK_MAX_COUNT] =
     16, 16, 16, 16, 16, 16, 16, 16,
     16, 16, 16, 16, 16, 16, 16, 16,
     16, 16, 16, 16, 16, 16, 16, 16,
-    // 8x8      
+    // 8x8
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
@@ -2338,7 +2335,7 @@ static const uint32_t ep_raster_scan_block_height[EP_BLOCK_MAX_COUNT] =
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
     8, 8, 8, 8, 8, 8, 8, 8,
-    // 8x4 
+    // 8x4
     4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4,
@@ -2401,12 +2398,12 @@ static const uint32_t ep_raster_scan_block_bsize[EP_BLOCK_MAX_COUNT] =
     // 16x32
     BLOCK_16X32, BLOCK_16X32, BLOCK_16X32, BLOCK_16X32,
     BLOCK_16X32, BLOCK_16X32, BLOCK_16X32, BLOCK_16X32,
-    // 16x16        
+    // 16x16
     BLOCK_16X16, BLOCK_16X16, BLOCK_16X16, BLOCK_16X16,
     BLOCK_16X16, BLOCK_16X16, BLOCK_16X16, BLOCK_16X16,
     BLOCK_16X16, BLOCK_16X16, BLOCK_16X16, BLOCK_16X16,
     BLOCK_16X16, BLOCK_16X16, BLOCK_16X16, BLOCK_16X16,
-    // 16x8    
+    // 16x8
     BLOCK_16X8, BLOCK_16X8, BLOCK_16X8, BLOCK_16X8,
     BLOCK_16X8, BLOCK_16X8, BLOCK_16X8, BLOCK_16X8,
     BLOCK_16X8, BLOCK_16X8, BLOCK_16X8, BLOCK_16X8,
@@ -2420,7 +2417,7 @@ static const uint32_t ep_raster_scan_block_bsize[EP_BLOCK_MAX_COUNT] =
     BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16,
     BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16,
     BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16, BLOCK_8X16,
-    // 8x8      
+    // 8x8
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
@@ -2429,7 +2426,7 @@ static const uint32_t ep_raster_scan_block_bsize[EP_BLOCK_MAX_COUNT] =
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
     BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8, BLOCK_8X8,
-    // 8x4 
+    // 8x4
     BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4,
     BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4,
     BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4, BLOCK_8X4,
@@ -2493,12 +2490,12 @@ static const uint32_t ep_raster_scan_block_depth[EP_BLOCK_MAX_COUNT] =
     // 16x32
     1, 1, 1, 1,
     1, 1, 1, 1,
-    // 16x16        
+    // 16x16
     2, 2, 2, 2,
     2, 2, 2, 2,
     2, 2, 2, 2,
     2, 2, 2, 2,
-    // 16x8    
+    // 16x8
     2, 2, 2, 2,
     2, 2, 2, 2,
     2, 2, 2, 2,
@@ -2512,7 +2509,7 @@ static const uint32_t ep_raster_scan_block_depth[EP_BLOCK_MAX_COUNT] =
     2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2,
-    // 8x8      
+    // 8x8
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
@@ -2521,7 +2518,7 @@ static const uint32_t ep_raster_scan_block_depth[EP_BLOCK_MAX_COUNT] =
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
-    // 8x4 
+    // 8x4
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3,
@@ -2567,7 +2564,7 @@ static const uint32_t ep_raster_scan_block_depth[EP_BLOCK_MAX_COUNT] =
 };
 
 static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
-{ 
+{
 
 
     EP_RASTER_SCAN_BLOCK_INDEX_64x64 ,
@@ -2623,7 +2620,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_35,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_50,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_51,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_1,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_1,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_5,
@@ -2665,7 +2662,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_39,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_54,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_55,
-        
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_4,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_8,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_12,
@@ -2707,7 +2704,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_99,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_114,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_115,
-        
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_5,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_9,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_13,
@@ -2749,7 +2746,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_103,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_118,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_119,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_1,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_1,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_3,
@@ -2923,7 +2920,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_111,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_126,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_127,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_2,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_4,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_6,
@@ -3097,7 +3094,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_231,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_246,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_247,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_32x32_3,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_5,
     EP_RASTER_SCAN_BLOCK_INDEX_32x16_7,
@@ -3145,7 +3142,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_171,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_186,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_187,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_11,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_19,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_23,
@@ -3187,8 +3184,8 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_175,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_190,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_191,
-    
-    
+
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_14,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_26,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_30,
@@ -3230,7 +3227,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_235,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_250,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_251,
-    
+
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_15,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_27,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_31,
@@ -3373,7 +3370,7 @@ static const uint32_t RASTER_SCAN_CU_PARENT_INDEX[PA_BLOCK_MAX_COUNT] =
 static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 {
 /*0  */0,
-/*1  */0,  
+/*1  */0,
 /*2  */0,
 /*3  */0,
 /*4  */0,
@@ -3416,7 +3413,7 @@ static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 /*41 */1,
 /*42 */1,
 /*43 */2,
-/*44 */2, 
+/*44 */2,
 /*45 */2,
 /*46 */2,
 /*47 */2,
@@ -3425,7 +3422,7 @@ static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 /*50 */2,
 /*51 */2,
 /*52 */2,
-/*53 */2, 
+/*53 */2,
 /*54 */2,
 /*55 */2,
 /*56 */2,
@@ -3437,7 +3434,7 @@ static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 /*62 */2,
 /*63 */2,
 /*64 */3,
-/*65 */3, 
+/*65 */3,
 /*66 */3,
 /*67 */3,
 /*68 */3,
@@ -3447,10 +3444,10 @@ static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 /*72 */3,
 /*73 */3,
 /*74 */3,
-/*75 */3, 
+/*75 */3,
 /*76 */3,
 /*77 */3,
-/*78 */3,  
+/*78 */3,
 /*79 */3,
 /*80 */3,
 /*81 */3,
@@ -3461,7 +3458,7 @@ static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 /******************************************************************************
                             ME/HME settings VMAF
 *******************************************************************************/
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level0_flag_vmaf[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3514,7 +3511,7 @@ static const uint16_t hme_level0_search_area_in_height_array_bottom_vmaf[5][MAX_
 };
 
 // HME LEVEL 1
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level1_flag_vmaf[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3551,7 +3548,7 @@ static const uint16_t hme_level1_search_area_in_height_array_bottom_vmaf[5][MAX_
     {  16,   16,   16,    4,    4,    4,    4,    4,    0,    0,    0,    0,    0 }
 };
 // HME LEVEL 2
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level2_flag_vmaf[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    0,    0,    0,    0,    0 },      // INPUT_SIZE_720P_RANGE
@@ -3606,7 +3603,7 @@ static const uint8_t search_area_height_vmaf[5][MAX_SUPPORTED_MODES] = {
 /******************************************************************************
                             ME/HME settings OQ
 *******************************************************************************/
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level0_flag_oq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3659,7 +3656,7 @@ static const uint16_t hme_level0_search_area_in_height_array_bottom_oq[5][MAX_SU
 };
 
 // HME LEVEL 1
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level1_flag_oq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3696,7 +3693,7 @@ static const uint16_t hme_level1_search_area_in_height_array_bottom_oq[5][MAX_SU
     {  16,   16,   16,   16,    4,    4,    4,    4,    0,    0,    0,    0,    0 }
 };
 // HME LEVEL 2
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level2_flag_oq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    0,    0,    0 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    0,    0,    0,    0 },      // INPUT_SIZE_720P_RANGE
@@ -3751,7 +3748,7 @@ static const uint8_t search_area_height_oq[5][MAX_SUPPORTED_MODES] = {
 /******************************************************************************
                             ME/HME settings SQ
 *******************************************************************************/
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11    
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level0_flag_sq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3804,7 +3801,7 @@ static const uint16_t hme_level0_search_area_in_height_array_bottom_sq[5][MAX_SU
 };
 
 // HME LEVEL 1
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level1_flag_sq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1 },      // INPUT_SIZE_720P_RANGE
@@ -3841,7 +3838,7 @@ static const uint16_t hme_level1_search_area_in_height_array_bottom_sq[5][MAX_SU
     {  16,   16,   16,   16,    4,    4,    4,    4,    0,    0,    0,    0,    0 }
 };
 // HME LEVEL 2
-//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11   
+//     M0    M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11
 static const uint8_t enable_hme_level2_flag_sq[5][MAX_SUPPORTED_MODES] = {
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    0,    0,    0,    0 },      // INPUT_SIZE_576p_RANGE_OR_LOWER
     {   1,    1,    1,    1,    1,    1,    1,    1,    1,    0,    0,    0,    0 },      // INPUT_SIZE_720P_RANGE

@@ -122,7 +122,7 @@ extern void invoke_safe_str_constraint_handler(
     Errno error);
 
 
-static void handle_error(char *orig_dest, Rsize orig_dmax,
+static void handle_error(char *orig_dest, rsize_t orig_dmax,
     char *err_msg, Errno err_code)
 {
     (void)orig_dmax;
@@ -158,9 +158,9 @@ void ignore_handler_s(const char *msg, void *ptr, Errno error)
 EXPORT_SYMBOL(ignore_handler_s)
 
 Errno
-strncpy_ss(char *dest, Rsize dmax, const char *src, Rsize slen)
+strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
 {
-    Rsize orig_dmax;
+    rsize_t orig_dmax;
     char *orig_dest;
     const char *overlap_bumper;
 
@@ -283,9 +283,9 @@ strncpy_ss(char *dest, Rsize dmax, const char *src, Rsize slen)
 EXPORT_SYMBOL(strncpy_ss)
 
 Errno
-strcpy_ss(char *dest, Rsize dmax, const char *src)
+strcpy_ss(char *dest, rsize_t dmax, const char *src)
 {
-    Rsize orig_dmax;
+    rsize_t orig_dmax;
     char *orig_dest;
     const char *overlap_bumper;
 
@@ -377,10 +377,10 @@ strcpy_ss(char *dest, Rsize dmax, const char *src)
 }
 EXPORT_SYMBOL(strcpy_ss)
 
-Rsize
-strnlen_ss(const char *dest, Rsize dmax)
+rsize_t
+strnlen_ss(const char *dest, rsize_t dmax)
 {
-    Rsize count;
+    rsize_t count;
 
     if (dest == NULL) {
         return RCNEGATE(0);
