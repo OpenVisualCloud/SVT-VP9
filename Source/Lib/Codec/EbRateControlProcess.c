@@ -4114,7 +4114,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
 		queue_entry_index_head_temp;
 
 	queue_entry_index_temp = queue_entry_index_head_temp;
-	bitrate_flag = encode_context_ptr->vbvMaxrate <= encode_context_ptr->available_target_bitrate;
+	bitrate_flag = encode_context_ptr->vbv_max_rate <= encode_context_ptr->available_target_bitrate;
 	int32_t current_ind = (queue_entry_index_temp > HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH - 1) ? queue_entry_index_temp - HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH : queue_entry_index_temp;
 
 
@@ -4123,7 +4123,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
 	{
 		hlRateControl_histogram_ptr_temp = (encode_context_ptr->hl_rate_control_historgram_queue[current_ind]);
 		double cur_bits = (double)predictBits(sequence_control_set_ptr, encode_context_ptr, hlRateControl_histogram_ptr_temp, q);
-		double buffer_fill_cur = encode_context_ptr->bufferFill - cur_bits;
+		double buffer_fill_cur = encode_context_ptr->buffer_fill - cur_bits;
 		double target_fill;
 		double fps = 1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION);
 		double total_duration = fps;
@@ -4140,8 +4140,8 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
 				|| (total_duration >= 1.0))
 				break;
 			total_duration += fps;
-			double wanted_frame_size = encode_context_ptr->vbvMaxrate * fps;
-			if (buffer_fill_cur + wanted_frame_size <= encode_context_ptr->vbvBufsize)
+			double wanted_frame_size = encode_context_ptr->vbv_max_rate * fps;
+			if (buffer_fill_cur + wanted_frame_size <= encode_context_ptr->vbv_buf_size)
 				buffer_fill_cur += wanted_frame_size;
 			cur_bits = (double)predictBits(sequence_control_set_ptr, encode_context_ptr, hlRateControl_histogram_ptr_temp, q);
 			buffer_fill_cur -= cur_bits;
@@ -4149,7 +4149,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
 		}
 		/* Try to get the buffer at least 50% filled, but don't set an impossible goal. */
 
-		target_fill = MIN(encode_context_ptr->bufferFill + total_duration * encode_context_ptr->vbvMaxrate * 0.5, encode_context_ptr->vbvBufsize * (1 - 0.5));
+		target_fill = MIN(encode_context_ptr->buffer_fill + total_duration * encode_context_ptr->vbv_max_rate * 0.5, encode_context_ptr->vbv_buf_size * (1 - 0.5));
 		if (buffer_fill_cur < target_fill)
 		{
 			q++;
@@ -4161,7 +4161,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
 			continue;
 		}
 		/* Try to get the buffer not more than 80% filled, but don't set an impossible goal. */
-		target_fill = CLIP3(encode_context_ptr->vbvBufsize * (1 - 0.05), encode_context_ptr->vbvBufsize, encode_context_ptr->bufferFill - total_duration * encode_context_ptr->vbvMaxrate * 0.5);
+		target_fill = CLIP3(encode_context_ptr->vbv_buf_size * (1 - 0.05), encode_context_ptr->vbv_buf_size, encode_context_ptr->buffer_fill - total_duration * encode_context_ptr->vbv_max_rate * 0.5);
 		if ((bitrate_flag) && (buffer_fill_cur > target_fill))
 		{
 			q--;
@@ -4235,9 +4235,9 @@ void* rate_control_kernel(void *input_ptr)
                         context_ptr,
                         picture_control_set_ptr,
                         sequence_control_set_ptr);
-					encodeContextPtr->bufferFill = (uint64_t)(sequence_control_set_ptr->static_config.vbvBufsize * 0.9);
-					encodeContextPtr->vbvMaxrate = sequence_control_set_ptr->static_config.vbvMaxrate;
-					encodeContextPtr->vbvBufsize = sequence_control_set_ptr->static_config.vbvBufsize;
+					encodeContextPtr->buffer_fill = (uint64_t)(sequence_control_set_ptr->static_config.vbv_buf_size * 0.9);
+					encodeContextPtr->vbv_max_rate = sequence_control_set_ptr->static_config.vbv_max_rate;
+					encodeContextPtr->vbv_buf_size = sequence_control_set_ptr->static_config.vbv_buf_size;
                 }
 
                 picture_control_set_ptr->parent_pcs_ptr->intra_selected_org_qp = 0;
@@ -4483,7 +4483,7 @@ void* rate_control_kernel(void *input_ptr)
 
                 picture_control_set_ptr->parent_pcs_ptr->cpi->common.base_qindex = picture_control_set_ptr->base_qindex = vp9_quantizer_to_qindex(picture_control_set_ptr->picture_qp);
             }
-			if (encodeContextPtr->vbvBufsize && encodeContextPtr->vbvMaxrate)
+			if (encodeContextPtr->vbv_buf_size && encodeContextPtr->vbv_max_rate)
 			{
 				eb_block_on_mutex(encodeContextPtr->sc_buffer_mutex);
 				picture_control_set_ptr->picture_qp = (uint8_t)Vbv_Buf_Calc(picture_control_set_ptr, sequence_control_set_ptr, encodeContextPtr);

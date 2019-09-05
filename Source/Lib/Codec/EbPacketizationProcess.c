@@ -631,15 +631,15 @@ void* packetization_kernel(void *input_ptr)
             output_stream_ptr->n_tick_count = (uint32_t)latency;
 		
 			/* update VBV plan */
-			if (encode_context_ptr->vbvMaxrate && encode_context_ptr->vbvBufsize)
+			if (encode_context_ptr->vbv_max_rate && encode_context_ptr->vbv_buf_size)
 			{
-				int64_t bufferfill_temp = (int64_t)(encode_context_ptr->bufferFill);
+				int64_t buffer_fill_temp = (int64_t)(encode_context_ptr->buffer_fill);
 
-				bufferfill_temp -= queue_entry_ptr->actualBits;
-				bufferfill_temp = MAX(bufferfill_temp, 0);
-				bufferfill_temp = (int64_t)(bufferfill_temp + (encode_context_ptr->vbvMaxrate * (1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION))));
-				bufferfill_temp = MIN(bufferfill_temp, encode_context_ptr->vbvBufsize);
-				encode_context_ptr->bufferFill = (uint64_t)(bufferfill_temp);
+				buffer_fill_temp -= queue_entry_ptr->actualBits;
+				buffer_fill_temp = MAX(buffer_fill_temp, 0);
+				buffer_fill_temp = (int64_t)(buffer_fill_temp + (encode_context_ptr->vbv_max_rate * (1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION))));
+				buffer_fill_temp = MIN(buffer_fill_temp, encode_context_ptr->vbv_buf_size);
+				encode_context_ptr->buffer_fill = (uint64_t)(buffer_fill_temp);
 				//printf("totalNumBits = %lld \t bufferFill = %lld \t pictureNumber = %lld \n", queue_entry_ptr->actualBits, encode_context_ptr->bufferFill, picture_control_set_ptr->picture_number);
 			}
             // Release the Bitstream wrapper object
