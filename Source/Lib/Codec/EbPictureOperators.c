@@ -313,7 +313,7 @@ void unpack_2d(
     )
 {
     
-    unpack2_d_func_ptr_array_16_bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX512_MASK) && 1](
+    unpack2_d_func_ptr_array_16_bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
         out8_bit_buffer,
