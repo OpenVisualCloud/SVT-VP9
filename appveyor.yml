@@ -22,3 +22,4 @@ deploy:
     prerelease: true
     on:
       appveyor_repo_tag: true
+      configuration: Release
