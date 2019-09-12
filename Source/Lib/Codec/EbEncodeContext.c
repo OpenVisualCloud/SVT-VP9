@@ -184,9 +184,9 @@ EbErrorType encode_context_ctor(
     // Rate Control
     encode_context_ptr->available_target_bitrate                            = 10000000;
     encode_context_ptr->available_target_bitrate_changed                     = EB_FALSE;
-	encode_context_ptr->buffer_fill = 0;
-	encode_context_ptr->vbv_buf_size = 0;
-	encode_context_ptr->vbv_max_rate                                          = 0;
+	encode_context_ptr->buffer_fill                                            = 0;
+	encode_context_ptr->vbv_buf_size                                           = 0;
+	encode_context_ptr->vbv_max_rate                                           = 0;
 
     // Rate Control Bit Tables
     EB_MALLOC(RateControlTables*, encode_context_ptr->rate_control_tables_array, sizeof(RateControlTables) * TOTAL_NUMBER_OF_INITIAL_RC_TABLES_ENTRY, EB_N_PTR); 

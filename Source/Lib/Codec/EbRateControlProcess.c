@@ -4037,9 +4037,14 @@ void init_rc(
     }
 }
 
-uint64_t predictBits(SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr, HlRateControlHistogramEntry *hlRateControl_histogram_ptr_temp, uint32_t qp)
-{
-	uint64_t total_bits = 0;
+uint64_t predictBits(
+	SequenceControlSet *sequence_control_set_ptr, 
+	EncodeContext *encode_context_ptr, 
+	HlRateControlHistogramEntry *hlRateControl_histogram_ptr_temp, 
+	uint32_t qp) {
+
+	uint64_t                          total_bits = 0;
+
 	if (hlRateControl_histogram_ptr_temp->is_coded) {
 		// If the frame is already coded, use the actual number of bits
 		total_bits = hlRateControl_histogram_ptr_temp->total_num_bitsCoded;
@@ -4084,28 +4089,30 @@ uint64_t predictBits(SequenceControlSet *sequence_control_set_ptr, EncodeContext
 		}
 
 		// Scale for in complete LCSs
-		//  pred_bits_ref_qp is normalized based on the area because of the LCUs at the picture boundries
+		// pred_bits_ref_qp is normalized based on the area because of the LCUs at the picture boundries
 		total_bits = total_bits * (uint64_t)area_in_pixel / (num_of_full_lcus << 12);
 	}
 	hlRateControl_histogram_ptr_temp->pred_bits_ref_qp[qp] = total_bits;
 	return total_bits;
 }
 
-uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr)
-{
-	int32_t loop_terminate = 0;
-	uint32_t q = picture_control_set_ptr->picture_qp;
-	uint32_t q0 = picture_control_set_ptr->picture_qp;
+uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, 
+	SequenceControlSet *sequence_control_set_ptr, 
+	EncodeContext *encode_context_ptr) {
+
+	int32_t                           loop_terminate = 0;
+	uint32_t                          q = picture_control_set_ptr->picture_qp;
+	uint32_t                          q0 = picture_control_set_ptr->picture_qp;
 	// Queue variables
-	uint32_t                             queue_entry_index_temp;
-	uint32_t                             queue_entry_index_temp2;
-	uint32_t                             queue_entry_index_head_temp;
-	HlRateControlHistogramEntry          *hlRateControl_histogram_ptr_temp;
-	EB_BOOL								 bitrate_flag;
+	uint32_t                          queue_entry_index_temp;
+	uint32_t                          queue_entry_index_temp2;
+	uint32_t                          queue_entry_index_head_temp;
+	HlRateControlHistogramEntry       *hlRateControl_histogram_ptr_temp;
+	EB_BOOL							  bitrate_flag;
 
 	/* Lookahead VBV: If lookahead is done, raise the quantizer as necessary
-				* such that no frames in the lookahead overflow and such that the buffer
-				* is in a reasonable state by the end of the lookahead. */
+	* such that no frames in the lookahead overflow and such that the buffer
+	* is in a reasonable state by the end of the lookahead. */
 
 	queue_entry_index_head_temp = (int32_t)(picture_control_set_ptr->picture_number - encode_context_ptr->hl_rate_control_historgram_queue[encode_context_ptr->hl_rate_control_historgram_queue_head_index]->picture_number);
 	queue_entry_index_head_temp += encode_context_ptr->hl_rate_control_historgram_queue_head_index;
