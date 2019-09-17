@@ -139,9 +139,9 @@ typedef struct EncodeContext
     // Rate Control
     uint32_t                            available_target_bitrate;
     EB_BOOL                             available_target_bitrate_changed;
-	uint32_t                            vbv_max_rate;
-	uint32_t                            vbv_buf_size;
-	uint64_t                            buffer_fill;
+    uint32_t                            vbv_max_rate;
+    uint32_t                            vbv_buf_size;
+    uint64_t                            buffer_fill;
     uint32_t                            previous_selected_ref_qp;
     uint64_t                            max_coded_poc;
     uint32_t                            max_coded_poc_selected_ref_qp;

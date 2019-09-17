@@ -415,7 +415,7 @@ void* packetization_kernel(void *input_ptr)
 
         // Send the number of bytes per frame to RC
         picture_control_set_ptr->parent_pcs_ptr->total_num_bits = output_stream_ptr->n_filled_len << 3;
-		queue_entry_ptr->actualBits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
+        queue_entry_ptr->actual_bits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
         queue_entry_ptr->total_num_bits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
 
 #if  VP9_RC
@@ -629,19 +629,19 @@ void* packetization_kernel(void *input_ptr)
                 &latency);
 
             output_stream_ptr->n_tick_count = (uint32_t)latency;
-		
-			/* update VBV plan */
-			if (encode_context_ptr->vbv_max_rate && encode_context_ptr->vbv_buf_size)
-			{
-				int64_t buffer_fill_temp = (int64_t)(encode_context_ptr->buffer_fill);
+        
+            /* update VBV plan */
+            if (encode_context_ptr->vbv_max_rate && encode_context_ptr->vbv_buf_size)
+            {
+                int64_t buffer_fill_temp = (int64_t)(encode_context_ptr->buffer_fill);
 
-				buffer_fill_temp -= queue_entry_ptr->actualBits;
-				buffer_fill_temp = MAX(buffer_fill_temp, 0);
-				buffer_fill_temp = (int64_t)(buffer_fill_temp + (encode_context_ptr->vbv_max_rate * (1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION))));
-				buffer_fill_temp = MIN(buffer_fill_temp, encode_context_ptr->vbv_buf_size);
-				encode_context_ptr->buffer_fill = (uint64_t)(buffer_fill_temp);
-				//printf("totalNumBits = %lld \t bufferFill = %lld \t pictureNumber = %lld \n", queue_entry_ptr->actualBits, encode_context_ptr->bufferFill, picture_control_set_ptr->picture_number);
-			}
+                buffer_fill_temp -= queue_entry_ptr->actual_bits;
+                buffer_fill_temp = MAX(buffer_fill_temp, 0);
+                buffer_fill_temp = (int64_t)(buffer_fill_temp + (encode_context_ptr->vbv_max_rate * (1.0 / (sequence_control_set_ptr->frame_rate >> RC_PRECISION))));
+                buffer_fill_temp = MIN(buffer_fill_temp, encode_context_ptr->vbv_buf_size);
+                encode_context_ptr->buffer_fill = buffer_fill_temp;
+                //printf("totalNumBits = %lld \t bufferFill = %lld \t pictureNumber = %lld \n", queue_entry_ptr->actual_bits, encode_context_ptr->bufferFill, picture_control_set_ptr->picture_number);
+            }
             // Release the Bitstream wrapper object
             eb_post_full_object(output_stream_wrapper_ptr);
             // Reset the Reorder Queue Entry

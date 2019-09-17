@@ -2016,9 +2016,9 @@ void copy_api_from_app(
 
     // Rate Control
     sequence_control_set_ptr->static_config.rate_control_mode = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->rate_control_mode;
-	sequence_control_set_ptr->static_config.vbv_max_rate = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->vbv_max_rate;
-	sequence_control_set_ptr->static_config.vbv_buf_size = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->vbv_buf_size;
-	sequence_control_set_ptr->static_config.frames_to_be_encoded = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->frames_to_be_encoded;
+    sequence_control_set_ptr->static_config.vbv_max_rate = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->vbv_max_rate;
+    sequence_control_set_ptr->static_config.vbv_buf_size = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->vbv_buf_size;
+    sequence_control_set_ptr->static_config.frames_to_be_encoded = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->frames_to_be_encoded;
     sequence_control_set_ptr->frame_rate = sequence_control_set_ptr->static_config.frame_rate = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->frame_rate;
     sequence_control_set_ptr->static_config.target_bit_rate = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->target_bit_rate;
     sequence_control_set_ptr->encode_context_ptr->available_target_bitrate = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->target_bit_rate;

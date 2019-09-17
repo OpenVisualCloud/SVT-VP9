@@ -151,7 +151,7 @@ static void set_cfg_use_qp_file                        (const char *value, EbCon
 static void set_loop_filter                            (const char *value, EbConfig *cfg) {cfg->loop_filter                         = (uint8_t)strtoul(value, NULL, 0);};
 static void set_enable_hme_flag                        (const char *value, EbConfig *cfg) {cfg->enable_hme_flag                     = (uint8_t)strtoul(value, NULL, 0);};
 static void set_rate_control_mode                      (const char *value, EbConfig *cfg) {cfg->rate_control_mode                   = strtoul(value, NULL, 0);};
-static void set_vbv_maxrate							   (const char *value, EbConfig *cfg) { cfg->vbv_max_rate = strtoul(value, NULL, 0); };
+static void set_vbv_maxrate                            (const char *value, EbConfig *cfg) { cfg->vbv_max_rate = strtoul(value, NULL, 0); };
 static void set_vbv_bufsize                              (const char *value, EbConfig *cfg) { cfg->vbv_buf_size = strtoul(value, NULL, 0); };
 static void set_target_bit_rate                        (const char *value, EbConfig *cfg) {cfg->target_bit_rate                     = strtoul(value, NULL, 0);};
 static void set_max_qp_allowed                         (const char *value, EbConfig *cfg) {cfg->max_qp_allowed                      = strtoul(value, NULL, 0);};
@@ -238,8 +238,8 @@ ConfigEntry config_entry[] = {
     { SINGLE_INPUT, TARGET_BIT_RATE_TOKEN, "TargetBitRate", set_target_bit_rate },
     { SINGLE_INPUT, MAX_QP_TOKEN, "MaxQpAllowed", set_max_qp_allowed },
     { SINGLE_INPUT, MIN_QP_TOKEN, "MinQpAllowed", set_min_qp_allowed },
-	{ SINGLE_INPUT, VBV_MAX_RATE_TOKEN, "vbvMaxRate", set_vbv_maxrate },
-	{ SINGLE_INPUT, VBV_BUFFER_SIZE_TOKEN, "vbvBufsize", set_vbv_bufsize },
+    { SINGLE_INPUT, VBV_MAX_RATE_TOKEN, "vbvMaxRate", set_vbv_maxrate },
+    { SINGLE_INPUT, VBV_BUFFER_SIZE_TOKEN, "vbvBufsize", set_vbv_bufsize },
 
     // Loop Filter
     { SINGLE_INPUT, LOOP_FILTER_TOKEN, "LoopFilter", set_loop_filter },
@@ -304,8 +304,8 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     config_ptr->rate_control_mode                                = 0;
     config_ptr->target_bit_rate                                  = 7000000;
-	config_ptr->vbv_max_rate = 0;
-	config_ptr->vbv_buf_size = 0;
+    config_ptr->vbv_max_rate                                     = 0;
+    config_ptr->vbv_buf_size                                     = 0;
     config_ptr->max_qp_allowed                                   = 63;
     config_ptr->min_qp_allowed                                   = 10;
     config_ptr->base_layer_switch_mode                           = 0;

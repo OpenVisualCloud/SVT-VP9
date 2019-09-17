@@ -174,9 +174,9 @@ EbErrorType  copy_configuration_parameters(
     callback_data->eb_enc_parameters.max_qp_allowed = config->max_qp_allowed;
     callback_data->eb_enc_parameters.min_qp_allowed = config->min_qp_allowed;
     callback_data->eb_enc_parameters.qp = config->qp;
-	callback_data->eb_enc_parameters.vbv_max_rate = config->vbv_max_rate;
-	callback_data->eb_enc_parameters.vbv_buf_size = config->vbv_buf_size;
-	callback_data->eb_enc_parameters.frames_to_be_encoded = config->frames_to_be_encoded;
+    callback_data->eb_enc_parameters.vbv_max_rate = config->vbv_max_rate;
+    callback_data->eb_enc_parameters.vbv_buf_size = config->vbv_buf_size;
+    callback_data->eb_enc_parameters.frames_to_be_encoded = config->frames_to_be_encoded;
     callback_data->eb_enc_parameters.use_qp_file = (uint8_t)config->use_qp_file;
     callback_data->eb_enc_parameters.loop_filter = (uint8_t)config->loop_filter;
     callback_data->eb_enc_parameters.use_default_me_hme = (uint8_t)config->use_default_me_hme;
