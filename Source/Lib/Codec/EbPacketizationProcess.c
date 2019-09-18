@@ -509,7 +509,7 @@ void* packetization_kernel(void *input_ptr)
                     else
                     {
                         SVT_LOG("SVT [ERROR]: disp_order_continuity_count Error1 POC:%i\n", (int)queue_entry_ptr->poc);
-                        exit(0);
+                        return EB_NULL;
                     }
                 }
 
@@ -518,8 +518,8 @@ void* packetization_kernel(void *input_ptr)
                         context_ptr->disp_order_continuity_count += 4;
                     else
                     {
-                        SVT_LOG("disp_order_continuity_count Error2 POC:%i\n", (int)queue_entry_ptr->poc);
-                        exit(0);
+                        SVT_LOG("SVT [ERROR]: disp_order_continuity_count Error2 POC:%i\n", (int)queue_entry_ptr->poc);
+                        return EB_NULL;
                     }
                 }
 
@@ -588,15 +588,15 @@ void* packetization_kernel(void *input_ptr)
 
                         if (queue_entry_ptr->ref_poc_list0 != context_ptr->dpb_disp_order[LASTrefIdx])
                         {
-                            SVT_LOG("L0 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
-                            exit(0);
+                            SVT_LOG("SVT [ERROR]: L0 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
+                            return EB_NULL;
                         }
 
 
                         if (sequence_control_set_ptr->hierarchical_levels == 3 && queue_entry_ptr->slice_type == B_SLICE && queue_entry_ptr->ref_poc_list1 != context_ptr->dpb_disp_order[BWDrefIdx])
                         {
-                            SVT_LOG("L1 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
-                            exit(0);
+                            SVT_LOG("SVT [ERROR]: L1 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
+                            return EB_NULL;
                         }
 
                     }

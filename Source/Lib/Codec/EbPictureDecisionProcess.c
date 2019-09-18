@@ -1134,8 +1134,8 @@ void  generate_rps_info(
         }
 
         else {
-            SVT_LOG("Error: Not supported GOP structure!");
-            exit(0);
+            SVT_LOG("SVT [ERROR]: Not supported GOP structure!");
+            return;
         }
 
         //last pic in MiniGop: mGop Toggling
@@ -1387,8 +1387,8 @@ void  generate_rps_info(
         }
 
         else {
-            SVT_LOG("Error: Not supported GOP structure!");
-            exit(0);
+            SVT_LOG("SVT [ERROR]: Not supported GOP structure!");
+            return;
         }
 
         //last pic in MiniGop: mGop Toggling
@@ -1401,8 +1401,8 @@ void  generate_rps_info(
 #endif
     else
     {
-        SVT_LOG("Error: Not supported GOP structure!");
-        exit(0);
+        SVT_LOG("SVT [ERROR]: Not supported GOP structure!");
+        return;
     }
 }
 
