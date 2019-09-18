@@ -107,6 +107,7 @@ set(flags_to_test
     -fPIC
     -D_FORTIFY_SOURCE=2
     #-flto
+    -fvisibility=hidden
     /GS
     /sdl)
 if(MSVC)
