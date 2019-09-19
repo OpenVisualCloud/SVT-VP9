@@ -431,7 +431,7 @@ extern rsize_t strnlen_ss(const char *s, rsize_t smax);
 
 #include <immintrin.h>
 
-#ifdef __GNUC__
+#if !defined(__clang__) && !defined(__INTEL_COMPILER) && defined(__GNUC__)
 __attribute__((optimize("unroll-loops")))
 #endif
 FORCE_INLINE void eb_memcpy_small(void* dst_ptr, void const* src_ptr, size_t size)
