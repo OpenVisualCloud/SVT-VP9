@@ -106,7 +106,7 @@ set(flags_to_test
     -fPIE
     -fPIC
     -D_FORTIFY_SOURCE=2
-    -flto
+    #-flto
     /GS
     /sdl)
 if(MSVC)
