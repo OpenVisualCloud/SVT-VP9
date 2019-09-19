@@ -203,7 +203,7 @@ const MiniGopStats* get_mini_gop_stats(const uint32_t mini_gop_index)
 }
 
 
-void eb_start_time(uint64_t *start_seconds, uint64_t *start_useconds) {
+EB_API void eb_start_time(uint64_t *start_seconds, uint64_t *start_useconds) {
 
 #if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)
     struct timeval start;
@@ -219,7 +219,7 @@ void eb_start_time(uint64_t *start_seconds, uint64_t *start_useconds) {
 #endif
 
 }
-void eb_finish_time(uint64_t *finish_seconds, uint64_t *finish_useconds) {
+EB_API void eb_finish_time(uint64_t *finish_seconds, uint64_t *finish_useconds) {
 
 #if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)
     struct timeval finish;
@@ -235,10 +235,10 @@ void eb_finish_time(uint64_t *finish_seconds, uint64_t *finish_useconds) {
 #endif
 
 }
-void eb_compute_overall_elapsed_time(
-    uint64_t start_seconds, 
-    uint64_t start_useconds, 
-    uint64_t finish_seconds, 
+EB_API void eb_compute_overall_elapsed_time(
+    uint64_t start_seconds,
+    uint64_t start_useconds,
+    uint64_t finish_seconds,
     uint64_t finish_useconds,
     double  *duration)
 {
@@ -264,11 +264,11 @@ void eb_compute_overall_elapsed_time(
 #endif
 
 }
-void eb_compute_overall_elapsed_time_ms(
-    uint64_t start_seconds, 
-    uint64_t start_useconds, 
-    uint64_t finish_seconds, 
-    uint64_t finish_useconds, 
+EB_API void eb_compute_overall_elapsed_time_ms(
+    uint64_t start_seconds,
+    uint64_t start_useconds,
+    uint64_t finish_seconds,
+    uint64_t finish_useconds,
     double  *duration)
 {
 #if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)

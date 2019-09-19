@@ -417,11 +417,6 @@ typedef struct EbMemoryMapEntry
 // Display Total Memory at the end of the memory allocations
 #define DISPLAY_MEMORY                                  0
 
-
-
-/* string length */
-extern rsize_t strnlen_ss(const char *s, rsize_t smax);
-
 // TODO EbUtility.h is probably a better place for it, would require including EbUtility.h
 
 /********************************************************************************************
@@ -516,14 +511,11 @@ FORCE_INLINE void eb_memcpy(void  *dst_ptr, void  *src_ptr, size_t size)
 #define EB_MEMSET(dst, val, count) \
     memset(dst, val, count)
 
-#define EB_STRNCPY(dst, src, count) \
-    strncpy_ss(dst, sizeof(dst), src, count)
-
-#define EB_STRCPY(dst, size, src) \
-    strcpy_ss(dst, size, src)
-
 #define EB_STRCMP(target,token) \
     strcmp(target,token)
+
+/* string length */
+EB_API rsize_t strnlen_ss(const char *s, rsize_t smax);
 
 #define EB_STRLEN(target, max_size) \
     strnlen_ss(target, max_size)

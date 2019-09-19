@@ -95,8 +95,6 @@
 
 #define RCNEGATE(x)  (x)
 #define RSIZE_MAX_STR      ( 4UL << 10 )      /* 4KB */
-#define sl_default_handler ignore_handler_s
-#define EXPORT_SYMBOL(sym)
 
 #ifndef sldebug_printf
 #define sldebug_printf(...)
@@ -109,21 +107,19 @@
 
 typedef void(*constraint_handler_t) (const char * /* msg */,
     void *       /* ptr */,
-    Errno      /* error */);
-extern void ignore_handler_s(const char *msg, void *ptr, Errno error);
-
+    errno_t      /* error */);
 /*
 * Function used by the libraries to invoke the registered
 * runtime-constraint handler. Always needed.
 */
-extern void invoke_safe_str_constraint_handler(
+static void invoke_safe_str_constraint_handler(
     const char *msg,
     void *ptr,
-    Errno error);
+    errno_t error);
 
 
 static void handle_error(char *orig_dest, rsize_t orig_dmax,
-    char *err_msg, Errno err_code)
+    char *err_msg, errno_t err_code)
 {
     (void)orig_dmax;
     *orig_dest = '\0';
@@ -133,32 +129,25 @@ static void handle_error(char *orig_dest, rsize_t orig_dmax,
 }
 static constraint_handler_t str_handler = NULL;
 
-void
-invoke_safe_str_constraint_handler(const char *msg,
+static void invoke_safe_str_constraint_handler(const char *msg,
 void *ptr,
-Errno error)
+errno_t error)
 {
     if (NULL != str_handler) {
         str_handler(msg, ptr, error);
     }
     else {
-        sl_default_handler(msg, ptr, error);
+        (void)msg;
+        (void)ptr;
+        (void)error;
+        sldebug_printf("IGNORE CONSTRAINT HANDLER: (%u) %s\n", error,
+            (msg) ? msg : "Null message");
     }
 }
 
-void ignore_handler_s(const char *msg, void *ptr, Errno error)
-{
-    (void)msg;
-    (void)ptr;
-    (void)error;
-    sldebug_printf("IGNORE CONSTRAINT HANDLER: (%u) %s\n", error,
-        (msg) ? msg : "Null message");
-    return;
-}
-EXPORT_SYMBOL(ignore_handler_s)
+extern rsize_t strnlen_ss(const char *s, rsize_t smax);
 
-Errno
-strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
+errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
 {
     rsize_t orig_dmax;
     char *orig_dest;
@@ -280,10 +269,8 @@ strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
         ESNOSPC);
     return RCNEGATE(ESNOSPC);
 }
-EXPORT_SYMBOL(strncpy_ss)
 
-Errno
-strcpy_ss(char *dest, rsize_t dmax, const char *src)
+errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src)
 {
     rsize_t orig_dmax;
     char *orig_dest;
@@ -375,38 +362,4 @@ strcpy_ss(char *dest, rsize_t dmax, const char *src)
         ESNOSPC);
     return RCNEGATE(ESNOSPC);
 }
-EXPORT_SYMBOL(strcpy_ss)
-
-rsize_t
-strnlen_ss(const char *dest, rsize_t dmax)
-{
-    rsize_t count;
-
-    if (dest == NULL) {
-        return RCNEGATE(0);
-    }
-
-    if (dmax == 0) {
-        invoke_safe_str_constraint_handler((char*)("strnlen_ss: dmax is 0"),
-            NULL, ESZEROL);
-        return RCNEGATE(0);
-    }
-
-    if (dmax > RSIZE_MAX_STR) {
-        invoke_safe_str_constraint_handler((char*)("strnlen_ss: dmax exceeds max"),
-            NULL, ESLEMAX);
-        return RCNEGATE(0);
-    }
-
-    count = 0;
-    while (*dest && dmax) {
-        count++;
-        dmax--;
-        dest++;
-    }
-
-    return RCNEGATE(count);
-}
-EXPORT_SYMBOL(strnlen_ss)
-
 /* SAFE STRING LIBRARY */
