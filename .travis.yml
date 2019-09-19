@@ -25,6 +25,9 @@ notifications:
     - https://coveralls.io/webhook
 env:
   global: build_type=release
+  matrix:
+    - CMAKE_EFLAGS="-DBUILD_SHARED_LIBS=ON"
+    - CMAKE_EFLAGS="-DBUILD_SHARED_LIBS=OFF"
 stages:
   - name: style
   - name: test
@@ -34,6 +37,7 @@ before_install:
   - export CMAKE_BUILD_PARALLEL_LEVEL=$(if [ $TRAVIS_OS_NAME = osx ]; then sysctl -n hw.ncpu; else nproc; fi)
   - "sudo chown -R travis: $HOME/.ccache"
   - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig PATH="/usr/local/opt/ccache/libexec:$PATH"
+  - sudo ln -s /usr/local/clang-7.0.0/bin/clang /usr/lib/ccache/clang || true
   - wget -nc https://raw.githubusercontent.com/OpenVisualCloud/SVT-AV1-Resources/master/video.tar.gz || wget -nc http://randomderp.com/video.tar.gz
   - tar xf video.tar.gz
   - mkdir -p $TRAVIS_BUILD_DIR/Build/linux/$build_type
@@ -160,7 +164,7 @@ matrix:
           ./configure --enable-libsvtvp9 || cat ffbuild/config.log
           sudo make -sj$(if [ $TRAVIS_OS_NAME = osx ]; then sysctl -n hw.ncpu; else nproc; fi) install
           cd $TRAVIS_BUILD_DIR
-          ffmpeg -i akiyo_cif.y4m -w 352 -h 288 -fps-num 30000 -fps-denom 1001 -c:v libsvt_hevc test.ivf
+          ffmpeg -i akiyo_cif.y4m -c:v libsvt_vp9 test.ivf
           SvtVp9EncApp -i stdin -w 352 -h 288 -fps 30 -n 150 -b test2.ivf < akiyo_cif.y4m
       after_script: &after_coveralls_script |
         if [ $CC = "clang" ] && [ $TRAVIS_OS_NAME = linux ]; then

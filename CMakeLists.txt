@@ -106,7 +106,8 @@ set(flags_to_test
     -fPIE
     -fPIC
     -D_FORTIFY_SOURCE=2
-    -flto
+    #-flto
+    -fvisibility=hidden
     /GS
     /sdl)
 if(MSVC)
@@ -125,8 +126,8 @@ else()
         list(APPEND flags_to_test -march=native)
     endif()
 endif()
-set(release_flags_to_test -O2 -O3)
-set(debug_flags_to_test -O0)
+set(release_flags_to_test)
+set(debug_flags_to_test)
 
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS

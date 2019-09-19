@@ -87,9 +87,9 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
 -    For the binaries to operate properly on your system, the following conditions have to be met:
     -    On any of the Windows* Operating Systems listed in the OS requirements section, install Visual Studio* 2017
     -    Once the installation is complete, copy the binaries to a location making sure that both the sample application "<u>SvtVp9EncApp.exe</u>” and library "<u>SvtVp9Enc.dll</u>” are in the same folder.
-    -    Open the command prompt window at the chosen location and run the sample application to encode. 
+    -    Open the command prompt window at the chosen location and run the sample application to encode.
         > SvtVp9EncApp.exe -i [in.yuv] -w [width] -h [height] -b [out.ivf].
-    -    Sample application supports reading from pipe. E.g: 
+    -    Sample application supports reading from pipe. E.g:
         > ffmpeg -i [input.mp4] -nostdin -f rawvideo -pix_fmt yuv420p - | SvtVp9EncApp.exe -i stdin -n [number_of_frames_to_encode] -w [width] -h [height].
 
 ### Linux* Operating Systems (64-bit):
@@ -100,7 +100,9 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
      -    YASM Assembler version 1.2.0 or later
 
 * __Build Instructions__
-     >    ./Build/linux/build.sh <release | debug> (if none specified, both release and debug will be built)
+     - `./Build/linux/build.sh <release | debug>` (if none specified, both release and debug will be built)
+     - To build a static library and binary, append `static`
+     - Additional options can be found by typing `./Build/linux/build.sh --help`
 
 * __Sample Binaries location__
      -    Binaries can be found under Bin/Release and / or Bin/Debug
@@ -108,18 +110,18 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
 * __Installation__
 For the binaries to operate properly on your system, the following conditions have to be met:
     -    On any of the Linux* Operating Systems listed above, copy the binaries under a location of your choice.
-    -    Change the permissions on the sample application “<u>SvtVp9EncApp</u>” executable by running the         command: 
+    -    Change the permissions on the sample application “<u>SvtVp9EncApp</u>” executable by running the         command:
         >chmod +x SvtVp9EncApp
     -    cd into your chosen location
-    -    Run the sample application to encode. 
+    -    Run the sample application to encode.
         >    ./SvtVp9EncApp -i [in.yuv] -w [width] -h [height] -b [out.ivf].
-    -    Sample application supports reading from pipe. E.g:  
+    -    Sample application supports reading from pipe. E.g:
         >ffmpeg -i [input.mp4] -nostdin -f rawvideo -pix_fmt yuv420p - | ./SvtVp9EncApp -i stdin -n [number_of_frames_to_encode] -w [width] -h [height].
 
 ## Demo features and limitations
 
 -  **Multi-instance support:** The multi-instance functionality is a demo feature implemented in the SVT-VP9 Encoder sample application as an example of one sample application using multiple encoding libraries. Encoding using the multi-instance support is limited to only 6 simultaneous streams. For example two channels encoding on Windows: SvtVp9EncApp.exe -nch 2 -c firstchannel.cfg secondchannel.cfg
--  **Features enabled:** The library will display an error message any feature combination that is not currently supported. 
+-  **Features enabled:** The library will display an error message any feature combination that is not currently supported.
 
 ## How to Contribute
 

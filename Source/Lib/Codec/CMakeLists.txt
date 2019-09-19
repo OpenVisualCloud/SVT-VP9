@@ -42,8 +42,14 @@ if(UNIX)
 
     # Pass version script to ensure that only global-namespace symbols are
     # exported.
-    set(VERSION_SCRIPT ${PROJECT_SOURCE_DIR}/Source/API/EbApi.version)
-    if(NOT APPLE)
+    if(APPLE)
+        set(VERSION_SCRIPT ${PROJECT_SOURCE_DIR}/Source/API/EbExport_list)
+        set(
+            CMAKE_SHARED_LINKER_FLAGS
+            "${CMAKE_SHARED_LINKER_FLAGS} -exported_symbols_list=${VERSION_SCRIPT}"
+            )
+    else()
+        set(VERSION_SCRIPT ${PROJECT_SOURCE_DIR}/Source/API/EbApi.version)
         set(
             CMAKE_SHARED_LINKER_FLAGS
             "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${VERSION_SCRIPT}"
