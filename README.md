@@ -101,6 +101,8 @@ In order to run the highest resolution supported by the SVT-VP9 Encoder, at leas
 
 * __Build Instructions__
      - `./Build/linux/build.sh <release | debug>` (if none specified, both release and debug will be built)
+     - To build a static library and binary, append `static`
+     - Additional options can be found by typing `./Build/linux/build.sh --help`
 
 * __Sample Binaries location__
      -    Binaries can be found under Bin/Release and / or Bin/Debug
