@@ -515,10 +515,10 @@ FORCE_INLINE void eb_memcpy(void  *dst_ptr, void  *src_ptr, size_t size)
     strcmp(target,token)
 
 /* string length */
-EB_API rsize_t strnlen_ss(const char *s, rsize_t smax);
+EB_API rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
 
 #define EB_STRLEN(target, max_size) \
-    strnlen_ss(target, max_size)
+    eb_strnlen_ss(target, max_size)
 
 
 #define MAX_NUM_PTR                (0x1312D00 << 2) //0x4C4B4000            // Maximum number of pointers to be allocated for the library

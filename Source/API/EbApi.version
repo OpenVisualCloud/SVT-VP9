@@ -2,7 +2,6 @@ SVT_VP9_0 {
     global:
         Eb*;
         eb*;
-        strnlen_ss;
     local:
         *;
 };

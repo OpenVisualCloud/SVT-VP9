@@ -3008,7 +3008,7 @@ static inline void invoke_safe_str_constraint_handler(
     (msg) ? msg : "Null message");
 }
 
-EB_API rsize_t strnlen_ss(const char *dest, rsize_t dmax)
+EB_API rsize_t eb_strnlen_ss(const char *dest, rsize_t dmax)
 {
     rsize_t count = 0;
 

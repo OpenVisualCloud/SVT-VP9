@@ -145,7 +145,7 @@ errno_t error)
     }
 }
 
-extern rsize_t strnlen_ss(const char *s, rsize_t smax);
+extern rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
 
 errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
 {
