@@ -58,8 +58,7 @@ EOF
 build() (
     build_type="Release"
     while [ -n "$*" ]; do
-        match=$(printf %s "$1" | tr '[:upper:]' '[:lower:]')
-        case "$match" in
+        case "$(printf %s "$1" | tr '[:upper:]' '[:lower:]')" in
         release) build_type="Release" && shift ;;
         debug) build_type="Debug" && shift ;;
         *) break ;;
