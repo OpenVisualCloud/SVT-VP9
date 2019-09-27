@@ -22,72 +22,7 @@
 #error OS/Platform not supported.
 #endif
 
-void eb_start_time(
-    uint64_t *start_seconds,
-    uint64_t *start_useconds)
-{
-#if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)
-    struct timeval start;
-    gettimeofday(&start, NULL);
-    *start_seconds = start.tv_sec;
-    *start_useconds = start.tv_usec;
-#elif _WIN32 //(WIN_ENCODER_TIMING || WIN_DECODER_TIMING)
-    *start_seconds = (uint64_t)clock();
-    (void)(*start_useconds);
-#else
-    (void)(*start_useconds);
-    (void)(*start_seconds);
-#endif
-
-}
-
-void eb_finish_time(
-    uint64_t *finish_seconds,
-    uint64_t *finish_useconds)
-{
-#if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)
-    struct timeval finish;
-    gettimeofday(&finish, NULL);
-    *finish_seconds = finish.tv_sec;
-    *finish_useconds = finish.tv_usec;
-#elif _WIN32 //(WIN_ENCODER_TIMING || WIN_DECODER_TIMING)
-    *finish_seconds = (uint64_t)clock();
-    (void)(*finish_useconds);
-#else
-    (void)(*finish_useconds);
-    (void)(*finish_seconds);
-#endif
-
-}
-void eb_compute_overall_elapsed_time(
-    uint64_t start_seconds,
-    uint64_t start_useconds,
-    uint64_t finish_seconds,
-    uint64_t finish_useconds,
-    double  *duration)
-{
-#if __linux__ //(LINUX_ENCODER_TIMING || LINUX_DECODER_TIMING)
-    long   mtime, seconds, useconds;
-    seconds = finish_seconds - start_seconds;
-    useconds = finish_useconds - start_useconds;
-    mtime = ((seconds) * 1000 + useconds / 1000.0) + 0.5;
-    *duration = (double)mtime / 1000;
-    //printf("\nElapsed time: %3.3ld seconds\n", mtime/1000);
-#elif _WIN32 //(WIN_ENCODER_TIMING || WIN_DECODER_TIMING)
-    //double  duration;
-    *duration = (double)(finish_seconds - start_seconds) / CLOCKS_PER_SEC;
-    //printf("\nElapsed time: %3.3f seconds\n", *duration);
-    (void)(start_useconds);
-    (void)(finish_useconds);
-#else
-    (void)(start_useconds);
-    (void)(start_seconds);
-    (void)(finish_useconds);
-    (void)(finish_seconds);
-
-#endif
-
-}
+#include "EbSvtVp9Time.h"
 
 void eb_sleep(uint64_t milli_seconds) {
 

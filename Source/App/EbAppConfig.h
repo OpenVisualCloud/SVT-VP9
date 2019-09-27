@@ -27,7 +27,7 @@ typedef size_t rsize_t;
 
 #ifndef _ERRNO_T_DEFINED
 #define _ERRNO_T_DEFINED
-typedef int32_t Errno;
+typedef int32_t errno_t;
 #endif  /* _ERRNO_T_DEFINED */
 
 /** The AppExitConditionType type is used to define the App main loop exit
@@ -127,13 +127,13 @@ extern    uint32_t          app_malloc_count;
     app_malloc_count++;
 
 /* string copy */
-extern Errno strcpy_ss(char *dest, rsize_t dmax, const char *src);
+extern errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src);
 
 /* fitted string copy */
-extern Errno strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen);
+extern errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen);
 
 /* string length */
-extern rsize_t strnlen_ss(const char *s, rsize_t smax);
+extern rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
 
 #define EB_STRNCPY(dst, src, count) \
     strncpy_ss(dst, sizeof(dst), src, count)
@@ -145,7 +145,7 @@ extern rsize_t strnlen_ss(const char *s, rsize_t smax);
     strcmp(target,token)
 
 #define EB_STRLEN(target, max_size) \
-    strnlen_ss(target, max_size)
+    eb_strnlen_ss(target, max_size)
 
 #define EB_APP_MEMORY() \
     SVT_LOG("Total Number of Mallocs in App: %d\n", app_malloc_count); \

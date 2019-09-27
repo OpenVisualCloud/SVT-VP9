@@ -19,43 +19,43 @@
 
 /**************************************
  * Component Private Data
- **************************************/  
+ **************************************/
 typedef struct EbEncHandle
 {
     // Encode Instances & Compute Segments
     uint32_t                              encode_instance_total_count;
     uint32_t                             *compute_segments_total_count_array;
-    
+
     // Config Set Counts
-    uint32_t                              sequence_control_set_pool_total_count; 
-    
+    uint32_t                              sequence_control_set_pool_total_count;
+
     // Full Results Count
-    uint32_t                              picture_control_set_pool_total_count;   
-        
+    uint32_t                              picture_control_set_pool_total_count;
+
     // Picture Buffer Counts
     uint32_t                              reference_picture_pool_total_count;
-    
+
     // Config Set Pool & Active Array
     EbSystemResource                     *sequence_control_set_pool_ptr;
     EbFifo                              **sequence_control_set_pool_producer_fifo_ptr_array;
     EbSequenceControlSetInstance        **sequence_control_set_instance_array;
-    
-    // Full Results 
+
+    // Full Results
     EbSystemResource                    **picture_control_set_pool_ptr_array;
     EbFifo                             ***picture_control_set_pool_producer_fifo_ptr_dbl_array;
 
     //ParentControlSet
     EbSystemResource                    **picture_parent_control_set_pool_ptr_array;
     EbFifo                             ***picture_parent_control_set_pool_producer_fifo_ptr_dbl_array;
-        
+
     // Picture Buffers
     EbSystemResource                    **reference_picture_pool_ptr_array;
     EbSystemResource                    **pa_reference_picture_pool_ptr_array;
-    
-    // Picture Buffer Producer Fifos   
+
+    // Picture Buffer Producer Fifos
     EbFifo                             ***reference_picture_pool_producer_fifo_ptr_dbl_array;
     EbFifo                             ***pa_reference_picture_pool_producer_fifo_ptr_dbl_array;
-    
+
     // Thread Handles
     EbHandle                              resource_coordination_thread_handle;
     EbHandle                             *picture_analysis_thread_handle_array;
@@ -69,7 +69,7 @@ typedef struct EbEncHandle
     EbHandle                             *enc_dec_thread_handle_array;
     EbHandle                             *entropy_coding_thread_handle_array;
     EbHandle                              packetization_thread_handle;
-        
+
     // Contexts
     EbPtr                                 resource_coordination_context_ptr;
     EbPtr                                *picture_analysis_context_ptr_array;
@@ -83,7 +83,7 @@ typedef struct EbEncHandle
     EbPtr                                *enc_dec_context_ptr_array;
     EbPtr                                *entropy_coding_context_ptr_array;
     EbPtr                                 packetization_context_ptr;
-    
+
     // System Resource Managers
     EbSystemResource                     *input_buffer_resource_ptr;
     EbSystemResource                    **output_stream_buffer_resource_ptr_array;
@@ -136,7 +136,7 @@ typedef struct EbEncHandle
     // Callbacks
     EbCallback                          **app_callback_ptr_array;
     // Memory Map
-    EbMemoryMapEntry                     *memory_map; 
+    EbMemoryMapEntry                     *memory_map;
     uint32_t                              memory_map_index;
     uint64_t                              total_lib_memory;
 
@@ -144,9 +144,9 @@ typedef struct EbEncHandle
 
 /**************************************
  * EbBufferHeaderType Constructor
- **************************************/  
+ **************************************/
 extern EbErrorType eb_buffer_header_ctor(
-    EbPtr *object_dbl_ptr, 
+    EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
-    
+
 #endif // EbEncHandle_h
