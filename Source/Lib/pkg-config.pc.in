@@ -4,6 +4,6 @@ libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 
 Name: SvtVp9Enc
 Description: SVT (Scalable Video Technology) for VP9 encoder library
-Version: @SVT_HEVC_VERSION_MAJOR@.@SVT_HEVC_VERSION_MINOR@.@SVT_HEVC_VERSION_PATCHLEVEL@
+Version: @SVT_VP9_VERSION_MAJOR@.@SVT_HVP9_VERSION_MINOR@.@SVT_VP9_VERSION_PATCHLEVEL@
 Libs: -L${libdir} -lSvtVp9Enc @LIBS@
 Cflags: -I${includedir}
