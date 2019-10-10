@@ -7,7 +7,7 @@
 #define EbSvtVp9Enc_h
 
 #include <stdint.h>
-
+#include <EbApiVersion.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,10 +25,6 @@ extern "C" {
 #define EB_ENCODERSTREAMPORT                    1
 #define EB_ENCODERRECONPORT                     2
 #define EB_ENCODERSTATISTICSPORT                3
-
-#define SVT_VERSION_MAJOR       0
-#define SVT_VERSION_MINOR       1
-#define SVT_VERSION_PATCHLEVEL  0
 
 #define EbBool                  uint8_t
 #define EB_FALSE                0
