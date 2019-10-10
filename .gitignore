@@ -14,9 +14,7 @@
 *.ivf
 *.exe
 *.bat
-Build/VS17/x64
 Bin
-Build/linux/debug/
-Build/linux/release/
-
-
+Build
+!Build/linux/build.sh
+!Build/windows/generate_vs17.bat
