@@ -754,7 +754,7 @@ uint32_t get_help(int argc, char *const argv[])
 uint32_t get_svt_version(int argc, char *const argv[])
 {
     char config_string[COMMAND_LINE_MAX_SIZE];
-    if (FindToken(argc, argv, VERSION_TOKEN, config_string) == 0) {
+    if (find_token(argc, argv, VERSION_TOKEN, config_string) == 0) {
         printf("SVT-VP9 version %d.%d.%d\n", SVT_VERSION_MAJOR, SVT_VERSION_MINOR, SVT_VERSION_PATCHLEVEL);
         printf("Copyright(c) 2018 Intel Corporation\n");
         printf("BSD-2-Clause Plus Patent License\n");
