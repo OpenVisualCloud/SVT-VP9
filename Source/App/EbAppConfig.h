@@ -310,7 +310,7 @@ extern EbErrorType read_command_line(
     EbErrorType *return_errors);
 
 extern uint32_t get_help(int argc, char *const argv[]);
-
+extern uint32_t get_svt_version(int argc, char *const argv[]);
 extern uint32_t get_number_of_channels(int argc, char *const argv[]);
 
 #endif //EbAppConfig_h
