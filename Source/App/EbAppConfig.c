@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "EbApiVersion.h"
 #include "EbAppConfig.h"
 
 #ifdef _WIN32
@@ -17,7 +17,8 @@
 /**********************************
  * Defines
  **********************************/
-#define HELP_TOKEN                      "-help"
+#define HELP_TOKEN                      "--help"
+#define VERSION_TOKEN                   "--version"
 #define CHANNEL_NUMBER_TOKEN            "-nch"
 #define COMMAND_LINE_MAX_SIZE           2048
 #define CONFIG_FILE_TOKEN               "-c"
@@ -739,25 +740,29 @@ uint32_t get_help(int argc, char *const argv[])
     char config_string[COMMAND_LINE_MAX_SIZE];
     if (find_token(argc, argv, HELP_TOKEN, config_string) == 0) {
         int token_index = -1;
-
         printf("\n%-25s\t%-25s\t%-25s\t\n\n" ,"TOKEN", "DESCRIPTION", "INPUT TYPE");
         printf("%-25s\t%-25s\t%-25s\t\n" ,"-nch", "NumberOfChannels", "Single input");
         while (config_entry[++token_index].token != NULL) {
-
             printf("%-25s\t%-25s\t%-25s\t\n", config_entry[token_index].token, config_entry[token_index].name, config_entry[token_index].type ? "Array input": "Single input");
-
         }
         return 1;
 
     }
-    else {
-        return 0;
-    }
-
-
-
+    return 0;
 }
 
+uint32_t get_svt_version(int argc, char *const argv[])
+{
+    char config_string[COMMAND_LINE_MAX_SIZE];
+    if (find_token(argc, argv, VERSION_TOKEN, config_string) == 0) {
+        printf("SVT-VP9 version %d.%d.%d\n", SVT_VERSION_MAJOR, SVT_VERSION_MINOR, SVT_VERSION_PATCHLEVEL);
+        printf("Copyright(c) 2018 Intel Corporation\n");
+        printf("BSD-2-Clause Plus Patent License\n");
+        printf("https://github.com/OpenVisualCloud/SVT-VP9\n");
+        return 1;
+    }
+    return 0;
+}
 
 /******************************************************
 * Get the number of channels and validate it with input
