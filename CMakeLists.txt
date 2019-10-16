@@ -11,6 +11,15 @@ if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
                     "Please use the Build folder or create your own.")
 endif()
 
+option(YASM "Use yasm (if present in PATH)" ON)
+if(YASM)
+    find_program(YASM_EXE yasm)
+    if(YASM_EXE AND NOT CMAKE_ASM_NASM_COMPILER MATCHES "yasm")
+        set(CMAKE_ASM_NASM_COMPILER ${YASM_EXE})
+        message(STATUS "Found YASM: ${YASM_EXE}")
+    endif()
+endif()
+
 project(${project_name} C ASM_NASM)
 
 if(NOT MSVC AND NOT CMAKE_BUILD_TYPE)
