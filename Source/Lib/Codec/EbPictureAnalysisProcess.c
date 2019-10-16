@@ -3508,7 +3508,7 @@ void sub_sample_luma_generate_pixel_intensity_histogram_bins(
 
 
             // Initialize bins to 1
-            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0], 64, 0, 1);
+            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0], 64, 0, 1);
 
             region_width_offset = (region_in_picture_width_index == sequence_control_set_ptr->picture_analysis_number_of_regions_per_width - 1) ?
                 input_picture_ptr->width - (sequence_control_set_ptr->picture_analysis_number_of_regions_per_width * region_width) :
@@ -3567,8 +3567,8 @@ void sub_sample_chroma_generate_pixel_intensity_histogram_bins(
 
 
             // Initialize bins to 1
-            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1], 64, 0, 1);
-            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2], 64, 0, 1);
+            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1], 64, 0, 1);
+            initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2], 64, 0, 1);
 
             region_width_offset = (region_in_picture_width_index == sequence_control_set_ptr->picture_analysis_number_of_regions_per_width - 1) ?
                 input_picture_ptr->width - (sequence_control_set_ptr->picture_analysis_number_of_regions_per_width * region_width) :
