@@ -76,7 +76,8 @@ before_test:
   - if "%configuration%"=="Release" 7z a -aoa -mx9 SVT-VP9.tar %APPVEYOR_BUILD_FOLDER%\FFmpeg-master\ffmpeg.exe
   - 7z a -aoa -mx9 SVT-VP9.tar.xz SVT-VP9.tar
   - dash -c 'ccache -s'
-  - ps: if ($env:configuration -eq "Release") {
+  - ps:
+      if ($env:configuration -eq "Release" -and $env:APPVEYOR_REPO_TAG -eq "true") {
       foreach ($file in "Bin\Release\SvtVp9Enc.dll Bin\Release\SvtVp9Enc.exp Bin\Release\SvtVp9Enc.lib Bin\Release\SvtVp9EncApp.exe".Split()) {
       Push-AppveyorArtifact $file -DeploymentName $env:APPVEYOR_PROJECT_NAME
       }
