@@ -28,7 +28,7 @@ void picture_addition(
     uint32_t  height)
 {
 
-    addition_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][width >> 3](
+    addition_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][width >> 3](
         pred_ptr,
         pred_stride,
         residual_ptr,
@@ -63,7 +63,7 @@ EbErrorType picture_copy8_bit(
     // Execute the Kernels
     if (component_mask & PICTURE_BUFFER_DESC_Y_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][area_width>>3](
             &(src->buffer_y[src_luma_origin_index]),
             src->stride_y,
             &(dst->buffer_y[dst_luma_origin_index]),
@@ -74,7 +74,7 @@ EbErrorType picture_copy8_bit(
 
     if (component_mask & PICTURE_BUFFER_DESC_Cb_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][chroma_area_width >> 3](
             &(src->buffer_cb[src_chroma_origin_index]),
             src->stride_cb,
             &(dst->buffer_cb[dst_chroma_origin_index]),
@@ -85,7 +85,7 @@ EbErrorType picture_copy8_bit(
 
     if (component_mask & PICTURE_BUFFER_DESC_Cr_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][chroma_area_width >> 3](
             &(src->buffer_cr[src_chroma_origin_index]),
             src->stride_cr,
             &(dst->buffer_cr[dst_chroma_origin_index]),
@@ -114,7 +114,7 @@ void picture_sub_sampled_residual(
     uint8_t   last_line)    //the last line has correct prediction data, so no duplication to be done.
 {
 
-    residual_kernel_sub_sampled_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    residual_kernel_sub_sampled_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -142,7 +142,7 @@ void picture_residual(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    residual_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -170,7 +170,7 @@ void picture_residual16bit(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array16_bit[(ASM_TYPES & PREAVX2_MASK) && 1](
+    residual_kernel_func_ptr_array16_bit[(ASM_TYPES & AVX2_MASK) && 1](
         input,
         input_stride,
         pred,
@@ -203,7 +203,7 @@ EbErrorType picture_full_distortion(
     distortion[0]   = 0;
     distortion[1]   = 0;
     // Y
-    full_distortion_intrinsic_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][eob != 0][0][area_size >> 3](
+    full_distortion_intrinsic_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][eob != 0][0][area_size >> 3](
         &(((int16_t*) coeff->buffer_y)[coeff_origin_index]),
         coeff->stride_y,
         &(((int16_t*) recon_coeff->buffer_y)[recon_coeff_origin_index]),
@@ -227,7 +227,7 @@ void extract_8bit_data(
     )
 {
     
-    unpack_8bit_func_ptr_array_16bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & PREAVX2_MASK) && 1](
+    unpack_8bit_func_ptr_array_16bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
         out8_bit_buffer,    

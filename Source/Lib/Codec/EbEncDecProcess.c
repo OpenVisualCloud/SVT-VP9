@@ -463,7 +463,7 @@ void perform_coding_loop(
     switch (tx_size) {
     case TX_32X32:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][32 >> 3](
+            residual_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][32 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -510,7 +510,7 @@ void perform_coding_loop(
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
-            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4](
+            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][4](
                 pred_buffer,
                 pred_stride,
                 recon_buffer,
@@ -530,7 +530,7 @@ void perform_coding_loop(
 
     case TX_16X16:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][16 >> 3](
+            residual_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][16 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -570,7 +570,7 @@ void perform_coding_loop(
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
 
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
-            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][2](
+            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][2](
                 pred_buffer,
                 pred_stride,
                 recon_buffer,
@@ -592,7 +592,7 @@ void perform_coding_loop(
 
     case TX_8X8:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][8 >> 3](
+            residual_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][8 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -632,7 +632,7 @@ void perform_coding_loop(
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
 
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
-            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][1](
+            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][1](
                 pred_buffer,
                 pred_stride,
                 recon_buffer,
@@ -655,7 +655,7 @@ void perform_coding_loop(
     default:
         assert(tx_size == TX_4X4);
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4 >> 3](
+            residual_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][4 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -701,7 +701,7 @@ void perform_coding_loop(
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
-            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][0](
+            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][0](
                 pred_buffer,
                 pred_stride,
                 recon_buffer,
@@ -761,7 +761,7 @@ void perform_inv_trans_add(
     switch (tx_size) {
     case TX_32X32:
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][4](
             pred_buffer,
             pred_stride,
             recon_buffer,
@@ -781,7 +781,7 @@ void perform_inv_trans_add(
 
     case TX_16X16:
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][2](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][2](
             pred_buffer,
             pred_stride,
             recon_buffer,
@@ -802,7 +802,7 @@ void perform_inv_trans_add(
         break;
 
     case TX_8X8:
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][1](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][1](
             pred_buffer,
             pred_stride,
             recon_buffer,
@@ -824,7 +824,7 @@ void perform_inv_trans_add(
 
     default:
         assert(tx_size == TX_4X4);
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][0](
+        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][0](
             pred_buffer,
             pred_stride,
             recon_buffer,
@@ -926,7 +926,7 @@ static void perform_dist_rate_calc(
     int tu_size = 1 << (2 + tx_size);
 
     if (context_ptr->spatial_sse_full_loop) {
-        tufull_distortion[DIST_CALC_RESIDUAL] = (int)spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tx_size](
+        tufull_distortion[DIST_CALC_RESIDUAL] = (int)spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tx_size](
             input_buffer,
             input_stride,
             recon_buffer,
@@ -934,7 +934,7 @@ static void perform_dist_rate_calc(
             tu_size,
             tu_size);
 
-        tufull_distortion[DIST_CALC_PREDICTION] = (int)spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tx_size](
+        tufull_distortion[DIST_CALC_PREDICTION] = (int)spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tx_size](
             input_buffer,
             input_stride,
             pred_buffer,
@@ -948,7 +948,7 @@ static void perform_dist_rate_calc(
     else {
         const int shift = tx_size == TX_32X32 ? 0 : 2;
         uint64_t                    tufull_distortionTemp[DIST_CALC_TOTAL];
-        full_distortion_intrinsic_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][*eob != 0][0][tu_size >> 3](
+        full_distortion_intrinsic_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][*eob != 0][0][tu_size >> 3](
             trans_coeff_buffer,
             tu_size,
             recon_coeff_buffer,
@@ -987,7 +987,7 @@ static void perform_dist_rate_calc(
                     tufull_distortion[DIST_CALC_RESIDUAL] = (tufull_distortion[DIST_CALC_PREDICTION]);
                     *tu_coeff_bits = 0;
                     if (*eob) {
-                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tu_size == 32 ? 4 : tx_size](
+                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tu_size == 32 ? 4 : tx_size](
                             pred_buffer,
                             pred_stride,
                             recon_buffer,
@@ -1245,7 +1245,7 @@ static void perform_dist_rate_calc(
                                         candidate_buffer->candidate_ptr->eob[0][tu_index] = 0;
                                         int arr_index = tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1;
                                         if (arr_index >= 0 && arr_index < 9)
-                                            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][arr_index](
+                                            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][arr_index](
                                                 &(candidate_buffer->prediction_ptr->buffer_y[context_ptr->block_origin_index + pred_recon_tu_origin_index]),
                                                 candidate_buffer->prediction_ptr->stride_y,
                                                 &(candidate_buffer->recon_ptr->buffer_y[context_ptr->block_origin_index + pred_recon_tu_origin_index]),
@@ -1259,7 +1259,7 @@ static void perform_dist_rate_calc(
                                     candidate_buffer->candidate_ptr->eob[1][0] = 0;
                                     int arr_index = tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1;
                                     if (arr_index >= 0 && arr_index < 9)
-                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][arr_index](
+                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][arr_index](
                                             &(candidate_buffer->prediction_ptr->buffer_cb[context_ptr->block_chroma_origin_index]),
                                             candidate_buffer->prediction_ptr->stride_cb,
                                             &(candidate_buffer->recon_ptr->buffer_cb[context_ptr->block_chroma_origin_index]),
@@ -1272,7 +1272,7 @@ static void perform_dist_rate_calc(
                                     candidate_buffer->candidate_ptr->eob[2][0] = 0;
                                     int arr_index = tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1;
                                     if (arr_index >= 0 && arr_index < 9)
-                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][arr_index](
+                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][arr_index](
                                             &(candidate_buffer->prediction_ptr->buffer_cr[context_ptr->block_chroma_origin_index]),
                                             candidate_buffer->prediction_ptr->stride_cr,
                                             &(candidate_buffer->recon_ptr->buffer_cr[context_ptr->block_chroma_origin_index]),
@@ -1914,7 +1914,7 @@ static void perform_dist_rate_calc(
         {
             (void)sb_ptr;
             if ((context_ptr->ep_block_stats_ptr->sq_size >> 3) < 9) {
-                pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size >> 3](
+                pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size >> 3](
                     &(recon_src_ptr->buffer_y[context_ptr->ep_block_stats_ptr->origin_x + context_ptr->ep_block_stats_ptr->origin_y * recon_src_ptr->stride_y]),
                     recon_src_ptr->stride_y,
                     &(recon_dst_ptr->buffer_y[context_ptr->ep_block_stats_ptr->origin_x + context_ptr->ep_block_stats_ptr->origin_y * recon_dst_ptr->stride_y]),
@@ -1926,7 +1926,7 @@ static void perform_dist_rate_calc(
                     uint16_t  chromaorigin_x = context_ptr->ep_block_stats_ptr->origin_x >> 1;
                     uint16_t  chromaorigin_y = context_ptr->ep_block_stats_ptr->origin_y >> 1;
 
-                    pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size_uv >> 3](
+                    pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size_uv >> 3](
                         &(recon_src_ptr->buffer_cb[chromaorigin_x + chromaorigin_y * recon_src_ptr->stride_cb]),
                         recon_src_ptr->stride_cb,
                         &(recon_dst_ptr->buffer_cb[chromaorigin_x + chromaorigin_y * recon_dst_ptr->stride_cb]),
@@ -1934,7 +1934,7 @@ static void perform_dist_rate_calc(
                         context_ptr->ep_block_stats_ptr->sq_size_uv,
                         context_ptr->ep_block_stats_ptr->sq_size_uv);
 
-                    pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size_uv >> 3](
+                    pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][context_ptr->ep_block_stats_ptr->sq_size_uv >> 3](
                         &(recon_src_ptr->buffer_cr[chromaorigin_x + chromaorigin_y * recon_src_ptr->stride_cr]),
                         recon_src_ptr->stride_cr,
                         &(recon_dst_ptr->buffer_cr[chromaorigin_x + chromaorigin_y * recon_dst_ptr->stride_cr]),
@@ -4215,7 +4215,7 @@ static void perform_dist_rate_calc(
                                         uint32_t pred_tu_origin_index = ((tu_index % 2) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) + ((tu_index > 1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size] * context_ptr->prediction_buffer->stride_y);
                                         context_ptr->block_ptr->eob[0][tu_index] = 0;
                                         if (do_recon)
-                                            pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size](
+                                            pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size](
                                                 &(context_ptr->prediction_buffer->buffer_y[context_ptr->block_origin_index + pred_tu_origin_index]),
                                                 context_ptr->prediction_buffer->stride_y,
                                                 &(context_ptr->recon_buffer->buffer_y[cuOriginReconIndex + pred_recon_tu_origin_index]),
@@ -4227,7 +4227,7 @@ static void perform_dist_rate_calc(
                                 if (context_ptr->block_ptr->eob[1][0]) {
                                     context_ptr->block_ptr->eob[1][0] = 0;
                                     if (do_recon)
-                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1](
+                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1](
                                             &((context_ptr->prediction_buffer->buffer_cb)[context_ptr->block_chroma_origin_index]),
                                             context_ptr->prediction_buffer->stride_cb,
                                             &(context_ptr->recon_buffer->buffer_cb[cuChromaOriginReconIndex]),
@@ -4238,7 +4238,7 @@ static void perform_dist_rate_calc(
                                 if (context_ptr->block_ptr->eob[2][0]) {
                                     context_ptr->block_ptr->eob[2][0] = 0;
                                     if (do_recon)
-                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1](
+                                        pic_copy_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][tu_size[context_ptr->ep_block_stats_ptr->tx_size_uv] == 32 ? 4 : context_ptr->ep_block_stats_ptr->tx_size - 1](
                                             &((context_ptr->prediction_buffer->buffer_cr)[context_ptr->block_chroma_origin_index]),
                                             context_ptr->prediction_buffer->stride_cr,
                                             &(context_ptr->recon_buffer->buffer_cr[cuChromaOriginReconIndex]),

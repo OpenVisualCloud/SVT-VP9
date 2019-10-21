@@ -239,12 +239,13 @@ static int32_t can_use_intel_avx512()
         | (1 << 30)  // AVX-512BW
         | (1 << 31); // AVX-512VL
 
+    if (!check4th_gen_intel_core_features())
+        return 0;
+
     // ensure OS supports ZMM registers (and YMM, and XMM)
     if (!check_xcr0_zmm())
         return 0;
 
-    if (!check4th_gen_intel_core_features())
-        return 0;
 
     run_cpuid(7, 0, abcd);
     if ((abcd[1] & avx512_ebx_mask) != avx512_ebx_mask)
