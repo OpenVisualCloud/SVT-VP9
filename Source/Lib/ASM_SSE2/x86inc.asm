@@ -36,7 +36,6 @@
 
 ;;;%include "vpx_config.asm"
 
-
 ARCH_ARM equ 0
 ARCH_MIPS equ 0
 ARCH_X86 equ 0

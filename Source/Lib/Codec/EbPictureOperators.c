@@ -97,10 +97,9 @@ EbErrorType picture_copy8_bit(
     return return_error;
 }
 
-
 /*******************************************
 * Picture Residue : subsampled version
-  Computes the residual data 
+  Computes the residual data
 *******************************************/
 void picture_sub_sampled_residual(
     uint8_t  *input,
@@ -185,7 +184,7 @@ void picture_residual16bit(
 
 /*******************************************
  * Picture Full Distortion
- *  Used in the Full Mode Decision Loop 
+ *  Used in the Full Mode Decision Loop
  *******************************************/
 
 EbErrorType picture_full_distortion(
@@ -198,7 +197,7 @@ EbErrorType picture_full_distortion(
     uint32_t             eob)
 {
     EbErrorType return_error = EB_ErrorNone;
-    
+
     //TODO due to a change in full kernel distortion , ASM has to be updated to not accumulate the input distortion by the output
     distortion[0]   = 0;
     distortion[1]   = 0;
@@ -207,31 +206,29 @@ EbErrorType picture_full_distortion(
         &(((int16_t*) coeff->buffer_y)[coeff_origin_index]),
         coeff->stride_y,
         &(((int16_t*) recon_coeff->buffer_y)[recon_coeff_origin_index]),
-        recon_coeff->stride_y,           
+        recon_coeff->stride_y,
         distortion,
         area_size,
         area_size);
 
-
     return return_error;
 }
-
 
 void extract_8bit_data(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
-    uint32_t  out8_stride,   
+    uint32_t  out8_stride,
     uint32_t  width,
     uint32_t  height
     )
 {
-    
+
     unpack_8bit_func_ptr_array_16bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & PREAVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
-        out8_bit_buffer,    
-        out8_stride,   
+        out8_bit_buffer,
+        out8_stride,
         width,
         height);
 }
@@ -241,28 +238,27 @@ void unpack_l0l1_avg(
         uint16_t *ref16_l1,
         uint32_t  ref_l1_stride,
         uint8_t  *dst_ptr,
-        uint32_t  dst_stride,      
+        uint32_t  dst_stride,
         uint32_t  width,
         uint32_t  height)
  {
- 
+
      unpack_avg_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
         ref16_l0,
         ref_l0_stride,
         ref16_l1,
         ref_l1_stride,
         dst_ptr,
-        dst_stride,      
+        dst_stride,
         width,
         height);
-     
- 
+
  }
 void extract8_bitdata_safe_sub(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
-    uint32_t  out8_stride,   
+    uint32_t  out8_stride,
     uint32_t  width,
     uint32_t  height
     )
@@ -271,8 +267,8 @@ void extract8_bitdata_safe_sub(
     unpack_8bit_safe_sub_func_ptr_array_16bit[(ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
-        out8_bit_buffer,    
-        out8_stride,   
+        out8_bit_buffer,
+        out8_stride,
         width,
         height
         );
@@ -283,7 +279,7 @@ void unpack_l0l1_avg_safe_sub(
         uint16_t *ref16_l1,
         uint32_t  ref_l1_stride,
         uint8_t  *dst_ptr,
-        uint32_t  dst_stride,      
+        uint32_t  dst_stride,
         uint32_t  width,
         uint32_t  height)
  {
@@ -295,11 +291,10 @@ void unpack_l0l1_avg_safe_sub(
         ref16_l1,
         ref_l1_stride,
         dst_ptr,
-        dst_stride,   
+        dst_stride,
         width,
         height);
-     
- 
+
  }
 void unpack_2d(
     uint16_t *in16_bit_buffer,
@@ -312,7 +307,7 @@ void unpack_2d(
     uint32_t  height
     )
 {
-    
+
     unpack2_d_func_ptr_array_16_bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
@@ -335,7 +330,7 @@ void pack_2d_src(
     uint32_t  height
    )
 {
-     
+
     pack2_d_func_ptr_array_16_bit_src[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
         in8_bit_buffer,
         in8_stride,
@@ -370,7 +365,6 @@ void compressed_pack_sb(
         height);
 }
 
-
 void compressed_pack_blk(
     uint8_t  *in8_bit_buffer,
     uint32_t  in8_stride,
@@ -382,7 +376,6 @@ void compressed_pack_blk(
     uint32_t  height
     )
 {
-
 
     compressed_pack_func_ptr_array[((width == 64 || width == 32 || width == 16 || width == 8) ? ((ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
         in8_bit_buffer,
@@ -417,7 +410,6 @@ void conv2b_to_c_pack_sb(
 
 }
 
-
 /*******************************************
  * memset16bit
  *******************************************/
@@ -447,8 +439,7 @@ void memcpy16bit(
     }
 }
 
- 
-int32_t  sum_residual( 
+int32_t  sum_residual(
     int16_t *in_ptr,
     uint32_t size,
     uint32_t stride_in )
@@ -476,4 +467,4 @@ void memset_16bit_block (
     for (i = 0; i < size; i++)
        memset16bit((uint16_t*)in_ptr + i*stride_in, value, size);
 
-}  
+}

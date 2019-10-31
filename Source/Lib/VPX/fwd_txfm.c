@@ -1078,7 +1078,6 @@ void vpx_partial_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) 
     }
 }
 
-
 // Note that although we use dct_32_round in dct32 computation flow,
 // this 2d fdct32x32 for rate-distortion optimization loop is operating
 // within 16 bits precision.

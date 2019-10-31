@@ -1416,19 +1416,18 @@ void vp9_filter_block_plane_ss11(VP9_COMMON *const cm,
   }
 }
 
-
 static void loop_filter_rows(
-#if 0   
-    YV12_BUFFER_CONFIG *frame_buffer, 
+#if 0
+    YV12_BUFFER_CONFIG *frame_buffer,
 #endif
     VP9_COMMON *cm, struct macroblockd_plane planes[MAX_MB_PLANE], int start, int stop, int y_only) {
 
   const int num_planes = y_only ? 1 : MAX_MB_PLANE;
-#if 0 
+#if 0
   enum lf_path path;
 #endif
   int mi_row, mi_col;
-#if 0 
+#if 0
   if (y_only)
     path = LF_PATH_444;
   else if (planes[1].subsampling_y == 1 && planes[1].subsampling_x == 1)
@@ -1464,7 +1463,7 @@ static void loop_filter_rows(
 
       vp9_filter_block_plane_ss00(cm, &planes[0], mi_row, lfm);
       for (plane = 1; plane < num_planes; ++plane) {
-#if 1 
+#if 1
           vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
 #else
         switch (path) {
@@ -1486,8 +1485,8 @@ static void loop_filter_rows(
 }
 
 void vp9_loop_filter_frame(
-#if 0 
-    YV12_BUFFER_CONFIG *frame, 
+#if 0
+    YV12_BUFFER_CONFIG *frame,
 #endif
     VP9_COMMON *cm, MACROBLOCKD *xd, int frame_filter_level, int y_only, int partial_frame) {
 
@@ -1502,8 +1501,8 @@ void vp9_loop_filter_frame(
   }
   end_mi_row = start_mi_row + mi_rows_to_filter;
   loop_filter_rows(
-#if 0 
-      frame, 
+#if 0
+      frame,
 #endif
       cm, xd->plane, start_mi_row, end_mi_row, y_only);
 }
@@ -1654,8 +1653,8 @@ int vp9_loop_filter_worker(void *arg1, void *unused) {
   LFWorkerData *const lf_data = (LFWorkerData *)arg1;
   (void)unused;
   loop_filter_rows(
-#if 0  
-      lf_data->frame_buffer, 
+#if 0
+      lf_data->frame_buffer,
 #endif
       lf_data->cm, lf_data->planes, lf_data->start, lf_data->stop, lf_data->y_only);
   return 1;

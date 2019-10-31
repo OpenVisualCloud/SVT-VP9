@@ -11,7 +11,6 @@
 #include "EbThreads.h"
 #include "EbEntropyCodingObject.h"
 
-
 #define DECODED_PICTURE_HASH 132
 
 EbErrorType reset_bitstream(
@@ -42,9 +41,6 @@ EbErrorType bitstream_ctor(
     return return_error;
 }
 
-
-    
-
 EbErrorType entropy_coder_ctor(
     EntropyCoder **entropy_coder_dbl_ptr,
     uint32_t       buffer_size)
@@ -60,5 +56,3 @@ EbErrorType entropy_coder_ctor(
 
     return return_error;
 }
-
-

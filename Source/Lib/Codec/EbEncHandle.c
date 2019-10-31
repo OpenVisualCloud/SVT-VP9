@@ -57,7 +57,6 @@
 
 #include "EbPredictionStructure.h"
 
-
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -253,7 +252,6 @@ static int32_t can_use_intel_avx512()
     return 1;
 }
 
-
 // Returns ASM Type based on system configuration. AVX512 - 111, AVX2 - 011, NONAVX2 - 001, C - 000
 // Using bit-fields, the fastest function will always be selected based on the available functions in the function arrays
 uint32_t get_cpu_asm_type()
@@ -420,7 +418,6 @@ EbErrorType init_thread_managment_params() {
     return EB_ErrorNone;
 }
 
-
 /**********************************
 * Encoder Error Handling
 **********************************/
@@ -559,7 +556,6 @@ static EbErrorType  eb_enc_handle_ctor(
     enc_handle_ptr->entropy_coding_results_producer_fifo_ptr_array        = (EbFifo**)EB_NULL;
     enc_handle_ptr->output_recon_buffer_producer_fifo_ptr_dbl_array       = (EbFifo***)EB_NULL;
 
-
     // Inter-Process Consumer Fifos
     enc_handle_ptr->input_buffer_consumer_fifo_ptr_array                  = (EbFifo**)EB_NULL;
     enc_handle_ptr->output_stream_buffer_consumer_fifo_ptr_dbl_array      = (EbFifo***)EB_NULL;
@@ -692,7 +688,6 @@ EbErrorType lib_allocate_frame_buffer(
     input_picture_buffer_desc_init_data.max_height = (uint16_t)sequence_control_set_ptr->max_input_luma_height;
     input_picture_buffer_desc_init_data.bit_depth = config->encoder_bit_depth;
 
-
     input_picture_buffer_desc_init_data.buffer_enable_mask = is16bit ? PICTURE_BUFFER_DESC_FULL_MASK : 0;
 
     input_picture_buffer_desc_init_data.left_padding = sequence_control_set_ptr->left_padding;
@@ -704,7 +699,6 @@ EbErrorType lib_allocate_frame_buffer(
 
     input_picture_buffer_desc_init_data.buffer_enable_mask = PICTURE_BUFFER_DESC_FULL_MASK;
 
-
     // Enhanced Picture Buffer
     return_error = eb_picture_buffer_desc_ctor(
         (EbPtr*) &(input_buffer->p_buffer),
@@ -713,7 +707,6 @@ EbErrorType lib_allocate_frame_buffer(
     if (return_error == EB_ErrorInsufficientResources) {
         return EB_ErrorInsufficientResources;
     }
-
 
     return return_error;
 }
@@ -807,7 +800,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     uint32_t maxpicture_width;
     uint32_t max_look_ahead_distance = 0;
     SequenceControlSet *scs_ptr = enc_handle_ptr->sequence_control_set_instance_array[0]->sequence_control_set_ptr;
-
 
     EB_BOOL is16bit = (EB_BOOL)(scs_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
@@ -948,7 +940,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     enc_dec_ports[ENCDEC_INPUT_PORT_MDC].count = scs_ptr->mode_decision_configuration_process_init_count;
     enc_dec_ports[ENCDEC_INPUT_PORT_ENCDEC].count = scs_ptr->enc_dec_process_init_count;
 
-
     EbReferenceObjectDescInitData     eb_reference_object_desc_init_data_structure;
     EbPaReferenceObjectDescInitData   eb_pa_reference_object_desc_init_data_structure;
     EbPictureBufferDescInitData       reference_picture_buffer_desc_init_data;
@@ -970,10 +961,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         reference_picture_buffer_desc_init_data.bit_depth = EB_10BIT;
     }
 
-
-
     eb_reference_object_desc_init_data_structure.reference_picture_desc_init_data = reference_picture_buffer_desc_init_data;
-
 
     // Reference Picture Buffers
     return_error = eb_system_resource_ctor(
@@ -986,7 +974,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         EB_FALSE,
         eb_reference_object_ctor,
         &(eb_reference_object_desc_init_data_structure));
-
 
     if (return_error == EB_ErrorInsufficientResources) {
         return EB_ErrorInsufficientResources;
@@ -1028,7 +1015,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     eb_pa_reference_object_desc_init_data_structure.quarter_picture_desc_init_data = quarter_decim_picture_buffer_desc_init_data;
     eb_pa_reference_object_desc_init_data_structure.sixteenth_picture_desc_init_data = sixteenth_decim_picture_buffer_desc_init_data;
 
-
     // Reference Picture Buffers
     return_error = eb_system_resource_ctor(
         &enc_handle_ptr->pa_reference_picture_pool_ptr_array[0],
@@ -1047,7 +1033,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     // Set the SequenceControlSet Picture Pool Fifo Ptrs
     scs_ptr->encode_context_ptr->reference_picture_pool_fifo_ptr = (enc_handle_ptr->reference_picture_pool_producer_fifo_ptr_dbl_array[0])[0];
     scs_ptr->encode_context_ptr->pa_reference_picture_pool_fifo_ptr = (enc_handle_ptr->pa_reference_picture_pool_producer_fifo_ptr_dbl_array[0])[0];
-
 
     /************************************
      * System Resource Managers & Fifos
@@ -1127,7 +1112,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             return EB_ErrorInsufficientResources;
         }
     }
-
 
     // Picture Analysis Results
     {
@@ -1263,7 +1247,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         }
     }
 
-
     // EncDec Tasks
     {
         EncDecTasksInitData mode_decision_result_init_data;
@@ -1383,7 +1366,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             ((scs_ptr->max_input_luma_width + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) *
             ((scs_ptr->max_input_luma_height + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE));
 
-
         if (return_error == EB_ErrorInsufficientResources) {
             return EB_ErrorInsufficientResources;
         }
@@ -1454,7 +1436,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         return EB_ErrorInsufficientResources;
     }
 
-
     // Mode Decision Configuration Contexts
     {
         // Mode Decision Configuration Contexts
@@ -1468,7 +1449,6 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                 enc_handle_ptr->enc_dec_tasks_producer_fifo_ptr_array[enc_dec_port_lookup(ENCDEC_INPUT_PORT_MDC, process_index)],
                 ((scs_ptr->max_input_luma_width + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) *
                 ((scs_ptr->max_input_luma_height + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE));
-
 
             if (return_error == EB_ErrorInsufficientResources) {
                 return EB_ErrorInsufficientResources;
@@ -1941,7 +1921,6 @@ static int32_t compute_default_intra_period(
     return intra_period;
 }
 
-
 void set_default_configuration_parameters(
     SequenceControlSet         *sequence_control_set_ptr) {
 
@@ -2093,7 +2072,6 @@ static EbErrorType  verify_settings(
     unsigned int  level_idx;
     EbSvtVp9EncConfiguration *config = &sequence_control_set_ptr->static_config;
     unsigned int channel_number = config->channel_id;
-
 
     switch (config->level) {
     case 10:
@@ -2430,7 +2408,6 @@ static EbErrorType  verify_settings(
         SVT_LOG("Error instance %u: Invalid target_socket. target_socket must be [-1 - 1] \n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
-
 
     return return_error;
 }
@@ -2832,7 +2809,6 @@ EB_API EbErrorType eb_vp9_svt_get_packet(
 
     return return_error;
 }
-
 
 static void switch_to_real_time() {
 

@@ -8,7 +8,6 @@
 #include "EbDefinitions.h"
 #include "EbUtility.h"
 
-
 static const int8_t avc_style_luma_if_coeff[4][4] = {
         { 0, 0, 0, 0 },
         { -1, 25, 9, -1 },
@@ -87,5 +86,3 @@ void avc_style_luma_interpolation_filter_vertical(
         dst += dst_stride;
     }
 }
-
-

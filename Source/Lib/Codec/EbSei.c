@@ -209,9 +209,6 @@ EbErrorType eb_video_usability_info_ctor(
     return EB_ErrorNone;
 }
 
-
-
-
 void eb_picture_timeing_sei_ctor(
     AppPictureTimingSei *pic_timing_ptr)
 {
@@ -263,7 +260,6 @@ void eb_buffering_period_sei_ctor(
 
     return;
 }
-
 
 void eb_recovery_point_sei_ctor(
     AppRecoveryPoint *recovery_point_sei_ptr)

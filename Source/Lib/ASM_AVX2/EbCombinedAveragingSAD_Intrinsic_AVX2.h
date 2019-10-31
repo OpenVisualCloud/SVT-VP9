@@ -85,5 +85,5 @@ uint32_t combined_averaging64x_msad_avx2_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif

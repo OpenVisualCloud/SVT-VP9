@@ -31,7 +31,7 @@
 #include "vp9_rdopt.h"
 #include "vp9_pred_common.h"
 
-// compute the cost of curr depth, and the depth above 
+// compute the cost of curr depth, and the depth above
 void compute_depth_costs(
     PictureControlSet *picture_control_set_ptr,
     SbUnit            *sb_ptr,
@@ -57,7 +57,7 @@ void compute_depth_costs(
             context_ptr->enc_dec_local_block_array[current_depth_idx_mds - 3 * step]->cost;
     }
     else {
-#if VP9_RD 
+#if VP9_RD
         get_partition_cost(
             picture_control_set_ptr,
             context_ptr,
@@ -70,8 +70,7 @@ void compute_depth_costs(
             MAX_BLOCK_COST :
             context_ptr->enc_dec_local_block_array[parent_depth_idx_mds]->cost + parent_depth_part_cost;
 
-
-#if VP9_RD 
+#if VP9_RD
 
         get_partition_cost(
             picture_control_set_ptr,
@@ -115,7 +114,7 @@ uint32_t inter_depth_decision(
     if (last_depth_flag) {
         while (ep_block_stats_ptr->is_last_quadrant) { // is_last_quadrant to move to geom
 
-            //get parent idx 
+            //get parent idx
             parent_depth_idx_mds = current_depth_idx_mds - parent_depth_offset[ep_block_stats_ptr->depth]; // parent_depth_offset to move to geom
 
             parent_depth_bsize = ep_get_block_stats(parent_depth_idx_mds)->bsize;
@@ -140,7 +139,7 @@ uint32_t inter_depth_decision(
                 context_ptr->enc_dec_local_block_array[parent_depth_idx_mds]->cost = current_depth_cost;
             }
 
-            //setup next parent inter depth         
+            //setup next parent inter depth
             ep_block_stats_ptr = ep_get_block_stats(parent_depth_idx_mds);
             current_depth_idx_mds = parent_depth_idx_mds;
         }
@@ -148,7 +147,6 @@ uint32_t inter_depth_decision(
 
     return last_block_index;
 }
- 
 
 const EbPredictionFunc prediction_fun_table[2] =
 {
@@ -177,7 +175,7 @@ void set_nfl(
     // 1                    4
     // 2                    3
     // 3                    2
-    // 4                    1      
+    // 4                    1
     if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE && picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_ptr->sb_index] == SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE) {
         context_ptr->full_recon_search_count = 1;
     }
@@ -228,7 +226,7 @@ void perform_fast_loop(
     uint32_t                      fast_candidate_total_count,
     EbPictureBufferDesc          *input_picture_ptr,
     uint32_t                      max_buffers,
-    uint32_t                     *second_fast_candidate_total_count) 
+    uint32_t                     *second_fast_candidate_total_count)
 {
 
     int32_t                      fast_loop_candidate_index;
@@ -256,7 +254,7 @@ void perform_fast_loop(
             candidate_buffer = candidate_buffer_ptr_array_base[0];
             ModeDecisionCandidate *candidate_ptr = candidate_buffer->candidate_ptr = &fast_candidate_array[fast_loop_candidate_index];
 
-            // Set the WebM mi 
+            // Set the WebM mi
             context_ptr->e_mbd->mi[0] = candidate_ptr->mode_info;
 
             // Perform src to src if distortion ready or INTRA and open loop intra enabled
@@ -301,7 +299,7 @@ void perform_fast_loop(
         candidate_buffer = candidate_buffer_ptr_array_base[highest_cost_index];
         candidate_ptr = candidate_buffer->candidate_ptr = &fast_candidate_array[fast_loop_candidate_index];
 
-        // Set the WebM mi 
+        // Set the WebM mi
         context_ptr->e_mbd->mi[0] = candidate_ptr->mode_info;
 
         EbPictureBufferDesc *prediction_ptr = candidate_buffer->prediction_ptr;
@@ -378,7 +376,7 @@ void perform_fast_loop(
             (*second_fast_candidate_total_count)++;
         }
 
-        // Find the buffer with the highest cost  
+        // Find the buffer with the highest cost
         if (fast_loop_candidate_index)
         {
             // max_cost is volatile to prevent the compiler from loading 0xFFFFFFFFFFFFFF
@@ -415,7 +413,6 @@ void perform_fast_loop(
         }
     } while (--fast_loop_candidate_index >= 0);
 }
-
 
 void perform_coding_loop(
     EncDecContext *context_ptr,
@@ -509,7 +506,7 @@ void perform_coding_loop(
 #endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
-            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
+            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
             pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4](
                 pred_buffer,
                 pred_stride,
@@ -569,7 +566,7 @@ void perform_coding_loop(
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
 
-            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
+            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
             pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][2](
                 pred_buffer,
                 pred_stride,
@@ -623,7 +620,7 @@ void perform_coding_loop(
                 scan_order->scan,
                 scan_order->iscan);
 
-#if 0 // Hsan is it similar to RDOQ: to evaluate     
+#if 0 // Hsan is it similar to RDOQ: to evaluate
             if (args->enable_coeff_opt) {
                 *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
             }
@@ -631,7 +628,7 @@ void perform_coding_loop(
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
 
-            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
+            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
             pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][1](
                 pred_buffer,
                 pred_stride,
@@ -650,7 +647,6 @@ void perform_coding_loop(
             }
         }
         break;
-
 
     default:
         assert(tx_size == TX_4X4);
@@ -677,7 +673,6 @@ void perform_coding_loop(
                     trans_coeff_buffer,
                     residual_quant_coeff_stride);
 
-
             vpx_quantize_b(
                 trans_coeff_buffer,
                 16,
@@ -693,14 +688,14 @@ void perform_coding_loop(
                 scan_order->scan,
                 scan_order->iscan);
 
-#if 0 // Hsan is it similar to RDOQ: to evaluate     
+#if 0 // Hsan is it similar to RDOQ: to evaluate
             if (args->enable_coeff_opt) {
                 *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
             }
 #endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
-            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision 
+            // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
             pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][0](
                 pred_buffer,
                 pred_stride,
@@ -708,7 +703,6 @@ void perform_coding_loop(
                 recon_stride,
                 4,
                 4);
-
 
             if (*eob) {
 
@@ -798,7 +792,6 @@ void perform_inv_trans_add(
                 *eob);
         }
 
-
         break;
 
     case TX_8X8:
@@ -820,7 +813,6 @@ void perform_inv_trans_add(
         }
 
         break;
-
 
     default:
         assert(tx_size == TX_4X4);
@@ -1044,10 +1036,10 @@ static void perform_dist_rate_calc(
             // Get candidate index
             candidate_index = context_ptr->best_candidate_index_array[full_loop_candidate_index];
 
-            // Get full loop candidate      
+            // Get full loop candidate
             candidate_buffer = candidate_buffer_ptr_array[candidate_index];
 
-            // Get fast loop candidate     
+            // Get fast loop candidate
             candidate_ptr = candidate_buffer->candidate_ptr;
 
             // Initialize eob to 1
@@ -1057,7 +1049,7 @@ static void perform_dist_rate_calc(
             candidate_buffer->candidate_ptr->eob[1][0] = 1;
             candidate_buffer->candidate_ptr->eob[2][0] = 1;
 
-            // Set the WebM mi 
+            // Set the WebM mi
             context_ptr->e_mbd->mi[0] = candidate_ptr->mode_info;
 
             if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -1081,7 +1073,7 @@ static void perform_dist_rate_calc(
                 uint32_t pred_recon_tu_origin_index = ((tu_index & 0x1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) + ((tu_index > 1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size] * MAX_SB_SIZE);
                 int tu_coeff_bits = 0;
 
-                // Luma Coding Loop 
+                // Luma Coding Loop
                 perform_coding_loop(
                     context_ptr,
                     &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_y)[residual_quant_tu_origin_index]),
@@ -1090,8 +1082,8 @@ static void perform_dist_rate_calc(
                     input_picture_ptr->stride_y,
                     &(candidate_buffer->prediction_ptr->buffer_y[context_ptr->block_origin_index + pred_recon_tu_origin_index]),
                     candidate_buffer->prediction_ptr->stride_y,
-                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_y)[0]),   // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_y)[residual_quant_tu_origin_index]),                           // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_y)[0]),   // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_y)[residual_quant_tu_origin_index]),                           // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                     &(candidate_buffer->recon_ptr->buffer_y[context_ptr->block_origin_index + pred_recon_tu_origin_index]),
                     candidate_buffer->recon_ptr->stride_y,
                     quants->y_zbin[qindex],
@@ -1106,7 +1098,7 @@ static void perform_dist_rate_calc(
                     0);
 
 #if VP9_RD
-                // Luma Distortion and Rate Calculation 
+                // Luma Distortion and Rate Calculation
                 perform_dist_rate_calc(
                     context_ptr,
                     picture_control_set_ptr,
@@ -1134,7 +1126,7 @@ static void perform_dist_rate_calc(
             }
 
             if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) && context_ptr->ep_block_stats_ptr->has_uv) {
-                // Cb Coding Loop 
+                // Cb Coding Loop
                 perform_coding_loop(
                     context_ptr,
                     &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cb)[0]),
@@ -1143,8 +1135,8 @@ static void perform_dist_rate_calc(
                     input_picture_ptr->stride_cb,
                     &(candidate_buffer->prediction_ptr->buffer_cb[context_ptr->block_chroma_origin_index]),
                     candidate_buffer->prediction_ptr->stride_cb,
-                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cb)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_cb)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cb)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_cb)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                     &(candidate_buffer->recon_ptr->buffer_cb[context_ptr->block_chroma_origin_index]),
                     candidate_buffer->recon_ptr->stride_cb,
                     quants->uv_zbin[qindex],
@@ -1181,7 +1173,7 @@ static void perform_dist_rate_calc(
                     &cb_coeff_bits);
 #endif
 
-                // Cr Coding Loop 
+                // Cr Coding Loop
                 perform_coding_loop(
                     context_ptr,
                     &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cr)[0]),
@@ -1190,8 +1182,8 @@ static void perform_dist_rate_calc(
                     input_picture_ptr->stride_cr,
                     &(candidate_buffer->prediction_ptr->buffer_cr[context_ptr->block_chroma_origin_index]),
                     candidate_buffer->prediction_ptr->stride_cr,
-                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cr)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_cr)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cr)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                    &(((int16_t*)candidate_buffer->recon_coeff_ptr->buffer_cr)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                     &(candidate_buffer->recon_ptr->buffer_cr[context_ptr->block_chroma_origin_index]),
                     candidate_buffer->recon_ptr->stride_cr,
                     quants->uv_zbin[qindex],
@@ -1204,7 +1196,6 @@ static void perform_dist_rate_calc(
                     2,
                     0,
                     0);
-
 
 #if VP9_RD
                 // Cr Distortion and Rate Calculation
@@ -1331,13 +1322,11 @@ static void perform_dist_rate_calc(
         }
     }
 
-
-
         // use neighbor sample arrays to contruct intra reference samples
         void generate_intra_reference_samples(
             SequenceControlSet *sequence_control_set_ptr,
             EncDecContext      *context_ptr,
-            int                 plane) 
+            int                 plane)
         {
 
             MACROBLOCKD *const xd = context_ptr->e_mbd;
@@ -1412,7 +1401,6 @@ static void perform_dist_rate_calc(
                 if (((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0) && ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0))
                     context_ptr->intra_above_ref[0] = context_ptr->intra_left_ref[0] = context_ptr->cr_recon_neighbor_array->top_left_array[(MAX_PICTURE_HEIGHT_SIZE >> 1) + (ROUND_UV(context_ptr->block_origin_x) >> 1) - (ROUND_UV(context_ptr->block_origin_y) >> 1)];
             }
-
 
             // NEED_LEFT
             if (have_left) {
@@ -1523,7 +1511,7 @@ static void perform_dist_rate_calc(
             }
         }
 
-        // use input or recon buffer to construct neighbor sample arrays 
+        // use input or recon buffer to construct neighbor sample arrays
         void update_recon_neighbor_arrays(
             EbPictureBufferDesc         *input_picture_ptr,
             EncDecContext               *context_ptr,
@@ -1628,15 +1616,14 @@ static void perform_dist_rate_calc(
             }
         }
 
-
-        // use input or recon buffer to construct neighbor sample arrays 
+        // use input or recon buffer to construct neighbor sample arrays
         void update_bdp_recon_neighbor_arrays(
             PictureControlSet           *picture_control_set_ptr,
             EbPictureBufferDesc         *input_picture_ptr,
             EncDecContext               *context_ptr,
             SbUnit                      *sb_ptr,
             ModeDecisionCandidateBuffer *candidate_buffer,
-            int                          depth_part_stage) 
+            int                          depth_part_stage)
         {
             (void)sb_ptr;
             if (context_ptr->intra_md_open_loop_flag) {
@@ -1734,7 +1721,7 @@ static void perform_dist_rate_calc(
         void set_sb_rate_context(
             PictureControlSet *picture_control_set_ptr,
             EncDecContext     *context_ptr,
-            MACROBLOCKD       *xd) 
+            MACROBLOCKD       *xd)
         {
 
             VP9_COMP    *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
@@ -1750,7 +1737,6 @@ static void perform_dist_rate_calc(
                     i * sizeof(*context_ptr->above_context) * 2 * mi_cols_aligned_to_sb(cm->mi_cols);
             }
             xd->above_seg_context = context_ptr->above_seg_context;
-
 
             for (int i = 0; i < MAX_MB_PLANE; ++i) {
                 EB_MEMCPY(&xd->left_context[i], &context_ptr->left_context[(context_ptr->sb_ptr->origin_y >> 2) + (i * sizeof(*context_ptr->left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))], 16);
@@ -1772,15 +1758,14 @@ static void perform_dist_rate_calc(
             }
             EB_MEMCPY(&context_ptr->left_seg_context[context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2], &xd->left_seg_context, sizeof(xd->left_seg_context));
 
-
         }
 
-        // update the context rate for BDP pilar and refinment stages 
+        // update the context rate for BDP pilar and refinment stages
         void update_bdp_sb_rate_context(
             PictureControlSet *picture_control_set_ptr,
             EncDecContext     *context_ptr,
             MACROBLOCKD       *xd,
-            int                depth_part_stage) 
+            int                depth_part_stage)
         {
 
             VP9_COMP    *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
@@ -1803,7 +1788,7 @@ static void perform_dist_rate_calc(
         void set_block_rate_context(
             PictureControlSet *picture_control_set_ptr,
             EncDecContext     *context_ptr,
-            MACROBLOCKD       *xd) 
+            MACROBLOCKD       *xd)
         {
 
             // Set skip context
@@ -1945,12 +1930,11 @@ static void perform_dist_rate_calc(
             }
         }
 
-
         EB_BOOL check_skip_sub_blocks(
             SequenceControlSet *sequence_control_set_ptr,
             PictureControlSet  *picture_control_set_ptr,
             EncDecContext      *context_ptr,
-            SbUnit             *sb_ptr) 
+            SbUnit             *sb_ptr)
         {
 
             SbParams *sb_params_ptr = &sequence_control_set_ptr->sb_params_array[sb_ptr->sb_index];
@@ -1979,7 +1963,7 @@ static void perform_dist_rate_calc(
         void next_mdc_block_index(
             MdcSbData *mdc_sb_data_ptr,
             EB_BOOL    skip_sub_blocks,
-            uint16_t  *mdc_block_index) 
+            uint16_t  *mdc_block_index)
         {
 
             PartBlockData *part_block_data_ptr = &mdc_sb_data_ptr->block_data_array[*mdc_block_index];
@@ -2005,7 +1989,7 @@ static void perform_dist_rate_calc(
         void search_uv_mode(
             PictureControlSet   *picture_control_set_ptr,
             EbPictureBufferDesc *input_picture_ptr,
-            EncDecContext       *context_ptr) 
+            EncDecContext       *context_ptr)
         {
 
             QUANTS *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
@@ -2038,7 +2022,7 @@ static void perform_dist_rate_calc(
                 context_ptr->uv_mode_search_eob[1][0] = 1;
                 context_ptr->uv_mode_search_eob[2][0] = 1;
 
-                // Set the WebM mi 
+                // Set the WebM mi
                 context_ptr->uv_mode_search_mode_info->uv_mode = uv_mode;
                 context_ptr->uv_mode_search_mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
 #if SEG_SUPPORT // Hsan: segmentation not supported
@@ -2049,7 +2033,7 @@ static void perform_dist_rate_calc(
 
                 context_ptr->e_mbd->mi[0] = context_ptr->uv_mode_search_mode_info;
 
-                // Cb Coding Loop 
+                // Cb Coding Loop
                 prediction_fun_table[1](
                     context_ptr,
                     context_ptr->uv_mode_search_prediction_buffer->buffer_cb + context_ptr->block_chroma_origin_index,
@@ -2064,8 +2048,8 @@ static void perform_dist_rate_calc(
                     input_picture_ptr->stride_cb,
                     &(context_ptr->uv_mode_search_prediction_buffer->buffer_cb[context_ptr->block_chroma_origin_index]),
                     context_ptr->uv_mode_search_prediction_buffer->stride_cb,
-                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cb)[0]),             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                    &(((int16_t*)context_ptr->uv_mode_search_recon_coeff_buffer->buffer_cb)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cb)[0]),             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                    &(((int16_t*)context_ptr->uv_mode_search_recon_coeff_buffer->buffer_cb)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                     &(context_ptr->uv_mode_search_recon_buffer->buffer_cb[context_ptr->block_chroma_origin_index]),
                     context_ptr->uv_mode_search_recon_buffer->stride_cb,
                     quants->uv_zbin[qindex],
@@ -2100,8 +2084,7 @@ static void perform_dist_rate_calc(
                     &cbfull_distortion[0],
                     &cb_coeff_bits);
 
-
-                // Cr Coding Loop 
+                // Cr Coding Loop
                 prediction_fun_table[1](
                     context_ptr,
                     context_ptr->uv_mode_search_prediction_buffer->buffer_cr + context_ptr->block_chroma_origin_index,
@@ -2116,8 +2099,8 @@ static void perform_dist_rate_calc(
                     input_picture_ptr->stride_cr,
                     &(context_ptr->uv_mode_search_prediction_buffer->buffer_cr[context_ptr->block_chroma_origin_index]),
                     context_ptr->uv_mode_search_prediction_buffer->stride_cr,
-                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cr)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                    &(((int16_t*)context_ptr->uv_mode_search_recon_coeff_buffer->buffer_cr)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                    &(((int16_t*)context_ptr->trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr->buffer_cr)[0]),  // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                    &(((int16_t*)context_ptr->uv_mode_search_recon_coeff_buffer->buffer_cr)[0]),                          // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                     &(context_ptr->uv_mode_search_recon_buffer->buffer_cr[context_ptr->block_chroma_origin_index]),
                     context_ptr->uv_mode_search_recon_buffer->stride_cr,
                     quants->uv_zbin[qindex],
@@ -2152,7 +2135,6 @@ static void perform_dist_rate_calc(
                     &crfull_distortion[0],
                     &cr_coeff_bits);
 
-
 #if 1
                 coeff_rate[uv_mode] = cb_coeff_bits + cr_coeff_bits;
                 distortion[uv_mode] = cbfull_distortion[DIST_CALC_RESIDUAL] + crfull_distortion[DIST_CALC_RESIDUAL];
@@ -2177,7 +2159,7 @@ static void perform_dist_rate_calc(
 
             }
 
-            // 
+            //
             uint64_t uv_cost;
             uint64_t best_uv_mode_cost;
             VP9_COMP   *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
@@ -2247,7 +2229,7 @@ static void perform_dist_rate_calc(
 #endif
 
             uint16_t mdc_block_index = 0;
-#if 0 // Hsan - to do    
+#if 0 // Hsan - to do
             uint16_t pa_block_index = 0;
 #endif
             uint16_t ep_block_index = 0;
@@ -2415,7 +2397,7 @@ static void perform_dist_rate_calc(
 
                         if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == EB_FALSE)
                         {
-                            // Get the settings of the best partition 
+                            // Get the settings of the best partition
                             context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[last_block_index];
                             context_ptr->ep_block_index = last_block_index;
                             context_ptr->ep_block_stats_ptr = ep_get_block_stats(last_block_index);
@@ -2445,7 +2427,6 @@ static void perform_dist_rate_calc(
                                         context_ptr->mode_info_array[mi_index]->uv_mode = context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.uv_mode;
                                         context_ptr->mode_info_array[mi_index]->ref_frame[0] = context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.ref_frame[0];
                                         context_ptr->mode_info_array[mi_index]->ref_frame[1] = context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.ref_frame[1];
-
 
                                         // Derive skip flag
                                         context_ptr->mode_info_array[mi_index]->skip =
@@ -2498,7 +2479,7 @@ static void perform_dist_rate_calc(
                                         2);
                                 }
 
-#if VP9_RD 
+#if VP9_RD
                                 // Update context for the rate of cus
                                 update_block_rate_context(
                                     context_ptr,
@@ -2506,14 +2487,14 @@ static void perform_dist_rate_calc(
 #endif
 
 #if !VP9_PERFORM_EP
-                                // copy coeff 
+                                // copy coeff
                                 {
 
                                     int j;
 
                                     //Y
                                     {
-                                        int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_y)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
+                                        int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_y)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                                         int16_t* dst_ptr = &(((int16_t*)context_ptr->sb_ptr->quantized_coeff->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x + context_ptr->ep_block_stats_ptr->origin_y * context_ptr->sb_ptr->quantized_coeff->stride_y]);
 
                                         for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
@@ -2526,7 +2507,7 @@ static void perform_dist_rate_calc(
                                     if (context_ptr->ep_block_stats_ptr->has_uv) {
                                         //Cb
                                         {
-                                            int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cb)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
+                                            int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cb)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                                             int16_t* dst_ptr = &(((int16_t*)context_ptr->sb_ptr->quantized_coeff->buffer_cb)[(ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * context_ptr->sb_ptr->quantized_coeff->stride_cb]);
 
                                             for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
@@ -2538,7 +2519,7 @@ static void perform_dist_rate_calc(
 
                                         //Cr
                                         {
-                                            int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cr)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
+                                            int16_t* src_ptr = &(((int16_t*)candidate_buffer->residual_quant_coeff_ptr->buffer_cr)[0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                                             int16_t* dst_ptr = &(((int16_t*)context_ptr->sb_ptr->quantized_coeff->buffer_cr)[(ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * context_ptr->sb_ptr->quantized_coeff->stride_cr]);
 
                                             for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
@@ -2577,7 +2558,6 @@ static void perform_dist_rate_calc(
                                             src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_cb;
                                             dst_ptr = dst_ptr + recon_buffer->stride_cb;
                                         }
-
 
                                         src_ptr = candidate_buffer->recon_ptr->buffer_cr + recCrOffset;
                                         dst_ptr = recon_buffer->buffer_cr + (recon_buffer->origin_x >> 1) + (ROUND_UV(context_ptr->block_origin_x) >> 1) + ((recon_buffer->origin_y >> 1) + (ROUND_UV(context_ptr->block_origin_y) >> 1))*recon_buffer->stride_cr;
@@ -2769,7 +2749,6 @@ static void perform_dist_rate_calc(
 
                         candidate_buffer_ptr_array = &(candidate_buffer_ptr_array_base[context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth]]);
 
-
                         // Initialize Fast Loop
                         coding_loop_init_fast_loop(
                             context_ptr);
@@ -2787,7 +2766,6 @@ static void perform_dist_rate_calc(
                             picture_control_set_ptr,
                             context_ptr,
                             sb_ptr);
-
 
                         // Generate intra reference samples if intra present
                         if (context_ptr->ep_block_stats_ptr->sq_size < MAX_CU_SIZE) {
@@ -2881,7 +2859,7 @@ static void perform_dist_rate_calc(
 
                         if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == EB_FALSE)
                         {
-                            // Get the settings of the best partition 
+                            // Get the settings of the best partition
                             context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[last_block_index];
                             context_ptr->ep_block_index = last_block_index;
                             context_ptr->ep_block_stats_ptr = ep_get_block_stats(last_block_index);
@@ -2912,7 +2890,7 @@ static void perform_dist_rate_calc(
                                     candidate_buffer,
                                     0);
 
-#if VP9_RD 
+#if VP9_RD
                                 // Update context for the rate of cus
                                 update_block_rate_context(
                                     context_ptr,
@@ -3025,13 +3003,11 @@ static void perform_dist_rate_calc(
                 context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
                 context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
-
                 // Set above_mi and left_mi
                 context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
                 context_ptr->e_mbd->left_mi = (context_ptr->mi_col > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - 1] : NULL;
 
                 candidate_buffer_ptr_array = &(candidate_buffer_ptr_array_base[context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth]]);
-
 
                 // Initialize Fast Loop
                 coding_loop_init_fast_loop(
@@ -3134,7 +3110,7 @@ static void perform_dist_rate_calc(
                     }
                 }
 
-                // Inter Depth Decision        
+                // Inter Depth Decision
                 {
                     uint64_t depth_n_part_cost = 0;
                     uint64_t depth_n_plus_one_part_cost = 0;
@@ -3142,7 +3118,7 @@ static void perform_dist_rate_calc(
                     uint64_t depth_n_plus_one_cost = 0;
 
                     // Compute depth N cost (64x64)
-#if VP9_RD 
+#if VP9_RD
                     get_partition_cost(
                         picture_control_set_ptr,
                         context_ptr,
@@ -3157,7 +3133,7 @@ static void perform_dist_rate_calc(
                         context_ptr->enc_dec_local_block_array[0]->cost + depth_n_part_cost;
 
                     // Compute depth N+1 cost (32x32)
-#if VP9_RD 
+#if VP9_RD
                     get_partition_cost(
                         picture_control_set_ptr,
                         context_ptr,
@@ -3184,10 +3160,9 @@ static void perform_dist_rate_calc(
                     }
                 }
 
-
                 if (sb_ptr->coded_block_array_ptr[0]->split_flag == EB_FALSE)
                 {
-                    // Get the settings of the best partition 
+                    // Get the settings of the best partition
                     context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[0];
                     context_ptr->ep_block_index = 0;
                     context_ptr->ep_block_stats_ptr = ep_get_block_stats(0);
@@ -3218,7 +3193,7 @@ static void perform_dist_rate_calc(
                             candidate_buffer,
                             0);
 
-#if VP9_RD 
+#if VP9_RD
                         // Update context for the rate of cus
                         update_block_rate_context(
                             context_ptr,
@@ -3350,7 +3325,6 @@ static void perform_dist_rate_calc(
 
                             candidate_buffer_ptr_array = &(candidate_buffer_ptr_array_base[context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth]]);
 
-
                             // Initialize Fast Loop
                             coding_loop_init_fast_loop(
                                 context_ptr);
@@ -3368,7 +3342,6 @@ static void perform_dist_rate_calc(
                                 picture_control_set_ptr,
                                 context_ptr,
                                 sb_ptr);
-
 
                             // Generate intra reference samples if intra present
                             if (context_ptr->ep_block_stats_ptr->sq_size < MAX_CU_SIZE) {
@@ -3479,7 +3452,7 @@ static void perform_dist_rate_calc(
 
                                 // Compute depth N+1 cost
 
-#if VP9_RD 
+#if VP9_RD
                                 get_partition_cost(
                                     picture_control_set_ptr,
                                     context_ptr,
@@ -3515,7 +3488,7 @@ static void perform_dist_rate_calc(
                             }
 
                             {
-                                // Get the settings of the best partition 
+                                // Get the settings of the best partition
                                 context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[last_block_index];
                                 context_ptr->ep_block_index = last_block_index;
                                 context_ptr->ep_block_stats_ptr = ep_get_block_stats(last_block_index);
@@ -3546,7 +3519,7 @@ static void perform_dist_rate_calc(
                                         sb_ptr,
                                         candidate_buffer,
                                         last_block_index == ep_block_index);
-#if VP9_RD 
+#if VP9_RD
                                     // Update context for the rate of cus
                                     update_block_rate_context(
                                         context_ptr,
@@ -3575,7 +3548,6 @@ static void perform_dist_rate_calc(
             EncDecContext      *context_ptr,
             SbUnit             *sb_ptr)
         {
-
 
             EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
             uint32_t                      buffer_total_count;
@@ -3648,7 +3620,6 @@ static void perform_dist_rate_calc(
 
                     candidate_buffer_ptr_array = &(candidate_buffer_ptr_array_base[context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth]]);
 
-
                     // Initialize Fast Loop
                     coding_loop_init_fast_loop(
                         context_ptr);
@@ -3666,7 +3637,6 @@ static void perform_dist_rate_calc(
                         picture_control_set_ptr,
                         context_ptr,
                         sb_ptr);
-
 
                     // Generate intra reference samples if intra present
                     if (context_ptr->ep_block_stats_ptr->sq_size < MAX_CU_SIZE) {
@@ -3794,8 +3764,7 @@ static void perform_dist_rate_calc(
                                 candidate_buffer,
                                 2);
 
-
-#if VP9_RD 
+#if VP9_RD
                             // Update context for the rate of cus
                             update_block_rate_context(
                                 context_ptr,
@@ -3934,7 +3903,6 @@ static void perform_dist_rate_calc(
                     context_ptr->block_origin_x = (uint16_t)sb_ptr->origin_x + context_ptr->ep_block_stats_ptr->origin_x;
                     context_ptr->block_origin_y = (uint16_t)sb_ptr->origin_y + context_ptr->ep_block_stats_ptr->origin_y;
 
-
                     context_ptr->input_origin_index = (context_ptr->block_origin_y + input_picture_ptr->origin_y) * input_picture_ptr->stride_y + (context_ptr->block_origin_x + input_picture_ptr->origin_x);
                     context_ptr->input_chroma_origin_index = ((ROUND_UV(context_ptr->block_origin_y) >> 1) + (input_picture_ptr->origin_y >> 1)) * input_picture_ptr->stride_cb + ((ROUND_UV(context_ptr->block_origin_x) >> 1) + (input_picture_ptr->origin_x >> 1));
                     context_ptr->block_origin_index = context_ptr->ep_block_stats_ptr->origin_y * MAX_SB_SIZE + context_ptr->ep_block_stats_ptr->origin_x;
@@ -3953,7 +3921,7 @@ static void perform_dist_rate_calc(
                     context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
                     context_ptr->e_mbd->left_mi = (context_ptr->mi_col > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - 1] : NULL;
 
-                    // Set the WebM mi 
+                    // Set the WebM mi
                     context_ptr->e_mbd->mi[0] = context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride];
 
                     // Set recon buffer indices
@@ -4036,7 +4004,6 @@ static void perform_dist_rate_calc(
                     struct segmentation *const seg = &cm->seg;
                     const int qindex = vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
 
-
 #else
                     const int qindex = picture_control_set_ptr->base_qindex;
 #endif
@@ -4048,7 +4015,7 @@ static void perform_dist_rate_calc(
                         uint32_t pred_tu_origin_index = ((tu_index % 2) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) + ((tu_index > 1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size] * context_ptr->prediction_buffer->stride_y);
                         int tu_coeff_bits = 0;
 
-                        // Luma Coding Loop 
+                        // Luma Coding Loop
                         perform_coding_loop(
                             context_ptr,
                             &(((int16_t*)sb_ptr->quantized_coeff_buffer[0])[sb_ptr->quantized_coeff_buffer_block_offset[0] + residual_quant_tu_origin_index]),
@@ -4057,8 +4024,8 @@ static void perform_dist_rate_calc(
                             input_picture_ptr->stride_y,
                             &((context_ptr->prediction_buffer->buffer_y)[context_ptr->block_origin_index + pred_tu_origin_index]),
                             context_ptr->prediction_buffer->stride_y,
-                            &(((int16_t*)context_ptr->residual_buffer->buffer_y)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                            &(((int16_t*)context_ptr->transform_buffer->buffer_y)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                            &(((int16_t*)context_ptr->residual_buffer->buffer_y)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                            &(((int16_t*)context_ptr->transform_buffer->buffer_y)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                             &(context_ptr->recon_buffer->buffer_y[cuOriginReconIndex + pred_recon_tu_origin_index]),
                             context_ptr->recon_buffer->stride_y,
                             quants->y_zbin[qindex],
@@ -4072,7 +4039,7 @@ static void perform_dist_rate_calc(
                             1,
                             do_recon);
 
-                        // Luma Distortion and Rate Calculation 
+                        // Luma Distortion and Rate Calculation
                         if (!(context_ptr->skip_eob_zero_mode_ep && context_ptr->block_ptr->eob[0][tu_index] == 0)) {
                             perform_dist_rate_calc(
                                 context_ptr,
@@ -4101,7 +4068,7 @@ static void perform_dist_rate_calc(
 
                     }
 
-                    // Cb Coding Loop 
+                    // Cb Coding Loop
                     if (context_ptr->ep_block_stats_ptr->has_uv) {
                         perform_coding_loop(
                             context_ptr,
@@ -4111,8 +4078,8 @@ static void perform_dist_rate_calc(
                             input_picture_ptr->stride_cb,
                             &((context_ptr->prediction_buffer->buffer_cb)[context_ptr->block_chroma_origin_index]),
                             context_ptr->prediction_buffer->stride_cb,
-                            &(((int16_t*)context_ptr->residual_buffer->buffer_cb)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                            &(((int16_t*)context_ptr->transform_buffer->buffer_cb)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                            &(((int16_t*)context_ptr->residual_buffer->buffer_cb)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                            &(((int16_t*)context_ptr->transform_buffer->buffer_cb)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                             &(context_ptr->recon_buffer->buffer_cb[cuChromaOriginReconIndex]),
                             context_ptr->recon_buffer->stride_cb,
                             quants->uv_zbin[qindex],
@@ -4149,7 +4116,7 @@ static void perform_dist_rate_calc(
                                 &cb_coeff_bits);
                         }
 
-                        // Cr Coding Loop 
+                        // Cr Coding Loop
                         perform_coding_loop(
                             context_ptr,
                             &(((int16_t*)sb_ptr->quantized_coeff_buffer[2])[sb_ptr->quantized_coeff_buffer_block_offset[2]]),
@@ -4158,8 +4125,8 @@ static void perform_dist_rate_calc(
                             input_picture_ptr->stride_cr,
                             &((context_ptr->prediction_buffer->buffer_cr)[context_ptr->block_chroma_origin_index]),
                             context_ptr->prediction_buffer->stride_cr,
-                            &(((int16_t*)context_ptr->residual_buffer->buffer_cr)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels 
-                            &(((int16_t*)context_ptr->transform_buffer->buffer_cr)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels   
+                            &(((int16_t*)context_ptr->residual_buffer->buffer_cr)[0]),                              // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
+                            &(((int16_t*)context_ptr->transform_buffer->buffer_cr)[0]),                             // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
                             &(context_ptr->recon_buffer->buffer_cr[cuChromaOriginReconIndex]),
                             context_ptr->recon_buffer->stride_cr,
                             quants->uv_zbin[qindex],
@@ -4249,7 +4216,6 @@ static void perform_dist_rate_calc(
                             }
                         }
                     }
-
 
                     // Derive skip flag
                     context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = EB_TRUE;
@@ -4384,7 +4350,7 @@ static void perform_dist_rate_calc(
                                 0,
                                 0);
                         }
-                        // Amir-Hsan: per sb or per block  
+                        // Amir-Hsan: per sb or per block
                         for (int i = 0; i < MAX_MB_PLANE; ++i) {
                             EB_MEMCPY(&picture_control_set_ptr->ep_left_context[(sb_ptr->origin_y >> 2) + (i * sizeof(*picture_control_set_ptr->ep_left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))], &xd->left_context[i], 16);
                         }
@@ -4402,7 +4368,6 @@ static void perform_dist_rate_calc(
             return return_error;
         }
 #endif
-
 
         /******************************************************
          * Enc Dec Context Constructor
@@ -4660,9 +4625,6 @@ static void perform_dist_rate_calc(
             return EB_ErrorNone;
         }
 
-
-
-
         /**************************************************
          * Reset Mode Decision Neighbor Arrays
          *************************************************/
@@ -4756,7 +4718,6 @@ static void perform_dist_rate_calc(
             //    trace = fopen("seg-trace.txt","w");
             //}
 
-
             switch (task_ptr->input_type) {
 
             case ENCDEC_TASKS_MDC_INPUT:
@@ -4764,7 +4725,7 @@ static void perform_dist_rate_calc(
                 // The entire picture is provided by the MDC process, so
                 //   no logic is necessary to clear input dependencies.
 
-                // Start on Segment 0 immediately 
+                // Start on Segment 0 immediately
                 *segment_in_out_index = segment_ptr->row_array[0].current_seg_index;
                 task_ptr->input_type = ENCDEC_TASKS_CONTINUE;
                 ++segment_ptr->row_array[0].current_seg_index;
@@ -4918,7 +4879,6 @@ static void perform_dist_rate_calc(
                     }
                 }
 
-
                 // End running the film grain
                 // Y Recon Samples
                 sampleTotalCount = ((reconPtr->max_width - sequence_control_set_ptr->max_input_pad_right) * (reconPtr->max_height - sequence_control_set_ptr->max_input_pad_bottom)) << is16bit;
@@ -4991,7 +4951,6 @@ static void perform_dist_rate_calc(
             eb_post_full_object(outputReconWrapperPtr);
             eb_release_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
         }
-
 
         void pad_ref_and_set_flags(
             PictureControlSet  *picture_control_set_ptr,
@@ -5071,7 +5030,6 @@ static void perform_dist_rate_calc(
 
             // set up the Slice Type
             reference_object->slice_type = picture_control_set_ptr->parent_pcs_ptr->slice_type;
-
 
         }
 
@@ -5182,7 +5140,7 @@ static void perform_dist_rate_calc(
             else
                 context_ptr->bipred3x3_injection = EB_FALSE;
 
-            // Set Limit INTRA Flag 
+            // Set Limit INTRA Flag
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
                 context_ptr->limit_intra = EB_FALSE;
             }
@@ -5196,9 +5154,9 @@ static void perform_dist_rate_calc(
             }
 
             // Set PF @ MD Level
-            // Level    Settings 
+            // Level    Settings
             // 0        OFF
-            // 1        N2    
+            // 1        N2
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_8) {
                 context_ptr->pf_md_level = 0;
             }
@@ -5224,7 +5182,7 @@ static void perform_dist_rate_calc(
             // 1                    4
             // 2                    3
             // 3                    2
-            // 4                    1     
+            // 4                    1
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
                 context_ptr->nfl_level = 0;
             }
@@ -5234,7 +5192,6 @@ static void perform_dist_rate_calc(
             else {
                 context_ptr->nfl_level = 2;
             }
-
 
             return return_error;
         }
@@ -5346,7 +5303,7 @@ static void perform_dist_rate_calc(
                 context_ptr->bipred3x3_injection = EB_FALSE;
             }
 
-            // Set Limit INTRA Flag 
+            // Set Limit INTRA Flag
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
                 context_ptr->limit_intra = EB_FALSE;
             }
@@ -5360,9 +5317,9 @@ static void perform_dist_rate_calc(
             }
 
             // Set PF @ MD Level
-            // Level    Settings 
+            // Level    Settings
             // 0        OFF
-            // 1        N2    
+            // 1        N2
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_5) {
                 context_ptr->pf_md_level = 0;
             }
@@ -5388,7 +5345,7 @@ static void perform_dist_rate_calc(
             // 1                    4
             // 2                    3
             // 3                    2
-            // 4                    1     
+            // 4                    1
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
                 context_ptr->nfl_level = 0;
             }
@@ -5398,7 +5355,6 @@ static void perform_dist_rate_calc(
             else {
                 context_ptr->nfl_level = 2;
             }
-
 
             return return_error;
         }
@@ -5493,7 +5449,7 @@ static void perform_dist_rate_calc(
             // Set Bipred 3x3 Injection Flag
             context_ptr->bipred3x3_injection = (picture_control_set_ptr->enc_mode <= ENC_MODE_1) ? EB_TRUE : EB_FALSE;
 
-            // Set Limit INTRA Flag 
+            // Set Limit INTRA Flag
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
                 context_ptr->limit_intra = EB_FALSE;
             }
@@ -5507,9 +5463,9 @@ static void perform_dist_rate_calc(
             }
 
             // Set PF @ MD Level
-            // Level    Settings 
+            // Level    Settings
             // 0        OFF
-            // 1        N2    
+            // 1        N2
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_5) {
                 context_ptr->pf_md_level = 0;
             }
@@ -5535,7 +5491,7 @@ static void perform_dist_rate_calc(
             // 1                    4
             // 2                    3
             // 3                    2
-            // 4                    1     
+            // 4                    1
             if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
                 context_ptr->nfl_level = 0;
             }
@@ -5559,17 +5515,17 @@ static void perform_dist_rate_calc(
             PictureControlSet      *picture_control_set_ptr;
             SequenceControlSet     *sequence_control_set_ptr;
             EncodeContext          *encode_context_ptr;
-            // Input               
+            // Input
             EbObjectWrapper        *enc_dec_tasks_wrapper_ptr;
             EncDecTasks            *enc_dec_tasks_ptr;
 
-            // Output                
+            // Output
             EbObjectWrapper        *enc_dec_results_wrapper_ptr;
             EncDecResults          *enc_dec_results_ptr;
             EbObjectWrapper        *picture_demux_results_wrapper_ptr;
             PictureDemuxResults    *picture_demux_results_ptr;
 
-            // SB Loop variables  
+            // SB Loop variables
             SbUnit                 *sb_ptr;
             uint16_t                sb_index;
             uint32_t                xsb_index;
@@ -5582,7 +5538,7 @@ static void perform_dist_rate_calc(
             uint32_t                sb_row_index_count;
             uint32_t                picture_width_in_sb;
 
-            // Segments            
+            // Segments
             uint16_t                segment_index = 0;
             uint32_t                x_sb_start_index;
             uint32_t                y_sb_start_index;
@@ -5593,7 +5549,6 @@ static void perform_dist_rate_calc(
             uint32_t                segment_band_index;
             uint32_t                segment_band_size;
             EncDecSegments         *segments_ptr;
-
 
             for (;;) {
 
@@ -5698,7 +5653,6 @@ static void perform_dist_rate_calc(
                 // Hsan: could move to resource coordination
                 vp9_tile_init(&context_ptr->e_mbd->tile, &(picture_control_set_ptr->parent_pcs_ptr->cpi->common), 0, 0);
 
-
                 context_ptr->e_mbd->plane[0].subsampling_x = context_ptr->e_mbd->plane[0].subsampling_y = 0;
                 context_ptr->e_mbd->plane[1].subsampling_x = context_ptr->e_mbd->plane[1].subsampling_y = 1;
                 context_ptr->e_mbd->plane[2].subsampling_x = context_ptr->e_mbd->plane[2].subsampling_y = 1;
@@ -5774,7 +5728,7 @@ static void perform_dist_rate_calc(
                                 picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_OPEN_LOOP_DEPTH_MODE ||
                                 (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE && (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FULL85_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FULL84_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_OPEN_LOOP_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_LIGHT_OPEN_LOOP_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_AVC_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_LIGHT_AVC_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_PRED_OPEN_LOOP_DEPTH_MODE || picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE))) {
 
-                                // MDC depth partitioning 
+                                // MDC depth partitioning
                                 context_ptr->depth_part_stage = 0;
                                 mode_decision_sb(
                                     sequence_control_set_ptr,
@@ -5899,7 +5853,6 @@ static void perform_dist_rate_calc(
                             lf_application_enable_flag = EB_TRUE;
                         }
 
-
                         if (lf_application_enable_flag) {
                             vp9_loop_filter_init(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
                             vp9_reset_lfm(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
@@ -5932,7 +5885,6 @@ static void perform_dist_rate_calc(
                                 0);
                         }
                     }
-
 
                     if (picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr != NULL) {
                         copy_statistics_to_ref_object(
@@ -6027,7 +5979,7 @@ static void perform_dist_rate_calc(
                         eb_post_full_object(picture_demux_results_wrapper_ptr);
                     }
 
-                    // When de interlacing is performed in the lib, each two consecutive pictures (fields: top & bottom) are going to use the same input buffer     
+                    // When de interlacing is performed in the lib, each two consecutive pictures (fields: top & bottom) are going to use the same input buffer
                     // only when both fields are encoded we can free the input buffer
                     // using the current prediction structure, bottom fields are usually encoded after top fields
                     // so that when picture scan type is interlaced we free the input buffer after encoding the bottom field
@@ -6035,7 +5987,7 @@ static void perform_dist_rate_calc(
 
                 }
 
-                // Send the Entropy Coder incremental updates as each LCU row becomes available   
+                // Send the Entropy Coder incremental updates as each LCU row becomes available
                 if (end_of_row_flag == EB_TRUE) {
 
                     // Get Empty EncDec Results
@@ -6050,7 +6002,6 @@ static void perform_dist_rate_calc(
                     // Post EncDec Results
                     eb_post_full_object(enc_dec_results_wrapper_ptr);
                 }
-
 
                 // Release Mode Decision Results
                 eb_release_object(enc_dec_tasks_wrapper_ptr);

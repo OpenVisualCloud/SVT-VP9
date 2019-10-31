@@ -26,7 +26,7 @@ typedef struct UnregistedUserData
     uint32_t  user_data_size;
 } UnregistedUserData;
 
-typedef struct RegistedUserData 
+typedef struct RegistedUserData
 {
     uint8_t   *user_data;    // First byte is itu_t_t35_country_code.
                              // If itu_t_t35_country_code  ==  0xFF, second byte is itu_t_t35_country_code_extension_byte.
@@ -100,7 +100,6 @@ typedef struct AppVideoUsabilityInfo
     uint32_t          chroma_sample_loc_type_top_field;
     uint32_t          chroma_sample_loc_type_bottom_field;
 
-
     EB_BOOL           neutral_chroma_indication_flag;
     EB_BOOL           field_seq_flag;
     EB_BOOL           frame_field_info_present_flag;
@@ -135,7 +134,6 @@ typedef struct AppVideoUsabilityInfo
 
 } AppVideoUsabilityInfo;
 
-
 typedef struct AppPictureTimingSei
 {
     uint32_t  pic_struct;
@@ -167,7 +165,6 @@ typedef struct AppBufferingPeriodSei
 
 } AppBufferingPeriodSei;
 
-
 typedef struct AppRecoveryPoint
 {
     uint32_t  recovery_poc_cnt;
@@ -176,9 +173,7 @@ typedef struct AppRecoveryPoint
 
 } AppRecoveryPoint;
 
-
 //
-
 
 // Signals that the default prediction structure and controls are to be
 //   overwritten and manually controlled. Manual control should be active
@@ -227,7 +222,6 @@ typedef struct EbEosDataDef
                                             //   If the last frame is NOT valid, the frame will be coded as IDR in the encoder, but
                                             //   not included in the bitstream.
 } EbEosDataDef;
-
 
 #ifdef __cplusplus
 }

@@ -110,23 +110,23 @@ void compressed_pack_sb(
     uint32_t  width,
     uint32_t  height);
 
-void pack_2d_src( 
+void pack_2d_src(
    uint8_t  *in8_bit_buffer,
-   uint32_t  in8_stride, 
-   uint8_t  *inn_bit_buffer, 
-   uint32_t  inn_stride, 
-   uint16_t *out16_bit_buffer, 
-   uint32_t  out_stride, 
+   uint32_t  in8_stride,
+   uint8_t  *inn_bit_buffer,
+   uint32_t  inn_stride,
+   uint16_t *out16_bit_buffer,
+   uint32_t  out_stride,
    uint32_t  width,
    uint32_t  height);
 
-void unpack_2d( 
+void unpack_2d(
    uint16_t *in16_bit_buffer,
-   uint32_t  in_stride, 
+   uint32_t  in_stride,
    uint8_t  *out8_bit_buffer,
-   uint32_t  out8_stride, 
-   uint8_t  *outn_bit_buffer,  
-   uint32_t  outn_stride, 
+   uint32_t  out8_stride,
+   uint8_t  *outn_bit_buffer,
+   uint32_t  outn_stride,
    uint32_t  width,
    uint32_t  height);
 
@@ -134,7 +134,7 @@ void extract_8bit_data(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
-    uint32_t  out8_stride,   
+    uint32_t  out8_stride,
     uint32_t  width,
     uint32_t  height);
 
@@ -144,7 +144,7 @@ void unpack_l0l1_avg(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,      
+    uint32_t  dst_stride,
     uint32_t  width,
     uint32_t  height);
 
@@ -152,7 +152,7 @@ void extract8_bitdata_safe_sub(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
-    uint32_t  out8_stride,   
+    uint32_t  out8_stride,
     uint32_t  width,
     uint32_t  height );
 
@@ -162,13 +162,13 @@ void unpack_l0l1_avg_safe_sub(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,      
+    uint32_t  dst_stride,
     uint32_t  width,
     uint32_t  height);
 
 void memcpy16bit(
     uint16_t *out_ptr,
-    uint16_t *in_ptr,   
+    uint16_t *in_ptr,
     uint64_t  num_of_elements);
 void memset16bit(
     uint16_t *in_ptr,
@@ -185,7 +185,6 @@ int32_t  sum_residual(
     int16_t *in_ptr,
     uint32_t size,
     uint32_t stride_in);
-
 
 typedef int32_t(*EbSumRes)(
     int16_t *in_ptr,
@@ -328,7 +327,6 @@ static EbPicCopyType FUNC_TABLE pic_copy_kernel_func_ptr_array[ASM_TYPE_TOTAL][9
         },
 };
 
-
 typedef void(*EbResdKernelSubsampledType)(
     uint8_t  *input,
     uint32_t  input_stride,
@@ -337,8 +335,8 @@ typedef void(*EbResdKernelSubsampledType)(
     int16_t  *residual,
     uint32_t  residual_stride,
     uint32_t  area_width,
-    uint32_t  area_height , 
-    uint8_t   last_line  
+    uint32_t  area_height ,
+    uint8_t   last_line
     );
 static EbResdKernelSubsampledType FUNC_TABLE residual_kernel_sub_sampled_func_ptr_array[ASM_TYPE_TOTAL][9] = {
     // C_DEFAULT
@@ -394,11 +392,10 @@ static EbResdKernelType FUNC_TABLE residual_kernel_func_ptr_array[ASM_TYPE_TOTAL
     },
 };
 
-
 static EbResdKernelType16Bit FUNC_TABLE residual_kernel_func_ptr_array16_bit[ASM_TYPE_TOTAL] = {
-    // C_DEFAULT     
+    // C_DEFAULT
     residual_kernel16bit,
-    // AVX2     
+    // AVX2
     residual_kernel16bit_sse2_intrin
 };
 
@@ -421,7 +418,7 @@ static EbZeroCoeffType FUNC_TABLE PicZeroOutCoef_funcPtrArray[ASM_TYPE_TOTAL][5]
         },
 };
 
-static EbFullDistType FUNC_TABLE full_distortion_intrinsic_func_ptr_array[ASM_TYPE_TOTAL][2][2][9] = {     
+static EbFullDistType FUNC_TABLE full_distortion_intrinsic_func_ptr_array[ASM_TYPE_TOTAL][2][2][9] = {
     // C_DEFAULT
     // It was found that the SSE2 intrinsic code is much faster (~2x) than the SSE4.1 code
     {
@@ -474,7 +471,7 @@ static EbFullDistType FUNC_TABLE full_distortion_intrinsic_func_ptr_array[ASM_TY
             }
 
         }
-    },   
+    },
       {
         {
             {

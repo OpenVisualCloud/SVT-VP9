@@ -26,17 +26,17 @@ void vp9_init_intra_predictors(void);
 
 void vp9_predict_intra_block(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
-                             const MACROBLOCKD *xd, 
+                             const MACROBLOCKD *xd,
 #endif
                              TX_SIZE tx_size,
-                             PREDICTION_MODE mode, 
+                             PREDICTION_MODE mode,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                              const uint8_t *ref,
-                             int ref_stride, 
+                             int ref_stride,
 #endif
                              uint8_t *dst, int dst_stride,
-#if 0 
-                             int aoff, int loff, 
+#if 0
+                             int aoff, int loff,
 #endif
                              int plane);
 #ifdef __cplusplus

@@ -65,7 +65,6 @@
 #include "vp9/encoder/vp9_svc_layercontext.h"
 #include "vp9/encoder/vp9_temporal_filter.h"
 
-
 #define AM_SEGMENT_ID_INACTIVE 7
 #define AM_SEGMENT_ID_ACTIVE 0
 
@@ -584,7 +583,7 @@ static void apply_roi_map(VP9_COMP *cpi) {
     vp9_disable_segfeature(seg, i, SEG_LVL_ALT_Q);
     vp9_disable_segfeature(seg, i, SEG_LVL_ALT_LF);
     if (internal_delta_q[i] != 0) {
-      vp9_enable_segfeature(seg, i, SEG_LVL_ALT_Q); 
+      vp9_enable_segfeature(seg, i, SEG_LVL_ALT_Q);
       vp9_set_segdata(seg, i, SEG_LVL_ALT_Q, internal_delta_q[i]);
     }
     if (delta_lf[i] != 0) {
@@ -3307,7 +3306,6 @@ static void output_frame_level_debug_stats(VP9_COMP *cpi) {
 #else
   recon_err = vpx_get_y_sse(cpi->Source, get_frame_new_buffer(cm));
 #endif  // CONFIG_VP9_HIGHBITDEPTH
-
 
   if (cpi->twopass.total_left_stats.coded_error != 0.0) {
     double dc_quant_devisor;

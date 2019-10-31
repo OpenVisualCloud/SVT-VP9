@@ -23,9 +23,7 @@ EbErrorType input_queue_entry_ctor(
     return EB_ErrorNone;
 }
 
-
-
-EbErrorType reference_queue_entry_ctor(   
+EbErrorType reference_queue_entry_ctor(
     ReferenceQueueEntry **entry_dbl_ptr)
 {
     ReferenceQueueEntry *entry_ptr;

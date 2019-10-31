@@ -24,16 +24,15 @@
 #define PAN_SB_PERCENTAGE   75
 #define LOW_AMPLITUDE_TH    64
 
-
 EB_BOOL check_mv_for_pan_high_amp(
     uint32_t hierarchical_levels,
     uint32_t temporal_layer_index,
     int32_t  *x_current_mv,
     int32_t  *x_candidate_mv)
 {
-    if (*x_current_mv * *x_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary) 
-        && ABS(*x_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
-        && ABS(*x_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
+    if (*x_current_mv * *x_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+        && ABS(*x_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
+        && ABS(*x_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
         && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) {    // close amplitude
 
         return(EB_TRUE);
@@ -51,9 +50,9 @@ EB_BOOL check_mv_for_tilt_high_amp(
     int32_t  *y_current_mv,
     int32_t  *y_candidate_mv)
 {
-    if (*y_current_mv * *y_candidate_mv > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary) 
-        && ABS(*y_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
-        && ABS(*y_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
+    if (*y_current_mv * *y_candidate_mv > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+        && ABS(*y_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
+        && ABS(*y_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
         && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) {    // close amplitude
 
         return(EB_TRUE);
@@ -75,9 +74,9 @@ EB_BOOL check_mv_for_pan(
 {
     if (*y_current_mv < LOW_AMPLITUDE_TH
         && *y_candidate_mv < LOW_AMPLITUDE_TH
-        && *x_current_mv * *x_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary) 
-        && ABS(*x_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
-        && ABS(*x_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
+        && *x_current_mv * *x_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+        && ABS(*x_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
+        && ABS(*x_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
         && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) {    // close amplitude
 
         return(EB_TRUE);
@@ -99,9 +98,9 @@ EB_BOOL check_mv_for_tilt(
 {
     if (*x_current_mv < LOW_AMPLITUDE_TH
         && *x_candidate_mv < LOW_AMPLITUDE_TH
-        && *y_current_mv * *y_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary) 
-        && ABS(*y_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
-        && ABS(*y_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude 
+        && *y_current_mv * *y_candidate_mv        > 0                        // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+        && ABS(*y_current_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
+        && ABS(*y_candidate_mv) >= global_motion_threshold[hierarchical_levels][temporal_layer_index]    // high amplitude
         && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) {    // close amplitude
 
         return(EB_TRUE);
@@ -129,7 +128,6 @@ EB_BOOL check_mv_for_non_uniform_motion(
     }
 
 }
-
 
 void DetectGlobalMotion(
     SequenceControlSet      *sequence_control_set_ptr,
@@ -168,12 +166,12 @@ void DetectGlobalMotion(
         sb_origin_x = sb_params->origin_x;
         sb_origin_y = sb_params->origin_y;
 
-        if (sb_params->is_complete_sb) { 
+        if (sb_params->is_complete_sb) {
 
-            // Current MV   
+            // Current MV
             get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
 
-            // Left MV   
+            // Left MV
             if (sb_origin_x == 0) {
                 x_left_mv = 0;
                 y_left_mv = 0;
@@ -182,7 +180,7 @@ void DetectGlobalMotion(
                 get_mv(picture_control_set_ptr, sb_index - 1, &x_left_mv, &y_left_mv);
             }
 
-            // Top MV   
+            // Top MV
             if (sb_origin_y == 0) {
                 x_top_mv = 0;
                 y_top_mv = 0;
@@ -191,7 +189,7 @@ void DetectGlobalMotion(
                 get_mv(picture_control_set_ptr, sb_index - picture_width_in_sb, &x_top_mv, &y_top_mv);
             }
 
-            // Right MV   
+            // Right MV
             if ((sb_origin_x + (MAX_SB_SIZE << 1)) > picture_control_set_ptr->enhanced_picture_ptr->width) {
                 x_right_mv = 0;
                 y_right_mv = 0;
@@ -200,7 +198,7 @@ void DetectGlobalMotion(
                 get_mv(picture_control_set_ptr, sb_index + 1, &x_right_mv, &y_right_mv);
             }
 
-            // Bottom MV   
+            // Bottom MV
             if ((sb_origin_y + (MAX_SB_SIZE << 1)) > picture_control_set_ptr->enhanced_picture_ptr->height) {
                 x_bottom_mv = 0;
                 y_bottom_mv = 0;
@@ -218,14 +216,12 @@ void DetectGlobalMotion(
 
                 total_pan_lcus++;
 
-
             }
 
             if ((EB_BOOL)(check_mv_for_tilt(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &x_current_mv, &y_current_mv, &x_left_mv, &y_left_mv)   ||
                           check_mv_for_tilt(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &x_current_mv, &y_current_mv, &x_top_mv, &y_top_mv)     ||
                           check_mv_for_tilt(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &x_current_mv, &y_current_mv, &x_right_mv, &y_right_mv) ||
                           check_mv_for_tilt(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &x_current_mv, &y_current_mv, &x_bottom_mv, &y_bottom_mv))) {
-
 
                 total_tilt_sbs++;
 
@@ -240,14 +236,12 @@ void DetectGlobalMotion(
 
                 total_pan_high_amp_sbs++;
 
-
             }
 
             if ((EB_BOOL)(check_mv_for_tilt_high_amp(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &y_current_mv, &y_left_mv)  ||
                           check_mv_for_tilt_high_amp(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &y_current_mv, &y_top_mv)   ||
                           check_mv_for_tilt_high_amp(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &y_current_mv, &y_right_mv) ||
                           check_mv_for_tilt_high_amp(picture_control_set_ptr->hierarchical_levels, picture_control_set_ptr->temporal_layer_index, &y_current_mv, &y_bottom_mv))) {
-
 
                 total_tilt_high_amp_sbs++;
 
@@ -257,7 +251,6 @@ void DetectGlobalMotion(
     }
     picture_control_set_ptr->is_pan = EB_FALSE;
     picture_control_set_ptr->is_tilt = EB_FALSE;
-
 
     // If more than PAN_SB_PERCENTAGE % of LCUs are PAN
     if (total_checked_sbs > 0 && ((total_pan_lcus * 100 / total_checked_sbs) > PAN_SB_PERCENTAGE)) {
@@ -301,7 +294,7 @@ void ReleasePaReferenceObjects(
 
         num_of_list_to_search = (picture_control_set_ptr->slice_type == P_SLICE) ? REF_LIST_0 : REF_LIST_1;
 
-        // List Loop 
+        // List Loop
         for (list_index = REF_LIST_0; list_index <= num_of_list_to_search; ++list_index) {
 
                 // Release PA Reference Pictures
@@ -314,11 +307,11 @@ void ReleasePaReferenceObjects(
     }
 
     if (picture_control_set_ptr->pareference_picture_wrapper_ptr != EB_NULL) {
-  
+
         eb_release_object(picture_control_set_ptr->p_pcs_wrapper_ptr);
         eb_release_object(picture_control_set_ptr->pareference_picture_wrapper_ptr);
     }
-    
+
     return;
 }
 
@@ -344,7 +337,6 @@ void me_based_global_motion_detection(
 
     return;
 }
-
 
 void stationary_edge_count_sb(
     SequenceControlSet      *sequence_control_set_ptr,
@@ -401,14 +393,13 @@ void update_global_motion_detection_over_time(
 
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
-                                   
+
     uint32_t                        total_pan_pictures = 0;
     uint32_t                        total_checked_pictures = 0;
     uint32_t                        total_tilt_pictures = 0;
     uint32_t                        update_is_pan_frames_to_check;
     uint32_t                        input_queue_index;
     uint32_t                        frames_to_check_index;
-
 
     (void) sequence_control_set_ptr;
 
@@ -471,7 +462,6 @@ void UpdateBeaInfoOverTime(
     uint16_t                        frames_to_check_index;
     uint32_t                        input_queue_index;
 
-
     SequenceControlSet *sequence_control_set_ptr = (SequenceControlSet*)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
     // Update motionIndexArray of the current picture by averaging the motionIndexArray of the N future pictures
     // Determine number of frames to check N
@@ -486,10 +476,8 @@ void UpdateBeaInfoOverTime(
         input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1) ? 0 : encode_context_ptr->initial_rate_control_reorder_queue_head_index + 1;
         for (frames_to_check_index = 0; frames_to_check_index < update_non_moving_index_array_frames_to_check - 1; frames_to_check_index++) {
 
-
             temporary_queue_entry_ptr = encode_context_ptr->initial_rate_control_reorder_queue[input_queue_index];
             temporary_picture_control_set_ptr = ((PictureParentControlSet  *)(temporary_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
-
 
             if (temporary_picture_control_set_ptr->slice_type == I_SLICE || temporary_picture_control_set_ptr->end_of_sequence_flag) {
                 break;
@@ -546,7 +534,6 @@ void update_motion_field_uniformity_over_time(
     input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1) ? 0 : encode_context_ptr->initial_rate_control_reorder_queue_head_index;
     for (frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
 
-
         temporary_queue_entry_ptr = encode_context_ptr->initial_rate_control_reorder_queue[input_queue_index];
         temporary_picture_control_set_ptr = ((PictureParentControlSet  *)(temporary_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
 
@@ -601,7 +588,7 @@ void update_homogeneity_over_time(
         mean_sqr_variance64x64_based = 0;
         mean_variance64x64_based = 0;
 
-        // Initialize 
+        // Initialize
         picture_control_set_ptr->sb_variance_of_variance_over_time[sb_index] = 0xFFFFFFFFFFFFFFFF;
 
         picture_control_set_ptr->is_sb_homogeneous_over_time[sb_index] = EB_FALSE;
@@ -613,7 +600,6 @@ void update_homogeneity_over_time(
         // Walk the first N entries in the sliding window starting picture + 1
         input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1) ? 0 : encode_context_ptr->initial_rate_control_reorder_queue_head_index;
         for (frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
-
 
             temporary_queue_entry_ptr = encode_context_ptr->initial_rate_control_reorder_queue[input_queue_index];
             temporary_picture_control_set_ptr = ((PictureParentControlSet  *)(temporary_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
@@ -644,9 +630,7 @@ void update_homogeneity_over_time(
 
         count_of_homogeneous_over_time += picture_control_set_ptr->is_sb_homogeneous_over_time[sb_index];
 
-
     } // LCU loop
-
 
     picture_control_set_ptr->pic_homogenous_over_time_sb_percentage = (uint8_t)(count_of_homogeneous_over_time * 100 / picture_control_set_ptr->sb_total_count);
 
@@ -660,7 +644,7 @@ void reset_homogeneity_structures(
 
     picture_control_set_ptr->pic_homogenous_over_time_sb_percentage = 0;
 
-    // Reset the structure 
+    // Reset the structure
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         picture_control_set_ptr->sb_variance_of_variance_over_time[sb_index] = 0xFFFFFFFFFFFFFFFF;
         picture_control_set_ptr->is_sb_homogeneous_over_time[sb_index] = EB_FALSE;
@@ -685,8 +669,6 @@ InitialRateControlReorderEntry* determine_picture_offset_in_queue(
     queue_entry_ptr->parent_pcs_wrapper_ptr = input_results_ptr->picture_control_set_wrapper_ptr;
     queue_entry_ptr->picture_number = picture_control_set_ptr->picture_number;
 
-
-
     return queue_entry_ptr;
 }
 
@@ -698,7 +680,7 @@ void get_histogram_queue_data(
     HlRateControlHistogramEntry *histogram_queue_entry_ptr;
     int32_t                      histogram_queue_entry_index;
 
-    // Determine offset from the Head Ptr for HLRC histogram queue 
+    // Determine offset from the Head Ptr for HLRC histogram queue
     eb_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     histogram_queue_entry_index = (int32_t)(picture_control_set_ptr->picture_number - encode_context_ptr->hl_rate_control_historgram_queue[encode_context_ptr->hl_rate_control_historgram_queue_head_index]->picture_number);
     histogram_queue_entry_index += encode_context_ptr->hl_rate_control_historgram_queue_head_index;
@@ -706,7 +688,6 @@ void get_histogram_queue_data(
         histogram_queue_entry_index - HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH :
         histogram_queue_entry_index;
     histogram_queue_entry_ptr = encode_context_ptr->hl_rate_control_historgram_queue[histogram_queue_entry_index];
-
 
     //histogram_queue_entry_ptr->parent_pcs_wrapper_ptr  = input_results_ptr->picture_control_set_wrapper_ptr;
     histogram_queue_entry_ptr->picture_number = picture_control_set_ptr->picture_number;
@@ -731,7 +712,6 @@ void get_histogram_queue_data(
 
     eb_release_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     //SVT_LOG("Test1 POC: %d\t POC: %d\t life_count: %d\n", histogram_queue_entry_ptr->picture_number, picture_control_set_ptr->picture_number,  histogram_queue_entry_ptr->life_count);
-
 
     return;
 
@@ -845,7 +825,7 @@ void* initial_rate_control_kernel(void *input_ptr)
                 sequence_control_set_ptr,
                 picture_control_set_ptr);
 
-            // Release Pa Ref pictures when not needed 
+            // Release Pa Ref pictures when not needed
             ReleasePaReferenceObjects(
                 picture_control_set_ptr);
 
@@ -853,7 +833,7 @@ void* initial_rate_control_kernel(void *input_ptr)
             // Input Motion Analysis Results into Reordering Queue
             //****************************************************
 
-            // Determine offset from the Head Ptr          
+            // Determine offset from the Head Ptr
             queue_entry_ptr = determine_picture_offset_in_queue(
                 encode_context_ptr,
                 picture_control_set_ptr,
@@ -863,7 +843,7 @@ void* initial_rate_control_kernel(void *input_ptr)
             {
                 if (sequence_control_set_ptr->look_ahead_distance != 0){
 
-                    // Getting the Histogram Queue Data 
+                    // Getting the Histogram Queue Data
                     get_histogram_queue_data(
                         sequence_control_set_ptr,
                         encode_context_ptr,
@@ -878,7 +858,7 @@ void* initial_rate_control_kernel(void *input_ptr)
             picture_control_set_ptr->frames_in_sw                 = 0;
             picture_control_set_ptr->historgram_life_count        = 0;
             picture_control_set_ptr->scene_change_in_gop = EB_FALSE;
- 
+
             move_slide_wondow_flag = EB_TRUE;
             while (move_slide_wondow_flag){
 
@@ -910,7 +890,6 @@ void* initial_rate_control_kernel(void *input_ptr)
                     queue_entry_index_temp++;
                 }
 
-
                 if (move_slide_wondow_flag)  {
 
                     //get a new entry spot
@@ -938,8 +917,6 @@ void* initial_rate_control_kernel(void *input_ptr)
                         end_of_sequence_flag = pictureControlSetPtrTemp->end_of_sequence_flag;
                         queue_entry_index_temp++;
                     }
-
-                    
 
                     if ((sequence_control_set_ptr->look_ahead_distance != 0) && (frames_in_sw < (sequence_control_set_ptr->look_ahead_distance + 1)))
                         picture_control_set_ptr->end_of_sequence_region = EB_TRUE;
@@ -973,12 +950,12 @@ void* initial_rate_control_kernel(void *input_ptr)
                     else {
                         if (picture_control_set_ptr->slice_type != I_SLICE) {
                             DetectGlobalMotion(
-                                sequence_control_set_ptr, 
+                                sequence_control_set_ptr,
                                 picture_control_set_ptr);
                         }
                     }
 
-                    // BACKGROUND ENHANCEMENT PART II 
+                    // BACKGROUND ENHANCEMENT PART II
                     if (!picture_control_set_ptr->end_of_sequence_flag && sequence_control_set_ptr->look_ahead_distance != 0) {
                         // Update BEA information based on Lookahead information
                         UpdateBeaInfoOverTime(
@@ -1060,4 +1037,3 @@ void* initial_rate_control_kernel(void *input_ptr)
     }
     return EB_NULL;
 }
-

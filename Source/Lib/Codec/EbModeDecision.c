@@ -301,7 +301,7 @@ EbErrorType pre_mode_decision(
         full_recon_candidate_count = MAX(1, (*full_candidate_total_count_ptr) - 1);
     }
 
-    //With N buffers, we get here with the best N-1, plus the last candidate. We need to exclude the worst, and keep the best N-1.  
+    //With N buffers, we get here with the best N-1, plus the last candidate. We need to exclude the worst, and keep the best N-1.
     highest_cost = *(buffer_ptr_array[0]->fast_cost_ptr);
     highest_cost_index = 0;
 
@@ -368,7 +368,7 @@ void new_mv_candidates_injection(
 
     // Set distortion ready
     context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = EB_TRUE;
-    
+
     // Derive target direction
     uint32_t target_direction = (ref_frame_0 == LAST_FRAME && ref_frame_1 == ALTREF_FRAME) ?
         BI_PRED :
@@ -414,7 +414,7 @@ void new_mv_candidates_injection(
 
     // Update the total number of candidates injected
     (*can_total_cnt)++;
-     
+
     return;
 }
 
@@ -493,7 +493,6 @@ void nearest_mv_candidates_injection(
 #endif
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
-
 
     if (ref_frame_0 == LAST_FRAME && ref_frame_1 == ALTREF_FRAME) {
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.col = context_ptr->block_ptr->mbmi_ext->ref_mvs[ref_frame_0][0].as_mv.col;
@@ -634,7 +633,6 @@ void new_mv_unipred3x3_candidates_injection(
             context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.row = (me_pu_result->y_mv_l1 + newmv_3x3_y_pos[position]) << 1;
         }
 
-
 #if 0 // Hsan: switchable interp_filter not supported''
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
 #endif
@@ -704,7 +702,7 @@ void  inter_candidates_injection(
     MV_REFERENCE_FRAME  ref_frame_0,
     MV_REFERENCE_FRAME  ref_frame_1,
     uint32_t           *can_total_cnt)
-{                       
+{
     if (context_ptr->use_ref_mvs_flag[ref_frame_0] && context_ptr->use_ref_mvs_flag[ref_frame_1]) {
 
         // Nearest
@@ -749,8 +747,6 @@ void  inter_candidates_injection(
             ref_frame_1,
             can_total_cnt);
 
-
-
         // New Unipred 3x3
         if (context_ptr->unipred3x3_injection) {
             if (ref_frame_1 == INTRA_FRAME) {
@@ -767,7 +763,7 @@ void  inter_candidates_injection(
 
         // New Bipred 3x3
         if (context_ptr->bipred3x3_injection) {
-            if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT && (ref_frame_0 != INTRA_FRAME) && (ref_frame_1 != INTRA_FRAME)) { 
+            if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT && (ref_frame_0 != INTRA_FRAME) && (ref_frame_1 != INTRA_FRAME)) {
                 new_mv_bipred3x3_candidates_injection(
                     picture_control_set_ptr,
                     context_ptr,
@@ -807,7 +803,7 @@ void intra_candidates_injection_mi(
 #endif
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->uv_mode = (context_ptr->chroma_level == CHROMA_LEVEL_0) ?
             context_ptr->best_uv_mode[mode] :
-            mode ;           
+            mode ;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = INTRA_FRAME;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = INTRA_FRAME;;
         context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = 0;
@@ -860,17 +856,17 @@ EbErrorType prepare_fast_loop_candidates(
 
     //----------------------
     // Inter
-    //----------------------     
+    //----------------------
     if (picture_control_set_ptr->slice_type != I_SLICE && context_ptr->ep_block_stats_ptr->bsize >= BLOCK_8X8)
-    { 
+    {
         // Hsan: done to use the same injection method for ALTREF_FRAME, LAST_FRAME, and COMPOUND
-        context_ptr->use_ref_mvs_flag[INTRA_FRAME] = 2; 
+        context_ptr->use_ref_mvs_flag[INTRA_FRAME] = 2;
         context_ptr->use_ref_mvs_flag[LAST_FRAME] = 0;
         context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = 0;
 
         int_mv *candidates;
 
-        // [LAST_FRAME] Gets an initial list of candidate vectors from neighbours and orders them      
+        // [LAST_FRAME] Gets an initial list of candidate vectors from neighbours and orders them
         candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[LAST_FRAME];
         context_ptr->use_ref_mvs_flag[LAST_FRAME] = vp9_find_mv_refs(
             context_ptr,
@@ -883,9 +879,8 @@ EbErrorType prepare_fast_loop_candidates(
             context_ptr->mi_col,
             context_ptr->block_ptr->mbmi_ext->mode_context);
 
-
-        // [ALTREF_FRAME] Gets an initial list of candidate vectors from neighbours and orders them for 
-        if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {           
+        // [ALTREF_FRAME] Gets an initial list of candidate vectors from neighbours and orders them for
+        if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
             candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[ALTREF_FRAME];
             context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = vp9_find_mv_refs(
                 context_ptr,
@@ -903,9 +898,9 @@ EbErrorType prepare_fast_loop_candidates(
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
 
             if (context_ptr->use_ref_mvs_flag[LAST_FRAME] == 0 && context_ptr->use_ref_mvs_flag[ALTREF_FRAME] == 0) {
-               
+
                 spatial_reference_mv_present_flag = EB_FALSE;
-  
+
                 zero_mv_candidates_injection(
                     picture_control_set_ptr,
                     context_ptr,
@@ -922,7 +917,7 @@ EbErrorType prepare_fast_loop_candidates(
                     LAST_FRAME,
                     INTRA_FRAME,
                     &can_total_cnt);
-                
+
                 // [ALTREF_FRAME] Injects available inter candidates
                 inter_candidates_injection(
                     picture_control_set_ptr,
@@ -986,7 +981,7 @@ EbErrorType prepare_fast_loop_candidates(
 
     //----------------------
     // Intra
-    //----------------------            
+    //----------------------
     if (context_ptr->ep_block_stats_ptr->sq_size <= 32) {  // No INTRA injection for 64x64 (INTRA_64x64 not supported)
         if (context_ptr->restrict_intra_global_motion == EB_FALSE || can_total_cnt == 0) { // No INTRA injection if restrict_intra_global_motion TRUE unless no INTER candidates
             if (spatial_reference_mv_present_flag == EB_TRUE || sb_ptr->sb_index > 0) { //  No INTRA injection @ 1st SB if no spatial reference MVs
@@ -997,7 +992,7 @@ EbErrorType prepare_fast_loop_candidates(
                         context_ptr,
                         &can_total_cnt);
                 }
-                else {      
+                else {
 
                     const EB_BOOL  is_left_cu = context_ptr->ep_block_stats_ptr->origin_x == 0;
                     const EB_BOOL  is_top_cu = context_ptr->ep_block_stats_ptr->origin_y == 0;
@@ -1058,7 +1053,7 @@ uint8_t full_mode_decision(
 
     candidate_ptr = buffer_ptr_array[lowest_cost_index]->candidate_ptr;
     context_ptr->enc_dec_local_block_array[ep_block_index]->cost = *(buffer_ptr_array[lowest_cost_index]->full_cost_ptr);
-        
+
     candidate_ptr->mode_info->tx_size = context_ptr->ep_block_stats_ptr->tx_size;
 
     EB_MEMCPY(&(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info), candidate_ptr->mode_info, sizeof(ModeInfo));
@@ -1075,9 +1070,3 @@ uint8_t full_mode_decision(
 
     return lowest_cost_index;
 }
-
-
-
-
-
-

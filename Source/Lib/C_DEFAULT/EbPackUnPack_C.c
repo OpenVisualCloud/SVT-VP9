@@ -80,7 +80,6 @@ void compressed_packmsb(
             out_pixel = in8_bit_buffer[k_idx * 4 + 3 + row*in8_stride] << 2;
             out16_bit_buffer[k_idx * 4 + 3 + row*out_stride] = out_pixel | n_bit_pixel;
 
-
         }
     }
 }
@@ -120,7 +119,6 @@ void c_pack_c(
 
 }
 
-
 /************************************************
 * unpack 10 bit data into  8 and 2 bit 2D data
 ************************************************/
@@ -152,8 +150,8 @@ void eb_enc_msb_un_pack_2d(
 void unpack_8bit_data(
     uint16_t  *in16_bit_buffer,
     uint32_t   in_stride,
-    uint8_t   *out8_bit_buffer,  
-    uint32_t   out8_stride, 
+    uint8_t   *out8_bit_buffer,
+    uint32_t   out8_stride,
     uint32_t   width,
     uint32_t   height)
 {
@@ -177,11 +175,11 @@ void unpack_avg(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,      
+    uint32_t  dst_stride,
     uint32_t  width,
     uint32_t  height )
  {
- 
+
     uint64_t   j, k;
     uint8_t   in_pixel_l0, in_pixel_l1;
 
@@ -192,18 +190,17 @@ void unpack_avg(
             in_pixel_l0 = (uint8_t)(ref16_l0[k + j*ref_l0_stride]>>2);
             in_pixel_l1 = (uint8_t)(ref16_l1[k + j*ref_l1_stride]>>2);
             dst_ptr[k + j*dst_stride] = (in_pixel_l0  + in_pixel_l1 + 1)>>1;
-          
+
         }
     }
 
- 
  }
 
 void un_pack8_bit_data_safe_sub(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
-    uint8_t  *out8_bit_buffer,  
-    uint32_t  out8_stride, 
+    uint8_t  *out8_bit_buffer,
+    uint32_t  out8_stride,
     uint32_t  width,
     uint32_t  height
     )
@@ -229,11 +226,11 @@ void unpack_avg_safe_sub(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,    
+    uint32_t  dst_stride,
     uint32_t  width,
     uint32_t  height )
  {
- 
+
     uint64_t  j, k;
     uint8_t   in_pixel_l0, in_pixel_l1;
 
@@ -244,7 +241,7 @@ void unpack_avg_safe_sub(
             in_pixel_l0 = (uint8_t)(ref16_l0[k + j*ref_l0_stride]>>2);
             in_pixel_l1 = (uint8_t)(ref16_l1[k + j*ref_l1_stride]>>2);
             dst_ptr[k + j*dst_stride] = (in_pixel_l0  + in_pixel_l1 + 1)>>1;
-          
+
         }
-    } 
+    }
  }

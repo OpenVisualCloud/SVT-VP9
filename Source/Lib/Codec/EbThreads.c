@@ -62,8 +62,8 @@ EbHandle eb_create_thread(
                        NULL);                          // new thread ID
 
 #elif __linux__
-    
-    pthread_attr_t attr;  
+
+    pthread_attr_t attr;
     struct sched_param param = {
         .sched_priority = 99
     };
@@ -192,7 +192,7 @@ EbHandle eb_create_semaphore(
         (sem_t*) semaphore_handle,       // semaphore handle
         0,                              // shared semaphore (not local)
         initial_count);                  // initial count
-#endif // _WIN32    
+#endif // _WIN32
 
     return semaphore_handle;
 }

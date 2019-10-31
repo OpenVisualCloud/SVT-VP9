@@ -15,8 +15,8 @@ extern "C" {
 /***************************************
  * Context
  ***************************************/
-typedef struct ResourceCoordinationContext  
-{      
+typedef struct ResourceCoordinationContext
+{
     EbFifo                        *input_buffer_fifo_ptr;
     EbFifo                        *resource_coordination_results_output_fifo_ptr;
     EbFifo                       **picture_control_set_fifo_ptr_array;
@@ -24,11 +24,11 @@ typedef struct ResourceCoordinationContext
     EbObjectWrapper              **sequence_control_set_active_array;
     EbFifo                        *sequence_control_set_empty_fifo_ptr;
     EbCallback                   **app_callback_ptr_array;
-     
+
     // Compute Segments
     uint32_t                      *compute_segments_total_count_array;
     uint32_t                       encode_instances_total_count;
-    
+
     // Picture Number Array
     uint64_t                      *picture_number_array;
 
@@ -44,12 +44,11 @@ typedef struct ResourceCoordinationContext
     int64_t                        previous_frame_in_check2;
     int64_t                        previous_frame_in_check3;
 
-
     uint64_t                       cur_speed; // speed x 1000
     uint64_t                       prevs_time_seconds;
     uint64_t                       prevs_timeu_seconds;
     int64_t                        prev_frame_out;
-     
+
     uint64_t                       first_in_pic_arrived_time_seconds;
     uint64_t                       first_in_pic_arrived_timeu_seconds;
     EB_BOOL                        start_flag;
@@ -69,7 +68,7 @@ extern EbErrorType resource_coordination_context_ctor(
     EbCallback                   **app_callback_ptr_array,
     uint32_t                      *compute_segments_total_count_array,
     uint32_t                       encode_instances_total_count);
-  
+
 extern void* resource_coordination_kernel(void *input_ptr);
 
 #ifdef __cplusplus

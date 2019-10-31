@@ -336,7 +336,7 @@ static const int16_t band_counts[TX_SIZES][8] = {
 };
 int cost_coeffs(MACROBLOCK *x, int plane, int block, TX_SIZE tx_size,
                        int pt, const int16_t *scan, const int16_t *nb,
-                       int use_fast_coef_costing) { 
+                       int use_fast_coef_costing) {
   MACROBLOCKD *const xd = &x->e_mbd;
   ModeInfo *mi = xd->mi[0];
   const struct macroblock_plane *p = &x->plane[plane];
@@ -1219,7 +1219,7 @@ static int64_t rd_pick_intra_sub_8x8_y_mode(VP9_COMP *cpi, MACROBLOCK *mb,
 static int64_t rd_pick_intra_sby_mode(VP9_COMP *cpi, MACROBLOCK *x, int *rate,
                                       int *rate_tokenonly, int64_t *distortion,
                                       int *skippable, BLOCK_SIZE bsize,
-                                      int64_t best_rd) { 
+                                      int64_t best_rd) {
   PREDICTION_MODE mode;
   PREDICTION_MODE mode_selected = DC_PRED;
   MACROBLOCKD *const xd = &x->e_mbd;
@@ -2839,7 +2839,7 @@ static int64_t handle_inter_mode(
 
 void vp9_rd_pick_intra_mode_sb(VP9_COMP *cpi, MACROBLOCK *x, RD_COST *rd_cost,
                                BLOCK_SIZE bsize, PICK_MODE_CONTEXT *ctx,
-                               int64_t best_rd) { 
+                               int64_t best_rd) {
   VP9_COMMON *const cm = &cpi->common;
   MACROBLOCKD *const xd = &x->e_mbd;
   struct macroblockd_plane *const pd = xd->plane;

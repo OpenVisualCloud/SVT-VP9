@@ -24,7 +24,6 @@
 #define SIZE_OF_ONE_FRAME_IN_BYTES(width, height,is16bit) ( ( ((width)*(height)*3)>>1 )<<is16bit)
 extern volatile int keep_running;
 
-
 /***************************************
 * Process Error Log
 ***************************************/
@@ -173,7 +172,6 @@ void process_input_field_standard_mode(
     // Step back 1 chroma row if bottom field (undo the previous jump), and skip 1 chroma row if bottom field (point to the bottom field)
     // => no action
 
-
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
 
         header_ptr->n_filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
@@ -187,7 +185,6 @@ void process_input_field_standard_mode(
         fseeko64(input_file, -(long)source_chroma_row_size, SEEK_CUR);
     }
 }
-
 
 //************************************/
 // get_next_qp_from_qp_file
@@ -256,7 +253,6 @@ int32_t get_next_qp_from_qp_file(
     return qp;
 }
 
-
 void read_input_frames(
     EbConfig           *config,
     unsigned char       is16bit,
@@ -282,7 +278,6 @@ void read_input_frames(
 
             header_ptr->n_filled_len = 0;
 
-
             uint64_t luma_read_size = (uint64_t)input_padded_width*input_padded_height << is16bit;
             eb_input_ptr = input_ptr->luma;
             header_ptr->n_filled_len += (uint32_t)fread(eb_input_ptr, 1, luma_read_size, input_file);
@@ -293,7 +288,6 @@ void read_input_frames(
             input_ptr->luma = input_ptr->luma + (0 << is16bit);
             input_ptr->cb = input_ptr->cb + (((config->source_width >> 1)*(0 >> 1) + (0 >> 1)) << is16bit);
             input_ptr->cr = input_ptr->cr + (((config->source_width >> 1)*(0 >> 1) + (0 >> 1)) << is16bit);
-
 
             if (read_size != header_ptr->n_filled_len) {
 
@@ -392,7 +386,6 @@ void read_input_frames(
         input_ptr->luma = input_ptr->luma + (0 << ten_bit_packed_mode);
         input_ptr->cb = input_ptr->cb + (((config->source_width >> 1)*(0 >> 1) + (0 >> 1)) << ten_bit_packed_mode);
         input_ptr->cr = input_ptr->cr + (((config->source_width >> 1)*(0 >> 1) + (0 >> 1)) << ten_bit_packed_mode);
-
 
         if (is16bit) {
             input_ptr->luma_ext = config->sequence_buffer[config->processed_frame_count % config->buffered_input] + luma8bit_size + 2 * chroma8bit_size;

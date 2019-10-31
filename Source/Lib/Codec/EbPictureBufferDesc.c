@@ -21,7 +21,7 @@ EbErrorType eb_picture_buffer_desc_ctor(
     EbPictureBufferDescInitData  *picture_buffer_desc_init_data_ptr = (EbPictureBufferDescInitData*) object_init_data_ptr;
 
     uint32_t bytesPerPixel = (picture_buffer_desc_init_data_ptr->bit_depth == EB_8BIT) ? 1 : 2;
-    
+
     EB_MALLOC(EbPictureBufferDesc  *, picture_buffer_desc_ptr, sizeof(EbPictureBufferDesc  ), EB_N_PTR);
 
     // Allocate the PictureBufferDesc Object
@@ -99,7 +99,6 @@ EbErrorType eb_picture_buffer_desc_ctor(
 
     return EB_ErrorNone;
 }
-
 
 /*****************************************
  * eb_recon_picture_buffer_desc_ctor

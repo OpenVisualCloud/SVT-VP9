@@ -17,4 +17,3 @@ EbErrorType packetization_reorder_entry_ctor(
 
     return EB_ErrorNone;
 }
-

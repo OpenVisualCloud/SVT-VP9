@@ -24,4 +24,3 @@
 3. Verify
 - ./ffmpeg  -i input.mp4 -c:v libsvt_vp9 -rc 1 -b:v 10M -preset 1  -y test.ivf
 - ./ffmpeg  -i input.mp4 -vframes 1000 -c:v libsvt_vp9 -y test.mp4
-

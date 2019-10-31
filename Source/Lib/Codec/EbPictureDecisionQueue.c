@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include "EbPictureDecisionQueue.h"
 
-
-EbErrorType pa_reference_queue_entry_ctor(   
+EbErrorType pa_reference_queue_entry_ctor(
     PaReferenceQueueEntry **entry_dbl_ptr)
 {
     PaReferenceQueueEntry *entry_ptr;
@@ -21,10 +20,8 @@ EbErrorType pa_reference_queue_entry_ctor(
     entry_ptr->list0_ptr               = (ReferenceList*) EB_NULL;
     entry_ptr->list1_ptr               = (ReferenceList*) EB_NULL;
     EB_MALLOC(int32_t*, entry_ptr->list0.list, sizeof(int32_t) * (1 << MAX_TEMPORAL_LAYERS) , EB_N_PTR);
-    
+
     EB_MALLOC(int32_t*, entry_ptr->list1.list, sizeof(int32_t) * (1 << MAX_TEMPORAL_LAYERS) , EB_N_PTR);
 
     return EB_ErrorNone;
 }
-   
-

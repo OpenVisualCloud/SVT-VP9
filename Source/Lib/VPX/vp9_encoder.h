@@ -342,7 +342,7 @@ typedef struct RD_COUNTS {
 typedef struct ThreadData {
   MACROBLOCK mb;
   RD_COUNTS rd_counts;
-  FRAME_COUNTS *counts;     
+  FRAME_COUNTS *counts;
 #if 0
   PICK_MODE_CONTEXT *leaf_tree;
   PC_TREE *pc_tree;
@@ -479,7 +479,7 @@ typedef struct VP9_COMP {
 
   VP9_COMMON common;
 
-#if 0 
+#if 0
   VP9EncoderConfig oxcf;
   struct lookahead_ctx *lookahead;
   struct lookahead_entry *alt_ref_source;
@@ -570,7 +570,6 @@ typedef struct VP9_COMP {
 #endif
 
   SPEED_FEATURES sf;
-
 
   uint32_t max_mv_magnitude;
 #if 0

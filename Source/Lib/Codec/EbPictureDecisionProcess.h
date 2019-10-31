@@ -13,10 +13,10 @@
  * Context
  **************************************/
 typedef struct PictureDecisionContext
-{      
+{
     EbFifo   *picture_analysis_results_input_fifo_ptr;
     EbFifo   *picture_decision_results_output_fifo_ptr;
- 
+
     uint64_t  last_solid_color_frame_poc;
 
     EB_BOOL   reset_running_avg;
@@ -27,7 +27,6 @@ typedef struct PictureDecisionContext
 
     // Dynamic GOP
     uint32_t   total_region_activity_cost[MAX_NUMBER_OF_REGIONS_IN_WIDTH][MAX_NUMBER_OF_REGIONS_IN_HEIGHT];
-
 
     uint32_t   total_number_of_mini_gops;
 

@@ -25,7 +25,6 @@ uint64_t compute_mean_of_squared_values8x8_sse2_intrin(
     uint32_t   input_area_width,   // input parameter, input area width
     uint32_t   input_area_height); // input parameter, input area height
 
-
 #ifdef __cplusplus
 }
 #endif

@@ -8,14 +8,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef enum NalRefIdc 
+typedef enum NalRefIdc
 {
     NAL_REF_IDC_PRIORITY_LOWEST = 0,
     NAL_REF_IDC_PRIORITY_LOW,
     NAL_REF_IDC_PRIORITY_HIGH,
     NAL_REF_IDC_PRIORITY_HIGHEST
 } NalRefIdc;
-
 
 #define EB_INTRA_PLANAR     0
 #define EB_INTRA_DC         1
@@ -52,8 +51,8 @@ typedef enum NalRefIdc
 #define EB_INTRA_MODE_32    32
 #define EB_INTRA_MODE_33    33
 #define EB_INTRA_MODE_34    34
-#define EB_INTRA_MODE_35    35 
-#define EB_INTRA_MODE_4x4   36 
+#define EB_INTRA_MODE_35    35
+#define EB_INTRA_MODE_4x4   36
 #define EB_INTRA_MODE_INVALID ~0u
 
 #define EB_INTRA_CHROMA_PLANAR      0
@@ -63,8 +62,6 @@ typedef enum NalRefIdc
 #define EB_INTRA_CHROMA_DM          4
 #define EB_INTRA_CHROMA_TOTAL_COUNT 5
 #define EB_INTRA_CHROMA_INVALID     ~0u
-
-
 
 #ifdef __cplusplus
 }

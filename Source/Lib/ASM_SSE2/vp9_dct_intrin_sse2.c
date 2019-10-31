@@ -19,7 +19,6 @@
 #include "transpose_sse2.h"
 #include "txfm_common_sse2.h"
 
-
  // TODO(jingning) The high bit-depth version needs re-work for performance.
  // The current SSE2 implementation also causes cross reference to the static
  // functions in the C implementation file.
@@ -1403,5 +1402,3 @@ static void fdct16_sse2(__m128i *const in0, __m128i *const in1) {
     transpose_16bit_16x16(in0, in1);
 }
 #endif
-
-

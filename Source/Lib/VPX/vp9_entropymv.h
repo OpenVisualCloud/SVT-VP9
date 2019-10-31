@@ -131,7 +131,6 @@ typedef struct {
 
 void vp9_inc_mv(const MV *mv, nmv_context_counts *mvctx);
 
-
 #ifdef __cplusplus
 }  // extern "C"
 #endif

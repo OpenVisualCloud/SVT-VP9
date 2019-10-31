@@ -7,7 +7,6 @@
 #include "EbComputeSAD_SadLoopKernel_AVX512.h"
 #include "stdint.h"
 
-
 #define UPDATE_BEST(s, k, offset) \
   tem_sum1 = _mm_extract_epi32(s, k); \
   if (tem_sum1 < low_sum) { \
@@ -203,7 +202,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
     {
                 if (height <= 16 && search_area_width <= 128)
                 {
-                    for (i = 0; i<search_area_height; i++) 
+                    for (i = 0; i<search_area_height; i++)
                     {
                         const int n = search_area_width >> 4; // search_area_width / 16;
 
@@ -211,17 +210,17 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
                                                      _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512() };
                         __m512i ss7sum1_aaray[8] = { _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512(),
                                                      _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512(), _mm512_setzero_si512() };
-                        
+
                         const uint8_t *pRef1 = ref;
 
                         ss3 = ss7 = _mm256_setzero_si256();
                         p_src = src;
                         p_ref = ref;
 
-                        for (k = 0; k < height; k += 2) 
+                        for (k = 0; k < height; k += 2)
                         {
                             __m256i ref0temp, ref1temp, ref4temp, ref3temp;
-                                
+
                             __m256i temp = _mm256_loadu_si256((__m256i*) (p_src));
                             ref0temp = _mm256_permutevar8x32_epi32(temp, _mm256_setr_epi64x(               0x0,                0x0, 0x0004000400040004, 0x0004000400040004));
                             ref1temp = _mm256_permutevar8x32_epi32(temp, _mm256_setr_epi64x(0x0001000100010001, 0x0001000100010001, 0x0005000500050005, 0x0005000500050005));
@@ -233,7 +232,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
                             __m512i ref3ftemp = _mm512_broadcast_i64x4(ref3temp);
                             __m512i ref4ftemp = _mm512_broadcast_i64x4(ref4temp);
 
-                            for (j = 0, p_ref = pRef1; j < n; j++, p_ref += 16) 
+                            for (j = 0, p_ref = pRef1; j < n; j++, p_ref += 16)
                             {
                                 __m256i ss0 = _mm256_inserti128_si256(_mm256_castsi128_si256(_mm_loadu_si128((__m128i*)(p_ref     ))), _mm_loadu_si128((__m128i*)(p_ref + ref_stride     )), 0x1);
                                 __m256i ss1 = _mm256_inserti128_si256(_mm256_castsi128_si256(_mm_loadu_si128((__m128i*)(p_ref + 8 ))), _mm_loadu_si128((__m128i*)(p_ref + ref_stride + 8 )), 0x1);
@@ -254,7 +253,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
 
                         }
 
-                        for (j = 0; j < n; j++) 
+                        for (j = 0; j < n; j++)
                         {
                             //Code performing better then original code
                             __m512i result1 = _mm512_adds_epu16(ss3sum1_aaray[j], ss7sum1_aaray[j]);
@@ -270,7 +269,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
                                 x_best = (int16_t)((16 * j) + _mm_extract_epi16(s3cum, 1));
                                 y_best = i;
                             }
-                            
+
                             tem_sum1 = _mm_extract_epi16(s7cum, 0);
                             if (tem_sum1 < low_sum) {
                                 low_sum = tem_sum1;
@@ -279,7 +278,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
                             }
 
                         }
-                        
+
                         ref += src_stride_raw;
                     }
                 }
@@ -911,7 +910,6 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
     default:
         break;
     }
-
 
     *best_sad = low_sum;
     *x_search_center = x_best;
@@ -1747,13 +1745,11 @@ void sad_loop_kernel_avx2_hme_l0_intrin(
         break;
     }
 
-
     *best_sad = low_sum;
     *x_search_center = x_best;
     *y_search_center = y_best;
 }
 #endif
-
 
 // AVX512VL version
 
@@ -1820,7 +1816,7 @@ void  GetEightHorizontalSearchPointResults_8x8_16x16_PU_AVX512_INTRIN(
     -----------------------   -----------------------
     */
 
-    //8x8_0 & 8x8_1  
+    //8x8_0 & 8x8_1
     __m256i result1, result2, result3, result4;
     __m256i temp, temp1, temp2, temp3;
     __m128i sumsad01, sumsad23;
@@ -1841,7 +1837,6 @@ void  GetEightHorizontalSearchPointResults_8x8_16x16_PU_AVX512_INTRIN(
     result2  = _mm256_dbsad_epu8(ss1temp, ref1temp, 0x94);
     result3  = _mm256_dbsad_epu8(ss2temp, ref0temp, 0xE9);
     result4  = _mm256_dbsad_epu8(ss3temp, ref1temp, 0xE9);
-
 
     src += src_stride * 2;
     ref += ref_stride * 2;
@@ -1914,7 +1909,7 @@ void  GetEightHorizontalSearchPointResults_8x8_16x16_PU_AVX512_INTRIN(
 
     //sotore the 8 SADs(16x8 SADs)
     _mm_store_si128((__m128i*)p_sad16x16, s3);
-    //find the best for 16x16      
+    //find the best for 16x16
     s3 = _mm_minpos_epu16(s3);
     tem_sum = _mm_extract_epi16(s3, 0) << 1;
     if (tem_sum <  p_best_sad16x16[0]) {
@@ -1960,7 +1955,7 @@ and check if there is improvement, if yes keep
 the best SAD+MV
 *******************************************/
 AVX512_FUNC_TARGET
-FORCE_INLINE static 
+FORCE_INLINE static
 void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     uint16_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
@@ -2004,13 +1999,11 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     ss6    = _mm256_setzero_si256();
     ss7    = _mm256_setzero_si256();
 
-
     /*--------------------
     |  32x32_0  |  32x32_1
     ----------------------
     |  32x32_2  |  32x32_3
     ----------------------*/
-
 
     /*  data ordering in p_sad16x16 buffer
 
@@ -2222,7 +2215,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     ss2 = _mm256_min_epi32(ss2, ss3);
     ss5 = _mm256_sub_epi32(ss5, _mm256_set1_epi32(2)); // ss5-2
 
-
     // *** 4 search points per position ***
     ss6 = _mm256_cmpgt_epi32(ss0, ss2);
     //ss6 = _mm256_or_si256(_mm256_cmpgt_epi32(ss0, ss2), _mm256_cmpeq_epi32(ss0, ss2));
@@ -2272,7 +2264,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     //SVT_LOG("mv0 %d, %d, %d, %d\n", _mm_extract_epi32(s2, 0), _mm_extract_epi32(s2, 1), _mm_extract_epi32(s2, 2), _mm_extract_epi32(s2, 3)); // DEBUG
     //SVT_LOG("mv1 %d, %d, %d, %d\n", _mm_extract_epi32(s3, 0), _mm_extract_epi32(s3, 1), _mm_extract_epi32(s3, 2), _mm_extract_epi32(s3, 3)); // DEBUG
 
-
     // Choose the best MV out of the two, use s4 to hold results of min
     s4 = _mm_cmpgt_epi32(s0, s1);
 
@@ -2281,8 +2272,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
 
     //s4 = _mm_or_si128(_mm_cmpgt_epi32(s0, s1), _mm_cmpeq_epi32(s0, s1));
     s0 = _mm_min_epi32(s0, s1);
-
-
 
     // Extract MV's based on the blocks to s2
     s3 = _mm_sub_epi32(s3, _mm_set1_epi32(4)); // s3-4
@@ -2296,17 +2285,16 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     s2 = _mm_sub_epi32(_mm_setzero_si128(), s2);
     s2 = _mm_slli_epi32(s2, 2); // mv info
 
-
     // ***SAD***
     // s0: current SAD candidates for each 32x32
     // s1: best SAD's for 32x32
 
     // << 1 to compensate for every other line
-    s0 = _mm_slli_epi32(s0, 1); // best sad info 
+    s0 = _mm_slli_epi32(s0, 1); // best sad info
     // Load best SAD's
     s1 = _mm_loadu_si128((__m128i*)p_best_sad32x32);
 
-    // Determine which candidates are better than the current best SAD's. 
+    // Determine which candidates are better than the current best SAD's.
     // s4 is used to determine the MV's of the new best SAD's
     s4 = _mm_cmpgt_epi32(s1, s0);
     // not different SVT_LOG("%d, %d, %d, %d\n", _mm_extract_epi32(s4, 0), _mm_extract_epi32(s4, 1), _mm_extract_epi32(s4, 2), _mm_extract_epi32(s4, 3)); // DEBUG
@@ -2315,7 +2303,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     s0 = _mm_min_epu32(s0, s1);
     // Store new best SAD's back to memory
     _mm_storeu_si128((__m128i*)p_best_sad32x32, s0);
-
 
     // ***Motion Vectors***
     // Load best MV's
@@ -2338,8 +2325,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     // Store back to memory
     _mm_storeu_si128((__m128i*)p_best_mv32x32, s3);
 }
-
-
 
 AVX512_FUNC_TARGET
 void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
@@ -2395,7 +2380,7 @@ void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
 
     src_next16x16_offset            = src_stride << 4;
 
-    for (int j = 0; j < 16; j += 4) 
+    for (int j = 0; j < 16; j += 4)
     {
         int i = j, blockIndex_l = block_index, searchPositionIndex_l = search_position_index;
         for ( ; i < (j+4); ++i, blockIndex_l += 16, searchPositionIndex_l += 16)

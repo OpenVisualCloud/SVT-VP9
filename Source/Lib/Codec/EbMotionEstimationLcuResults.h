@@ -16,7 +16,7 @@ extern "C" {
 #define SQUARE_PU_COUNT          85
 #define MAX_ME_CANDIDATE_PER_PU   3
 
-typedef struct MeCandidate 
+typedef struct MeCandidate
 {
     union {
         struct {
@@ -34,15 +34,13 @@ typedef struct MeCandidate
 
 } MeCandidate;
 
-
 typedef struct  DistDir
 {
     unsigned    distortion : 32;
     unsigned    direction  :  2;
 } DistDir;
 
-
-typedef struct MeCuResults 
+typedef struct MeCuResults
 {
     union {
         struct {

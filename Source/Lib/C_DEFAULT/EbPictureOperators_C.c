@@ -220,12 +220,10 @@ void residual_kernel_sub_sampled(
     uint8_t   *pred_O = pred;
     int16_t  *residual_O = residual;
 
-
     //hard code subampling dimensions, keep residual_stride
     area_height >>= 1;
     input_stride <<= 1;
     pred_stride <<= 1;
-
 
     while (row_index < area_height) {
         column_index = 0;

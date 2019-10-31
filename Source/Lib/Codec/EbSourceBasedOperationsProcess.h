@@ -14,7 +14,7 @@
  * Context
  **************************************/
 
-typedef struct SourceBasedOperationsContext  
+typedef struct SourceBasedOperationsContext
 {
     EbFifo   *initial_rate_control_results_input_fifo_ptr;
     EbFifo   *picture_demux_results_output_fifo_ptr;
@@ -40,6 +40,5 @@ extern EbErrorType source_based_operations_context_ctor(
     EbFifo                        *picture_demux_results_output_fifo_ptr);
 
 extern void* source_based_operations_kernel(void *input_ptr);
-
 
 #endif // EbSourceBasedOperations_h

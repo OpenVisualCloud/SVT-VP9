@@ -9,7 +9,6 @@
 #include "EbDefinitions.h"
 #include "vp9_enums.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,28 +23,28 @@ typedef struct EpBlockStats
     Part       shape;            // P_N..P_V4 . P_S is not used.
     uint8_t    origin_x;         // orgin x from topleft of sb
     uint8_t    origin_y;         // orgin x from topleft of sb
-                                 
+
     uint8_t    d1i;              // index of the block in d1 dimension 0..24  (0 is parent square, 1 top half of H , ...., 24:last quarter of V4)
-    uint16_t   sqi_mds;          // index of the parent square in md scan.    
+    uint16_t   sqi_mds;          // index of the parent square in md scan.
     uint8_t    totns;             // max number of ns blocks within one partition 1..4 (N:1,H:2,V:2,HA:3,HB:3,VA:3,VB:3,H4:4,V4:4)
-    uint8_t    nsi;              // non square index within a partition  0..totns-1      
-                                 
+    uint8_t    nsi;              // non square index within a partition  0..totns-1
+
     uint8_t    bwidth;           // block width
-    uint8_t    bheight;          // block height  
-    uint8_t    bwidth_uv;        // block width for chroma 4:2:0 
-    uint8_t    bheight_uv;       // block height for chroma 4:2:0    
-                                 
+    uint8_t    bheight;          // block height
+    uint8_t    bwidth_uv;        // block width for chroma 4:2:0
+    uint8_t    bheight_uv;       // block height for chroma 4:2:0
+
     uint8_t    bwidth_log2;      // block width log2
     uint8_t    bheight_log2;     // block height log2
-    BLOCK_SIZE bsize;            // block size 
-    BLOCK_SIZE bsize_uv;         // block size for chroma 4:2:0 
-                                 
+    BLOCK_SIZE bsize;            // block size
+    BLOCK_SIZE bsize_uv;         // block size for chroma 4:2:0
+
     TX_SIZE    tx_size;          // largest transform size for a block
-    TX_SIZE    tx_size_uv;       // largest transform size for a block for chroma 4:2:0    
-                                 
-    uint16_t   blkidx_mds;       // block index in md scan   
+    TX_SIZE    tx_size_uv;       // largest transform size for a block for chroma 4:2:0
+
+    uint16_t   blkidx_mds;       // block index in md scan
     uint16_t   blkidx_dps;       // block index in depth scan
-               
+
     int        has_uv;
     int        sq_size;
     int        sq_size_uv;
@@ -58,7 +57,7 @@ static const uint16_t sq_depth_offset    [5] = { 681, 169,  41,   9,  1 };
 static const uint16_t nsq_depth_offset   [5] = {   5,   5,   5,   5,  1 };
 
 static const  TX_SIZE blocksize_to_txsize[/*BLOCK_SIZES_ALL*/13] = {
-        TX_4X4    ,      // BLOCK_4X4           
+        TX_4X4    ,      // BLOCK_4X4
         TX_4X4    ,      // BLOCK_4X8
         TX_4X4    ,      // BLOCK_8X4
         TX_8X8    ,      // BLOCK_8X8
@@ -75,9 +74,8 @@ static const  TX_SIZE blocksize_to_txsize[/*BLOCK_SIZES_ALL*/13] = {
 
 static const uint16_t tu_size[4] = { 4,   8,   16,   32 };
 
-
 // PA Stats Helper Functions
-typedef struct PaBlockStats   
+typedef struct PaBlockStats
 {
     uint8_t      depth;
     uint8_t      size;
@@ -189,7 +187,7 @@ extern uint64_t log2f_high_precision(uint64_t x, uint8_t precision);
 
 #define TWO_D_INDEX(x, y, stride)   \
     (((y) * (stride)) + (x))
-        
+
 // MAX_CU_COUNT is used to find the total number of partitions for the max partition depth and for
 // each parent partition up to the root partition level (i.e. LCU level).
 
@@ -211,7 +209,7 @@ extern uint64_t log2f_high_precision(uint64_t x, uint8_t precision);
 #if NEW_PRED_STRUCT
 static const uint32_t mini_gop_offset[4] = { 1, 3, 7, 31 };
 #endif
-typedef struct MiniGopStats  
+typedef struct MiniGopStats
 {
     uint32_t  hierarchical_levels;
     uint32_t  start_index;
@@ -220,7 +218,7 @@ typedef struct MiniGopStats
 
 } MiniGopStats;
 extern const MiniGopStats  * get_mini_gop_stats(const uint32_t mini_gop_index);
-typedef enum MiniGopIndex 
+typedef enum MiniGopIndex
 {
     L6_INDEX   = 0,
     L5_0_INDEX = 1,

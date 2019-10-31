@@ -24,7 +24,6 @@
 #include <gst/video/gstvideoencoder.h>
 #include "gstsvtvp9enc.h"
 
-
 GST_DEBUG_CATEGORY_STATIC (gst_svtvp9enc_debug_category);
 #define GST_CAT_DEFAULT gst_svtvp9enc_debug_category
 
@@ -865,7 +864,6 @@ gst_svtvp9enc_dequeue_encoded_frames (GstSvtVp9Enc * svtvp9enc,
       gst_buffer_fill (frame->output_buffer, 0,
           output_buf->p_buffer, output_buf->n_filled_len);
 
-
       /* SVT-VP9 may return first frames with a negative DTS,
        * offsetting it to start at 0 since GStreamer 1.x doesn't support it */
       if (output_buf->dts + svtvp9enc->dts_offset < 0) {
@@ -987,7 +985,6 @@ gst_svtvp9enc_set_format (GstVideoEncoder * encoder,
   gst_svtvp9enc_configure_svt (svtvp9enc);
   gst_svtvp9enc_allocate_svt_buffers (svtvp9enc);
   gst_svtvp9enc_start_svt (svtvp9enc);
-
 
   uint32_t fps = (uint32_t)((svtvp9enc->svt_config->frame_rate > 1000) ?
       svtvp9enc->svt_config->frame_rate >> 16 : svtvp9enc->svt_config->frame_rate);

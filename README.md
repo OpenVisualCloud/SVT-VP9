@@ -42,7 +42,6 @@ SVT-VP9 Encoder may run on any Windows* or Linux* 64 bit operating systems. The 
 
     -  Ubuntu* 18.04 Server LTS
 
-
 ### Hardware
 
 The SVT-VP9 Encoder library supports the x86 architecture
@@ -54,7 +53,6 @@ In order to achieve the performance targeted by the SVT-VP9 Encoder, the specifi
 * __RAM Requirements__
 
 In order to run the highest resolution supported by the SVT-VP9 Encoder, at least 10GB of RAM is required to run a 4k 8bit stream multi-threading on an 8180 system. The SVT-VP9 Encoder application will display an error if the system does not have enough RAM to support this. The following table shows the minimum amount of RAM required for some standard resolutions of 8bit video per stream:
-
 
 |        Resolution         | Minimum Footprint (GB)|
 |-----------------------|-----------------------|

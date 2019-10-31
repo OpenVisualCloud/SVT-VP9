@@ -209,7 +209,7 @@ void sad_loop_kernel(
     return;
 }
 
-//compute a 8x4 SAD  
+//compute a 8x4 SAD
 static uint32_t Subsad8x8(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
@@ -218,7 +218,6 @@ static uint32_t Subsad8x8(
 {
     uint32_t x, y;
     uint32_t sad_block8x4 = 0;
-
 
     src_stride = src_stride * 2;
     ref_stride = ref_stride * 2;
@@ -254,7 +253,6 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
     int16_t x_mv, y_mv;
     uint32_t sad8x8_0, sad8x8_1, sad8x8_2, sad8x8_3;
     uint16_t sad16x16;
-
 
     /*
     -------------------------------------   -----------------------------------
@@ -293,7 +291,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
     for (x_search_index = 0; x_search_index < 8; x_search_index++)
     {
 
-        //8x8_0        
+        //8x8_0
         sad8x8_0 = Subsad8x8(src, src_stride, ref + x_search_index, ref_stride);
         if (2 * sad8x8_0 < p_best_sad8x8[0]) {
             p_best_sad8x8[0] = 2 * sad8x8_0;
@@ -302,7 +300,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
             p_best_mv8x8[0] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
 
-        //8x8_1        
+        //8x8_1
         sad8x8_1 = Subsad8x8(src + 8, src_stride, ref + x_search_index + 8, ref_stride);
         if (2 * sad8x8_1 < p_best_sad8x8[1]) {
             p_best_sad8x8[1] = 2 * sad8x8_1;
@@ -311,7 +309,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
             p_best_mv8x8[1] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
 
-        //8x8_2        
+        //8x8_2
         sad8x8_2 = Subsad8x8(src + 8 * src_stride, src_stride, ref + x_search_index + 8 * ref_stride, ref_stride);
         if (2 * sad8x8_2 < p_best_sad8x8[2]) {
             p_best_sad8x8[2] = 2 * sad8x8_2;
@@ -320,7 +318,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
             p_best_mv8x8[2] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
 
-        //8x8_3        
+        //8x8_3
         sad8x8_3 = Subsad8x8(src + 8 + 8 * src_stride, src_stride, ref + 8 + 8 * ref_stride + x_search_index, ref_stride);
         if (2 * sad8x8_3 < p_best_sad8x8[3]) {
             p_best_sad8x8[3] = 2 * sad8x8_3;
@@ -328,7 +326,6 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
             y_mv = _MVYT(mv);
             p_best_mv8x8[3] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
-
 
         //16x16
         sad16x16 = (uint16_t)(sad8x8_0 + sad8x8_1 + sad8x8_2 + sad8x8_3);
@@ -343,7 +340,6 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu(
     }
 }
 
-    
 /*******************************************
 Calcualte SAD for 32x32,64x64 from 16x16
 and check if there is improvement, if yes keep
@@ -367,7 +363,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64(
     |  32x32_2  |  32x32_3
     ----------------------*/
 
-
     /*  data ordering in p_sad16x16 buffer
 
     Search    Search            Search
@@ -383,8 +378,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64(
     16x16_15   |    x    |    x    | ...... |    x    |
     ---------------------------------------
     */
-
-
 
     for (x_search_index = 0; x_search_index < 8; x_search_index++)
     {
@@ -419,7 +412,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64(
             p_best_mv32x32[2] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
 
-
         //32x32_3
         sad32x32_3 = p_sad16x16[12 * 8 + x_search_index] + p_sad16x16[13 * 8 + x_search_index] + p_sad16x16[14 * 8 + x_search_index] + p_sad16x16[15 * 8 + x_search_index];
 
@@ -429,7 +421,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64(
             y_mv = _MVYT(mv);
             p_best_mv32x32[3] = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
         }
-
 
         //64x64
         sad64x64 = sad32x32_0 + sad32x32_1 + sad32x32_2 + sad32x32_3;

@@ -17,7 +17,7 @@ typedef struct Bitstream {
     EbPtr output_bitstream_ptr;
 } Bitstream;
 
-typedef struct EntropyCoder 
+typedef struct EntropyCoder
 {
     VpxWriter residual_bc;
     EbPtr     ec_output_bitstream_ptr;

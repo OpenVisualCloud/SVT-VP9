@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include "vp9_enums.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

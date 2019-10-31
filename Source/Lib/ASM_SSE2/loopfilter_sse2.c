@@ -1750,4 +1750,3 @@ void vpx_lpf_vertical_16_sse2(unsigned char *s, int p,
   // Transpose back
   transpose(src, 8, dst, p, 2);
 }
-

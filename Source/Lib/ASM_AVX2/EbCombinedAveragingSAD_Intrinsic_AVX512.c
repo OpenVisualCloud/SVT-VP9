@@ -56,7 +56,6 @@ void bi_pred_average_kernel_avx512_intrin(
                 _mm256_storeu_si256((__m256i *) dst, xmm_avg1_256);
                 _mm256_storeu_si256((__m256i *) (dst + dst_stride), xmm_avg3_256);
 
-
                 src0 += src0_stride << 1;
                 src1 += src1_stride << 1;
                 dst += dst_stride << 1;
@@ -219,7 +218,6 @@ void bi_pred_average_kernel_avx2_intrin(
                 _mm256_storeu_si256((__m256i *) dst, xmm_avg1_256);
                 _mm256_storeu_si256((__m256i *) (dst + dst_stride), xmm_avg3_256);
 
-
                 src0 += src0_stride << 1;
                 src1 += src1_stride << 1;
                 dst += dst_stride << 1;
@@ -339,4 +337,3 @@ void bi_pred_average_kernel_avx2_intrin(
 
 }
 #endif
-

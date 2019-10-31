@@ -123,7 +123,7 @@ void vp9_loop_filter_frame_init(struct VP9Common *cm, int default_filt_lvl);
 
 void vp9_loop_filter_frame(
 #if 0
-    YV12_BUFFER_CONFIG *frame, 
+    YV12_BUFFER_CONFIG *frame,
 #endif
     struct VP9Common *cm, struct macroblockd *mbd, int filter_level, int y_only, int partial_frame);
 

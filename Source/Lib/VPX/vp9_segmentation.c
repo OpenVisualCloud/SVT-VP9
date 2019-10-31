@@ -205,7 +205,7 @@ void vp9_choose_segmap_coding_method(VP9_COMMON *cm, MACROBLOCKD *xd) {
   // temporal coding probabilities
   memset(seg->tree_probs, 255, sizeof(seg->tree_probs));
   memset(seg->pred_probs, 255, sizeof(seg->pred_probs));
- 
+
   // First of all generate stats regarding how well the last segment map
   // predicts this one
   for (tile_col = 0; tile_col < 1 << cm->log2_tile_cols; tile_col++) {

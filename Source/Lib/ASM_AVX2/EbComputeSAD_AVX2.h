@@ -40,33 +40,33 @@ uint32_t compute24x_m_sad_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
-    uint32_t  ref_stride,                     // input parameter, reference stride  
+    uint32_t  ref_stride,                     // input parameter, reference stride
     uint32_t  height,                         // input parameter, block height (M)
-    uint32_t  width);                         // input parameter, block width (N)    
+    uint32_t  width);                         // input parameter, block width (N)
 
 uint32_t compute32x_m_sad_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
-    uint32_t  ref_stride,                     // input parameter, reference stride  
+    uint32_t  ref_stride,                     // input parameter, reference stride
     uint32_t  height,                         // input parameter, block height (M)
-    uint32_t  width);                         // input parameter, block width (N)    
+    uint32_t  width);                         // input parameter, block width (N)
 
 uint32_t compute48x_m_sad_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
-    uint32_t  ref_stride,                     // input parameter, reference stride  
+    uint32_t  ref_stride,                     // input parameter, reference stride
     uint32_t  height,                         // input parameter, block height (M)
-    uint32_t  width);                         // input parameter, block width (N)    
+    uint32_t  width);                         // input parameter, block width (N)
 
 uint32_t compute64x_m_sad_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
-    uint32_t  ref_stride,                     // input parameter, reference stride  
+    uint32_t  ref_stride,                     // input parameter, reference stride
     uint32_t  height,                         // input parameter, block height (M)
-    uint32_t  width);                         // input parameter, block width (N) 
+    uint32_t  width);                         // input parameter, block width (N)
 
 void sad_loop_kernel_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
@@ -106,6 +106,5 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbComputeSAD_AVX2_h
-

@@ -112,7 +112,6 @@ void SpeedBufferControl(
     int8_t   change_cond        = 0;
     int64_t  target_fps         = (sequence_control_set_ptr->static_config.injector_frame_rate >> 16);
 
-    
     int64_t buffer_trshold1 = SC_FRAMES_INTERVAL_T1;
     int64_t buffer_trshold2 = SC_FRAMES_INTERVAL_T2;
     int64_t buffer_trshold3 = SC_FRAMES_INTERVAL_T3;
@@ -261,8 +260,6 @@ void SpeedBufferControl(
     context_ptr->prev_enc_mod = sequence_control_set_ptr->encode_context_ptr->enc_mode;
 }
 
-
-
 /******************************************************
 * Derive Pre-Analysis settings for SQ
 Input   : encoder mode and tune
@@ -323,9 +320,7 @@ EbErrorType signal_derivation_pre_analysis_sq(
         4;    // 4K
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
 
-
         picture_control_set_ptr->enable_hme_flag = EB_TRUE;
-
 
     }
     else {
@@ -351,7 +346,6 @@ EbErrorType signal_derivation_pre_analysis_oq(
 
     uint8_t input_resolution = sequence_control_set_ptr->input_resolution;
 
-
     // Derive Noise Detection Method
     if (input_resolution == INPUT_SIZE_4K_RANGE) {
         if (picture_control_set_ptr->enc_mode <= ENC_MODE_3) {
@@ -372,7 +366,6 @@ EbErrorType signal_derivation_pre_analysis_oq(
     else {
         picture_control_set_ptr->noise_detection_method = NOISE_DETECT_FULL_PRECISION;
     }
-
 
     // Derive Noise Detection Threshold
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_3) {
@@ -400,7 +393,6 @@ EbErrorType signal_derivation_pre_analysis_oq(
         (input_resolution <= INPUT_SIZE_1080p_RANGE) ? 3 : // 1080I
         4;    // 4K
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-
 
         picture_control_set_ptr->enable_hme_flag = EB_TRUE;
 
@@ -501,7 +493,7 @@ void* resource_coordination_kernel(void *input_ptr)
             context_ptr->input_buffer_fifo_ptr,
             &ebInputWrapperPtr);
         eb_input_ptr = (EbBufferHeaderType*) ebInputWrapperPtr->object_ptr;
-         
+
         sequence_control_set_ptr       = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr;
 
         // If config changes occured since the last picture began encoding, then
@@ -509,17 +501,16 @@ void* resource_coordination_kernel(void *input_ptr)
         //   of the previous Active SequenceControlSet
         eb_block_on_mutex(context_ptr->sequence_control_set_instance_array[instance_index]->config_mutex);
         if(context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) {
-            
+
             // Update picture width, picture height, cropping right offset, cropping bottom offset, and conformance windows
-            if(context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) 
-            
+            if(context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture)
+
             {
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->luma_width = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_luma_width;
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->luma_height = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_luma_height;
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->chroma_width = (context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_luma_width >> 1);
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->chroma_height = (context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_luma_height >> 1);
 
-                
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->pad_right = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_pad_right;
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->cropping_right_offset = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->pad_right;
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->pad_bottom = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->max_input_pad_bottom;
@@ -527,7 +518,6 @@ void* resource_coordination_kernel(void *input_ptr)
 
                 input_size = context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->luma_width * context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr->luma_height;
             }
-
 
             // Copy previous Active sequence_control_set_ptr to a place holder
             previoussequence_control_set_wrapper_ptr = context_ptr->sequence_control_set_active_array[instance_index];
@@ -569,7 +559,7 @@ void* resource_coordination_kernel(void *input_ptr)
 
         // Set the current SequenceControlSet
         sequence_control_set_ptr   = (SequenceControlSet*) context_ptr->sequence_control_set_active_array[instance_index]->object_ptr;
-        
+
         // Init LCU Params
         if (context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) {
             derive_input_resolution(
@@ -593,9 +583,8 @@ void* resource_coordination_kernel(void *input_ptr)
 
         picture_control_set_ptr->p_pcs_wrapper_ptr = picture_control_set_wrapper_ptr;
 
-
         // VP9 code
-        // Hsan - to clean up 
+        // Hsan - to clean up
 
         picture_control_set_ptr->cpi->alt_fb_idx = 2;
         picture_control_set_ptr->cpi->common.error_resilient_mode = 0;
@@ -633,7 +622,7 @@ void* resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->cpi->common.y_dc_delta_q = 0;
 #if CHROMA_QP_OFFSET
         if (sequence_control_set_ptr->static_config.tune == TUNE_OQ) {
-            picture_control_set_ptr->cpi->common.uv_dc_delta_q = -15; 
+            picture_control_set_ptr->cpi->common.uv_dc_delta_q = -15;
             picture_control_set_ptr->cpi->common.uv_ac_delta_q = -15;
         }
         else {
@@ -656,8 +645,8 @@ void* resource_coordination_kernel(void *input_ptr)
         vp9_init_mv_probs(&picture_control_set_ptr->cpi->common);
 
         init_mode_probs(picture_control_set_ptr->cpi->common.fc);
-        vp9_zero(*picture_control_set_ptr->cpi->td.counts);        // Hsan  could be completely removed   
-        vp9_zero(picture_control_set_ptr->cpi->td.rd_counts);      // Hsan  could be completely removed   
+        vp9_zero(*picture_control_set_ptr->cpi->td.counts);        // Hsan  could be completely removed
+        vp9_zero(picture_control_set_ptr->cpi->td.rd_counts);      // Hsan  could be completely removed
 
         vp9_init_intra_predictors();
 
@@ -673,7 +662,7 @@ void* resource_coordination_kernel(void *input_ptr)
         vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
 #endif
         // Set the Encoder mode
-        picture_control_set_ptr->enc_mode = sequence_control_set_ptr->static_config.enc_mode; 
+        picture_control_set_ptr->enc_mode = sequence_control_set_ptr->static_config.enc_mode;
 
         // Keep track of the previous input for the ZZ SADs computation
         picture_control_set_ptr->previous_picture_control_set_wrapper_ptr = (context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) ?
@@ -694,14 +683,14 @@ void* resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->sequence_control_set_wrapper_ptr    = context_ptr->sequence_control_set_active_array[instance_index];
         picture_control_set_ptr->input_picture_wrapper_ptr          = input_picture_wrapper_ptr;
         picture_control_set_ptr->end_of_sequence_flag               = end_of_sequence_flag;
-            
+
         // Set Picture Control Flags
         picture_control_set_ptr->idr_flag = sequence_control_set_ptr->encode_context_ptr->initial_picture || (picture_control_set_ptr->eb_input_ptr->pic_type == EB_IDR_PICTURE);
         picture_control_set_ptr->cra_flag = (picture_control_set_ptr->eb_input_ptr->pic_type == EB_I_PICTURE) ? EB_TRUE : EB_FALSE;
         picture_control_set_ptr->scene_change_flag                 = EB_FALSE;
 
         picture_control_set_ptr->qp_on_the_fly                      = EB_FALSE;
-           
+
         picture_control_set_ptr->sb_total_count                      = sequence_control_set_ptr->sb_total_count;
 
         if (sequence_control_set_ptr->static_config.speed_control_flag) {
@@ -716,7 +705,6 @@ void* resource_coordination_kernel(void *input_ptr)
 
         // Set the SCD Mode
         sequence_control_set_ptr->scd_mode = SCD_MODE_0;
-    
 
         // Pre-Analysis Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
@@ -735,7 +723,7 @@ void* resource_coordination_kernel(void *input_ptr)
                 picture_control_set_ptr);
         }
 
-        // Rate Control                                            
+        // Rate Control
         // Set the ME Distortion and OIS Historgrams to zero
         if (sequence_control_set_ptr->static_config.rate_control_mode){
                 EB_MEMSET(picture_control_set_ptr->me_distortion_histogram, 0, NUMBER_OF_SAD_INTERVALS*sizeof(uint16_t));
@@ -760,11 +748,8 @@ void* resource_coordination_kernel(void *input_ptr)
         // Picture Stats
         picture_control_set_ptr->picture_number                   = context_ptr->picture_number_array[instance_index]++;
 
-
         // Set the picture structure: 0: progressive, 1: top, 2: bottom
         picture_control_set_ptr->pict_struct = PROGRESSIVE_PIC_STRUCT;
-
-
 
         sequence_control_set_ptr->encode_context_ptr->initial_picture = EB_FALSE;
 
@@ -779,11 +764,11 @@ void* resource_coordination_kernel(void *input_ptr)
         eb_object_inc_live_count(
             picture_control_set_ptr->pareference_picture_wrapper_ptr,
             2);
-   
+
         eb_object_inc_live_count(
             picture_control_set_wrapper_ptr,
             2);
-        
+
         ((EbPaReferenceObject*)picture_control_set_ptr->pareference_picture_wrapper_ptr->object_ptr)->input_padded_picture_ptr->buffer_y = picture_control_set_ptr->enhanced_picture_ptr->buffer_y;
         // Get Empty Output Results Object
         if (picture_control_set_ptr->picture_number > 0 && prev_picture_control_set_wrapper_ptr != NULL)

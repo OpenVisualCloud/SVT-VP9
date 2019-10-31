@@ -193,7 +193,6 @@ typedef struct macroblockd {
     /* pointer to current frame */
     const YV12_BUFFER_CONFIG *cur_buf;
 
-
     ENTROPY_CONTEXT *above_context[MAX_MB_PLANE];
     ENTROPY_CONTEXT left_context[MAX_MB_PLANE][16];
 
@@ -245,7 +244,6 @@ static INLINE TX_TYPE get_tx_type_4x4(PLANE_TYPE plane_type,
 
 void vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y);
 
-
 static INLINE TX_SIZE get_uv_tx_size(const ModeInfo *mi,
     const struct macroblockd_plane *pd) {
     assert(mi->sb_type < BLOCK_8X8 ||
@@ -254,7 +252,6 @@ static INLINE TX_SIZE get_uv_tx_size(const ModeInfo *mi,
     return uv_txsize_lookup[mi->sb_type][mi->tx_size][pd->subsampling_x]
         [pd->subsampling_y];
 }
-
 
 static INLINE BLOCK_SIZE
     get_plane_block_size(BLOCK_SIZE bsize, const struct macroblockd_plane *pd) {

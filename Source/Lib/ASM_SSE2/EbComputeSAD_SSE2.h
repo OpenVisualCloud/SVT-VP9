@@ -33,5 +33,5 @@ extern uint32_t combined_averaging8x_msad_sse2_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbComputeSAD_SSE2_h

@@ -35,10 +35,10 @@ extern "C" {
 /**************************************
  * Member definitions
  **************************************/
-typedef struct EncDecSegDependencyMap 
+typedef struct EncDecSegDependencyMap
 {
     uint8_t  *dependency_map;
-    EbHandle update_mutex; 
+    EbHandle update_mutex;
 } EncDecSegDependencyMap;
 
 typedef struct EncDecSegSegmentRow
@@ -46,7 +46,7 @@ typedef struct EncDecSegSegmentRow
     uint16_t  starting_seg_index;
     uint16_t  ending_seg_index;
     uint16_t  current_seg_index;
-    EbHandle assignment_mutex;  
+    EbHandle assignment_mutex;
 
 } EncDecSegSegmentRow;
 
@@ -67,7 +67,7 @@ typedef struct EncDecSegments
     uint32_t               segment_total_count;
     uint32_t               sb_band_count;
     uint32_t               sb_row_count;
-                          
+
     uint32_t               segment_max_band_count;
     uint32_t               segment_max_row_count;
     uint32_t               segment_max_total_count;

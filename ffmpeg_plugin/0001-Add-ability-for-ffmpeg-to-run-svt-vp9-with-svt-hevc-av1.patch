@@ -82,10 +82,10 @@ index b749946..1f504af 100644
 @@ -1526,6 +1526,8 @@ typedef struct AVPacket {
   */
  #define AV_PKT_FLAG_DISPOSABLE 0x0010
- 
+
 +#define AV_PKT_FLAG_SVT_VP9_EXT_ON  0x10000 // Indicating SVT VP9 frame header ext on
 +#define AV_PKT_FLAG_SVT_VP9_EXT_OFF 0x20000 // Indicating SVT VP9 frame header ext off
- 
+
  enum AVSideDataParamChangeFlags {
      AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
@@ -575,7 +575,7 @@ index adf7211..05f0813 100644
 @@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
      AVIOContext *pb = s->pb;
      IVFEncContext *ctx = s->priv_data;
- 
+
 -    avio_wl32(pb, pkt->size);
 -    avio_wl64(pb, pkt->pts);
 -    avio_write(pb, pkt->data, pkt->size);
@@ -612,7 +612,7 @@ index adf7211..05f0813 100644
 @@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
- 
+
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
@@ -620,5 +620,5 @@ index adf7211..05f0813 100644
      if (st->codecpar->codec_id == AV_CODEC_ID_VP9)
          ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
      else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
--- 
+--
 1.8.3.1

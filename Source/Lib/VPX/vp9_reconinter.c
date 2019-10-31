@@ -175,7 +175,7 @@ void build_inter_predictors(EncDecContext   *context_ptr, EbByte pred_buffer, ui
         (plane == 1) ?
             context_ptr->ref_pic_list[list_index]->stride_cb :
             context_ptr->ref_pic_list[list_index]->stride_cr;
-    
+
     EbByte ref_buffer = (plane == 0) ?
         (context_ptr->ref_pic_list[list_index]->buffer_y + context_ptr->ref_pic_list[list_index]->origin_x + context_ptr->block_origin_x + (context_ptr->ref_pic_list[list_index]->origin_y + context_ptr->block_origin_y) * ref_stride) :
         (plane == 1) ?
@@ -260,11 +260,11 @@ void build_inter_predictors(EncDecContext   *context_ptr, EbByte pred_buffer, ui
 #if 1
     inter_predictor(
         pre,
-        ref_stride, 
-        pred_buffer, 
-        pred_stride, 
+        ref_stride,
+        pred_buffer,
+        pred_stride,
         subpel_x,
-        subpel_y, 
+        subpel_y,
         sf, w, h, ref, kernel, xs, ys);
 #else
     inter_predictor(pre, pre_buf->stride, dst, dst_buf->stride, subpel_x,
@@ -301,7 +301,6 @@ static void build_inter_predictors_for_planes(MACROBLOCKD *xd, BLOCK_SIZE bsize,
   }
 }
 
-
 void vp9_build_inter_predictors_sby(MACROBLOCKD *xd, int mi_row, int mi_col,
                                     BLOCK_SIZE bsize) {
   build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, 0, 0);
@@ -323,7 +322,6 @@ void vp9_build_inter_predictors_sb(MACROBLOCKD *xd, int mi_row, int mi_col,
   build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, 0,
                                     MAX_MB_PLANE - 1);
 }
-
 
 void vp9_setup_dst_planes(struct macroblockd_plane planes[MAX_MB_PLANE],
                           const YV12_BUFFER_CONFIG *src, int mi_row,

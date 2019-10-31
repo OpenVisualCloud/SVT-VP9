@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 void picture_average_kernel(
     EbByte    src0,
     uint32_t  src0_stride,
@@ -145,8 +145,7 @@ uint64_t spatial_full_distortion_kernel(
     uint32_t   area_width,
     uint32_t   area_height);
 
-
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbPictureOperators_C_h

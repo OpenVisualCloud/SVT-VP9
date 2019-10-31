@@ -41,8 +41,6 @@ EbErrorType output_bitstream_unit_ctor(
     return EB_ErrorNone;
 }
 
-
-
 /**********************************
  * Reset Bitstream
  **********************************/
@@ -103,7 +101,7 @@ EbErrorType output_bitstream_write (
 }
 
 EbErrorType output_bitstream_write_byte(
-    OutputBitstreamUnit *bitstream_ptr, 
+    OutputBitstreamUnit *bitstream_ptr,
     uint32_t             bits)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -176,6 +174,3 @@ EbErrorType output_bitstream_rbsp_to_payload(
 
     return return_error;
 }
-
-
-

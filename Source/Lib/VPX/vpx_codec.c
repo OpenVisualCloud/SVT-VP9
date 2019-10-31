@@ -15,7 +15,6 @@
 
 #define INLINE __inline
 
-
 #if 0
 #define SAVE_STATUS(ctx, var) (ctx ? (ctx->err = var) : var)
 

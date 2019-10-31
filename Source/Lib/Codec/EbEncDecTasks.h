@@ -18,7 +18,7 @@ extern "C" {
 /**************************************
  * Process Results
  **************************************/
-typedef struct EncDecTasks 
+typedef struct EncDecTasks
 {
     EbObjectWrapper *picture_control_set_wrapper_ptr;
     uint32_t         input_type;
@@ -34,9 +34,8 @@ typedef struct EncDecTasksInitData {
  * Extern Function Declarations
  **************************************/
 extern EbErrorType enc_dec_tasks_ctor(
-    EbPtr *object_dbl_ptr, 
+    EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
-
 
 #ifdef __cplusplus
 }

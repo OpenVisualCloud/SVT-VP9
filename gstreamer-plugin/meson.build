@@ -4,7 +4,6 @@ project('gst-svt-vp9', 'c',
   meson_version : '>= 0.29',
   default_options : [ 'buildtype=debugoptimized' ])
 
-  
 # standard gst-plugins-bad dependencies and configuration
 gst_req = '>= 1.8.0'
 gst_dep = dependency('gstreamer-1.0', version : gst_req,
@@ -34,21 +33,20 @@ foreach flag: cc_flags
     endif
 endforeach
 
-
 ldflags = [
    '-Wl,-z,now',
    '-Wl,-z,relro',
    '-Wl,-z,noexecstack',
 ]
 foreach lflag : ldflags
-	add_global_link_arguments(lflag, language : 'c')
+    add_global_link_arguments(lflag, language : 'c')
 endforeach
 
 if svtvp9enc_dep.found()
-	gstsvtvp9enc = library('gstsvtvp9enc',
-		'gstsvtvp9enc.c', 
-		dependencies: [gstbase_dep, gstvideo_dep, svtvp9enc_dep],
-		install: true,
-		install_dir: plugins_install_dir,
-	)
+    gstsvtvp9enc = library('gstsvtvp9enc',
+        'gstsvtvp9enc.c',
+        dependencies: [gstbase_dep, gstvideo_dep, svtvp9enc_dep],
+        install: true,
+        install_dir: plugins_install_dir,
+    )
 endif

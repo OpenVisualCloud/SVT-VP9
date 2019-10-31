@@ -122,9 +122,9 @@ extern "C" {
             /*6 48xM */ combined_averaging_sad,
             /*7      */ (EbSadavgkernelNxMType)nx_m_sad_kernel_void_func,
             /*8 64xM */ combined_averaging_sad
-        },              
-        // AVX2         
-        {               
+        },
+        // AVX2
+        {
             /*0 4xM  */ combined_averaging4x_msad_sse2_intrin,
             /*1 8xM  */ combined_averaging8x_msad_avx2_intrin,
             /*2 16xM */ combined_averaging16x_msad_avx2_intrin,
@@ -136,7 +136,6 @@ extern "C" {
             /*8 64xM */ combined_averaging64x_msad_avx2_intrin
         },
     };
-
 
     static EbSadloopkernelNxMType FUNC_TABLE nx_m_sad_loop_kernel_func_ptr_array[ASM_TYPE_TOTAL] =
     {

@@ -12,11 +12,9 @@
     - 3.2 [Software BKC](#software-bkc)
 5. [Legal Disclaimer](#legal-disclaimer)
 
-
 ## Introduction
 
 This document describes how to use the Scalable Video Technology for VP9 Encoder (SVT-VP9).  In particular, this user guide describes how to run the sample application with the respective dynamically linked library.
-
 
 ## Sample Application Guide
 
@@ -39,7 +37,6 @@ The sample application typically takes the following command line parameters:
 >-c filename [**Optional**]
 
 A text file that contains encoder parameters such as input file name, quantization parameter etc. Refer to the comments in the Config/Sample.cfg for specific details. The list of encoder parameters are also listed below. Note that command line parameters take precedence over the parameters included in the configuration file when there is a conflict.
-
 
 >-i filename **[Required]**
 
@@ -69,8 +66,6 @@ The intra period defines the interval of frames after which you insert an Intra 
 
 This token sets the bitrate control encoding mode [1: Variable Bitrate, 0: Constant QP]. When rc is set to 1, it is best to match the -lad (lookahead distance described in the next section) parameter to the -intra-period. When -rc is set to 0, a qp value is expected with the use of the -q command line option otherwise a default value is assigned (45).
 
-
-
 For example, the following command encodes 100 frames of the YUV video sequence into the bin bit stream file.  The picture is 1920 luma pixels wide and 1080 pixels high using the <u>Sample.cfg</u> configuration. The QP equals 30 and the md5 checksum is not included in the bit stream.
 
 >SvtVp9EncApp.exe -i CrowdRun\_1920x1080.yuv -w 1920 -h 1080 -n 100 -fps 50 -b output.ivf
@@ -80,7 +75,6 @@ It should be noted that not all the encoder parameters present in the <u>Sample.
 #### List of all configuration parameters
 
 The encoder parameters present in the Sample.cfg file are listed in this table below along with their status of support, command line parameter and the range of values that the parameters can take.
-
 
 | **Configuration file parameter** | **Command line** |   **Range**   | **Default** | **Description** |
 | --- | --- | --- | --- | --- |
@@ -148,7 +142,6 @@ Visual Studio* 2017 offers Profile Guided Optimization (PGO) to improve compiler
 5. Right click SvtVp9EncApp project from the Solution Explorer -> Profile Guided Optimization -> Run Instrumented/Optimized Application
 6. Right click SvtVp9EncApp project from the Solution Explorer -> Profile Guided Optimization -> Optimize (Repeat for SvtVp9Enc)
 
-
 #### Linux* OS (Tested on Ubuntu* Server 18.04 and 16.04)
 
 Some Linux\* Operating systems and kernels assign CPU utilization limits to applications running on servers. Therefore, to allow the application to utilize up to ~100% of the CPUs assigned to it, it is best to run the following commands before and when running the encoder:
@@ -157,7 +150,7 @@ Some Linux\* Operating systems and kernels assign CPU utilization limits to appl
 
 The above section is not needed for Windows\* as it does not perform the CPU utilization limitation on the application.
 
-#### Command Line BKC 
+#### Command Line BKC
 The SVT-VP9 encoder achieves the best performance when restricting each channel to only one socket on either Windows\* or Linux\* operating systems. For example, when running four channels on a dual socket system, it&#39;s best to pin two channels to each socket and not split every channel on both sockets.
 
 LogicalProcessorNumber (-lp) and TargetSocket (-ss) parameters can be used to management the threads. Or you can use OS commands like below.
@@ -169,7 +162,6 @@ For example, in order to run a 2-stream 4kp60 simultaneous encode on a dual sock
 >start /node 0 SvtVp9EncApp.exe -enc-mode 8 -tune 0  -w 3840  -h 2160 -bit-depth 8 -i in.yuv  -rc 1 -tbr 10000000 -fps 60  -b out1.bin   -n 5000
 
 >start /node 1 SvtVp9EncApp.exe -enc-mode 8 -tune 0  -w 3840  -h 2160 -bit-depth 8 -i in.yuv  -rc 1 -tbr 10000000 -fps 60 -b out3.bin   -n 5000
-
 
 ##### *Running Ubuntu** 18.04:
 
@@ -197,7 +189,6 @@ If only TargetSocket is set, threads run on all the logical processors of socket
 
 >SvtVp9EncApp.exe -i in.yuv -w 3840 -h 2160 –lp 20 –ss 0
 If both LogicalProcessorNumber and TargetSocket are set, threads run on 20 logical processors of socket 0. Threads guaranteed to run only on socket 0 if 20 is larger than logical processor number of socket 0.
-
 
 ## Legal Disclaimer
 

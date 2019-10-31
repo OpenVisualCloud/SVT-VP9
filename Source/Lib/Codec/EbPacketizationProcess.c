@@ -41,20 +41,19 @@ EbErrorType packetization_context_ctor(
     PacketizationContext *context_ptr;
     EB_MALLOC(PacketizationContext*, context_ptr, sizeof(PacketizationContext), EB_N_PTR);
     *context_dbl_ptr = context_ptr;
-        
+
     context_ptr->entropy_coding_input_fifo_ptr      = entropy_coding_input_fifo_ptr;
     context_ptr->rate_control_tasks_output_fifo_ptr  = rate_control_tasks_output_fifo_ptr;
-    
+
     return EB_ErrorNone;
 }
 
-
 void ivf_write_frame_header(
-    EbByte    write_byte_ptr, 
-    uint32_t *write_location, 
-    size_t    frame_size, 
-    uint64_t  pts, 
-    uint32_t *output_buffer_index) 
+    EbByte    write_byte_ptr,
+    uint32_t *write_location,
+    size_t    frame_size,
+    uint64_t  pts,
+    uint32_t *output_buffer_index)
 {
 
     mem_put_le32(&write_byte_ptr[*write_location], (int)frame_size);
@@ -81,7 +80,6 @@ void update_rc_rate_tables(
 
     uint32_t  sb_index;
     int32_t   qp_index;
-
 
     // LCU Loop
     if (sequence_control_set_ptr->static_config.rate_control_mode > 0) {
@@ -123,7 +121,7 @@ void update_rc_rate_tables(
                 if (picture_control_set_ptr->slice_type == I_SLICE) {
                     if (sequence_control_set_ptr->input_resolution < INPUT_SIZE_4K_RANGE) {
                         for (sad_interval_index = 0; sad_interval_index < NUMBER_OF_INTRA_SAD_INTERVALS; sad_interval_index++) {
-                            
+
                             if (count[sad_interval_index] > 5) {
                                 weight = 8;
                             }
@@ -237,7 +235,7 @@ void update_rc_rate_tables(
             //if (picture_control_set_ptr->temporalLayerIndex == 0) {
             //    qp_index = 40;
             //    SVT_LOG("UPDATE: %d\t%d\t%d\t%d\n", picture_control_set_ptr->pictureNumber, picture_control_set_ptr->pictureQp, ref_qindex_dequant, picture_control_set_ptr->ParentPcsPtr->cpi->y_dequant[vp9_quantizer_to_qindex(qp_index)][1]);
-            //    
+            //
             //    for (sad_interval_index = 0; sad_interval_index < NUMBER_OF_INTRA_SAD_INTERVALS; sad_interval_index++) {
 
             //        SVT_LOG("%d\t%d\n", sad_interval_index, encodecontext_ptr->rateControlTablesArray[qp_index].sad_bits_array[picture_control_set_ptr->temporalLayerIndex][sad_interval_index]);
@@ -254,15 +252,15 @@ void* packetization_kernel(void *input_ptr)
 {
     // Context
     PacketizationContext      *context_ptr = (PacketizationContext*) input_ptr;
-    
+
     PictureControlSet         *picture_control_set_ptr;
-    
+
     // Config
     SequenceControlSet        *sequence_control_set_ptr;
-    
+
     // Encoding Context
     EncodeContext             *encode_context_ptr;
-    
+
     // Input
     EbObjectWrapper           *entropy_coding_results_wrapper_ptr;
     EntropyCodingResults      *entropy_coding_results_ptr;
@@ -272,7 +270,7 @@ void* packetization_kernel(void *input_ptr)
     EbBufferHeaderType        *output_stream_ptr;
     EbObjectWrapper           *rate_control_tasks_wrapper_ptr;
     RateControlTasks          *rate_control_tasks_ptr;
-    
+
     // Queue variables
     int32_t                    queue_entry_index;
     PacketizationReorderEntry *queue_entry_ptr;
@@ -281,7 +279,7 @@ void* packetization_kernel(void *input_ptr)
     context_ptr->disp_order_continuity_count = 0;
 
     for(;;) {
-    
+
         // Get EntropyCoding Results
         eb_get_full_object(
             context_ptr->entropy_coding_input_fifo_ptr,
@@ -294,14 +292,14 @@ void* packetization_kernel(void *input_ptr)
         //****************************************************
         // Input Entropy Results into Reordering Queue
         //****************************************************
-               
+
         //get a new entry spot
-        queue_entry_index = picture_control_set_ptr->parent_pcs_ptr->decode_order % PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;          
+        queue_entry_index = picture_control_set_ptr->parent_pcs_ptr->decode_order % PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;
         queue_entry_ptr    = encode_context_ptr->packetization_reorder_queue[queue_entry_index];
         queue_entry_ptr->start_time_seconds = picture_control_set_ptr->parent_pcs_ptr->start_time_seconds;
         queue_entry_ptr->start_timeu_seconds = picture_control_set_ptr->parent_pcs_ptr->start_timeu_seconds;
 
-        //TODO: buffer should be big enough to avoid a deadlock here. Add an assert that make the warning       
+        //TODO: buffer should be big enough to avoid a deadlock here. Add an assert that make the warning
         // Get Output Bitstream buffer
         output_stream_wrapper_ptr       = picture_control_set_ptr->parent_pcs_ptr->output_stream_wrapper_ptr;
         output_stream_ptr               = (EbBufferHeaderType*) output_stream_wrapper_ptr->object_ptr;
@@ -320,7 +318,7 @@ void* packetization_kernel(void *input_ptr)
         eb_get_empty_object(
             context_ptr->rate_control_tasks_output_fifo_ptr,
             &rate_control_tasks_wrapper_ptr);
-        rate_control_tasks_ptr                                 = (RateControlTasks*) rate_control_tasks_wrapper_ptr->object_ptr; 
+        rate_control_tasks_ptr                                 = (RateControlTasks*) rate_control_tasks_wrapper_ptr->object_ptr;
         rate_control_tasks_ptr->picture_control_set_wrapper_ptr    = picture_control_set_ptr->picture_parent_control_set_wrapper_ptr;
         rate_control_tasks_ptr->task_type                       = RC_PACKETIZATION_FEEDBACK_RESULT;
 
@@ -329,7 +327,7 @@ void* packetization_kernel(void *input_ptr)
 
         size = 0;
         reset_bitstream(
-            picture_control_set_ptr->bitstream_ptr->output_bitstream_ptr);      
+            picture_control_set_ptr->bitstream_ptr->output_bitstream_ptr);
 
         vp9_pack_bitstream(
             picture_control_set_ptr,
@@ -339,7 +337,7 @@ void* packetization_kernel(void *input_ptr)
             0,
             0);
 
-        // Stream construction 
+        // Stream construction
         output_bitstream_ptr->written_bits_count = (uint32_t) size;
         output_bitstream_ptr->buffer = output_bitstream_ptr->buffer_begin + size;
         uint32_t write_location = 0;
@@ -353,7 +351,7 @@ void* packetization_kernel(void *input_ptr)
 
         // IVF data: 12-byte header
         // bytes 0 -  3 :   size of frame in bytes(not including the 12 - byte header)
-        // bytes 4 - 11 :   64 - bit presentation timestamp    
+        // bytes 4 - 11 :   64 - bit presentation timestamp
         //ivf_write_frame_header(write_byte_ptr, &write_location, size, picture_control_set_ptr->picture_number, output_buffer_index);
 
         // Frame Data: 12+-byte
@@ -366,7 +364,6 @@ void* packetization_kernel(void *input_ptr)
             }
             read_location++;
         }
-
 
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.show_existing_frame) {
             output_stream_ptr->flags |= EB_BUFFERFLAG_SHOW_EXT;
@@ -384,7 +381,7 @@ void* packetization_kernel(void *input_ptr)
                     1,
                     show_existing_frame_index);
 
-                // Stream construction 
+                // Stream construction
                 output_bitstream_ptr->written_bits_count = (uint32_t)size;
                 output_bitstream_ptr->buffer = output_bitstream_ptr->buffer_begin + size;
                 uint32_t  write_location = 0;
@@ -441,7 +438,6 @@ void* packetization_kernel(void *input_ptr)
         queue_entry_ptr->show_existing_frame_index_array[2] = picture_control_set_ptr->parent_pcs_ptr->show_existing_frame_index_array[2];
         queue_entry_ptr->show_existing_frame_index_array[3] = picture_control_set_ptr->parent_pcs_ptr->show_existing_frame_index_array[3];
 
-
         //Store the buffer in the Queue
         queue_entry_ptr->output_stream_wrapper_ptr = output_stream_wrapper_ptr;
 
@@ -452,7 +448,7 @@ void* packetization_kernel(void *input_ptr)
             eb_release_mutex(encode_context_ptr->sc_buffer_mutex);
         }
 
-        // Post Rate Control Taks            
+        // Post Rate Control Taks
         eb_post_full_object(rate_control_tasks_wrapper_ptr);
 
         //Release the Parent PCS then the Child PCS
@@ -461,10 +457,9 @@ void* packetization_kernel(void *input_ptr)
         // Release the Entropy Coding Result
         eb_release_object(entropy_coding_results_wrapper_ptr);
 
-
         //****************************************************
         // Process the head of the queue
-        //****************************************************      
+        //****************************************************
         // Look at head of queue and see if any picture is ready to go
         queue_entry_ptr = encode_context_ptr->packetization_reorder_queue[encode_context_ptr->packetization_reorder_queue_head_index];
 
@@ -530,9 +525,7 @@ void* packetization_kernel(void *input_ptr)
                 if (queue_entry_ptr->show_existing_frame)
                     context_ptr->tot_shown_frames += 4;
 
-
-
-                //implement the GOP here - Serial dec order          
+                //implement the GOP here - Serial dec order
                 if (queue_entry_ptr->frame_type == KEY_FRAME)
                 {
                     //reset the DPB on a Key frame
@@ -575,8 +568,8 @@ void* packetization_kernel(void *input_ptr)
                             SVT_LOG("%i (%i  %i)    %i  (%i  %i)   %c  showEx: %i %i %i %i  %i frames\n",
                             (int)queue_entry_ptr->picture_number, (int)context_ptr->dpb_dec_order[LASTrefIdx], (int)context_ptr->dpb_dec_order[BWDrefIdx],
                                 (int)queue_entry_ptr->poc, (int)context_ptr->dpb_disp_order[LASTrefIdx], (int)context_ptr->dpb_disp_order[BWDrefIdx],
-                                showTab[queue_entry_ptr->show_frame], 
-                                (int)context_ptr->dpb_disp_order[queue_entry_ptr->show_existing_frame_index_array[0]], 
+                                showTab[queue_entry_ptr->show_frame],
+                                (int)context_ptr->dpb_disp_order[queue_entry_ptr->show_existing_frame_index_array[0]],
                                 (int)context_ptr->dpb_disp_order[queue_entry_ptr->show_existing_frame_index_array[1]],
                                 (int)context_ptr->dpb_disp_order[queue_entry_ptr->show_existing_frame_index_array[2]],
                                 (int)context_ptr->dpb_disp_order[queue_entry_ptr->show_existing_frame_index_array[3]],
@@ -592,7 +585,6 @@ void* packetization_kernel(void *input_ptr)
                             SVT_LOG("SVT [ERROR]: L0 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
                             return EB_NULL;
                         }
-
 
                         if (sequence_control_set_ptr->hierarchical_levels == 3 && queue_entry_ptr->slice_type == B_SLICE && queue_entry_ptr->ref_poc_list1 != context_ptr->dpb_disp_order[BWDrefIdx])
                         {
@@ -629,7 +621,7 @@ void* packetization_kernel(void *input_ptr)
                 &latency);
 
             output_stream_ptr->n_tick_count = (uint32_t)latency;
-        
+
             /* update VBV plan */
             if (encode_context_ptr->vbv_max_rate && encode_context_ptr->vbv_buf_size)
             {

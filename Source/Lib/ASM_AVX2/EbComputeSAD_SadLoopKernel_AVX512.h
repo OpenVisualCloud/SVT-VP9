@@ -53,9 +53,7 @@ extern void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
     );
 #endif
 
-
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbComputeSAD_AVX512_h
-

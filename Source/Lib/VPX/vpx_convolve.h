@@ -13,7 +13,6 @@
 #include <stddef.h>
 #include "vpx_filter.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -54,8 +54,8 @@ void eb_enc_msb_un_pack_2d(
 void unpack_8bit_data(
     uint16_t      *in16_bit_buffer,
     uint32_t       in_stride,
-    uint8_t       *out8_bit_buffer, 
-    uint32_t       out8_stride,  
+    uint8_t       *out8_bit_buffer,
+    uint32_t       out8_stride,
     uint32_t       width,
     uint32_t       height);
 
@@ -86,7 +86,6 @@ void unpack_avg_safe_sub(
     uint32_t       dst_stride,
     uint32_t       width,
     uint32_t       height);
-
 
 #ifdef __cplusplus
 }

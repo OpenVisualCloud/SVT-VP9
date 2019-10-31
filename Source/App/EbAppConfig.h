@@ -160,8 +160,6 @@ extern rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
 #define FOPEN(f,s,m) f=fopen(s,m)
 #endif
 
-
-
 typedef struct EbPerformanceContext
 {
 
@@ -225,7 +223,6 @@ typedef struct EbConfig
     uint32_t        intra_refresh_type;
     uint32_t        pred_structure;
 
-
     /****************************************
      * Quantization
      ****************************************/
@@ -247,7 +244,6 @@ typedef struct EbConfig
      ****************************************/
     uint32_t       search_area_width;
     uint32_t       search_area_height;
-
 
     /****************************************
      * Rate Control
@@ -295,7 +291,6 @@ typedef struct EbConfig
 
     uint64_t        processed_frame_count;
     uint64_t        processed_byte_count;
-
 
 } EbConfig;
 

@@ -11,7 +11,6 @@
 #include "vpx_filter.h" // NO
 #include "mem.h"
 
-
 DECLARE_ALIGNED(256, static const InterpKernel,
                 bilinear_filters[SUBPEL_SHIFTS]) = {
   { 0, 0, 0, 128, 0, 0, 0, 0 },  { 0, 0, 0, 120, 8, 0, 0, 0 },

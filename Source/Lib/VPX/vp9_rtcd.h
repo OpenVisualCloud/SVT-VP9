@@ -53,7 +53,6 @@ extern "C" {
     void vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type);
     RTCD_EXTERN void(*vp9_fht16x16)(const int16_t *input, tran_low_t *output, int stride, int tx_type);
 
-
     void vp9_fht4x4_c(const int16_t *input, tran_low_t *output, int stride, int tx_type);
     void vp9_fht4x4_sse2(const int16_t *input, tran_low_t *output, int stride, int tx_type);
     RTCD_EXTERN void(*vp9_fht4x4)(const int16_t *input, tran_low_t *output, int stride, int tx_type);
@@ -70,16 +69,13 @@ extern "C" {
     void vp9_iht16x16_256_add_avx2(const tran_low_t *input, uint8_t *output, int pitch, int tx_type);
     RTCD_EXTERN void(*vp9_iht16x16_256_add)(const tran_low_t *input, uint8_t *output, int pitch, int tx_type);
 
-
     void vp9_iht4x4_16_add_c(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
     void vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
     RTCD_EXTERN void(*vp9_iht4x4_16_add)(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
 
-
     void vp9_iht8x8_64_add_c(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
     void vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
     RTCD_EXTERN void(*vp9_iht8x8_64_add)(const tran_low_t *input, uint8_t *dest, int stride, int tx_type);
-
 
     void vp9_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
     void vp9_quantize_fp_avx2(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);

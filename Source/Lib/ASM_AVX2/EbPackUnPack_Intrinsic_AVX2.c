@@ -78,7 +78,7 @@ void eb_enc_msb_un_pack2_d_avx512_intrin(
         {
             uint16_t in_pixel2 = in16_bit_buffer[y];
             out8_bit_buffer[y] = (uint8_t)(in_pixel2 >> 2);
-                
+
             uint8_t tmp_pixel2 = (uint8_t)(in_pixel2 << 6);
             outn_bit_buffer[y] = tmp_pixel2;
         }

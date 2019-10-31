@@ -24,7 +24,7 @@ EbErrorType neighbor_array_unit_ctor(
 {
     NeighborArrayUnit *na_unit_ptr;
     EB_MALLOC(NeighborArrayUnit*, na_unit_ptr, sizeof(NeighborArrayUnit), EB_N_PTR);
-    
+
     *na_unit_dbl_ptr                         = na_unit_ptr;
     na_unit_ptr->unit_size                   = (uint8_t)(unit_size);
     na_unit_ptr->granularity_normal          = (uint8_t)(granularity_normal);
@@ -59,7 +59,6 @@ EbErrorType neighbor_array_unit_ctor(
     return EB_ErrorNone;
 }
 
-
 /*************************************************
  * Neighbor Array Unit Reset
  *************************************************/
@@ -79,7 +78,6 @@ void neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr)
 
     return;
 }
-
 
 /*************************************************
  * Neighbor Array Unit Get Left Index
@@ -469,7 +467,7 @@ void neighbor_array_unit_mode_write(
 {
     uint32_t  idx;
     uint8_t  *dst_ptr;
-    
+
     uint32_t  count;
     uint32_t  na_offset;
     uint32_t  na_unit_size;
@@ -478,28 +476,28 @@ void neighbor_array_unit_mode_write(
 
     if(neighbor_array_type_mask & NEIGHBOR_ARRAY_UNIT_TOP_MASK) {
 
-        //                                                       
-        //     ----------12345678---------------------  Top Neighbor Array                                                  
-        //                ^    ^                                 
+        //
+        //     ----------12345678---------------------  Top Neighbor Array
+        //                ^    ^
         //                |    |
-        //                |    |                                                                       
-        //               xxxxxxxx                                        
-        //               x      x                                  
-        //               x      x                                 
-        //               12345678                                        
-        //                                                       
+        //                |    |
+        //               xxxxxxxx
+        //               x      x
+        //               x      x
+        //               12345678
+        //
         //  The top neighbor array is updated with the samples from the
-        //    bottom row of the source block                                                 
-        //   
-        //  Index = origin_x                                                    
+        //    bottom row of the source block
+        //
+        //  Index = origin_x
 
         na_offset = get_neighbor_array_unit_top_index(
             na_unit_ptr,
             origin_x);
 
-        dst_ptr = na_unit_ptr->top_array + 
+        dst_ptr = na_unit_ptr->top_array +
              na_offset * na_unit_size;
-       
+
         count   = block_width >> na_unit_ptr->granularity_normal_log2;
 
         for(idx = 0; idx < count; ++idx) {
@@ -513,26 +511,26 @@ void neighbor_array_unit_mode_write(
     if(neighbor_array_type_mask & NEIGHBOR_ARRAY_UNIT_LEFT_MASK) {
 
         //   Left Neighbor Array
-        //    
-        //    |                                                                                                   
-        //    |                                                    
-        //    1         xxxxxxx1                                                
-        //    2  <----  x      2                                                                    
-        //    3  <----  x      3                                          
-        //    4         xxxxxxx4                                          
-        //    |                                                    
-        //    |                                                    
-        //                                                       
+        //
+        //    |
+        //    |
+        //    1         xxxxxxx1
+        //    2  <----  x      2
+        //    3  <----  x      3
+        //    4         xxxxxxx4
+        //    |
+        //    |
+        //
         //  The left neighbor array is updated with the samples from the
-        //    right column of the source block                                                 
-        //                
-        //  Index = origin_y                                       
+        //    right column of the source block
+        //
+        //  Index = origin_y
 
         na_offset = get_neighbor_array_unit_left_index(
                 na_unit_ptr,
                 origin_y);
 
-        dst_ptr = na_unit_ptr->left_array + 
+        dst_ptr = na_unit_ptr->left_array +
             na_offset * na_unit_size;
 
         count   = block_height >> na_unit_ptr->granularity_normal_log2;
@@ -546,23 +544,23 @@ void neighbor_array_unit_mode_write(
     }
 
     if(neighbor_array_type_mask & NEIGHBOR_ARRAY_UNIT_TOPLEFT_MASK) {
-        
+
         /*
         //   Top-left Neighbor Array
-        //    
+        //
         //    4-5--6--7------------
-        //    3 \      \    
-        //    2  \      \                                           
-        //    1   \      \  
-        //    |\   xxxxxx7 
-        //    | \  x     6 
-        //    |  \ x     5 
-        //    |   \1x2x3x4 
-        //    |            
-        //                                                       
-        //  The top-left neighbor array is updated with the reversed samples 
-        //    from the right column and bottom row of the source block                                                 
-        //                 
+        //    3 \      \
+        //    2  \      \
+        //    1   \      \
+        //    |\   xxxxxx7
+        //    | \  x     6
+        //    |  \ x     5
+        //    |   \1x2x3x4
+        //    |
+        //
+        //  The top-left neighbor array is updated with the reversed samples
+        //    from the right column and bottom row of the source block
+        //
         // Index = origin_x - origin_y
         */
 
@@ -571,9 +569,9 @@ void neighbor_array_unit_mode_write(
             origin_x,
             origin_y + (block_height - 1));
 
-        // Copy bottom-row + right-column 
+        // Copy bottom-row + right-column
         // *Note - start from the bottom-left corner
-        dst_ptr = na_unit_ptr->top_left_array + 
+        dst_ptr = na_unit_ptr->top_left_array +
             na_offset * na_unit_size;
 
         count   = ((block_width + block_height) >> na_unit_ptr->granularity_top_left_log2) - 1;
@@ -581,7 +579,7 @@ void neighbor_array_unit_mode_write(
         for(idx = 0; idx < count; ++idx) {
 
             EB_MEMCPY(dst_ptr, value, na_unit_size);
-            
+
             dst_ptr += na_unit_size;
         }
     }
@@ -599,60 +597,56 @@ void neighbor_array_unit_intra_write(//NeighborArrayUnitDepthWrite(
     uint32_t           origin_y,
     uint32_t           block_size)
 {
-    
+
     uint8_t *dst_ptr;
     uint8_t *na_unit_top_array;
     uint8_t *na_unit_left_array;
 
     uint32_t count;
-    
+
     na_unit_top_array = na_unit_ptr->top_array;
     na_unit_left_array = na_unit_ptr->left_array;
 
-
-    //                                                       
-    //     ----------12345678---------------------  Top Neighbor Array                                                  
-    //                ^    ^                                 
+    //
+    //     ----------12345678---------------------  Top Neighbor Array
+    //                ^    ^
     //                |    |
-    //                |    |                                                                       
-    //               xxxxxxxx                                        
-    //               x      x                                  
-    //               x      x                                 
-    //               12345678                                        
-    //                                                       
+    //                |    |
+    //               xxxxxxxx
+    //               x      x
+    //               x      x
+    //               12345678
+    //
     //  The top neighbor array is updated with the samples from the
-    //    bottom row of the source block                                                 
-    //   
-    //  Index = origin_x                                                    
+    //    bottom row of the source block
+    //
+    //  Index = origin_x
 
     dst_ptr = na_unit_top_array + (origin_x >> 2);
     count   = block_size >> 2;
     EB_MEMSET(dst_ptr, *value, count);
 
-
     //   Left Neighbor Array
-    //    
-    //    |                                                                                                   
-    //    |                                                    
-    //    1         xxxxxxx1                                                
-    //    2  <----  x      2                                                                    
-    //    3  <----  x      3                                          
-    //    4         xxxxxxx4                                          
-    //    |                                                    
-    //    |                                                    
-    //                                                       
+    //
+    //    |
+    //    |
+    //    1         xxxxxxx1
+    //    2  <----  x      2
+    //    3  <----  x      3
+    //    4         xxxxxxx4
+    //    |
+    //    |
+    //
     //  The left neighbor array is updated with the samples from the
-    //    right column of the source block                                                 
-    //                
-    //  Index = origin_y                                       
+    //    right column of the source block
+    //
+    //  Index = origin_y
 
-    
     dst_ptr = na_unit_left_array + (origin_y >> 2);
     EB_MEMSET(dst_ptr, *value, count);
 
     return;
 }
-
 
 /*************************************************
  * Neighbor Array Unit Mode Type Write
@@ -675,21 +669,20 @@ void neighbor_array_unit_mode_type_write(
     na_unit_left_array = na_unit_ptr->left_array;
     na_unit_top_left_array = na_unit_ptr->top_left_array;
 
-
-    //                                                       
-    //     ----------12345678---------------------  Top Neighbor Array                                                  
-    //                ^    ^                                 
+    //
+    //     ----------12345678---------------------  Top Neighbor Array
+    //                ^    ^
     //                |    |
-    //                |    |                                                                       
-    //               xxxxxxxx                                        
-    //               x      x                                  
-    //               x      x                                 
-    //               12345678                                        
-    //                                                       
+    //                |    |
+    //               xxxxxxxx
+    //               x      x
+    //               x      x
+    //               12345678
+    //
     //  The top neighbor array is updated with the samples from the
-    //    bottom row of the source block                                                 
-    //   
-    //  Index = origin_x                                                    
+    //    bottom row of the source block
+    //
+    //  Index = origin_x
 
     na_offset = origin_x >> 2;
     dst_ptr = na_unit_top_array + na_offset;
@@ -697,45 +690,43 @@ void neighbor_array_unit_mode_type_write(
 
     EB_MEMSET(dst_ptr, *value, count);
 
-
     //   Left Neighbor Array
-    //    
-    //    |                                                                                                   
-    //    |                                                    
-    //    1         xxxxxxx1                                                
-    //    2  <----  x      2                                                                    
-    //    3  <----  x      3                                          
-    //    4         xxxxxxx4                                          
-    //    |                                                    
-    //    |                                                    
-    //                                                       
+    //
+    //    |
+    //    |
+    //    1         xxxxxxx1
+    //    2  <----  x      2
+    //    3  <----  x      3
+    //    4         xxxxxxx4
+    //    |
+    //    |
+    //
     //  The left neighbor array is updated with the samples from the
-    //    right column of the source block                                                 
-    //                
-    //  Index = origin_y                                       
+    //    right column of the source block
+    //
+    //  Index = origin_y
 
     na_offset = origin_y >> 2;
     dst_ptr = na_unit_left_array + na_offset;
 
     EB_MEMSET(dst_ptr, *value, count);
- 
-    
+
     /*
     //   Top-left Neighbor Array
-    //    
+    //
     //    4-5--6--7------------
-    //    3 \      \    
-    //    2  \      \                                           
-    //    1   \      \  
-    //    |\   xxxxxx7 
-    //    | \  x     6 
-    //    |  \ x     5 
-    //    |   \1x2x3x4 
-    //    |            
-    //                                                       
-    //  The top-left neighbor array is updated with the reversed samples 
-    //    from the right column and bottom row of the source block                                                 
-    //                 
+    //    3 \      \
+    //    2  \      \
+    //    1   \      \
+    //    |\   xxxxxx7
+    //    | \  x     6
+    //    |  \ x     5
+    //    |   \1x2x3x4
+    //    |
+    //
+    //  The top-left neighbor array is updated with the reversed samples
+    //    from the right column and bottom row of the source block
+    //
     // Index = origin_x - origin_y
     */
 
@@ -744,17 +735,15 @@ void neighbor_array_unit_mode_type_write(
         origin_x,
         origin_y + (block_size - 1));
 
-    // Copy bottom-row + right-column 
+    // Copy bottom-row + right-column
     // *Note - start from the bottom-left corner
     dst_ptr = na_unit_top_left_array + na_offset;
     count  = ((block_size + block_size) >> 2) - 1;
 
     EB_MEMSET(dst_ptr, *value, count);
 
-
     return;
 }
-
 
 /*************************************************
  * Neighbor Array Unit Mode Write
@@ -775,33 +764,32 @@ void neighbor_array_unit_mv_write(
     uint32_t count;
     uint32_t na_offset;
     uint32_t na_unit_size;
-    
+
     na_unit_size = na_unit_ptr->unit_size;
     na_unit_top_array = na_unit_ptr->top_array;
     na_unit_left_array = na_unit_ptr->left_array;
     na_unit_top_left_array = na_unit_ptr->top_left_array;
 
-
-    //                                                       
-    //     ----------12345678---------------------  Top Neighbor Array                                                  
-    //                ^    ^                                 
+    //
+    //     ----------12345678---------------------  Top Neighbor Array
+    //                ^    ^
     //                |    |
-    //                |    |                                                                       
-    //               xxxxxxxx                                        
-    //               x      x                                  
-    //               x      x                                 
-    //               12345678                                        
-    //                                                       
+    //                |    |
+    //               xxxxxxxx
+    //               x      x
+    //               x      x
+    //               12345678
+    //
     //  The top neighbor array is updated with the samples from the
-    //    bottom row of the source block                                                 
-    //   
-    //  Index = origin_x                                                    
+    //    bottom row of the source block
+    //
+    //  Index = origin_x
 
     na_offset = origin_x >> 2 ;
 
-    dst_ptr = na_unit_top_array + 
+    dst_ptr = na_unit_top_array +
          na_offset * na_unit_size;
-    
+
     //dst_step = na_unit_size;
     count   = block_size >> 2;
 
@@ -812,28 +800,26 @@ void neighbor_array_unit_mv_write(
         dst_ptr += na_unit_size;
     }
 
-
     //   Left Neighbor Array
-    //    
-    //    |                                                                                                   
-    //    |                                                    
-    //    1         xxxxxxx1                                                
-    //    2  <----  x      2                                                                    
-    //    3  <----  x      3                                          
-    //    4         xxxxxxx4                                          
-    //    |                                                    
-    //    |                                                    
-    //                                                       
+    //
+    //    |
+    //    |
+    //    1         xxxxxxx1
+    //    2  <----  x      2
+    //    3  <----  x      3
+    //    4         xxxxxxx4
+    //    |
+    //    |
+    //
     //  The left neighbor array is updated with the samples from the
-    //    right column of the source block                                                 
-    //                
-    //  Index = origin_y                                       
+    //    right column of the source block
+    //
+    //  Index = origin_y
 
     na_offset = origin_y >> 2 ;
 
-    dst_ptr = na_unit_left_array + 
+    dst_ptr = na_unit_left_array +
         na_offset * na_unit_size;
-
 
     for(idx = 0; idx < count; ++idx) {
 
@@ -842,23 +828,22 @@ void neighbor_array_unit_mv_write(
         dst_ptr += na_unit_size;
     }
 
-    
     /*
     //   Top-left Neighbor Array
-    //    
+    //
     //    4-5--6--7------------
-    //    3 \      \    
-    //    2  \      \                                           
-    //    1   \      \  
-    //    |\   xxxxxx7 
-    //    | \  x     6 
-    //    |  \ x     5 
-    //    |   \1x2x3x4 
-    //    |            
-    //                                                       
-    //  The top-left neighbor array is updated with the reversed samples 
-    //    from the right column and bottom row of the source block                                                 
-    //                 
+    //    3 \      \
+    //    2  \      \
+    //    1   \      \
+    //    |\   xxxxxx7
+    //    | \  x     6
+    //    |  \ x     5
+    //    |   \1x2x3x4
+    //    |
+    //
+    //  The top-left neighbor array is updated with the reversed samples
+    //    from the right column and bottom row of the source block
+    //
     // Index = origin_x - origin_y
     */
 
@@ -867,9 +852,9 @@ void neighbor_array_unit_mv_write(
         origin_x,
         origin_y + (block_size - 1));
 
-    // Copy bottom-row + right-column 
+    // Copy bottom-row + right-column
     // *Note - start from the bottom-left corner
-    dst_ptr = na_unit_top_left_array + 
+    dst_ptr = na_unit_top_left_array +
         na_offset * na_unit_size;
 
     count   = ((block_size + block_size) >> 2) - 1;
@@ -877,7 +862,7 @@ void neighbor_array_unit_mv_write(
     for(idx = 0; idx < count; ++idx) {
 
         EB_MEMCPY(dst_ptr, value, na_unit_size);
-        
+
         dst_ptr += na_unit_size;
     }
 

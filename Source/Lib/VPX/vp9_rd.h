@@ -103,7 +103,7 @@ typedef struct RD_OPT {
   // to pick a threshold.
   int thresh_mult[MAX_MODES];
   int thresh_mult_sub8x8[MAX_REFS];
-#if 0 
+#if 0
   int threshes[MAX_SEGMENTS][BLOCK_SIZES][MAX_MODES];
 #endif
   int64_t prediction_type_threshes[MAX_REF_FRAMES][REFERENCE_MODES];

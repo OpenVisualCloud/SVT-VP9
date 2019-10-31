@@ -15,7 +15,7 @@ extern "C" {
 #define SVT_VERSION_MINOR       (@SVT_VP9_VERSION_MINOR@)
 #define SVT_VERSION_PATCHLEVEL  (@SVT_VP9_VERSION_PATCHLEVEL@)
 
-#define	SVT_CHECK_VERSION(major,minor,patch)	\
+#define    SVT_CHECK_VERSION(major,minor,patch)    \
     (SVT_VERSION_MAJOR > (major) || \
      (SVT_VERSION_MAJOR == (major) && SVT_VERSION_MINOR > (minor)) || \
      (SVT_VERSION_MAJOR == (major) && SVT_VERSION_MINOR == (minor) && \

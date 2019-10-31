@@ -24,7 +24,7 @@ void vp9_pick_filter_level(
 #if 0
     const struct yv12_buffer_config *sd,
 #endif
-    struct VP9_COMP *cpi, 
+    struct VP9_COMP *cpi,
     LPF_PICK_METHOD method);
 
 #ifdef __cplusplus

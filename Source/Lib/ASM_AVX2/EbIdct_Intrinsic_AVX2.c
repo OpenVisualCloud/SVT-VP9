@@ -16,7 +16,7 @@
 #include "tmmintrin.h"
 
 static INLINE __m256i load_input_data16_avx2(
-    const tran_low_t *const data) 
+    const tran_low_t *const data)
 {
 #if CONFIG_VP9_HIGHBITDEPTH
     const __m256i in0 = _mm256_load_si256((const __m256i *)(data + 0));
@@ -31,7 +31,7 @@ static INLINE __m256i load_input_data16_avx2(
 static INLINE void load_buffer_8x16(
     const tran_low_t *const input,
     const int               stride,
-    __m128i *const          in) 
+    __m128i *const          in)
 {
     load_buffer_8x8(input + 0 * 16, stride, in + 0);
     load_buffer_8x8(input + 8 * 16, stride, in + 8);
@@ -40,7 +40,7 @@ static INLINE void load_buffer_8x16(
 static INLINE void load_buffer_16x16_avx2(
     const tran_low_t *const input,
     const int               stride,
-    __m256i *const          in) 
+    __m256i *const          in)
 {
     in[0]  = load_input_data16_avx2(input + 0 * stride);
     in[1]  = load_input_data16_avx2(input + 1 * stride);
@@ -61,8 +61,8 @@ static INLINE void load_buffer_16x16_avx2(
 }
 
 static INLINE void recon_and_store_avx2(
-    const __m256i  in, 
-    uint8_t *const dest) 
+    const __m256i  in,
+    uint8_t *const dest)
 {
     const __m128i zero = _mm_setzero_si128();
     __m128i d = _mm_loadu_si128((__m128i *)dest);
@@ -89,8 +89,8 @@ static INLINE void write_buffer_16x1_avx2(
 }
 
 static INLINE void write_buffer_16_avx2(
-    const __m256i in, 
-    uint8_t *const dest) 
+    const __m256i in,
+    uint8_t *const dest)
 {
     const __m256i final_rounding = _mm256_set1_epi16(1 << 5);
     const __m256i d0 = _mm256_adds_epi16(in, final_rounding);
@@ -101,7 +101,7 @@ static INLINE void write_buffer_16_avx2(
 static INLINE void write_buffer_16x16_avx2(
     __m256i *const in,
     uint8_t *const dest,
-    const int      stride) 
+    const int      stride)
 {
     // Final rounding and shift
     write_buffer_16x1_avx2(in[0],  dest + 0 *  stride);
@@ -125,7 +125,7 @@ static INLINE void write_buffer_16x16_avx2(
 // Only do addition and subtraction butterfly, size = 16, 32
 static INLINE void add_sub_butterfly_avx2(
     const __m256i *const in,
-    __m256i *const       out, 
+    __m256i *const       out,
     const int            size)
 {
     int i           = 0;
@@ -140,7 +140,7 @@ static INLINE void add_sub_butterfly_avx2(
 
 static INLINE void idct16_avx2(
     const __m256i *const in,
-    __m256i *const       out) 
+    __m256i *const       out)
 {
     __m256i step1[16], step2[16];
 
@@ -203,18 +203,18 @@ static INLINE void idct16_avx2(
 }
 
 static INLINE void iadst16_kernel_avx2(
-    const __m256i     in0, 
+    const __m256i     in0,
     const __m256i     in1,
-    const __m256i     in2, 
-    const __m256i     in3, 
+    const __m256i     in2,
+    const __m256i     in3,
     const tran_coef_t c0,
-    const tran_coef_t c1, 
-    const tran_coef_t c2, 
+    const tran_coef_t c1,
+    const tran_coef_t c2,
     const tran_coef_t c3,
     __m256i *const    out0,
-    __m256i *const    out1, 
+    __m256i *const    out1,
     __m256i *const    out2,
-    __m256i *const    out3) 
+    __m256i *const    out3)
 {
     const __m256i cst0 = pair_set_epi16_avx2(c0, c1);
     const __m256i cst1 = pair_set_epi16_avx2(c1, -c0);
@@ -261,7 +261,7 @@ static INLINE void iadst16_kernel_avx2(
     *out3 = _mm256_packs_epi32(u[6], u[7]);
 }
 
-void iadst16_avx2(__m256i *const in) 
+void iadst16_avx2(__m256i *const in)
 {
     const __m256i kZero = _mm256_set1_epi16(0);
     __m256i s[16], x[16];
@@ -311,23 +311,23 @@ void iadst16_avx2(__m256i *const in)
     in[15] = _mm256_sub_epi16(kZero, s[1]);
 }
 
-void transpose_idct16_avx2(__m256i *const in) 
+void transpose_idct16_avx2(__m256i *const in)
 {
     transpose_16bit_16x16_avx2(in, in);
     idct16_avx2(in, in);
 }
 
-void transpose_iadst16_avx2(__m256i *const in) 
+void transpose_iadst16_avx2(__m256i *const in)
 {
     transpose_16bit_16x16_avx2(in, in);
     iadst16_avx2(in);
 }
 
 void vp9_iht16x16_256_add_avx2(
-    const tran_low_t *input, 
+    const tran_low_t *input,
     uint8_t          *dest,
-    int               stride, 
-    int               tx_type) 
+    int               stride,
+    int               tx_type)
 {
     __m256i in[16];
 
@@ -405,10 +405,10 @@ static INLINE void load_transpose_16bit_16x16(
 }
 
 static INLINE void partial_butterfly_avx2(
-    const __m256i  in, 
+    const __m256i  in,
     const int      c0,
-    const int      c1, 
-    __m256i *const out0, 
+    const int      c1,
+    __m256i *const out0,
     __m256i *const out1)
 {
     const __m256i cst0 = _mm256_set1_epi16(2 * c0);
@@ -417,7 +417,7 @@ static INLINE void partial_butterfly_avx2(
     *out1              = _mm256_mulhrs_epi16(in, cst1);
 }
 
-static INLINE __m256i partial_butterfly_cospi16_avx2(const __m256i in) 
+static INLINE __m256i partial_butterfly_cospi16_avx2(const __m256i in)
 {
     const __m256i coef_pair = _mm256_set1_epi16(2 * cospi_16_64);
     return _mm256_mulhrs_epi16(in, coef_pair);
@@ -576,7 +576,7 @@ static INLINE void idct32_34_16x32_quarter_1_avx2(
 // Input with index, 2, 6
 // output pixels: 8-15 in __m256i out[32]
 static INLINE void idct32_34_16x32_quarter_2_avx2(
-    const __m256i *const in, 
+    const __m256i *const in,
     __m256i *const       out)
 {
     __m256i step1[16], step2[16];
@@ -774,7 +774,7 @@ static INLINE void idct32_135_16x32_quarter_1_2_avx2(
 // 1, 3, 5, 7, 9, 11, 13, 15
 // output pixels: 16-23, 24-31 in __m256i out[32]
 static INLINE void idct32_135_16x32_quarter_3_4_avx2(
-    const __m256i *const in, 
+    const __m256i *const in,
     __m256i *const       out)
 {
     __m256i step1[32], step2[32];
@@ -940,9 +940,9 @@ static INLINE void idct32_1024_16x32_quarter_1_avx2(
 // Input with index, 2, 6, 10, 14, 18, 22, 26, 30
 // output pixels: 8-15 in __m256i out[32]
 static INLINE void idct32_1024_16x32_quarter_2_avx2(
-    const __m256i *const in, 
+    const __m256i *const in,
     __m256i *const       out)
-{  
+{
     __m256i step1[16], step2[16];
 
     // stage 2
@@ -965,7 +965,7 @@ static INLINE void idct32_1024_16x32_quarter_2_avx2(
 }
 
 static INLINE void idct32_1024_16x32_quarter_1_2_avx2(
-    const __m256i *const in, 
+    const __m256i *const in,
     __m256i *const       out)
 {
     __m256i temp[16];

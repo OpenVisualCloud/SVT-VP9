@@ -1045,7 +1045,6 @@ static EbErrorType prediction_structure_ctor(
 
                 // Allocate the Leading Picture Reference List 1
                 prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = 0;
-              
 
                 // Copy Reference List 1
                 for(ref_index = 0; ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list_count; ++ref_index) {
@@ -1071,7 +1070,6 @@ static EbErrorType prediction_structure_ctor(
 
                 // Allocate the Leading Picture Reference List 1
                 prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = 0;
-               
 
                 // Copy Reference List 1
                 for(ref_index = 0; ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list_count; ++ref_index) {
@@ -1145,7 +1143,6 @@ static EbErrorType prediction_structure_ctor(
 
                 // Allocate the Leading Picture Reference List 1
                 prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = 0;
-                               
 
                 // Copy Reference List 1
                 for(ref_index = 0; ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list_count; ++ref_index) {
@@ -1167,7 +1164,6 @@ static EbErrorType prediction_structure_ctor(
 
                 // Allocate the Leading Picture Reference List 1
                 prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = 0;
-                  
 
                 // Copy Reference List 1
                 for(ref_index = 0; ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list_count; ++ref_index) {
@@ -1781,7 +1777,7 @@ EbErrorType prediction_structure_group_ctor(
     // Count the number of Prediction Structures
     while((prediction_structure_config_array[pred_struct_index].entry_array != 0) && (prediction_structure_config_array[pred_struct_index].entry_count != 0)) {
         // Get Random Access + P for temporal ID 0
-        if(prediction_structure_config_array[pred_struct_index].entry_array->temporal_layer_index == 0 && base_layer_switch_mode) { 
+        if(prediction_structure_config_array[pred_struct_index].entry_array->temporal_layer_index == 0 && base_layer_switch_mode) {
                 prediction_structure_config_array[pred_struct_index].entry_array->ref_list1 = 0;
         }
         ++pred_struct_index;
@@ -1807,4 +1803,3 @@ EbErrorType prediction_structure_group_ctor(
 
     return EB_ErrorNone;
 }
-

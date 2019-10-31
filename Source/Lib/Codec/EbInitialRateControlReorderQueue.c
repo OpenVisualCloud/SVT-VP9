@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbInitialRateControlReorderQueue.h"
 
-EbErrorType initial_rate_control_reorder_entry_ctor(   
+EbErrorType initial_rate_control_reorder_entry_ctor(
     InitialRateControlReorderEntry **entry_dbl_ptr,
     uint32_t                         picture_number)
 {
@@ -14,12 +14,11 @@ EbErrorType initial_rate_control_reorder_entry_ctor(
 
     (*entry_dbl_ptr)->picture_number       = picture_number;
     (*entry_dbl_ptr)->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
-    
+
     return EB_ErrorNone;
 }
 
-
-EbErrorType hl_rate_control_histogram_entry_ctor(   
+EbErrorType hl_rate_control_histogram_entry_ctor(
     HlRateControlHistogramEntry **entry_dbl_ptr,
     uint32_t                      picture_number)
 {
@@ -37,6 +36,3 @@ EbErrorType hl_rate_control_histogram_entry_ctor(
 
     return EB_ErrorNone;
 }
-
-
-

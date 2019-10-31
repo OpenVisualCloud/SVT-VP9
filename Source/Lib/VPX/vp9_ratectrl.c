@@ -13,7 +13,6 @@
 #include "vp9_onyxc_int.h"
 #include "vp9_encoder.h"
 
-
 #if 0
 // Max rate per frame for 1080P and below encodes if no level requirement given.
 // For larger formats limit to MAX_MB_RATE bits per MB
@@ -86,8 +85,6 @@ static int arfgf_high_motion_minq_12[QINDEX_RANGE];
 static int inter_minq_12[QINDEX_RANGE];
 static int rtc_minq_12[QINDEX_RANGE];
 #endif
-
-
 
 // Functions to compute the active minq lookup table entries based on a
 // formulaic approach to facilitate easier adjustment of the Q tables.
@@ -909,8 +906,8 @@ static int rc_pick_q_and_bounds_one_pass_cbr(const VP9_COMP *cpi,
       int delta_qindex = vp9_compute_qdelta(
           rc, last_boosted_q, (last_boosted_q * 0.75), cm->bit_depth);
       active_best_quality = VPXMAX(qindex + delta_qindex, rc->best_quality);
-    }  
-    else 
+    }
+    else
 
     if (cm->current_video_frame > 0) {
       // not first frame of one pass and kf_boost is set

@@ -22,8 +22,7 @@
 #include "vp9_scan.h"
 #include "vp9_pred_common.h"
 
-
-#if VP9_RD 
+#if VP9_RD
 // Note that the context is not pointing to the right CU.
 EbErrorType get_partition_cost(
     PictureControlSet       *picture_control_set_ptr,
@@ -204,7 +203,6 @@ int vp9_mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost,
 }
 #endif
 
-
 EbErrorType inter_full_cost(
     struct EncDecContext               *context_ptr,
     struct ModeDecisionCandidateBuffer *candidate_buffer_ptr,
@@ -295,7 +293,6 @@ int64_t inter_fast_cost(
     const int this_mode                 = candidate_ptr->mode_info->mode;
     int refs[2]                         = { ref_frame, (second_ref_frame < 0) ? 0 : second_ref_frame };
 
-
     int this_rate;
     int64_t this_distortion;
     int64_t this_rd;
@@ -305,7 +302,7 @@ int64_t inter_fast_cost(
     int rate_mv = 0;
     int rate_inter_mode = 0;
 
-    // Estimate the reference frame signaling cost 
+    // Estimate the reference frame signaling cost
 
     int comp_pred = second_ref_frame > INTRA_FRAME;
     if (comp_pred) {
@@ -316,7 +313,6 @@ int64_t inter_fast_cost(
     }
 
     rate_compmode = (cpi->common.reference_mode == REFERENCE_MODE_SELECT) ? vp9_cost_bit(comp_mode_p, comp_pred) : 0;
-
 
     if (this_mode == NEWMV) {
 
@@ -400,7 +396,6 @@ int64_t inter_fast_cost(
 
 }
 
-
 int64_t intra_fast_cost(
      PictureControlSet     *picture_control_set_ptr,
     int                     has_uv,
@@ -425,7 +420,6 @@ int64_t intra_fast_cost(
     int64_t this_rd;
     int rate_mode;
 
-
     int rate_uv_mode = has_uv ?
         cpi->intra_uv_mode_cost[cpi->common.frame_type][mode][uv_mode] :
         0;
@@ -444,7 +438,7 @@ int64_t intra_fast_cost(
     }
     else {
         rate_mode                           = cpi->mbmode_cost[mode];
-        // Estimate the reference frame signaling cost 
+        // Estimate the reference frame signaling cost
         MV_REFERENCE_FRAME ref_frame        = candidate_ptr->mode_info->ref_frame[0];
         MV_REFERENCE_FRAME second_ref_frame = candidate_ptr->mode_info->ref_frame[1];
         int comp_pred                       = second_ref_frame > INTRA_FRAME;
