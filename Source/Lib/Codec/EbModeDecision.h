@@ -32,7 +32,6 @@ typedef void(*EbPredictionFunc)(
     uint16_t              pred_stride,
     int                   plane);
 
-
 typedef int64_t(*EbFastCostFunc)(
     PictureControlSet            *picture_control_set_ptr,
     int                           has_uv,
@@ -60,10 +59,10 @@ typedef EbErrorType (*EbFullCostFunc)(
 /**************************************
 * Mode Decision Candidate
 **************************************/
-typedef struct ModeDecisionCandidate    
+typedef struct ModeDecisionCandidate
 {
     uint32_t  me_distortion;
-    EB_BOOL   distortion_ready;      
+    EB_BOOL   distortion_ready;
 
     uint64_t  fast_luma_rate;
     uint64_t  fast_chroma_rate;
@@ -102,7 +101,7 @@ EbErrorType mode_decision_candidate_buffer_ctor(
     EbBitDepth                    max_bitdepth,
     uint64_t                     *fast_cost_ptr,
     uint64_t                     *full_cost_ptr);
-    
+
 EbErrorType prepare_fast_loop_candidates(
     PictureControlSet    *picture_control_set_ptr,
     struct EncDecContext *context_ptr,

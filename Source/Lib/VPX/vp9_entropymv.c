@@ -155,7 +155,6 @@ void vp9_inc_mv(const MV *mv, nmv_context_counts *counts) {
   }
 }
 
-
 void vp9_adapt_mv_probs(VP9_COMMON *cm, int allow_hp) {
   int i, j;
 

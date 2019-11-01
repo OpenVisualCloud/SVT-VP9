@@ -37,9 +37,9 @@ static int get_max_filter_level(const VP9_COMP *cpi) {
 
 void vp9_pick_filter_level(
 #if 0
-    const YV12_BUFFER_CONFIG *sd, 
+    const YV12_BUFFER_CONFIG *sd,
 #endif
-    VP9_COMP *cpi,                           
+    VP9_COMP *cpi,
     LPF_PICK_METHOD method) {
 
   VP9_COMMON *const cm = &cpi->common;
@@ -81,7 +81,7 @@ void vp9_pick_filter_level(
 #endif
 
     if (cm->frame_type == KEY_FRAME) filt_guess -= 4;
-    
+
     lf->filter_level = clamp(filt_guess, min_filter_level, max_filter_level);
 
   } else {

@@ -22,7 +22,6 @@ extern void eb_enc_msb_pack2_d_avx2_intrin_al(
     uint32_t    width,
     uint32_t    height);
 
-
 extern void compressed_packmsb_avx2_intrin(
     uint8_t    *in8_bit_buffer,
     uint32_t    in8_stride,
@@ -33,7 +32,6 @@ extern void compressed_packmsb_avx2_intrin(
     uint32_t    width,
     uint32_t    height);
 
-
 void c_pack_avx2_intrin(
     const uint8_t  *inn_bit_buffer,
     uint32_t        inn_stride,
@@ -43,14 +41,13 @@ void c_pack_avx2_intrin(
     uint32_t        width,
     uint32_t        height);
 
-
 void unpack_avg_avx2_intrin(
     uint16_t  *ref16_l0,
     uint32_t   ref_l0_stride,
     uint16_t  *ref16_l1,
     uint32_t   ref_l1_stride,
     uint8_t   *dst_ptr,
-    uint32_t   dst_stride,      
+    uint32_t   dst_stride,
     uint32_t   width,
     uint32_t   height);
 
@@ -65,7 +62,6 @@ void memset16bit_block_avx2_intrin (
     uint32_t  size,
     int16_t   value
     );
-
 
 void unpack_avg_safe_sub_avx2_intrin(
     uint16_t *ref16_l0,

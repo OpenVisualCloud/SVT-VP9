@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include "prob.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

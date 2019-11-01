@@ -11,10 +11,8 @@
 #ifndef VPX_VP9_COMMON_VP9_FILTER_H_
 #define VPX_VP9_COMMON_VP9_FILTER_H_
 
-
 #include "vpx_filter.h"
 #include "mem.h"
-
 
 #ifdef __cplusplus
 extern "C" {

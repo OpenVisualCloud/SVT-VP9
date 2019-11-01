@@ -50,5 +50,5 @@ void weight_search_region(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbMeSadCalculation_C_h

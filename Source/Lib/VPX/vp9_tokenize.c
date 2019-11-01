@@ -21,7 +21,6 @@
 #include "vp9_scan.h"
 #include "vp9_encoder.h"
 
-
 static const TOKENVALUE dct_cat_lt_10_value_tokens[] = {
   { 9, 63 }, { 9, 61 }, { 9, 59 }, { 9, 57 }, { 9, 55 }, { 9, 53 }, { 9, 51 },
   { 9, 49 }, { 9, 47 }, { 9, 45 }, { 9, 43 }, { 9, 41 }, { 9, 39 }, { 9, 37 },
@@ -320,7 +319,7 @@ static void set_entropy_context_b(MACROBLOCKD *const xd, int plane, int block, i
 
   ThreadData *const td = args->td;
   MACROBLOCK *const x = &td->mb;
-#if 0  
+#if 0
   MACROBLOCKD *const xd = &x->e_mbd;
 #endif
 
@@ -328,7 +327,6 @@ static void set_entropy_context_b(MACROBLOCKD *const xd, int plane, int block, i
   struct macroblockd_plane *pd = &xd->plane[plane];
   vp9_set_contexts(xd, pd, plane_bsize, tx_size, p->eobs[block] > 0, col, row);
 }
-
 
 static INLINE void add_token(TOKENEXTRA **t, const vpx_prob *context_tree,
                              int16_t token, EXTRABIT extra,
@@ -430,7 +428,6 @@ static void tokenize_b(MACROBLOCKD *xd, int plane, int block, int row, int col,
   vp9_set_contexts(xd, pd, plane_bsize, tx_size, c > 0, col, row);
 }
 
-
 struct is_skippable_args {
   uint16_t *eobs;
   int *skippable;
@@ -483,7 +480,7 @@ void vp9_tokenize_sb(struct VP9_COMP *cpi, MACROBLOCKD *const xd, struct ThreadD
 #if 0
   MACROBLOCK *const x = &td->mb;
   MACROBLOCKD *const xd = &x->e_mbd;
-#endif  
+#endif
   ModeInfo *const mi = xd->mi[0];
 
 #if 0 // Hsan: count-based probability update not yet supported (i.e. do not increment, and use default)

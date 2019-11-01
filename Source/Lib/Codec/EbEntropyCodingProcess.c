@@ -55,7 +55,6 @@ EbErrorType entropy_coding_context_ctor(
     // Hsan - how many token do we really need ?
     EB_MALLOC(TOKENEXTRA*, context_ptr->tok, sizeof(TOKENEXTRA) * MAX_CU_SIZE * MAX_CU_SIZE * MAX_MB_PLANE, EB_N_PTR);
 
-
     return EB_ErrorNone;
 }
 
@@ -82,7 +81,6 @@ EbErrorType EntropyCodingSb(
     uint32_t                  rasterScanIndex;
     uint32_t                  valid_block_index;
     uint32_t                  search_valid_index;
-   
 
     // Set mi_grid_visible
     cm->mi_grid_visible = picture_control_set_ptr->mode_info_array;
@@ -116,7 +114,7 @@ EbErrorType EntropyCodingSb(
     sb_ptr->quantized_coeff_buffer_block_offset[0] = sb_ptr->quantized_coeff_buffer_block_offset[1] = sb_ptr->quantized_coeff_buffer_block_offset[2] = 0;
 #endif
     do {
-        
+
         context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[block_index];
         context_ptr->ep_block_stats_ptr = ep_get_block_stats(block_index);
         rasterScanIndex = ep_scan_to_raster_scan[block_index];
@@ -135,7 +133,7 @@ EbErrorType EntropyCodingSb(
                 valid_block_index = search_valid_index;
                 break;
             }
-        }    
+        }
 
         if (valid_block_index == (uint32_t)~0 && ((EB_BOOL)lcuParam->ep_scan_block_validity[search_valid_index + 1] == EB_TRUE)) {
             partition = PARTITION_SPLIT;
@@ -146,12 +144,12 @@ EbErrorType EntropyCodingSb(
             if (valid_block_index == block_index) {
                 if(context_ptr->block_ptr->split_flag == EB_TRUE)
                     partition = PARTITION_SPLIT;
-                else 
+                else
                     partition = PARTITION_NONE;
             }
             else {
                 partition = PARTITION_SPLIT;
-            } 
+            }
         }
 
         if (partition != PARTITION_INVALID) {
@@ -167,7 +165,7 @@ EbErrorType EntropyCodingSb(
             // Write partition
             write_partition(cm, xd, bs, context_ptr->mi_row, context_ptr->mi_col, partition, context_ptr->ep_block_stats_ptr->bsize, residual_bc);
 
-            // Write mode info for final partitioning  
+            // Write mode info for final partitioning
             if (partition == PARTITION_NONE || (partition == PARTITION_SPLIT && ep_get_block_stats(block_index)->bsize == BLOCK_8X8)) {
 
                 // Set above_mi and left_mi
@@ -267,7 +265,7 @@ EbErrorType EntropyCodingSb(
                             }
                         }
 
-#if 1 
+#if 1
                         //Cb
                         {
                             int16_t* src_ptr = &(((int16_t*)sb_ptr->quantized_coeff->buffer_cb)[(context_ptr->ep_block_stats_ptr->origin_x >> 1) + (context_ptr->ep_block_stats_ptr->origin_y >> 1) * sb_ptr->quantized_coeff->stride_cb]);
@@ -337,7 +335,7 @@ EbErrorType EntropyCodingSb(
                 // Set skip context
                 set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
 
-                // Track the head of the tok buffer 
+                // Track the head of the tok buffer
                 context_ptr->tok_start = context_ptr->tok;
 
                 // Tokonize the SB
@@ -350,7 +348,7 @@ EbErrorType EntropyCodingSb(
                 // Reset the tok buffer
                 context_ptr->tok         = context_ptr->tok_start;
 
-                // Write mode info  
+                // Write mode info
                 write_modes_b(context_ptr, cpi, xd, (TileInfo *)EB_NULL, residual_bc, &context_ptr->tok, context_ptr->tok_end, context_ptr->mi_row, context_ptr->mi_col, &cpi->max_mv_magnitude, cpi->interp_filter_selected);
 
                 // Reset the tok buffer
@@ -369,7 +367,7 @@ EbErrorType EntropyCodingSb(
             }
         }
         else {
-           
+
             if (context_ptr->block_origin_x >= sequence_control_set_ptr->luma_width || context_ptr->block_origin_y >= sequence_control_set_ptr->luma_height) {
                 // Next CU in the current depth
                 block_index += ep_intra_depth_offset[ep_raster_scan_block_depth[rasterScanIndex]];
@@ -390,14 +388,13 @@ EbErrorType EntropyCodingSb(
     return return_error;
 }
 
-
 /******************************************************
- * Update Entropy Coding Rows 
+ * Update Entropy Coding Rows
  *
  * This function is responsible for synchronizing the
- *   processing of Entropy Coding LCU-rows and starts 
- *   processing of LCU-rows as soon as their inputs are 
- *   available and the previous LCU-row has completed.  
+ *   processing of Entropy Coding LCU-rows and starts
+ *   processing of LCU-rows as soon as their inputs are
+ *   available and the previous LCU-row has completed.
  *   At any given time, only one segment row per picture
  *   is being processed.
  *
@@ -447,7 +444,7 @@ static EB_BOOL update_entropy_coding_rows(
         for(i=*row_index; i < *row_index + row_count; ++i) {
             picture_control_set_ptr->entropy_coding_row_array[i] = EB_TRUE;
         }
-        
+
         while(picture_control_set_ptr->entropy_coding_row_array[picture_control_set_ptr->entropy_coding_current_available_row] == EB_TRUE &&
               picture_control_set_ptr->entropy_coding_current_available_row < picture_control_set_ptr->entropy_coding_row_count)
         {
@@ -461,7 +458,7 @@ static EB_BOOL update_entropy_coding_rows(
     }
 
     // Test if the picture is not already complete AND not currently being worked on by another ENCDEC process
-    if(picture_control_set_ptr->entropy_coding_current_row < picture_control_set_ptr->entropy_coding_row_count && 
+    if(picture_control_set_ptr->entropy_coding_current_row < picture_control_set_ptr->entropy_coding_row_count &&
        picture_control_set_ptr->entropy_coding_row_array[picture_control_set_ptr->entropy_coding_current_row] == EB_TRUE &&
        picture_control_set_ptr->entropy_coding_in_progress == EB_FALSE)
     {
@@ -490,12 +487,12 @@ void* entropy_coding_kernel(void *input_ptr)
     EntropyCodingContext *context_ptr = (EntropyCodingContext*) input_ptr;
     PictureControlSet    *picture_control_set_ptr;
     SequenceControlSet   *sequence_control_set_ptr;
-                        
-    // Input            
+
+    // Input
     EbObjectWrapper      *enc_dec_results_wrapper_ptr;
     EncDecResults        *enc_dec_results_ptr;
-                        
-    // Output            
+
+    // Output
     EbObjectWrapper      *entropy_coding_results_wrapper_ptr;
     EntropyCodingResults *entropy_coding_results_ptr;
 
@@ -522,10 +519,10 @@ void* entropy_coding_kernel(void *input_ptr)
         picture_width_in_sb = (sequence_control_set_ptr->luma_width + MAX_SB_SIZE_MINUS_1) >> LOG2F_MAX_SB_SIZE;
         {
             initial_process_call = EB_TRUE;
-            ysb_index = enc_dec_results_ptr->completed_sb_row_index_start;   
-            
+            ysb_index = enc_dec_results_ptr->completed_sb_row_index_start;
+
             // LCU-loops
-            while(update_entropy_coding_rows(picture_control_set_ptr, &ysb_index, enc_dec_results_ptr->completed_sb_row_count, &initial_process_call) == EB_TRUE) 
+            while(update_entropy_coding_rows(picture_control_set_ptr, &ysb_index, enc_dec_results_ptr->completed_sb_row_count, &initial_process_call) == EB_TRUE)
             {
                 uint32_t rowsb_total_bits = 0;
 
@@ -533,18 +530,17 @@ void* entropy_coding_kernel(void *input_ptr)
                     picture_control_set_ptr->entropy_coding_pic_done = EB_FALSE;
                 }
 
-                for(xsb_index = 0; xsb_index < picture_width_in_sb; ++xsb_index) 
+                for(xsb_index = 0; xsb_index < picture_width_in_sb; ++xsb_index)
                 {
 
-                    
                     sb_index = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb);
                     sb_ptr = picture_control_set_ptr->sb_ptr_array[sb_index];
 
                     sb_ptr->sb_total_bits = 0;
-#if VP9_RC            
+#if VP9_RC
                     uint32_t prev_pos = sb_index ? picture_control_set_ptr->entropy_coder_ptr->residual_bc.pos : 0;
-#endif                  
-#if SEG_SUPPORT 
+#endif
+#if SEG_SUPPORT
                     if (sb_index == 0) {
                         MACROBLOCKD *xd = NULL;
                         VP9_COMMON *const cm = &picture_control_set_ptr->parent_pcs_ptr->cpi->common;
@@ -568,7 +564,7 @@ void* entropy_coding_kernel(void *input_ptr)
                         context_ptr,
                         sb_ptr,
                         picture_control_set_ptr->entropy_coder_ptr);
-#if VP9_RC      
+#if VP9_RC
                     sb_ptr->sb_total_bits = (picture_control_set_ptr->entropy_coder_ptr->residual_bc.pos - prev_pos)<<3;
                     picture_control_set_ptr->parent_pcs_ptr->quantized_coeff_num_bits += sb_ptr->sb_total_bits;
 #endif
@@ -593,7 +589,7 @@ void* entropy_coding_kernel(void *input_ptr)
 
                     rate_control_task_ptr->picture_control_set_wrapper_ptr = 0;
                     rate_control_task_ptr->segment_index = ~0u;
-                    
+
                     // Post EncDec Results
                     eb_post_full_object(rate_control_task_wrapper_ptr);
                 }
@@ -638,13 +634,12 @@ void* entropy_coding_kernel(void *input_ptr)
                 }
                 eb_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
-
             }
         }
         // Release Mode Decision Results
         eb_release_object(enc_dec_results_wrapper_ptr);
 
     }
-    
+
     return EB_NULL;
 }

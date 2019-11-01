@@ -24,24 +24,22 @@
 #include "vp9_encoder.h"
 #include "vp9_blockd.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define SEGMENT_ENTROPY_BUFFER_SIZE                         0x989680                               // Entropy Bitstream Buffer Size
 #define PACKETIZATION_PROCESS_BUFFER_SIZE                   SEGMENT_ENTROPY_BUFFER_SIZE + 0x001000 // Entropy Bitstream + Header(s) Buffer Size.
-#define HISTOGRAM_NUMBER_OF_BINS                            256  
+#define HISTOGRAM_NUMBER_OF_BINS                            256
 #define MAX_NUMBER_OF_REGIONS_IN_WIDTH                      4
 #define MAX_NUMBER_OF_REGIONS_IN_HEIGHT                     4
 
-#define MAX_REF_QP_NUM                                      81 
-
+#define MAX_REF_QP_NUM                                      81
 
 #define SEGMENT_MAX_COUNT   64
 #define SEGMENT_COMPLETION_MASK_SET(mask,                   index)        MULTI_LINE_MACRO_BEGIN (mask) |= (((uint64_t) 1) << (index)); MULTI_LINE_MACRO_END
 #define SEGMENT_COMPLETION_MASK_TEST(mask,                  total_count)  ((mask) == ((((uint64_t) 1) << (total_count)) - 1))
-#define SEGMENT_ROW_COMPLETION_TEST(mask,                   row_index, width) ((((mask) >> ((row_index) * (width))) & ((1ull << (width))-1)) == ((1ull << (width))-1)) 
+#define SEGMENT_ROW_COMPLETION_TEST(mask,                   row_index, width) ((((mask) >> ((row_index) * (width))) & ((1ull << (width))-1)) == ((1ull << (width))-1))
 #define SEGMENT_CONVERT_IDX_TO_XY(index,                    x, y, pic_width_in_sb) \
                                                             MULTI_LINE_MACRO_BEGIN \
                                                             (y) = (index) / (pic_width_in_sb); \
@@ -76,7 +74,6 @@ typedef struct BdpSbData
     PartBlockData block_data_array[EP_BLOCK_MAX_COUNT];
 
 } BdpSbData;
-
 
 /**************************************
  * MD Segment Control
@@ -121,7 +118,7 @@ typedef struct PictureControlSet
 
     EncDecSegments                 *enc_dec_segment_ctrl;
 
-    // Entropy Process Rows           
+    // Entropy Process Rows
     int8_t                          entropy_coding_current_available_row;
     EB_BOOL                         entropy_coding_row_array[MAX_SB_ROWS];
     int8_t                          entropy_coding_current_row;
@@ -139,7 +136,7 @@ typedef struct PictureControlSet
     // Rate Control
     uint8_t                         picture_qp;
 
-    int                             base_qindex; // Hsan to remove as present under cpi -> cm 
+    int                             base_qindex; // Hsan to remove as present under cpi -> cm
     int                             bottom_index;
     int                             top_index;
     // LCU Array
@@ -159,7 +156,7 @@ typedef struct PictureControlSet
     ENTROPY_CONTEXT                *md_above_context[NEIGHBOR_ARRAY_TOTAL_COUNT];
     ENTROPY_CONTEXT                *md_left_context[NEIGHBOR_ARRAY_TOTAL_COUNT];
 
-    // Encode Pass Neighbor        Arrays       
+    // Encode Pass Neighbor        Arrays
     NeighborArrayUnit              *ep_luma_recon_neighbor_array;
     NeighborArrayUnit              *ep_cb_recon_neighbor_array;
     NeighborArrayUnit              *ep_cr_recon_neighbor_array;
@@ -183,10 +180,9 @@ typedef struct PictureControlSet
 #endif
 } PictureControlSet;
 
-
 // To optimize based on the max input size
 // To study speed-memory trade-offs
-typedef struct SbParameters 
+typedef struct SbParameters
 {
     uint8_t   horizontal_index;
     uint8_t   vertical_index;
@@ -201,28 +197,28 @@ typedef struct SbParameters
     uint8_t   is_edge_sb;
 } SbParams;
 
-typedef struct CuStat 
+typedef struct CuStat
 {
     EB_BOOL  grass_area;
     EB_BOOL  skin_area;
-             
+
     EB_BOOL  high_chroma;
     EB_BOOL  high_luma;
-             
+
     uint16_t edge_cu;
     uint16_t similar_edge_count;
     uint16_t pm_similar_edge_count;
 
 } CuStat;
 
-typedef struct SbStat 
+typedef struct SbStat
 {
     CuStat  cu_stat_array[PA_BLOCK_MAX_COUNT];
     uint8_t stationary_edge_over_time_flag;
-            
+
     uint8_t pm_stationary_edge_over_time_flag;
     uint8_t pm_check1_for_logo_stationary_edge_over_time_flag;
-            
+
     uint8_t check1_for_logo_stationary_edge_over_time_flag;
     uint8_t check2_for_logo_stationary_edge_over_time_flag;
     uint8_t low_dist_logo;
@@ -234,16 +230,16 @@ typedef struct SbStat
 // It actually holds only high                          level Pciture based control data:(GOP management,when to start a picture, when to release the PCS, ....).
 // The regular picture_control_set(Child)               will be dedicated to store LCU based encoding results and information.
 // Parent is created before                             the Child, and continue to live more. Child PCS only lives the exact time needed to encode the picture: from ME to EC/ALF.
-typedef struct PictureParentControlSet  
+typedef struct PictureParentControlSet
 {
-    VP9_COMP                                          *cpi; // Hsan - to remove unessary fields 
+    VP9_COMP                                          *cpi; // Hsan - to remove unessary fields
     EbObjectWrapper                                   *sequence_control_set_wrapper_ptr;
     EbObjectWrapper                                   *input_picture_wrapper_ptr;
     EbObjectWrapper                                   *reference_picture_wrapper_ptr;
     EbObjectWrapper                                   *pareference_picture_wrapper_ptr;
 
     EB_BOOL                                            idr_flag;
-    EB_BOOL                                            cra_flag; // Hsan - to remove                         
+    EB_BOOL                                            cra_flag; // Hsan - to remove
     EB_BOOL                                            open_gop_cra_flag;
     EB_BOOL                                            scene_change_flag;
     EB_BOOL                                            end_of_sequence_flag;
@@ -296,7 +292,6 @@ typedef struct PictureParentControlSet
     uint8_t                                            intra_selected_org_qp;
     uint64_t                                           sad_me;
 
-
     uint64_t                                           quantized_coeff_num_bits;
 
     uint64_t                                           last_idr_picture;
@@ -306,7 +301,6 @@ typedef struct PictureParentControlSet
     uint32_t                                           luma_sse;
     uint32_t                                           cr_sse;
     uint32_t                                           cb_sse;
-
 
     // PA
     uint32_t                                           pre_assignment_buffer_count;
@@ -318,7 +312,7 @@ typedef struct PictureParentControlSet
     uint8_t                                          **y_mean;
     uint8_t                                          **cb_mean;
     uint8_t                                          **cr_mean;
-                                                  
+
     uint16_t                                           pic_avg_variance;
 
     // Histograms
@@ -336,14 +330,13 @@ typedef struct PictureParentControlSet
     uint8_t                                            max_number_of_pus_per_sb;
     uint8_t                                            max_number_of_me_candidates_per_pu;
 
-
     MeCuResults                                      **me_results;
     uint32_t                                          *rcme_distortion;
 
-    // Motion Estimation Distortion                     and OIS Historgram 
+    // Motion Estimation Distortion                     and OIS Historgram
     uint16_t                                           *me_distortion_histogram;
     uint16_t                                           *ois_distortion_histogram;
-                                                       
+
     uint32_t                                           *intra_sad_interval_index;
     uint32_t                                           *inter_sad_interval_index;
 
@@ -356,7 +349,6 @@ typedef struct PictureParentControlSet
     uint8_t                                             hierarchical_levels;
     EB_BOOL                                             init_pred_struct_position_flag;
     int8_t                                              hierarchical_layers_diff;
-
 
     // Interlaced Video
     EB_PIC_STRUCT                                       pict_struct;
@@ -378,7 +370,7 @@ typedef struct PictureParentControlSet
     uint8_t                                            *sb_flat_noise_array;
     uint64_t                                           *sb_variance_of_variance_over_time;
     EB_BOOL                                            *is_sb_homogeneous_over_time;
-    // 5L or 6L prediction error                        compared to 4L prediction structure 
+    // 5L or 6L prediction error                        compared to 4L prediction structure
     // 5L: computed for base                            layer frames (16 -  8 on top of 16 - 0)
     // 6L: computed for base                            layer frames (32 - 24 on top of 32 - 0 & 16 - 8 on top of 16 - 0)
     uint8_t                                             pic_homogenous_over_time_sb_percentage;
@@ -389,19 +381,19 @@ typedef struct PictureParentControlSet
     uint8_t                                            *sharp_edge_sb_flag;
 #if 0 // Hsan:  PA detector to evaluate                     after adding OIS
     uint8_t                                             *failing_motion_sb_flag;                            // used by EncDecProcess() and ModeDecisionConfigurationProcess
-    EB_BOOL                                             *uncovered_area_sb_flag;                            // used by EncDecProcess() 
-#endif    
-    EB_BOOL                                            *sb_homogeneous_area_array;                        // used by EncDecProcess()  
-    EB_BOOL                                             logo_pic_flag;                                    // used by EncDecProcess()  
-    uint64_t                                          **var_of_var_32x32_based_sb_array;                    // used by ModeDecisionConfigurationProcess()- the variance of 8x8 block variances for each 32x32 block          
+    EB_BOOL                                             *uncovered_area_sb_flag;                            // used by EncDecProcess()
+#endif
+    EB_BOOL                                            *sb_homogeneous_area_array;                        // used by EncDecProcess()
+    EB_BOOL                                             logo_pic_flag;                                    // used by EncDecProcess()
+    uint64_t                                          **var_of_var_32x32_based_sb_array;                    // used by ModeDecisionConfigurationProcess()- the variance of 8x8 block variances for each 32x32 block
     EB_BOOL                                            *sb_cmplx_contrast_array;                        // used by EncDecProcess()
 
-    uint16_t                                            non_moving_average_score;                        // used by ModeDecisionConfigurationProcess()    
+    uint16_t                                            non_moving_average_score;                        // used by ModeDecisionConfigurationProcess()
 #if BEA
     int16_t                                             non_moving_index_min_distance;
     int16_t                                             non_moving_index_max_distance;
-#endif    
-    EB_BOOL                                            *sb_isolated_non_homogeneous_area_array;            // used by ModeDecisionConfigurationProcess()    
+#endif
+    EB_BOOL                                            *sb_isolated_non_homogeneous_area_array;            // used by ModeDecisionConfigurationProcess()
     uint8_t                                             grass_percentage_in_picture;
     uint8_t                                             percentage_of_edge_in_light_background;
     EB_BOOL                                             dark_background_light_foreground;
@@ -422,10 +414,10 @@ typedef struct PictureParentControlSet
     RpsNode                                             ref_signal;
     uint8_t                                             show_existing_frame_index_array[4];
 
-    // Encoder Mode                    
+    // Encoder Mode
     EB_ENC_MODE                                         enc_mode;
 
-    // Multi-modes signal(s)           
+    // Multi-modes signal(s)
     EbPictureDepthMode                                  pic_depth_mode;
     EB_BOOL                                             use_subpel_flag;
     EbCu8x8Mode                                         cu8x8_mode;
@@ -439,7 +431,6 @@ typedef struct PictureParentControlSet
     EB_BOOL                                             enable_hme_level_2_flag;
 
 } PictureParentControlSet;
-
 
 typedef struct PictureControlSetInitData
 {
@@ -460,7 +451,6 @@ typedef struct PictureControlSetInitData
     uint8_t     speed_control;
 
     uint8_t     tune;
-
 
 } PictureControlSetInitData;
 

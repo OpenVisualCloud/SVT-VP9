@@ -18,7 +18,7 @@ extern "C" {
 /**********************************
  * Bitstream Unit Types
  **********************************/
-typedef struct OutputBitstreamUnit 
+typedef struct OutputBitstreamUnit
 {
     uint32_t size;                                 // allocated buffer size
     uint32_t byte_holder;                          // holds bytes and partial bytes
@@ -38,9 +38,7 @@ extern EbErrorType output_bitstream_unit_ctor(
     OutputBitstreamUnit *bitstream_ptr,
     uint32_t             buffer_size );
 
-
 extern EbErrorType output_bitstream_reset(OutputBitstreamUnit *bitstream_ptr);
-
 
 extern EbErrorType output_bitstream_write (
     OutputBitstreamUnit *bitstream_ptr,
@@ -48,7 +46,7 @@ extern EbErrorType output_bitstream_write (
     uint32_t             number_of_bits );
 
 extern EbErrorType output_bitstream_write_byte(
-    OutputBitstreamUnit *bitstream_ptr, 
+    OutputBitstreamUnit *bitstream_ptr,
     uint32_t             bits);
 
 extern EbErrorType output_bitstream_write_align_zero(OutputBitstreamUnit *bitstream_ptr);

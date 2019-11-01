@@ -17,9 +17,9 @@ extern "C" {
 /************************************************
  * Packetization Reorder Queue Entry
  ************************************************/
-typedef struct PacketizationReorderEntry 
+typedef struct PacketizationReorderEntry
 {
-    uint64_t          picture_number;    
+    uint64_t          picture_number;
     EbObjectWrapper  *output_stream_wrapper_ptr;
 
     uint64_t          start_time_seconds;
@@ -38,13 +38,12 @@ typedef struct PacketizationReorderEntry
     int               show_existing_frame;
     uint8_t           show_existing_frame_index_array[4];
     uint64_t          actual_bits;
-} PacketizationReorderEntry;   
+} PacketizationReorderEntry;
 
-extern EbErrorType packetization_reorder_entry_ctor(   
+extern EbErrorType packetization_reorder_entry_ctor(
     PacketizationReorderEntry **entry_dbl_ptr,
     uint32_t                    picture_number);
 
-  
 #ifdef __cplusplus
 }
 #endif

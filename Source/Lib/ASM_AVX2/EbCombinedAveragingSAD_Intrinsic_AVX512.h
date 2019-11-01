@@ -49,5 +49,5 @@ void bi_pred_average_kernel_avx2_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif

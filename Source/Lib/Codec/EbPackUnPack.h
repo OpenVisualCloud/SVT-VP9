@@ -40,7 +40,6 @@ EbEncPack2DType pack2_d_func_ptr_array_16_bit_src[2][ASM_TYPE_TOTAL] =
     }
 };
 
-
 EbEncPack2DType compressed_pack_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
@@ -104,7 +103,7 @@ typedef void(*EbEncUnpackAvgType)(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,      
+    uint32_t  dst_stride,
     uint32_t  width,
     uint32_t  height );
 
@@ -114,7 +113,7 @@ EbEncUnpackAvgType unpack_avg_func_ptr_array[ASM_TYPE_TOTAL] =
         unpack_avg,
         // AVX2
         unpack_avg_avx2_intrin,//unpack_avg_sse2_intrin,
-    
+
 };
 typedef void(*EbEncUnpackAvgSubType)(
     uint16_t *ref16_l0,
@@ -122,9 +121,9 @@ typedef void(*EbEncUnpackAvgSubType)(
     uint16_t *ref16_l1,
     uint32_t  ref_l1_stride,
     uint8_t  *dst_ptr,
-    uint32_t  dst_stride,  
+    uint32_t  dst_stride,
     uint32_t  width,
-    uint32_t  height ); 
+    uint32_t  height );
 
 EbEncUnpackAvgSubType unpack_avg_safe_sub_func_ptr_array[ASM_TYPE_TOTAL] =
 {
@@ -132,7 +131,7 @@ EbEncUnpackAvgSubType unpack_avg_safe_sub_func_ptr_array[ASM_TYPE_TOTAL] =
         unpack_avg_safe_sub,
         // AVX2  SafeSub
         unpack_avg_safe_sub_avx2_intrin
-   
+
 };
 
 typedef void(*EbEncUnPack8BitDataType)(
@@ -166,7 +165,7 @@ typedef void(*EbEncUnPack8BitDataSubType)(
 
 EbEncUnPack8BitDataSubType unpack_8bit_safe_sub_func_ptr_array_16bit[ASM_TYPE_TOTAL] =
 {
-        // C_DEFAULT           
+        // C_DEFAULT
         un_pack8_bit_data_safe_sub,
         // SSE2
         eb_enc_un_pack8_bit_data_safe_sub_sse2_intrin

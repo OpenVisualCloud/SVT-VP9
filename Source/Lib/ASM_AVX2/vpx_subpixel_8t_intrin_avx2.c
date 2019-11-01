@@ -184,7 +184,6 @@ void vpx_convolve_avg_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *ds
     }
 }
 
-
 static INLINE void shuffle_filter_ssse3(const int16_t *const filter,
     __m128i *const f) {
     const __m128i f_values = _mm_load_si128((const __m128i *)filter);
@@ -241,7 +240,6 @@ static INLINE __m128i convolve8_8_ssse3(const __m128i *const s,
 #else   // !(gcc || clang)
 #define MM256_BROADCASTSI128_SI256(x) _mm256_broadcastsi128_si256(x)
 #endif  // __clang__
-
 
 static INLINE void shuffle_filter_avx2(const int16_t *const filter,
     __m256i *const f) {
@@ -1133,7 +1131,6 @@ static void vpx_filter_block1d16_v8_avg_avx2(
   vpx_filter_block1d16_v8_x_avx2(src_ptr, src_stride, dst_ptr, dst_stride,
                                  height, filter, 1);
 }
-
 
 filter8_1dfunction vpx_filter_block1d16_v2_ssse3;
 filter8_1dfunction vpx_filter_block1d16_h2_ssse3;

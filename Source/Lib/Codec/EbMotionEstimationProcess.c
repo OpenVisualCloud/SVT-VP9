@@ -55,7 +55,6 @@ EbErrorType check_zero_zero_center(
     int16_t                 *x_search_center,
     int16_t                 *y_search_center);
 
-
 /************************************************
  * Set ME/HME Params
  ************************************************/
@@ -102,7 +101,6 @@ void* set_me_hme_params_sq(
     me_context_ptr->search_area_width = search_area_width_sq[resolution_index][hme_me_level];
     me_context_ptr->search_area_height = search_area_height_sq[resolution_index][hme_me_level];
 
-
     // HME Level0 adjustment for low frame rate contents (frame rate <= 30)
     if (input_resolution == INPUT_SIZE_4K_RANGE) {
         if ((sequence_control_set_ptr->static_config.frame_rate >> 16) <= 30) {
@@ -136,8 +134,6 @@ void* set_me_hme_params_sq(
 
     return EB_NULL;
 };
-
-
 
 /************************************************
  * Set ME/HME Params
@@ -185,7 +181,6 @@ void* set_me_hme_params_oq(
     me_context_ptr->search_area_width = search_area_width_oq[resolution_index][hme_me_level];
     me_context_ptr->search_area_height = search_area_height_oq[resolution_index][hme_me_level];
 
-
     // HME Level0 adjustment for low frame rate contents (frame rate <= 30)
     if (input_resolution == INPUT_SIZE_4K_RANGE) {
         if ((sequence_control_set_ptr->static_config.frame_rate >> 16) <= 30) {
@@ -212,8 +207,6 @@ void* set_me_hme_params_oq(
     return EB_NULL;
 };
 
-
-
 /************************************************
  * Set ME/HME Params
  ************************************************/
@@ -225,7 +218,6 @@ void* set_me_hme_params_vmaf(
 {
 
     uint8_t  hme_me_level = picture_control_set_ptr->enc_mode;
-
 
     uint32_t input_ratio = sequence_control_set_ptr->luma_width / sequence_control_set_ptr->luma_height;
 
@@ -263,10 +255,8 @@ void* set_me_hme_params_vmaf(
 
     // HME Level0 adjustment for low frame rate contents (frame rate <= 30)
 
-
     return EB_NULL;
 };
-
 
 /************************************************
  * Set ME/HME Params from Config
@@ -310,7 +300,7 @@ EbErrorType motion_estimation_context_ctor(
 }
 
 /***************************************************************************************************
-* ZZ SAD 
+* ZZ SAD
 ***************************************************************************************************/
 int non_moving_th_shift[4] = { 4, 2, 0, 0};
 
@@ -439,7 +429,6 @@ EbErrorType compute_zz_sad(
             sb_width = sb_params->width;
             sb_height = sb_params->height;
 
-
             block_width = sb_width >> 2;
             block_height = sb_height >> 2;
 
@@ -451,7 +440,7 @@ EbErrorType compute_zz_sad(
                 block_index_sub = (sixteenth_decimated_picture_ptr->origin_y + (sb_origin_y >> 2)) * sixteenth_decimated_picture_ptr->stride_y + sixteenth_decimated_picture_ptr->origin_x + (sb_origin_x >> 2);
                 block_index = (previous_input->origin_y + sb_origin_y)* previous_input->stride_y + (previous_input->origin_x + sb_origin_x);
 
-                // 1/16 collocated LCU decimation 
+                // 1/16 collocated LCU decimation
                 decimation_2d(
                     &previous_input->buffer_y[block_index],
                     previous_input->stride_y,
@@ -495,7 +484,7 @@ EbErrorType compute_zz_sad(
             else if (zz_sad < (((block_width * block_height) * 8))) {
                 previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_2;
             }
-            else { 
+            else {
                 previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_3;
             }
 #endif
@@ -513,11 +502,10 @@ EbErrorType compute_zz_sad(
 EbErrorType signal_derivation_me_kernel_sq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
-    MotionEstimationContext *context_ptr) 
+    MotionEstimationContext *context_ptr)
 {
 
     EbErrorType return_error = EB_ErrorNone;
-
 
     // Set ME/HME search regions
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
@@ -563,7 +551,7 @@ EbErrorType signal_derivation_me_kernel_sq(
     }
 
     // Set fractional search model
-    // 0: search all blocks 
+    // 0: search all blocks
     // 1: selective based on Full-Search SAD & MV.
     // 2: off
     if (picture_control_set_ptr->use_subpel_flag == 1) {
@@ -589,7 +577,7 @@ EbErrorType signal_derivation_me_kernel_sq(
 EbErrorType signal_derivation_me_kernel_oq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
-    MotionEstimationContext *context_ptr) 
+    MotionEstimationContext *context_ptr)
 {
 
     EbErrorType return_error = EB_ErrorNone;
@@ -638,7 +626,7 @@ EbErrorType signal_derivation_me_kernel_oq(
     }
 
     // Set fractional search model
-    // 0: search all blocks 
+    // 0: search all blocks
     // 1: selective based on Full-Search SAD & MV.
     // 2: off
     if (picture_control_set_ptr->use_subpel_flag == 1) {
@@ -664,7 +652,7 @@ EbErrorType signal_derivation_me_kernel_oq(
 EbErrorType signal_derivation_me_kernel_vmaf(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
-    MotionEstimationContext *context_ptr) 
+    MotionEstimationContext *context_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -712,7 +700,7 @@ EbErrorType signal_derivation_me_kernel_vmaf(
     }
 
     // Set fractional search model
-    // 0: search all blocks 
+    // 0: search all blocks
     // 1: selective based on Full-Search SAD & MV.
     // 2: off
     if (picture_control_set_ptr->use_subpel_flag == 1) {
@@ -729,7 +717,6 @@ EbErrorType signal_derivation_me_kernel_vmaf(
 
     return return_error;
 }
-
 
 /******************************************************
 * get_mv
@@ -817,7 +804,7 @@ void stationary_edge_over_update_over_time_sb_part1(
 
     if (sb_params->potential_logo_sb && sb_params->is_complete_sb) {
 
-        // Current MV   
+        // Current MV
         if (picture_control_set_ptr->temporal_layer_index > 0)
             get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
 
@@ -866,36 +853,36 @@ void stationary_edge_over_update_over_time_sb_part2(
 
     SbParams *sb_params  = &sequence_control_set_ptr->sb_params_array[sb_index];
     SbStat   *sb_stat_ptr = &picture_control_set_ptr->sb_stat_array[sb_index];
-    
+
     if (sb_params->potential_logo_sb && sb_params->is_complete_sb) {
         uint32_t me_dist = 0;
-    
+
         EB_BOOL lowSad = EB_FALSE;
-    
+
         if (picture_control_set_ptr->slice_type == B_SLICE) {
             get_me_dist(picture_control_set_ptr, sb_index, &me_dist);
         }
         lowSad = (picture_control_set_ptr->slice_type != B_SLICE) ?
-    
+
             EB_FALSE : (me_dist < 64 * 64 * low_sad_th) ? EB_TRUE : EB_FALSE;
-    
+
         if (lowSad) {
             sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag = 0;
             sb_stat_ptr->low_dist_logo = 1;
         }
         else {
             sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag = 1;
-    
+
             sb_stat_ptr->low_dist_logo = 0;
         }
     }
     else {
         sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag = 0;
-    
+
         sb_stat_ptr->low_dist_logo = 0;
     }
     sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag = 1;
-    
+
 }
 
 /************************************************
@@ -936,8 +923,6 @@ void* motion_estimation_kernel(void *input_ptr)
     uint32_t                 sb_height;
     uint32_t                 sb_row;
 
-
-
     EbPaReferenceObject     *pa_reference_object;
     EbPictureBufferDesc     *quarter_decimated_picture_ptr;
     EbPictureBufferDesc     *sixteenth_decimated_picture_ptr;
@@ -953,9 +938,7 @@ void* motion_estimation_kernel(void *input_ptr)
 
     uint32_t                 intra_sad_interval_index;
 
-
     for (;;) {
-
 
         // Get Input Full Object
         eb_get_full_object(
@@ -1038,10 +1021,8 @@ void* motion_estimation_kernel(void *input_ptr)
                         _mm_prefetch(p, _MM_HINT_T2);
                     }
 
-
                     context_ptr->me_context_ptr->sb_src_ptr = &input_padded_picture_ptr->buffer_y[buffer_index];
                     context_ptr->me_context_ptr->sb_src_stride = input_padded_picture_ptr->stride_y;
-
 
                     // Load the 1/4 decimated LCU from the 1/4 decimated input to the 1/4 intermediate LCU buffer
                     if (picture_control_set_ptr->enable_hme_level_1_flag) {
@@ -1141,11 +1122,10 @@ void* motion_estimation_kernel(void *input_ptr)
                         y_sb_start_index,
                         y_sb_end_index);
 #endif
-                    
+
                 }
             }
         }
-
 
         // Calculate the ME Distortion and OIS Historgrams
         eb_block_on_mutex(picture_control_set_ptr->rc_distortion_histogram_mutex);
@@ -1157,8 +1137,8 @@ void* motion_estimation_kernel(void *input_ptr)
 
                         sb_origin_x = xsb_index * MAX_SB_SIZE;
                         sb_origin_y = ysb_index * MAX_SB_SIZE;
-                        
-                        sb_index = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb); 
+
+                        sb_index = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb);
 
                         SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
 
@@ -1170,7 +1150,7 @@ void* motion_estimation_kernel(void *input_ptr)
 
                         if (sb_params->is_complete_sb) {
 
-                            sad_interval_index = (uint16_t)(picture_control_set_ptr->rcme_distortion[sb_index] >> (12 - SAD_PRECISION_INTERVAL));//change 12 to 2*log2(64) 
+                            sad_interval_index = (uint16_t)(picture_control_set_ptr->rcme_distortion[sb_index] >> (12 - SAD_PRECISION_INTERVAL));//change 12 to 2*log2(64)
 
                             sad_interval_index = (uint16_t)(sad_interval_index >> 2);
                             if (sad_interval_index > (NUMBER_OF_SAD_INTERVALS>>1) -1){
@@ -1181,17 +1161,13 @@ void* motion_estimation_kernel(void *input_ptr)
                             }
                             if (sad_interval_index >= NUMBER_OF_SAD_INTERVALS - 1)
                                 sad_interval_index = NUMBER_OF_SAD_INTERVALS - 1;
-                  
 
-                         
-                            picture_control_set_ptr->inter_sad_interval_index[sb_index] = sad_interval_index;   
+                            picture_control_set_ptr->inter_sad_interval_index[sb_index] = sad_interval_index;
                             picture_control_set_ptr->me_distortion_histogram[sad_interval_index] ++;
-                            
-                            
 
-#if VP9_RC 
+#if VP9_RC
 
-                            intra_sad_interval_index = picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4; 
+                            intra_sad_interval_index = picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4;
 #else
                             uint32_t                       bestOisblock_index = 0;
                             intra_sad_interval_index = (uint32_t)
@@ -1210,12 +1186,8 @@ void* motion_estimation_kernel(void *input_ptr)
                             if (intra_sad_interval_index >= NUMBER_OF_SAD_INTERVALS - 1)
                                 intra_sad_interval_index = NUMBER_OF_SAD_INTERVALS - 1;
 
-                   
-                            picture_control_set_ptr->intra_sad_interval_index[sb_index] = intra_sad_interval_index; 
-                            picture_control_set_ptr->ois_distortion_histogram[intra_sad_interval_index] ++; 
-
-
-
+                            picture_control_set_ptr->intra_sad_interval_index[sb_index] = intra_sad_interval_index;
+                            picture_control_set_ptr->ois_distortion_histogram[intra_sad_interval_index] ++;
 
                             ++picture_control_set_ptr->full_sb_count;
                         }
@@ -1233,16 +1205,15 @@ void* motion_estimation_kernel(void *input_ptr)
                         sb_height = (sequence_control_set_ptr->luma_height - sb_origin_y) < MAX_SB_SIZE ? sequence_control_set_ptr->luma_height - sb_origin_y : MAX_SB_SIZE;
 
                         sb_index = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb);
-                       
+
                         picture_control_set_ptr->inter_sad_interval_index[sb_index] = 0;
                         picture_control_set_ptr->intra_sad_interval_index[sb_index] = 0;
-                        
+
                         if (sb_width == MAX_SB_SIZE && sb_height == MAX_SB_SIZE) {
 
-
 #if VP9_RC
-                            
-                            intra_sad_interval_index = picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4; 
+
+                            intra_sad_interval_index = picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4;
 #else
                             intra_sad_interval_index = (uint32_t)
                                 (((picture_control_set_ptr->oisCu32Cu16Results[sb_index]->sortedOisCandidate[1][bestOisblock_index].distortion +

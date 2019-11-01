@@ -63,7 +63,6 @@ static intra_high_pred_fn pred_high[INTRA_MODES][4];
 static intra_high_pred_fn dc_pred_high[2][2][4];
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
-
 static void vp9_init_intra_predictors_internal(void) {
 #define INIT_ALL_SIZES(p, type)               \
   p[TX_4X4] = vpx_##type##_predictor_4x4;     \
@@ -104,7 +103,6 @@ static void vp9_init_intra_predictors_internal(void) {
 
 #undef intra_pred_allsizes
 }
-
 
 #if CONFIG_VP9_HIGHBITDEPTH
 static void build_intra_predictors_high(
@@ -261,14 +259,14 @@ static void build_intra_predictors(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                                    const MACROBLOCKD *xd,
                                    const uint8_t *ref,
-                                   int ref_stride, 
+                                   int ref_stride,
 #endif
                                    uint8_t *dst, int dst_stride,
                                    PREDICTION_MODE mode, TX_SIZE tx_size,
-#if 0                           
-                                   int up_available, int left_available, int right_available, 
+#if 0
+                                   int up_available, int left_available, int right_available,
 #endif
-#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()       
+#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                                    int x, int y,
 #endif
                                    int plane) {
@@ -406,7 +404,7 @@ static void build_intra_predictors(EncDecContext   *context_ptr,
 
   // predict
   if (mode == DC_PRED) {
-#if 1 
+#if 1
       dc_pred[(plane == 0 && context_ptr->block_origin_x > 0) || ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0)][(plane == 0 && context_ptr->block_origin_y > 0) || ((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0)][tx_size](dst, dst_stride, context_ptr->const_above_row[plane], context_ptr->left_col[plane]);
 #else
     dc_pred[left_available][up_available][tx_size](dst, dst_stride, context_ptr->const_above_row[plane], context_ptr->left_col[plane]);
@@ -418,21 +416,21 @@ static void build_intra_predictors(EncDecContext   *context_ptr,
 
 void vp9_predict_intra_block(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
-                             const MACROBLOCKD *xd, 
+                             const MACROBLOCKD *xd,
 #endif
                              TX_SIZE tx_size,
-                             PREDICTION_MODE mode, 
+                             PREDICTION_MODE mode,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                              const uint8_t *ref,
-                             int ref_stride, 
+                             int ref_stride,
 #endif
                              uint8_t *dst, int dst_stride,
 #if 0
-                             int aoff, int loff, 
+                             int aoff, int loff,
 #endif
     int plane) {
 
-#if 0   
+#if 0
   const int bw = (1 << bwl_in);
   const int txw = (1 << tx_size);
   const int have_top = loff || (xd->above_mi != NULL);
@@ -453,12 +451,12 @@ void vp9_predict_intra_block(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
        xd, ref, ref_stride,
 #endif
-      dst, dst_stride, mode, tx_size,  
-#if 0   
-      have_top, have_left, have_right, 
+      dst, dst_stride, mode, tx_size,
+#if 0
+      have_top, have_left, have_right,
 #endif
-#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()   
-      x, y, 
+#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
+      x, y,
 #endif
       plane);
 }
@@ -466,4 +464,3 @@ void vp9_predict_intra_block(EncDecContext   *context_ptr,
 void vp9_init_intra_predictors(void) {
   once(vp9_init_intra_predictors_internal);
 }
-

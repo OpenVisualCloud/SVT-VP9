@@ -6,10 +6,9 @@
 #ifndef EbPictureBuffer_h
 #define EbPictureBuffer_h
 
-#include <stdio.h> 
+#include <stdio.h>
 
 #include "EbDefinitions.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,24 +21,24 @@ extern "C" {
 #define PICTURE_BUFFER_DESC_FULL_MASK           (PICTURE_BUFFER_DESC_Y_FLAG | PICTURE_BUFFER_DESC_Cb_FLAG | PICTURE_BUFFER_DESC_Cr_FLAG)
 
 /************************************
- * EbPictureBufferDesc 
+ * EbPictureBufferDesc
  ************************************/
-typedef struct EbPictureBufferDesc  
-{   
+typedef struct EbPictureBufferDesc
+{
     // Buffer Ptrs
     EbByte         buffer_y;          // pointer to the Y luma buffer
     EbByte         buffer_cb;         // pointer to the U chroma buffer
-    EbByte         buffer_cr;         // pointer to the V chroma buffer 
+    EbByte         buffer_cr;         // pointer to the V chroma buffer
 
-    //Bit increment 
+    //Bit increment
     EbByte         buffer_bit_inc_y;  // pointer to the Y luma buffer Bit increment
     EbByte         buffer_bit_inc_cb; // pointer to the U chroma buffer Bit increment
     EbByte         buffer_bit_inc_cr; // pointer to the V chroma buffer Bit increment
 
     uint16_t       stride_y;          // pointer to the Y luma buffer
     uint16_t       stride_cb;         // pointer to the U chroma buffer
-    uint16_t       stride_cr;         // pointer to the V chroma buffer 
-                   
+    uint16_t       stride_cr;         // pointer to the V chroma buffer
+
     uint16_t       stride_bit_inc_y;  // pointer to the Y luma buffer Bit increment
     uint16_t       stride_bit_inc_cb; // pointer to the U chroma buffer Bit increment
     uint16_t       stride_bit_inc_cr; // pointer to the V chroma buffer Bit increment
@@ -55,7 +54,7 @@ typedef struct EbPictureBufferDesc
 
     // Buffer Parameters
     uint32_t       luma_size;         // Size of the luma buffer
-    uint32_t       chroma_size;       // Size of the chroma buffers                
+    uint32_t       chroma_size;       // Size of the chroma buffers
     EB_BOOL        packed_flag;       // Indicates if sample buffers are packed or not
 
 } EbPictureBufferDesc;
@@ -74,18 +73,18 @@ typedef struct EbPictureBufferDescInitData
     uint16_t   top_padding;
     uint16_t   bot_padding;
     EB_BOOL    split_mode;         //ON: allocate 8bit data separately from nbit data
-    
+
 } EbPictureBufferDescInitData;
 
 /**************************************
  * Extern Function Declarations
  **************************************/
 extern EbErrorType eb_picture_buffer_desc_ctor(
-    EbPtr  *object_dbl_ptr, 
+    EbPtr  *object_dbl_ptr,
     EbPtr   object_init_data_ptr);
 
 extern EbErrorType eb_recon_picture_buffer_desc_ctor(
-    EbPtr  *object_dbl_ptr, 
+    EbPtr  *object_dbl_ptr,
     EbPtr   object_init_data_ptr);
 
 #ifdef __cplusplus

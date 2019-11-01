@@ -31,12 +31,12 @@ EbErrorType sb_unit_ctor(
     uint16_t block_index;
 #if !VP9_PERFORM_EP
     EbPictureBufferDescInitData coeff_init_data;
-#endif 
+#endif
     SbUnit *sb_unit_ptr;
     EB_MALLOC(SbUnit*, sb_unit_ptr, sizeof(SbUnit), EB_N_PTR);
 
     *sb_unit_dbl_ptr = sb_unit_ptr;
-    
+
     // ************ LCU ***************
     if((picture_width - sb_origin_x) < MAX_SB_SIZE) {
         border_largest_block_size = picture_width - sb_origin_x;
@@ -45,7 +45,7 @@ EbErrorType sb_unit_ctor(
             border_largest_block_size -= (border_largest_block_size & ((~0u) << Log2f(border_largest_block_size)));
         }
     }
-    
+
     if((picture_height - sb_origin_y) < MAX_SB_SIZE) {
         border_largest_block_size = picture_height - sb_origin_y;
         // Which border_largest_block_size is not a power of two
@@ -55,12 +55,12 @@ EbErrorType sb_unit_ctor(
     }
     sb_unit_ptr->picture_control_set_ptr = picture_control_set;
     sb_unit_ptr->origin_x                = sb_origin_x;
-    sb_unit_ptr->origin_y                = sb_origin_y;   
+    sb_unit_ptr->origin_y                = sb_origin_y;
     sb_unit_ptr->sb_index                = sb_index;
 
     EB_MALLOC(CodingUnit**, sb_unit_ptr->coded_block_array_ptr, sizeof(CodingUnit*) * EP_BLOCK_MAX_COUNT, EB_N_PTR);
 
-    for(block_index=0; block_index < EP_BLOCK_MAX_COUNT; ++block_index) {          
+    for(block_index=0; block_index < EP_BLOCK_MAX_COUNT; ++block_index) {
         EB_MALLOC(CodingUnit*, sb_unit_ptr->coded_block_array_ptr[block_index], sizeof(CodingUnit), EB_N_PTR);
         if (ep_get_block_stats(block_index)->bwidth == ep_get_block_stats(block_index)->bheight) {
             EB_MALLOC(MbModeInfoExt*, sb_unit_ptr->coded_block_array_ptr[block_index]->mbmi_ext, sizeof(MbModeInfoExt), EB_N_PTR);

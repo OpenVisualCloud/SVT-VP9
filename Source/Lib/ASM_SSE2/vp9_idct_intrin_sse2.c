@@ -149,4 +149,3 @@ static INLINE void write_buffer_16x16(__m128i *const in0, __m128i *const in1,
     write_buffer_16x1(in0[14], in1[14], dest + 14 * stride);
     write_buffer_16x1(in0[15], in1[15], dest + 15 * stride);
 }
-

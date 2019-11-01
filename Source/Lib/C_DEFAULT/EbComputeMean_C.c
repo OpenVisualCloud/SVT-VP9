@@ -37,7 +37,6 @@ uint64_t compute_mean(
     return block_mean;
 }
 
-
 /*******************************************
 * compute_mean_of_squared_values
 *   returns the Mean of Squared Values
@@ -79,7 +78,6 @@ uint64_t ComputeSubMeanOfSquaredValues(
     uint64_t block_mean = 0;
     uint16_t skip = 0;
 
-    
     for (vertical_index = 0; skip < input_area_height; skip =vertical_index + vertical_index) {
         for (horizontal_index = 0; horizontal_index < input_area_width; horizontal_index++) {
 
@@ -107,7 +105,6 @@ uint64_t ComputeSubMean8x8(
     uint64_t block_mean = 0;
     uint16_t skip = 0;
 
-
     for (vertical_index = 0; skip < input_area_height; skip =vertical_index + vertical_index) {
         for (horizontal_index = 0; horizontal_index < input_area_width; horizontal_index++) {
 
@@ -122,7 +119,3 @@ uint64_t ComputeSubMean8x8(
 
     return block_mean;
 }
-
-
-
-

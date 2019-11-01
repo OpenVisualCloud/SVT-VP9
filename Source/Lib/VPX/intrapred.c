@@ -15,7 +15,6 @@
 #include "vpx_dsp_common.h"
 #include "vpx_dsp_rtcd.h"
 
-
 #define dst(x, y) dst[(x) + (y)*stride]
 #define AVG3(a, b, c) (((a) + 2 * (b) + (c) + 2) >> 2)
 #define AVG2(a, b) (((a) + (b) + 1) >> 1)

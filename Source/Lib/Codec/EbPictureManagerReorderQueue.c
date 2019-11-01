@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbPictureDecisionReorderQueue.h"
 
-EbErrorType picture_decision_reorder_entry_ctor(   
+EbErrorType picture_decision_reorder_entry_ctor(
     PictureDecisionReorderEntry **entry_dbl_ptr,
     uint32_t                      picture_number)
 {
@@ -14,6 +14,6 @@ EbErrorType picture_decision_reorder_entry_ctor(
 
     (*entry_dbl_ptr)->picture_number       = picture_number;
     (*entry_dbl_ptr)->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
-    
+
     return EB_ErrorNone;
 }

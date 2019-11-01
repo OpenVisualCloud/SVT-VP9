@@ -3,7 +3,6 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
-
 #include "EbNoiseExtractAVX2.h"
 #include "EbDefinitions.h"
 #include "immintrin.h"
@@ -32,16 +31,16 @@ inline void luma_weak_filter_avx2_intrin(
         bottom_first_half,
         filter_first_half,
         filter_second_half,
-        curr_next_first_half, 
+        curr_next_first_half,
         curr_next_second_half,
-        weights, 
+        weights,
         curr_left_mid_first_half_weight,
-        curr_left_mid_first_halflo, 
+        curr_left_mid_first_halflo,
         curr_left_mid_first_halfhi,
-        curr_prev_permutation, 
-        curr_permutation, 
+        curr_prev_permutation,
+        curr_permutation,
         curr_next_permutation,
-        top_permutation, 
+        top_permutation,
         bottom_permutation;
 
     curr_prev_permutation           = _mm256_permute4x64_epi64(curr_prev, 216);
@@ -59,14 +58,12 @@ inline void luma_weak_filter_avx2_intrin(
     curr_next_second_half           = _mm256_unpackhi_epi8(curr_next_permutation, _mm256_setzero_si256());
     curr_left_mid_first_halfhi      = _mm256_add_epi16(curr_next_second_half, curr_left_mid_first_half_weight);
 
-
     top_permutation                 = _mm256_permute4x64_epi64(top, 216);
     top_first_half                  = _mm256_unpacklo_epi8(top_permutation, _mm256_setzero_si256());
     bottom_permutation              = _mm256_permute4x64_epi64(bottom, 216);
     bottom_first_half               = _mm256_unpacklo_epi8(bottom_permutation, _mm256_setzero_si256());
     filter_first_half               = _mm256_adds_epi16(_mm256_adds_epi16(bottom_first_half, top_first_half), curr_left_mid_first_halflo);
     filter_first_half               = _mm256_srli_epi16(filter_first_half, 3);
-
 
     top_first_half                  = _mm256_unpackhi_epi8(top_permutation, _mm256_setzero_si256());
     bottom_first_half               = _mm256_unpackhi_epi8(bottom_permutation, _mm256_setzero_si256());
@@ -96,30 +93,29 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(
         filter_second_half,
         curr_next_first_half,
         curr_next_second_half,
-        weights, 
+        weights,
         curr_left_mid_first_half_weight,
-        curr_left_mid_first_halflo, 
-        curr_left_mid_first_halfhi, 
-        curr_prev_permutation, 
-        curr_permutation, 
+        curr_left_mid_first_halflo,
+        curr_left_mid_first_halfhi,
+        curr_prev_permutation,
+        curr_permutation,
         curr_next_permutation,
-        top_permutation, 
+        top_permutation,
         bottom_permutation,
-        top_prev_permutation, 
-        top_left_mid_first_halflo, 
-        top_left_mid_first_half_weight, 
+        top_prev_permutation,
+        top_left_mid_first_halflo,
+        top_left_mid_first_half_weight,
         top_next_first_half,
-        top_next_permutation, 
-        top_left_mid_first_halfhi, 
+        top_next_permutation,
+        top_left_mid_first_halfhi,
         top_next_second_half,
         bottom_prev_permutation,
-        bottom_left_mid_first_halflo, 
+        bottom_left_mid_first_halflo,
         bottom_left_mid_first_half_weight,
         bottom_next_permutation,
         bottom_next_first_half,
-        bottom_left_mid_first_halfhi, 
+        bottom_left_mid_first_halfhi,
         bottom_next_second_half;
-
 
     //  Curr
     curr_prev_permutation             = _mm256_permute4x64_epi64(curr_prev, 216);
@@ -155,7 +151,6 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(
     top_next_second_half              = _mm256_unpackhi_epi8(top_next_permutation, _mm256_setzero_si256());
     top_left_mid_first_halfhi         = _mm256_add_epi16(top_next_second_half, top_left_mid_first_half_weight);
 
-
     // Bottom
     bottom_prev_permutation           = _mm256_permute4x64_epi64(bottom_prev, 216);
     bottom_permutation                = _mm256_permute4x64_epi64(bottom, 216);
@@ -172,16 +167,13 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(
     bottom_next_second_half           = _mm256_unpackhi_epi8(bottom_next_permutation, _mm256_setzero_si256());
     bottom_left_mid_first_halfhi      = _mm256_add_epi16(bottom_next_second_half, bottom_left_mid_first_half_weight);
 
-
     filter_first_half                 = _mm256_adds_epi16(_mm256_adds_epi16(bottom_left_mid_first_halflo, top_left_mid_first_halflo), curr_left_mid_first_halflo);
     filter_first_half                 = _mm256_srli_epi16(filter_first_half, 4);
     filter_second_half                = _mm256_adds_epi16(_mm256_adds_epi16(bottom_left_mid_first_halfhi, top_left_mid_first_halfhi), curr_left_mid_first_halfhi);
     filter_second_half                = _mm256_srli_epi16(filter_second_half, 4);
 
-
     filter_first_half                 = _mm256_permute4x64_epi64(_mm256_packus_epi16(filter_first_half, filter_second_half), 216);
     _mm256_storeu_si256((__m256i *)(ptr_denoised), filter_first_half);
-
 
 }
 
@@ -203,17 +195,16 @@ inline void chroma_strong_avx2_intrin(
         curr_prev_permutation,
         curr_permutation,
         curr_next_permutation,
-        top_permutation, 
-        top_prev_permutation, 
+        top_permutation,
+        top_prev_permutation,
         top_left_mid_first_halflo,
-        top_next_permutation, 
+        top_next_permutation,
         top_left_mid_first_halfhi,
         bottom_permutation,
-        bottom_prev_permutation, 
+        bottom_prev_permutation,
         bottom_left_mid_first_halflo,
         bottom_next_permutation,
         bottom_left_mid_first_halfhi;
-
 
     curr_prev_permutation        = _mm256_permute4x64_epi64(curr_prev, 216);
     curr_permutation             = _mm256_permute4x64_epi64(curr, 216);
@@ -227,22 +218,17 @@ inline void chroma_strong_avx2_intrin(
         _mm256_unpackhi_epi8(curr_prev_permutation, _mm256_setzero_si256()));
     curr_left_mid_first_halfhi   = _mm256_add_epi16(_mm256_unpackhi_epi8(curr_next_permutation, _mm256_setzero_si256()), curr_left_mid_first_halfhi);
 
-
     top_prev_permutation         = _mm256_permute4x64_epi64(top_prev, 216);
     top_permutation              = _mm256_permute4x64_epi64(top, 216);
     top_next_permutation         = _mm256_permute4x64_epi64(top_next, 216);
-
 
     top_left_mid_first_halflo    = _mm256_add_epi16(_mm256_unpacklo_epi8(top_permutation, _mm256_setzero_si256()),
         _mm256_unpacklo_epi8(top_prev_permutation, _mm256_setzero_si256()));
     top_left_mid_first_halflo    = _mm256_add_epi16(_mm256_unpacklo_epi8(top_next_permutation, _mm256_setzero_si256()), top_left_mid_first_halflo);
 
-
     top_left_mid_first_halfhi    = _mm256_add_epi16(_mm256_unpackhi_epi8(top_permutation, _mm256_setzero_si256()),
         _mm256_unpackhi_epi8(top_prev_permutation, _mm256_setzero_si256()));
     top_left_mid_first_halfhi    = _mm256_add_epi16(_mm256_unpackhi_epi8(top_next_permutation, _mm256_setzero_si256()), top_left_mid_first_halfhi);
-
-
 
     bottom_prev_permutation      = _mm256_permute4x64_epi64(bottom_prev, 216);
     bottom_permutation           = _mm256_permute4x64_epi64(bottom, 216);
@@ -252,11 +238,9 @@ inline void chroma_strong_avx2_intrin(
         _mm256_unpacklo_epi8(bottom_prev_permutation, _mm256_setzero_si256()));
     bottom_left_mid_first_halflo = _mm256_add_epi16(_mm256_unpacklo_epi8(bottom_next_permutation, _mm256_setzero_si256()), bottom_left_mid_first_halflo);
 
-
     bottom_left_mid_first_halfhi = _mm256_add_epi16(_mm256_unpackhi_epi8(bottom_permutation, _mm256_setzero_si256()),
         _mm256_unpackhi_epi8(bottom_prev_permutation, _mm256_setzero_si256()));
     bottom_left_mid_first_halfhi = _mm256_add_epi16(_mm256_unpackhi_epi8(bottom_next_permutation, _mm256_setzero_si256()), bottom_left_mid_first_halfhi);
-
 
     curr_left_mid_first_halflo   = _mm256_add_epi16(_mm256_add_epi16(curr_left_mid_first_halflo, top_left_mid_first_halflo), bottom_left_mid_first_halflo);
     curr_left_mid_first_halfhi   = _mm256_add_epi16(_mm256_add_epi16(curr_left_mid_first_halfhi, top_left_mid_first_halfhi), bottom_left_mid_first_halfhi);
@@ -271,7 +255,6 @@ inline void chroma_strong_avx2_intrin(
 
     curr_left_mid_first_halflo   = _mm256_insertf128_si256(_mm256_setzero_si256(), _mm_packus_epi16(_mm256_extracti128_si256(curr_left_mid_first_halflo, 0), _mm256_extracti128_si256(curr_left_mid_first_halflo, 1)), 0);
 
-
     top_left_mid_first_halfhi    = _mm256_unpacklo_epi16(curr_left_mid_first_halfhi, _mm256_setzero_si256());
     top_left_mid_first_halfhi    = _mm256_mullo_epi32(top_left_mid_first_halfhi, _mm256_set1_epi32(7282));
     top_left_mid_first_halfhi    = _mm256_srli_epi32(top_left_mid_first_halfhi, 16);
@@ -283,7 +266,6 @@ inline void chroma_strong_avx2_intrin(
 
     curr_left_mid_first_halflo   = _mm256_insertf128_si256(curr_left_mid_first_halflo, _mm_packus_epi16(_mm256_extracti128_si256(curr_left_mid_first_halfhi, 0), _mm256_extracti128_si256(curr_left_mid_first_halfhi, 1)), 1);
     _mm256_storeu_si256((__m256i *)(ptr_denoised), curr_left_mid_first_halflo);
-
 
 }
 /*******************************************
@@ -341,7 +323,7 @@ void noise_extract_luma_weak_avx2_intrin(
         //    p[1 + 2 * stride]) / 8;
 
         top = curr =  second_top = second_curr = _mm256_setzero_si256();
-    
+
         for (kk = 0; kk + MAX_SB_SIZE <= pic_width; kk += MAX_SB_SIZE)
         {
             for (jj = 0; jj < sb_height; jj++)
@@ -413,7 +395,6 @@ void noise_extract_luma_weak_avx2_intrin(
                 second_curr = second_bottom;
 
             }
-
 
         }
 
@@ -560,7 +541,6 @@ void noise_extract_luma_weak_sb_avx2_intrin(
 
             }
 
-
         }
 
         sb_height = MIN(MAX_SB_SIZE, pic_height - sb_origin_y);
@@ -620,7 +600,6 @@ void noise_extract_luma_strong_avx2_intrin(
         stride_out             = denoised_picture_ptr->stride_y;
         ptr_denoised           = &(denoised_picture_ptr->buffer_y[input_origin_index_pad]);
         ptr_denoised_interm    = ptr_denoised;
-
 
         top = curr = second_top = second_curr = top_next = top_prev = curr_next = curr_prev = second_curr_prev = second_curr_next = second_top_prev = second_top_next = _mm256_setzero_si256();
         for (kk = 0; kk + MAX_SB_SIZE <= pic_width; kk += MAX_SB_SIZE)
@@ -707,7 +686,6 @@ void noise_extract_luma_strong_avx2_intrin(
                     bottom_next,
                     ptr_denoised_interm);
 
-
                 chroma_weak_luma_strong_filter_avx2_intrin(
                     second_top,
                     second_curr,
@@ -719,7 +697,6 @@ void noise_extract_luma_strong_avx2_intrin(
                     second_bottom_prev,
                     second_bottom_next,
                     ptr_denoised_interm + 32);
-
 
                 top              = curr;
                 curr             = bottom;
@@ -735,7 +712,6 @@ void noise_extract_luma_strong_avx2_intrin(
                 second_curr_next = second_bottom_next;
 
             }
-
 
         }
 
@@ -870,7 +846,6 @@ void noise_extract_chroma_strong_avx2_intrin(
                     bottom_cr              = _mm256_loadu_si256((__m256i*)((ptr_in_cr + kk) + (2 + jj)* stride_in_cr - stride_in_cr));
                     ptr_denoised_interm_cr = ptr_denoised_cr + kk + ((1 + jj)*stride_out_cr - stride_out_cr);
 
-
                 }
 
                 chroma_strong_avx2_intrin(
@@ -912,7 +887,6 @@ void noise_extract_chroma_strong_avx2_intrin(
 
             }
 
-
         }
 
         sb_height = MIN(MAX_SB_SIZE / 2, pic_height - sb_origin_y);
@@ -928,7 +902,6 @@ void noise_extract_chroma_strong_avx2_intrin(
             }
         }
     }
-
 
 }
 
@@ -978,7 +951,6 @@ void noise_extract_chroma_weak_avx2_intrin(
         stride_out             = denoised_picture_ptr->stride_cb;
         ptr_denoised           = &(denoised_picture_ptr->buffer_cb[input_origin_index_pad]);
         ptr_denoised_interm    = ptr_denoised;
-
 
         stride_in_cr           = input_picture_ptr->stride_cr;
         input_origin_index     = input_picture_ptr->origin_x / 2 + (input_picture_ptr->origin_y / 2 + sb_origin_y)  * input_picture_ptr->stride_cr;
@@ -1075,7 +1047,6 @@ void noise_extract_chroma_weak_avx2_intrin(
                     bottom_next_cr,
                     ptr_denoised_interm_cr);
 
-
                 top          = curr;
                 curr         = bottom;
                 top_prev     = curr_prev;
@@ -1091,9 +1062,7 @@ void noise_extract_chroma_weak_avx2_intrin(
 
             }
 
-
         }
-
 
         sb_height = MIN(MAX_SB_SIZE / 2, pic_height - sb_origin_y);
         for (jj = 0; jj < sb_height; jj++){
@@ -1107,6 +1076,5 @@ void noise_extract_chroma_weak_avx2_intrin(
             }
         }
     }
-
 
 }

@@ -34,7 +34,6 @@ static EbErrorType eb_fifo_ctor(
     return EB_ErrorNone;
 }
 
-
 /**************************************
  * eb_fifo_push_back
  **************************************/
@@ -109,8 +108,6 @@ static EbErrorType eb_circular_buffer_ctor(
     return EB_ErrorNone;
 }
 
-
-
 /**************************************
  * eb_circular_buffer_empty_check
  **************************************/
@@ -180,7 +177,7 @@ static EbErrorType eb_circular_buffer_push_front(
 
     // Increment the Current Count
     ++buffer_ptr->current_count;
-    
+
     return return_error;
 }
 
@@ -507,8 +504,6 @@ EbErrorType eb_system_resource_ctor(
     return return_error;
 }
 
-
-
 /*********************************************************************
  * EbSystemResourceReleaseProcess
  *********************************************************************/
@@ -689,7 +684,7 @@ static EB_BOOL eb_fifo_peak_front(
     EbFifo            *fifo_ptr){
 
     // Set wrapper_ptr to head of BufferPool
-    if (fifo_ptr->first_ptr == (EbObjectWrapper*)EB_NULL) 
+    if (fifo_ptr->first_ptr == (EbObjectWrapper*)EB_NULL)
         return EB_TRUE;
     else
         return EB_FALSE;

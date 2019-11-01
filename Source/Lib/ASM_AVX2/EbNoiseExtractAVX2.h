@@ -13,15 +13,14 @@
 extern "C" {
 #endif
 
-
 /*******************************************
 * noise_extract_luma_weak
 *  weak filter Luma and store noise.
 *******************************************/
 void noise_extract_luma_weak_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,    
+    EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
-    EbPictureBufferDesc *noise_picture_ptr,   
+    EbPictureBufferDesc *noise_picture_ptr,
     uint32_t             sb_origin_y,
     uint32_t             sb_origin_x
     );
@@ -73,7 +72,6 @@ void luma_weak_filter_avx2_intrin(
     uint8_t  *ptr_denoised,
     uint8_t  *ptr_noise);
 
-
 void chroma_weak_luma_strong_filter_avx2_intrin(
     __m256i   top,
     __m256i   curr,
@@ -88,6 +86,5 @@ void chroma_weak_luma_strong_filter_avx2_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbNoiseExtractAVX2_h
-

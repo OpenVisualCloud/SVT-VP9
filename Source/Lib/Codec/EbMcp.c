@@ -9,9 +9,7 @@
 #include "EbDefinitions.h"
 #include "EbPictureOperators.h"
 
-
 // Hassene: to rename the file as no MCP here
-
 
 /** generate_padding()
         is used to pad the target picture. The horizontal padding happens first and then the vertical padding.
@@ -109,7 +107,6 @@ void generate_padding_16bit(
     return;
 }
 
-
 /** pad_input_picture()
 is used to pad the input picture in order to get . The horizontal padding happens first and then the vertical padding.
 */
@@ -158,4 +155,3 @@ void pad_input_picture(
 
     return;
 }
-

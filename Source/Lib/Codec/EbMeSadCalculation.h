@@ -43,7 +43,6 @@ typedef void(*EbInializeBuffer32Bits)(
     uint32_t  count32,
     uint32_t  value);
 
-
 /***************************************
 * Function Tables
 ***************************************/
@@ -57,10 +56,9 @@ static EbSadCalculation8x8and16x16Type sad_calculation_8x8_16x16_func_ptr_array[
 static EbSadCalculation32x32and64x64Type sad_calculation_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
     sad_calculation_32x32_64x64,
-    // AVX2      
+    // AVX2
     sad_calculation_32x32_64x64_sse2_intrin,
 };
-
 
 static EbInializeBuffer32Bits initialize_buffer_32bits_func_ptr_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
@@ -69,8 +67,7 @@ static EbInializeBuffer32Bits initialize_buffer_32bits_func_ptr_array[ASM_TYPE_T
     initialize_buffer_32bits_sse2_intrin
 };
 
-
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbMeSadCalculation_h

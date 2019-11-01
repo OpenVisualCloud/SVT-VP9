@@ -3,11 +3,9 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
-
 #include "EbComputeSAD_SSE4_1.h"
 #include "EbDefinitions.h"
 #include "smmintrin.h"
-
 
 #define UPDATE_BEST(s, k, offset) \
   tem_sum = _mm_extract_epi32(s, k); \
@@ -43,7 +41,6 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
     uint32_t k, l;
     const uint8_t *p_ref, *p_src;
     __m128i s0, s1, s2, s3, s4, s5, s6, s7, s9, s10, s11;
-
 
     switch (width) {
     case 4:
@@ -954,24 +951,23 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
  * get_eight_horizontal_search_point_results_8x8_16x16_pu
  *******************************************/
 void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
-    uint8_t   *src,       
-    uint32_t   src_stride,  
-    uint8_t   *ref,        
-    uint32_t   ref_stride,  
+    uint8_t   *src,
+    uint32_t   src_stride,
+    uint8_t   *ref,
+    uint32_t   ref_stride,
     uint32_t  *p_best_sad8x8,
     uint32_t  *p_best_mv8x8,
     uint32_t  *p_best_sad16x16,
-    uint32_t  *p_best_mv16x16, 
-    uint32_t   mv,   
+    uint32_t  *p_best_mv16x16,
+    uint32_t   mv,
     uint16_t  *p_sad16x16 )
-{  
- 
+{
+
     int16_t x_mv,y_mv;
     const uint8_t *p_ref, *p_src;
     __m128i s0, s1, s2, s3, s4, s5;
      __m128i sad_0, sad_1, sad_2, sad_3;
     uint32_t tem_sum;
-
 
      /*
     -------------------------------------   -----------------------------------
@@ -1007,8 +1003,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
     -----------------------   -----------------------
     */
 
-   
-    //8x8_0    
+    //8x8_0
     {
         p_src = src;
         p_ref = ref;
@@ -1022,10 +1017,10 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-       
+
         p_src += src_stride *4;
         p_ref += ref_stride *4;
-        
+
         s0 = _mm_loadu_si128((__m128i*)p_ref);
         s1 = _mm_loadu_si128((__m128i*)(p_ref+ref_stride*2));
         s2 = _mm_loadl_epi64((__m128i*)p_src);
@@ -1034,22 +1029,22 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-        
+
         //final 8x4 SAD
         sad_0 = _mm_adds_epu16(s3, s4);
-        
-        //find the best for 8x8_0        
+
+        //find the best for 8x8_0
         s3 = _mm_minpos_epu16(sad_0);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (2*tem_sum <  p_best_sad8x8[0]) {
-            p_best_sad8x8[0] = 2*tem_sum; 
+            p_best_sad8x8[0] = 2*tem_sum;
             x_mv = _MVXT(mv)  + (int16_t)(_mm_extract_epi16(s3, 1)*4) ;
             y_mv = _MVYT(mv);
-            p_best_mv8x8[0]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv); 
+            p_best_mv8x8[0]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv);
         }
     }
 
-    //8x8_1    
+    //8x8_1
     {
         p_src = src + 8;
         p_ref = ref + 8;
@@ -1063,10 +1058,10 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-       
+
         p_src += src_stride *4;
         p_ref += ref_stride *4;
-        
+
         s0 = _mm_loadu_si128((__m128i*)p_ref);
         s1 = _mm_loadu_si128((__m128i*)(p_ref+ref_stride*2));
         s2 = _mm_loadl_epi64((__m128i*)p_src);
@@ -1075,22 +1070,22 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-        
+
         //final 8x4 SAD
         sad_1 = _mm_adds_epu16(s3, s4);
-        
-        //find the best for 8x8_1        
+
+        //find the best for 8x8_1
         s3 = _mm_minpos_epu16(sad_1);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (2*tem_sum <  p_best_sad8x8[1]) {
-            p_best_sad8x8[1] = 2*tem_sum; 
+            p_best_sad8x8[1] = 2*tem_sum;
             x_mv = _MVXT(mv)  + (int16_t)(_mm_extract_epi16(s3, 1)*4) ;
             y_mv = _MVYT(mv);
-            p_best_mv8x8[1]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv); 
+            p_best_mv8x8[1]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv);
         }
     }
 
-    //8x8_2    
+    //8x8_2
     {
         p_src = src + 8*src_stride;
         p_ref = ref + 8*ref_stride;
@@ -1104,10 +1099,10 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-       
+
         p_src += src_stride *4;
         p_ref += ref_stride *4;
-        
+
         s0 = _mm_loadu_si128((__m128i*)p_ref);
         s1 = _mm_loadu_si128((__m128i*)(p_ref+ref_stride*2));
         s2 = _mm_loadl_epi64((__m128i*)p_src);
@@ -1116,22 +1111,22 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-        
+
         //final 8x4 SAD
         sad_2 = _mm_adds_epu16(s3, s4);
-        
-        //find the best for 8x8_2        
+
+        //find the best for 8x8_2
         s3 = _mm_minpos_epu16(sad_2);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (2*tem_sum <  p_best_sad8x8[2]) {
-            p_best_sad8x8[2] = 2*tem_sum; 
+            p_best_sad8x8[2] = 2*tem_sum;
             x_mv = _MVXT(mv)  + (int16_t)(_mm_extract_epi16(s3, 1)*4) ;
             y_mv = _MVYT(mv);
-            p_best_mv8x8[2]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv); 
+            p_best_mv8x8[2]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv);
         }
     }
 
-    //8x8_3    
+    //8x8_3
     {
         p_src = src + 8 + 8*src_stride;
         p_ref = ref + 8 + 8*ref_stride;
@@ -1145,10 +1140,10 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-       
+
         p_src += src_stride *4;
         p_ref += ref_stride *4;
-        
+
         s0 = _mm_loadu_si128((__m128i*)p_ref);
         s1 = _mm_loadu_si128((__m128i*)(p_ref+ref_stride*2));
         s2 = _mm_loadl_epi64((__m128i*)p_src);
@@ -1157,21 +1152,21 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s0, s2, 5));
         s3 = _mm_adds_epu16(s3, _mm_mpsadbw_epu8(s1, s5, 0));
         s4 = _mm_adds_epu16(s4, _mm_mpsadbw_epu8(s1, s5, 5));
-        
+
         //final 8x4 SAD
         sad_3 = _mm_adds_epu16(s3, s4);
-        
-        //find the best for 8x8_3        
+
+        //find the best for 8x8_3
         s3 = _mm_minpos_epu16(sad_3);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (2*tem_sum <  p_best_sad8x8[3]) {
-            p_best_sad8x8[3] = 2*tem_sum; 
+            p_best_sad8x8[3] = 2*tem_sum;
             x_mv = _MVXT(mv)  + (int16_t)(_mm_extract_epi16(s3, 1)*4) ;
             y_mv = _MVYT(mv);
-            p_best_mv8x8[3]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv); 
+            p_best_mv8x8[3]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv);
         }
     }
-   
+
     //16x16
     {
         s0 = _mm_adds_epu16(sad_0, sad_1);
@@ -1179,16 +1174,15 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         s3 = _mm_adds_epu16(s0   , s1   );
         //sotore the 8 SADs(16x8 SADs)
         _mm_store_si128( (__m128i*)p_sad16x16, s3);
-        //find the best for 16x16      
+        //find the best for 16x16
         s3 = _mm_minpos_epu16(s3);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (2*tem_sum <  p_best_sad16x16[0]) {
-            p_best_sad16x16[0] = 2*tem_sum; 
+            p_best_sad16x16[0] = 2*tem_sum;
             x_mv = _MVXT(mv)  + (int16_t)(_mm_extract_epi16(s3, 1)*4) ;
             y_mv = _MVYT(mv);
-            p_best_mv16x16[0]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv); 
+            p_best_mv16x16[0]  = ((uint16_t)y_mv<<16) | ((uint16_t)x_mv);
         }
     }
-          
-   
+
 }

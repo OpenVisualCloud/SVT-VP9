@@ -38,7 +38,7 @@ PREDICTION_MODE vp9_above_block_mode(const ModeInfo *cur_mi,
 }
 
 void vp9_foreach_transformed_block_in_plane(
-    MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane, 
+    MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
     foreach_transformed_block_visitor visit, void *arg) {
   const struct macroblockd_plane *const pd = &xd->plane[plane];
   const ModeInfo *mi = xd->mi[0];

@@ -9,7 +9,6 @@
 #include "EbDefinitions.h"
 #include "EbSyntaxElements.h"
 
-
 #include "EbSystemResourceManager.h"
 #include "EbPictureBufferDesc.h"
 #include "EbModeDecision.h"
@@ -22,7 +21,6 @@
 
 #include "vpx_convolve.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -34,7 +32,7 @@ extern "C" {
 
 #define MAX_NFL                                                 11
 #define MODE_DECISION_CANDIDATE_BUFFER_MAX_COUNT   (MAX_NFL+1) * 5
-#define MAX_FULL_LOOP_CANIDATES_PER_DEPTH                  MAX_NFL 
+#define MAX_FULL_LOOP_CANIDATES_PER_DEPTH                  MAX_NFL
 
 /**************************************
 * Macros
@@ -56,14 +54,14 @@ typedef struct EncDecBlockUnit
 /**************************************
 * Enc Dec Context
 **************************************/
-typedef struct EncDecContext    
+typedef struct EncDecContext
 {
     EbFifo                          *mode_decision_input_fifo_ptr;
     EbFifo                          *enc_dec_output_fifo_ptr;
     EbFifo                          *enc_dec_feedback_fifo_ptr;
     EbFifo                          *picture_demux_output_fifo_ptr;
-                                   
-    // Coding Unit Workspace       
+
+    // Coding Unit Workspace
     EbPictureBufferDesc             *residual_buffer;
     EbPictureBufferDesc             *transform_buffer;
     EbPictureBufferDesc             *prediction_buffer;
@@ -78,59 +76,57 @@ typedef struct EncDecContext
     uint16_t                         uv_mode_search_eob[MAX_MB_PLANE][4];
     PREDICTION_MODE                  best_uv_mode[TM_PRED + 1];
 
-    // Context Variables           
-    CodingUnit                      *block_ptr; 
+    // Context Variables
+    CodingUnit                      *block_ptr;
     const EpBlockStats              *ep_block_stats_ptr;
     uint32_t                         ep_block_index;
-                             
+
     uint16_t                         block_origin_x;
     uint16_t                         block_origin_y;
-                                   
+
     uint32_t                         sb_index;
-                                   
-    EB_BOOL                          is16bit;                               
+
+    EB_BOOL                          is16bit;
     EbFifo                          *mode_decision_configuration_input_fifo_ptr;
 
     ModeDecisionCandidate          **fast_candidate_ptr_array;
     ModeDecisionCandidate           *fast_candidate_array;
-                                  
-    ModeDecisionCandidateBuffer    **candidate_buffer_ptr_array;
 
+    ModeDecisionCandidateBuffer    **candidate_buffer_ptr_array;
 
     // Transform and Quantization Buffers
     EbTransQuantBuffers             *trans_quant_buffers_ptr;
-
 
     struct EncDecContext            *enc_dec_context_ptr;
 
     uint64_t                        *fast_cost_array;
     uint64_t                        *full_cost_array;
-                                    
-    // Fast loop buffers            
+
+    // Fast loop buffers
     uint8_t                          buffer_depth_index_start[MAX_LEVEL_COUNT];
     uint8_t                          buffer_depth_index_width[MAX_LEVEL_COUNT];
-                                   
+
     SbUnit                          *sb_ptr;
-                                   
-    // Inter depth decision        
+
+    // Inter depth decision
     uint8_t                          best_candidate_index_array[MAX_FULL_LOOP_CANIDATES_PER_DEPTH];
     uint32_t                         full_recon_search_count;
-                                    
+
     NeighborArrayUnit               *luma_recon_neighbor_array;
     NeighborArrayUnit               *cb_recon_neighbor_array;
     NeighborArrayUnit               *cr_recon_neighbor_array;
-                                    
+
     PARTITION_CONTEXT               *above_seg_context;
     PARTITION_CONTEXT               *left_seg_context;
     ENTROPY_CONTEXT                 *above_context;
     ENTROPY_CONTEXT                 *left_context;
 
     EncDecBlockUnit                **enc_dec_local_block_array;
-                         
+
     EB_BOOL                          restrict_intra_global_motion;
     uint8_t                          use_subpel_flag;
 
-    // Multi-modes signal(s) 
+    // Multi-modes signal(s)
     EB_BOOL                          spatial_sse_full_loop;
     EB_BOOL                          full_loop_escape;
     EB_BOOL                          single_fast_loop_flag;
@@ -162,7 +158,6 @@ typedef struct EncDecContext
     int                               bmi_index; // Hsan : to access bmi under mode info (apply minimum changes to WebM kernels)
     MACROBLOCKD                      *e_mbd;
 
-
     uint32_t                          input_origin_index;
     uint32_t                          input_chroma_origin_index;
 
@@ -171,7 +166,7 @@ typedef struct EncDecContext
 
     EbPictureBufferDesc              *ref_pic_list[2];
     EbPictureBufferDesc              *recon_buffer;
-                                     
+
     convolve_fn_t                     predict[2][2][2];  // horiz, vert, avg
     struct scale_factors             *sf;
     int                               use_ref_mvs_flag[MAX_REF_FRAMES];
@@ -186,11 +181,10 @@ typedef struct EncDecContext
 
     EB_BOOL                           skip_eob_zero_mode_ep;
     EB_BOOL                           eob_zero_mode;
-                                     
-    // Multi-modes signal(s)         
+
+    // Multi-modes signal(s)
     EB_BOOL                           allow_enc_dec_mismatch;
-                                     
-                                     
+
     BdpSbData                         bdp_block_data;
     EbPictureBufferDesc              *bdp_pillar_scratch_recon_buffer;
 
@@ -224,5 +218,5 @@ extern void* enc_dec_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }
-#endif  
+#endif
 #endif // EbEncDecProcess_h

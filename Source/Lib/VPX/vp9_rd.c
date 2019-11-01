@@ -246,7 +246,7 @@ void vp9_initialize_me_consts(VP9_COMP *cpi, MACROBLOCK *x, int qindex) {
   x->sadperbit4 = sad_per_bit4lut_8[qindex];
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 }
-#if 0 
+#if 0
 static void set_block_thresholds(const VP9_COMMON *cm, RD_OPT *rd) {
   int i, bsize, segment_id;
 
@@ -302,7 +302,7 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
                        cm->frame_type != KEY_FRAME)
                           ? 0
                           : 1;
-#if 0 
+#if 0
   set_block_thresholds(cm, rd);
 #endif
   set_partition_probs(cm, xd);
@@ -320,7 +320,7 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
       fill_token_costs(x->token_costs, cm->fc->coef_probs);
 
     //if (cpi->sf.partition_search_type != VAR_BASED_PARTITION ||
-    //    cm->frame_type == KEY_FRAME) 
+    //    cm->frame_type == KEY_FRAME)
     {
       for (i = 0; i < PARTITION_CONTEXTS; ++i)
         vp9_cost_tokens(cpi->partition_cost[i], get_partition_probs(xd, i),
@@ -328,7 +328,7 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
     }
 
     //if (!cpi->sf.use_nonrd_pick_mode || (cm->current_video_frame & 0x07) == 1 ||
-    //    cm->frame_type == KEY_FRAME) 
+    //    cm->frame_type == KEY_FRAME)
     {
       fill_mode_costs(cpi);
 

@@ -31,13 +31,13 @@ extern "C" {
 /************************************************
  * Reference List
  *
- *   reference_list - Contains the deltaPOCs of 
+ *   reference_list - Contains the deltaPOCs of
  *    the pictures referenced by the current
  *    picture.
  ************************************************/
 typedef struct ReferenceList
 {
-    int32_t  reference_list;    
+    int32_t  reference_list;
     uint32_t reference_list_count;
 
 } ReferenceList;
@@ -47,29 +47,29 @@ typedef struct ReferenceList
  *
  *   list_count - Contains count of how
  *     deep into list should be used
- *     depending on how many references are 
+ *     depending on how many references are
  *     being used in the prediction structure.
  *
  *   list - Contains the deltaPOCs of
  *     pictures that reference the current picture.
  *     The dependent list pictures must be grouped
- *     by the referenceCount group in ascending 
+ *     by the referenceCount group in ascending
  *     order.  The grouping is not display order!
  ************************************************/
 typedef struct DependentList
 {
     int32_t *list;
     uint32_t list_count;
-    
+
 } DependentList;
 
 /************************************************
  * Prediction Structure Config Entry
- *   Contains the basic reference lists and 
+ *   Contains the basic reference lists and
  *   configurations for each Prediction Structure
  *   Config Entry.
  ************************************************/
-typedef struct PredictionStructureConfigEntry 
+typedef struct PredictionStructureConfigEntry
 {
     uint32_t temporal_layer_index;
     uint32_t decode_order;
@@ -83,19 +83,19 @@ typedef struct PredictionStructureConfigEntry
  *   Contains a collection of basic control data
  *   for the basic prediction structure.
  ************************************************/
-typedef struct PredictionStructureConfig 
+typedef struct PredictionStructureConfig
 {
     uint32_t                        entry_count;
     PredictionStructureConfigEntry *entry_array;
 } PredictionStructureConfig;
 
 /************************************************
- * Prediction Structure Entry 
+ * Prediction Structure Entry
  *   Contains the reference and dependent lists
  *   for a particular picture in the Prediction
  *   Structure.
  ************************************************/
-typedef struct PredictionStructureEntry 
+typedef struct PredictionStructureEntry
 {
     ReferenceList ref_list0;
     ReferenceList ref_list1;
@@ -123,17 +123,17 @@ typedef struct PredictionStructureEntry
     EB_BOOL       ref_pics_override_total_count_flag;
     int32_t       ref_pics_list0_total_count_minus1;
     int32_t       ref_pics_list1_total_count_minus1;
-    EB_BOOL       restricted_ref_pic_lists_flag;                        // Same list enable flag (if set, 
-                                                                        //   it implies all slices of the 
-                                                                        //   same type in the same picture 
+    EB_BOOL       restricted_ref_pic_lists_flag;                        // Same list enable flag (if set,
+                                                                        //   it implies all slices of the
+                                                                        //   same type in the same picture
                                                                         //   have identical lists)
-    
+
     // List Modification
     // *Note - This should probably be moved to the slice header since its a dynamic control - JMJ Jan 2, 2013
     EB_BOOL       list0_modification_flag;
 
     // Lists Combination (STUB)
-    
+
 } PredictionStructureEntry;
 
 /************************************************
@@ -141,7 +141,7 @@ typedef struct PredictionStructureEntry
  *   Contains a collection of control and RPS
  *   data types for an entire Prediction Structure
  ************************************************/
-typedef struct PredictionStructure 
+typedef struct PredictionStructure
 {
 
     uint32_t                   pred_struct_entry_count;
@@ -155,7 +155,7 @@ typedef struct PredictionStructure
     uint32_t                   leading_pic_index;
     uint32_t                   init_pic_index;
     uint32_t                   steady_state_index;
-    
+
     // RPS Related Entries
     EB_BOOL                    restricted_ref_pic_lists_enable_flag;
     EB_BOOL                    lists_modification_enable_flag;
@@ -167,10 +167,10 @@ typedef struct PredictionStructure
 
 /************************************************
  * Prediction Structure Group
- *   Contains the control structures for all 
- *   supported prediction structures. 
+ *   Contains the control structures for all
+ *   supported prediction structures.
  ************************************************/
-typedef struct PredictionStructureGroup 
+typedef struct PredictionStructureGroup
 {
     PredictionStructure **prediction_structure_ptr_array;
     uint32_t              prediction_structure_count;
@@ -187,14 +187,13 @@ extern PredictionStructure* get_prediction_structure(
     PredictionStructureGroup *prediction_structure_group_ptr,
     EB_PRED                   pred_structure,
     uint32_t                  number_of_references,
-    uint32_t                  levels_of_hierarchy);    
+    uint32_t                  levels_of_hierarchy);
 
-typedef struct RpsNode 
+typedef struct RpsNode
 {
     uint8_t refresh_frame_mask;
     uint8_t ref_dpb_index[3];//LAST-GOLDEN-ALT
 } RpsNode;
-
 
 #ifdef __cplusplus
 }

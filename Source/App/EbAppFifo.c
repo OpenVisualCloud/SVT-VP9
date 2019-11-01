@@ -117,7 +117,6 @@ static void invoke_safe_str_constraint_handler(
     void *ptr,
     errno_t error);
 
-
 static void handle_error(char *orig_dest, rsize_t orig_dmax,
     char *err_msg, errno_t err_code)
 {
@@ -195,7 +194,6 @@ errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen)
             ESLEMAX);
         return RCNEGATE(ESLEMAX);
     }
-
 
     if (dest < src) {
         overlap_bumper = src;

@@ -18,7 +18,6 @@
 #include "vp9_entropymode.h"
 #include "vp9_common.h"
 
-
 // Unconstrained Node Tree
 /* clang-format off */
 const vpx_tree_index vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)] = {

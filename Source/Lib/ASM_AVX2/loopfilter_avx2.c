@@ -369,7 +369,6 @@ DECLARE_ALIGNED(32, static const uint8_t, filt_loopfilter_avx2[32]) = {
   8, 128, 9, 128, 10, 128, 11, 128, 12, 128, 13, 128, 14, 128, 15, 128
 };
 
-
 static INLINE __m128i abs_diff(__m128i a, __m128i b) {
     return _mm_or_si128(_mm_subs_epu8(a, b), _mm_subs_epu8(b, a));
 }

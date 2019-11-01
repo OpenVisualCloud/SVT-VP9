@@ -18,7 +18,7 @@ EbErrorType enc_dec_segments_ctor(
     uint32_t row_index;
     EncDecSegments *segments_ptr;
     EB_MALLOC(EncDecSegments*, segments_ptr, sizeof(EncDecSegments), EB_N_PTR);
-    
+
     *segments_dbl_ptr = segments_ptr;
 
     segments_ptr->segment_max_row_count = segment_row_count;
@@ -29,25 +29,23 @@ EbErrorType enc_dec_segments_ctor(
     EB_MALLOC(uint16_t*, segments_ptr->x_start_array, sizeof(uint16_t) * segments_ptr->segment_max_total_count, EB_N_PTR);
 
     EB_MALLOC(uint16_t*, segments_ptr->y_start_array, sizeof(uint16_t) * segments_ptr->segment_max_total_count, EB_N_PTR);
-    
+
     EB_MALLOC(uint16_t*, segments_ptr->valid_sb_count_array, sizeof(uint16_t) * segments_ptr->segment_max_total_count, EB_N_PTR);
-    
+
     // Dependency map
     EB_MALLOC(uint8_t*, segments_ptr->dep_map.dependency_map, sizeof(uint8_t) * segments_ptr->segment_max_total_count, EB_N_PTR);
-    
+
     EB_CREATEMUTEX(EbHandle, segments_ptr->dep_map.update_mutex, sizeof(EbHandle), EB_MUTEX);
-    
+
     // Segment rows
     EB_MALLOC(EncDecSegSegmentRow*, segments_ptr->row_array, sizeof(EncDecSegSegmentRow) * segments_ptr->segment_max_row_count, EB_N_PTR)
-    
+
     for(row_index=0; row_index < segments_ptr->segment_max_row_count; ++row_index) {
         EB_CREATEMUTEX(EbHandle, segments_ptr->row_array[row_index].assignment_mutex, sizeof(EbHandle), EB_MUTEX);
     }
 
     return EB_ErrorNone;
 }
-
-
 
 void enc_dec_segments_init(
     EncDecSegments *segments_ptr,
@@ -79,12 +77,12 @@ void enc_dec_segments_init(
 
             //++segments_ptr->inputMap.inputDependencyMap[segment_index];
             ++segments_ptr->valid_sb_count_array[segment_index];
-            segments_ptr->x_start_array[segment_index] = (segments_ptr->x_start_array[segment_index] == (uint16_t) -1) ? 
-                (uint16_t) x : 
+            segments_ptr->x_start_array[segment_index] = (segments_ptr->x_start_array[segment_index] == (uint16_t) -1) ?
+                (uint16_t) x :
                 segments_ptr->x_start_array[segment_index];
-            segments_ptr->y_start_array[segment_index] = (segments_ptr->y_start_array[segment_index] == (uint16_t) -1) ? 
-                (uint16_t) y : 
-                segments_ptr->y_start_array[segment_index]; 
+            segments_ptr->y_start_array[segment_index] = (segments_ptr->y_start_array[segment_index] == (uint16_t) -1) ?
+                (uint16_t) y :
+                segments_ptr->y_start_array[segment_index];
         }
     }
 
@@ -121,4 +119,3 @@ void enc_dec_segments_init(
 
     return;
 }
-

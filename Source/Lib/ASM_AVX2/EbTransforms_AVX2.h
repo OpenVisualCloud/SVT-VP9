@@ -48,10 +48,7 @@ extern "C" {
         *out1 = idct_calc_wraplow_avx2(lo, hi, cst1);
     }
 
-
 #ifdef __cplusplus
 }
 #endif
 #endif // EbTransforms_AVX2_h
-
-

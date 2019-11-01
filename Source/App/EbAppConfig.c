@@ -212,7 +212,6 @@ ConfigEntry config_entry[] = {
     { SINGLE_INPUT, ERROR_FILE_TOKEN, "ErrorFile", set_cfg_error_file },
     { SINGLE_INPUT, QP_FILE_TOKEN, "QpFile", set_cfg_qp_file },
 
-
     // Picture Dimensions
     { SINGLE_INPUT, WIDTH_TOKEN, "SourceWidth", set_cfg_source_width },
     { SINGLE_INPUT, HEIGHT_TOKEN, "SourceHeight", set_cfg_source_height },
@@ -252,7 +251,6 @@ ConfigEntry config_entry[] = {
     // ME Parameters
     { SINGLE_INPUT, SEARCH_AREA_WIDTH_TOKEN, "SearchAreaWidth", set_cfg_search_area_width },
     { SINGLE_INPUT, SEARCH_AREA_HEIGHT_TOKEN, "SearchAreaHeight", set_cfg_search_area_height },
-
 
     // Tune
     { SINGLE_INPUT, TUNE_TOKEN, "Tune", set_cfg_tune },
@@ -346,7 +344,6 @@ void eb_config_ctor(EbConfig *config_ptr)
     config_ptr->performance_context.total_latency                = 0;
     config_ptr->performance_context.byte_count                   = 0;
 
-
     // ASM Type
     config_ptr->asm_type                                         = 1;
 
@@ -386,8 +383,6 @@ void eb_config_dtor(EbConfig *config_ptr)
         fclose(config_ptr->recon_file);
         config_ptr->recon_file = (FILE *)NULL;
     }
-
-
 
     if (config_ptr->error_log_file) {
         fclose(config_ptr->error_log_file);
@@ -463,7 +458,6 @@ static void line_split(
 
     return;
 }
-
 
 /**********************************
 * Set Config value
@@ -645,7 +639,6 @@ static EbErrorType verify_settings(EbConfig *config, uint32_t channel_number)
         return_error = EB_ErrorBadParameter;
     }
 
-
     if (config->injector > 1 ){
         fprintf(config->error_log_file, "Error Instance %u: Invalid injector [0 - 1]\n",channel_number+1);
         return_error = EB_ErrorBadParameter;
@@ -816,7 +809,6 @@ int32_t compute_frames_to_be_encoded(
         file_size = ftello64(config->input_file);
     }
 
-
     uint32_t frame_size = SIZE_OF_ONE_FRAME_IN_BYTES(config->source_width, config->source_height, (uint8_t)((config->encoder_bit_depth == 10) ? 1 : 0));
 
     if (frame_size == 0)
@@ -885,7 +877,6 @@ EbErrorType read_command_line(
             return_error = EB_ErrorNone;
         }
     }
-
 
     /***************************************************************************************************/
     /***********   Find SINGLE_INPUT configuration parameter tokens and call respective functions  **********/

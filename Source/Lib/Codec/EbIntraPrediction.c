@@ -9,7 +9,6 @@
 #include "EbIntraPrediction.h"
 #include "EbDefinitions.h"
 
-
 #include "vp9_reconintra.h"
 #include "vp9_reconinter.h"
 
@@ -19,7 +18,7 @@ void intra_prediction(
     uint16_t       pred_stride,
     int            plane)
 {
-    MACROBLOCKD *const xd = context_ptr->e_mbd; 
+    MACROBLOCKD *const xd = context_ptr->e_mbd;
 
 #if 0
     const TX_SIZE tx_size = plane ? get_uv_tx_size(xd->mi[0], pd) : xd->mi[0]->tx_size;
@@ -46,7 +45,7 @@ void intra_prediction(
         mode,
         pred_buffer,
         pred_stride,
-#if 0 
+#if 0
         0,
         0,
 #endif

@@ -35,7 +35,7 @@ extern "C" {
 
 EB_ALIGN(16) static const uint8_t ndp_refinement_control_nref[MAX_TEMPORAL_LAYERS/*temporal layer*/][4/*cu Size*/] =
 {
-    //   64                         32                              16                  8  
+    //   64                         32                              16                  8
     /* layer-0 */      { Pred + Predp1 + Predp2     , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
     /* layer-1 */      { Pred + Predp1 + Predp2     , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
     /* layer-2 */      { Pred + Predp1 + Predp2     , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
@@ -44,11 +44,9 @@ EB_ALIGN(16) static const uint8_t ndp_refinement_control_nref[MAX_TEMPORAL_LAYER
     /* layer-5 */      { Pred + Predp1            , Pred + Predp1                  , Pred + Predp1        , Pred + Predm1      },
 };
 
-
-
 EB_ALIGN(16) static const uint8_t ndp_refinement_control_fast[MAX_TEMPORAL_LAYERS/*temporal layer*/][4/*cu Size*/] =
 {
-    //   64                         32                              16                  8  
+    //   64                         32                              16                  8
     /* layer-0 */      { Pred + Predp1 + Predp2       , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
     /* layer-1 */      { Pred                       , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
     /* layer-2 */      { Pred                       , Pred + Predp1                  ,Pred + Predp1          ,Pred + Predm1         },
@@ -68,7 +66,7 @@ EB_ALIGN(16) static const uint8_t ndp_refinement_control_islice_sub4_k[4/*cu Siz
     Predp1 + Predp2             ,Pred + Predp1 + Predp2         ,Predm1 + Pred + Predp1     ,Predm1 + Pred
 };
 
-typedef struct MdcpLocalCodingUnit    
+typedef struct MdcpLocalCodingUnit
 {
     uint64_t                        early_cost;
     EB_BOOL                         early_split_flag;
@@ -84,7 +82,7 @@ typedef struct ModeDecisionConfigurationContext
 {
     EbFifo                     *rate_control_input_fifo_ptr;
     EbFifo                     *mode_decision_configuration_output_fifo_ptr;
-                               
+
     uint8_t                     qp;
     MdcpLocalCodingUnit         local_cu_array[PA_BLOCK_MAX_COUNT];
 
@@ -92,7 +90,7 @@ typedef struct ModeDecisionConfigurationContext
     uint8_t                     group_of8x8_blocks_count;
     uint8_t                     group_of16x16_blocks_count;
 
-    // Budgeting  
+    // Budgeting
     uint32_t                   *sb_score_array;
     uint8_t                     cost_depth_mode[SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE];
     uint8_t                    *sb_cost_array;
@@ -128,8 +126,6 @@ typedef struct ModeDecisionConfigurationContext
 
 } ModeDecisionConfigurationContext;
 
-
-
 /**************************************
  * Extern Function Declarations
  **************************************/
@@ -143,5 +139,5 @@ extern void* mode_decision_configuration_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }
-#endif   
+#endif
 #endif // EbModeDecisionConfigurationProcess_h

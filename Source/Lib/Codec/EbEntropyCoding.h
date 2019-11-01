@@ -28,7 +28,6 @@ extern "C" {
 extern EbErrorType reset_bitstream(
     EbPtr bitstream_ptr);
 
-
 #ifdef __cplusplus
 }
 #endif

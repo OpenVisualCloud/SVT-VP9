@@ -15,7 +15,6 @@ extern "C" {
 //#define   CHECK_REPORT_ERROR(cond, app_callback_ptr, error_code)  { (void)app_callback_ptr,(void)error_code;  }
 //#define   CHECK_REPORT_ERROR_NC(app_callback_ptr, error_code)     { (void)app_callback_ptr,(void)error_code; }
 
-
 typedef enum EncoderErrorCodes
 {
 

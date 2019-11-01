@@ -8,9 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-
 #define INLINE __inline
-
 
 #if 0
 static vpx_image_t *img_alloc_helper(vpx_image_t *img, vpx_img_fmt_t fmt,
@@ -129,7 +127,6 @@ fail:
   vpx_img_free(img);
   return NULL;
 }
-
 
 vpx_image_t *vpx_img_alloc(vpx_image_t *img, vpx_img_fmt_t fmt,
                            unsigned int d_w, unsigned int d_h,

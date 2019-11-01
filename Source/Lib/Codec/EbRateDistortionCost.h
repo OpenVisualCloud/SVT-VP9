@@ -6,20 +6,16 @@
 #ifndef EbRateDistortionCost_h
 #define EbRateDistortionCost_h
 
-
 /***************************************
  * Includes
  ***************************************/
 #include "EbIntraPrediction.h"
 
-
-#include "EbEncDecProcess.h"  
-
+#include "EbEncDecProcess.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #if VP9_RD
 extern void estimate_ref_frame_costs(
@@ -97,7 +93,6 @@ extern int coeff_rate_estimate( //cost_coeffs
     TX_SIZE               tx_size,
     int                   pt, // coeff_ctx
     int                   use_fast_coef_costing);
-
 
 #ifdef __cplusplus
 }

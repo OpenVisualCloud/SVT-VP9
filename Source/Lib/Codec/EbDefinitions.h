@@ -166,7 +166,6 @@ extern "C" {
         PART_S
     } Part;
 
-
 #define PREAVX2_MASK    1
 #define AVX2_MASK       2
 #define AVX512_MASK     4
@@ -199,7 +198,6 @@ The pointer is word aligned and the buffer is byte aligned.
         EB_16BIT = 16
     } EbBitDepth;
 
-
     /** Assembly Types
     */
     typedef enum EbAsm
@@ -221,7 +219,6 @@ The pointer is word aligned and the buffer is byte aligned.
 #define P_SLICE         1
 #define I_SLICE         2
 
-
 /** The EB_PIC_STRUCT type is used to describe the picture structure.
 */
 #define EB_PIC_STRUCT           uint8_t
@@ -229,13 +226,11 @@ The pointer is word aligned and the buffer is byte aligned.
 #define TOP_FIELD_PIC_STRUCT    1
 #define BOTTOM_FIELD_PIC_STRUCT 2
 
-
 /** The EbModeType type is used to describe the PU type.
 */
 typedef uint8_t EbModeType;
 #define INTER_MODE 1
 #define INTRA_MODE 2
-
 
 extern uint32_t ASM_TYPES;
 
@@ -274,7 +269,6 @@ static const uint32_t me2_nx2_n_offset[4]    = { 0, 1, 5, 21 };
 
 #define SPEED_CONTROL_INIT_MOD ENC_MODE_5;
 
-
 /** The EB_TUID type is used to identify a TU within a CU.
 */
 
@@ -286,16 +280,11 @@ static const uint32_t me2_nx2_n_offset[4]    = { 0, 1, 5, 21 };
 #define UNI_PRED_LIST_1          1
 #define BI_PRED                  2
 
-
-
-
 // The EB_QP_OFFSET_MODE type is used to describe the QP offset
 #define EB_FRAME_CARACTERICTICS uint8_t
 #define EB_FRAME_CARAC_0           0
 #define EB_FRAME_CARAC_1           1
 #define EB_FRAME_CARAC_2           2
-
-
 
 // Rate Control
 #define THRESHOLD1QPINCREASE     1 //AMIR changes mode 1 to be modified
@@ -331,7 +320,6 @@ typedef struct EbH265DynEncConfiguration {
     uint32_t available_target_bitrate;
 } EbH265DynEncConfiguration;
 
-
 /** The EbIntraRefreshType is used to describe the intra refresh type.
 */
 typedef enum EbIntraRefreshType
@@ -354,13 +342,11 @@ semaphores, mutexs, etc.
 */
 typedef void * EbHandle;
 
-
 #define EB_INPUT_RESOLUTION             uint8_t
 #define INPUT_SIZE_576p_RANGE_OR_LOWER     0
 #define INPUT_SIZE_1080i_RANGE             1
 #define INPUT_SIZE_1080p_RANGE             2
 #define INPUT_SIZE_4K_RANGE                 3
-
 
 #define INPUT_SIZE_576p_TH                0x90000        // 0.58 Million
 #define INPUT_SIZE_1080i_TH                0xB71B0        // 0.75 Million
@@ -392,8 +378,6 @@ buffers to and from the eBrisk API.  The EbByte type is a 32 bit pointer.
 The pointer is word aligned and the buffer is byte aligned.
 */
 typedef uint8_t * EbByte;
-
-
 
 /** The EB_NULL type is used to define the C style NULL pointer.
 */
@@ -461,7 +445,6 @@ FORCE_INLINE void eb_memcpy_sse(void* dst_ptr, void const* src_ptr, size_t size)
     size_t      i = 0;
     size_t align_cnt = EB_MIN((64 - ((size_t)dst & 63)), size);
 
-
     // align dest to a $line
     if (align_cnt != 64)
     {
@@ -520,7 +503,6 @@ EB_API rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
 #define EB_STRLEN(target, max_size) \
     eb_strnlen_ss(target, max_size)
 
-
 #define MAX_NUM_PTR                (0x1312D00 << 2) //0x4C4B4000            // Maximum number of pointers to be allocated for the library
 
 #define ALVALUE                     32
@@ -533,7 +515,6 @@ extern    uint32_t          lib_malloc_count;
 extern    uint32_t          lib_thread_count;
 extern    uint32_t          lib_semaphore_count;
 extern    uint32_t          lib_mutex_count;
-
 
 #ifdef _WIN32
 #define EB_ALLIGN_MALLOC(type, pointer, n_elements, pointer_class) \
@@ -577,8 +558,6 @@ extern    uint32_t          lib_mutex_count;
         } \
     lib_malloc_count++;
 #endif
-
-
 
 #define EB_MEMORY() \
     SVT_LOG("Total Number of Mallocs in Library: %d\n", lib_malloc_count); \
@@ -681,7 +660,6 @@ object_ptr is a EbPtr  to the object being constructed.
 typedef void(*EbDtor)(
     EbPtr object_ptr);
 
-
 /**************************************
 * Callback Functions
 **************************************/
@@ -753,7 +731,6 @@ Groups of Pictures (GOP) units.
 #define    FULL_SAD_SEARCH  1
 #define    SSD_SEARCH       2
 
-
 //***Profile, tier, level***
 #define TOTAL_LEVEL_COUNT                           13
 
@@ -762,18 +739,14 @@ Groups of Pictures (GOP) units.
 #define C2_TRSHLF_N       16
 #define C2_TRSHLF_D       10
 
-
 #define ANTI_CONTOURING_TH_0     16 * 16
 #define ANTI_CONTOURING_TH_1     32 * 32
 #define ANTI_CONTOURING_TH_2 2 * 32 * 32
 
-
 #define ANTI_CONTOURING_LUMA_T1                40
 #define ANTI_CONTOURING_LUMA_T2                180
 
-
 #define VAR_BASED_DETAIL_PRESERVATION_SELECTOR_THRSLHD         (64*64)
-
 
 #define MAX_BITS_PER_FRAME            8000000
 
@@ -828,8 +801,6 @@ Groups of Pictures (GOP) units.
 #define MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE       ((MAX_PICTURE_WIDTH_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) * \
                                                    ((MAX_PICTURE_HEIGHT_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE)
 
-
-
 //***Prediction Structure***
 #define MAX_TEMPORAL_LAYERS                         6
 #define MAX_HIERARCHICAL_LEVEL                      6
@@ -837,26 +808,21 @@ Groups of Pictures (GOP) units.
 #define INVALID_POC                                 (((uint32_t) (~0)) - (((uint32_t) (~0)) >> 1))
 #define MAX_ELAPSED_IDR_COUNT                       1024
 
-
 //***HME***
 #define EB_HME_SEARCH_AREA_COLUMN_MAX_COUNT         2
 #define EB_HME_SEARCH_AREA_ROW_MAX_COUNT            2
-
 
 //***Mode Decision Candidate List***
 #define LOG_MAX_AMVP_MODE_DECISION_CANDIDATE_NUM    2
 #define MAX_AMVP_MODE_DECISION_CANDIDATE_NUM        (1 << LOG_MAX_AMVP_MODE_DECISION_CANDIDATE_NUM)
 
-
 #define EP_BLOCK_MAX_COUNT                         681
 #define PA_BLOCK_MAX_COUNT                          85
-
 
 #define UNUSED(a) (void) a
 
 #define _MVXT(mv) ( (int16_t)((mv) &  0xFFFF) )
 #define _MVYT(mv) ( (int16_t)((mv) >> 16    ) )
-
 
 //***MCP***
 #define MaxChromaFilterTag          4
@@ -871,8 +837,6 @@ Groups of Pictures (GOP) units.
 #define IF_Negative_Offset          (IF_Prec - 1)                         // to be modified
 #define InternalBitDepthIncrement   (InternalBitDepth - 8)
 
-
-
 //***Transforms***
 #define TRANSFORMS_LUMA_FLAG        0
 #define TRANSFORMS_CHROMA_FLAG      1
@@ -882,7 +846,6 @@ Groups of Pictures (GOP) units.
 #define MAX_POS_16BIT_NUM      32767
 #define MIN_NEG_16BIT_NUM      -32768
 #define MEDIUM_SB_VARIANCE        50
-
 
 // INTRA restriction for global motion
 #define INTRA_GLOBAL_MOTION_NON_MOVING_INDEX_TH  2
@@ -958,8 +921,6 @@ Groups of Pictures (GOP) units.
 // Noise detection
 #define  NOISE_VARIANCE_TH                390
 
-
-
 #define  EB_PICNOISE_CLASS    uint8_t
 #define  PIC_NOISE_CLASS_INV  0 //not computed
 #define  PIC_NOISE_CLASS_1    1 //No Noise
@@ -975,7 +936,6 @@ Groups of Pictures (GOP) units.
 #define  PIC_NOISE_CLASS_10   11 //Extreme Noise
 
 // Intrinisc
-
 
 #define NON_MOVING_SCORE_0     0
 #define NON_MOVING_SCORE_1    10
@@ -1001,8 +961,6 @@ Groups of Pictures (GOP) units.
 // Aura detection definitions
 #define    AURA_4K_DISTORTION_TH    25
 
-
-
 static const int32_t global_motion_threshold[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORAL_LAYERS] = { // [Highest Temporal Layer] [Temporal Layer Index]
     { 2 },
     { 4, 2 },
@@ -1011,7 +969,6 @@ static const int32_t global_motion_threshold[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORA
     { 32, 16, 8, 4, 2 },    // Derived by analogy from 4-layer settings
     { 64, 32, 16, 8, 4, 2 }
 };
-
 
 #define EB_SCD_MODE uint8_t
 #define SCD_MODE_0   0     // SCD OFF
@@ -1041,7 +998,6 @@ static const int32_t global_motion_threshold[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORA
 #define SB_COMPLEXITY_NON_MOVING_INDEX_TH_0 30
 #define SB_COMPLEXITY_NON_MOVING_INDEX_TH_1 29
 #define SB_COMPLEXITY_NON_MOVING_INDEX_TH_2 23
-
 
 typedef enum EbCu16x16Mode
 {
@@ -1077,14 +1033,12 @@ typedef enum EbPictureDepthMode
 #define SB_PRED_OPEN_LOOP_DEPTH_MODE        9
 #define SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE 10
 
-
 typedef enum EbAdpDepthSensitivePicClass
 {
     DEPTH_SENSITIVE_PIC_CLASS_0 = 0,    // Normal picture
     DEPTH_SENSITIVE_PIC_CLASS_1 = 1,    // High complex picture
     DEPTH_SENSITIVE_PIC_CLASS_2 = 2     // Moderate complex picture
 } EbAdpDepthSensitivePicClass;
-
 
 typedef enum EbAdpRefinementMode
 {
@@ -2558,7 +2512,6 @@ static const uint32_t ep_raster_scan_block_depth[EP_BLOCK_MAX_COUNT] =
 static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
 {
 
-
     EP_RASTER_SCAN_BLOCK_INDEX_64x64 ,
     EP_RASTER_SCAN_BLOCK_INDEX_64x32_0,
     EP_RASTER_SCAN_BLOCK_INDEX_64x32_1,
@@ -3177,7 +3130,6 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_190,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_191,
 
-
     EP_RASTER_SCAN_BLOCK_INDEX_16x16_14,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_26,
     EP_RASTER_SCAN_BLOCK_INDEX_16x8_30,
@@ -3262,9 +3214,7 @@ static const uint32_t ep_scan_to_raster_scan[EP_BLOCK_MAX_COUNT] =
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_254,
     EP_RASTER_SCAN_BLOCK_INDEX_4x4_255,
 
-
 };
-
 
 static const uint16_t pa_to_ep_block_index[PA_BLOCK_MAX_COUNT] =
 {
@@ -3313,7 +3263,6 @@ static const uint16_t ep_start_cu_index_per_depth[EP_CU_DEPTH] = { 0, 5, 10, 15,
 static const uint16_t ep_intra_depth_offset[EP_CU_DEPTH] = { 681, 169, 41, 9, 1};
 static const uint16_t ep_inter_depth_offset = 5;
 
-
 static const uint32_t MD_SCAN_TO_RASTER_SCAN[PA_BLOCK_MAX_COUNT] =
 {
     0,
@@ -3356,8 +3305,6 @@ static const uint32_t RASTER_SCAN_CU_PARENT_INDEX[PA_BLOCK_MAX_COUNT] =
 17, 17, 18, 18, 19, 19, 20, 20,
 17, 17, 18, 18, 19, 19, 20, 20
 };
-
-
 
 static const uint32_t md_scan_to_ois_32x32_scan[PA_BLOCK_MAX_COUNT] =
 {

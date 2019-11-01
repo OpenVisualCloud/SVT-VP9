@@ -32,7 +32,6 @@
 #define DARK_FRM_TH                      45
 #define CB_MEAN_RANGE_00                 80
 
-
 #define SAD_DEVIATION_SB_TH_0            15
 #define SAD_DEVIATION_SB_TH_1            20
 
@@ -40,10 +39,10 @@
 #define MIN_DELTA_QP_SHAPE_TH             1
 
 #define MIN_BLACK_AREA_PERCENTAGE        20
-#define LOW_MEAN_TH_0                    25 
+#define LOW_MEAN_TH_0                    25
 
 #define MIN_WHITE_AREA_PERCENTAGE         1
-#define LOW_MEAN_TH_1                    40 
+#define LOW_MEAN_TH_1                    40
 #define HIGH_MEAN_TH                    210
 
 /************************************************
@@ -73,7 +72,7 @@ void derive_picture_activity_statistics(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
-    uint64_t non_moving_index_sum = 0;    
+    uint64_t non_moving_index_sum = 0;
     uint32_t complete_sb_count = 0;
     uint32_t non_moving_sb_count = 0;
     uint32_t sb_index;
@@ -141,14 +140,12 @@ void grass_skin_sb(
     grass_sb_inrange = 0;
     processed_cus = 0;
 
-
     for (raster_scan_block_index = PA_RASTER_SCAN_CU_INDEX_16x16_0; raster_scan_block_index <= PA_RASTER_SCAN_CU_INDEX_16x16_15; raster_scan_block_index++) {
         if (sb_params->pa_raster_scan_block_validity[raster_scan_block_index]) {
             const uint32_t md_scan_block_index = raster_scan_to_md_scan[raster_scan_block_index];
             const uint32_t raster_scan_parent_block_index = RASTER_SCAN_CU_PARENT_INDEX[raster_scan_block_index];
             const uint32_t mdScanParentblock_index = raster_scan_to_md_scan[raster_scan_parent_block_index];
             CuStat *cu_stat_ptr = &(sb_stat_ptr->cu_stat_array[md_scan_block_index]);
-
 
             const uint32_t perfect_condition = 7;
             const uint8_t y_mean = context_ptr->y_mean_ptr[raster_scan_block_index];
@@ -164,7 +161,6 @@ void grass_skin_sb(
             grass_condition += (y_mean > Y_MEAN_RANGE_02 && y_mean < Y_MEAN_RANGE_01) ? 1 : 0;
             grass_condition += (cb_mean > CB_MEAN_RANGE_00 && cb_mean < CB_MEAN_RANGE_02) ? 2 : 0;
             grass_condition += (cr_mean > CR_MEAN_RANGE_00 && cr_mean < CR_MEAN_RANGE_02) ? 4 : 0;
-
 
             grass_sb_inrange += (grass_condition == perfect_condition) ? 1 : 0;
             processed_cus++;
@@ -209,8 +205,6 @@ void grass_skin_sb(
                 sb_stat_ptr->cu_stat_array[mdScanParentblock_index].high_luma;
             sb_stat_ptr->cu_stat_array[0].high_luma = cu_stat_ptr->high_luma ? EB_TRUE :
                 sb_stat_ptr->cu_stat_array[0].high_luma;
-
-
 
         }
     }
@@ -282,7 +276,7 @@ static void determine_isolated_non_homogeneous_region_in_picture(
                     }
                 }
 
-                // To determine current lcu is isolated non-homogeneous, at least 2 neighbors must be homogeneous 
+                // To determine current lcu is isolated non-homogeneous, at least 2 neighbors must be homogeneous
                 if (count_of_homogeneous_neighbor_sbs >= 2){
                     for (cuu_index = 0; cuu_index < 4; cuu_index++)
                     {
@@ -298,7 +292,6 @@ static void determine_isolated_non_homogeneous_region_in_picture(
     }
     return;
 }
-
 
 static void determine_more_potential_aura_areas(
     SequenceControlSet      *sequence_control_set_ptr,
@@ -336,7 +329,6 @@ static void determine_more_potential_aura_areas(
         }
     }
 
-
     // To check the percentage of potential aura in the picture.. If a large area is detected then this is not isolated
     picture_control_set_ptr->percentage_of_edge_in_light_background = (uint8_t)(count_of_edge_blocks * 100 / sb_total_count);
 
@@ -348,7 +340,6 @@ static void determine_more_potential_aura_areas(
 void derive_high_dark_area_density_flag(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
-
 
     uint32_t    region_in_picture_width_index;
     uint32_t    region_in_picture_height_index;
@@ -376,7 +367,7 @@ void derive_high_dark_area_density_flag(
             for (luma_histogram_bin = 0; luma_histogram_bin < LOW_MEAN_TH_1; luma_histogram_bin++){ // loop over the 1st LOW_MEAN_THLD bins
                 black_samples_count += picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0][luma_histogram_bin];
             }
-            for (luma_histogram_bin = HIGH_MEAN_TH; luma_histogram_bin < HISTOGRAM_NUMBER_OF_BINS; luma_histogram_bin++){ 
+            for (luma_histogram_bin = HIGH_MEAN_TH; luma_histogram_bin < HISTOGRAM_NUMBER_OF_BINS; luma_histogram_bin++){
                 white_samples_count += picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0][luma_histogram_bin];
             }
         }
@@ -414,17 +405,16 @@ void temporal_high_contrast_classifier(
     uint32_t nsad;
     uint32_t me_dist = 0;
 
-    if (picture_control_set_ptr->slice_type == B_SLICE){ 
+    if (picture_control_set_ptr->slice_type == B_SLICE){
 
-            
             for (blk_it = 0; blk_it < 4; blk_it++) {
-            
+
                 nsad = ((uint32_t)picture_control_set_ptr->me_results[sb_index][1 + blk_it].distortion_direction[0].distortion) >> NORM_FACTOR;
 
                 if (nsad >= nsad_table[picture_control_set_ptr->temporal_layer_index] + th_res)
                     me_dist++;
             }
-        
+
     }
     context_ptr->high_dist = me_dist>0 ? EB_TRUE : EB_FALSE;
 }
@@ -448,8 +438,7 @@ void spatial_high_contrast_classifier(
 
         uint16_t var = picture_control_set_ptr->variance[sb_index][5 + blk_it];
 
-
-        if (var>VAR_MIN && var<VAR_MAX          &&  //medium texture 
+        if (var>VAR_MIN && var<VAR_MAX          &&  //medium texture
             y_mean>MIN_Y && y_mean < MAX_Y        &&  //medium brightness(not too dark and not too bright)
             ABS((int64_t)umean - MID_CB) < TH_CB &&  //middle of the color plane
             ABS((int64_t)vmean - MID_CR) < TH_CR     //middle of the color plane
@@ -517,7 +506,6 @@ void populate_from_current_sb_to_neighbor_sbs(
     }
 }
 
-
 /******************************************************
 Input   : variance
 Output  : true if current & neighbors are spatially complex
@@ -533,7 +521,6 @@ EB_BOOL is_spatially_complex_area(
     uint32_t  available_sbs_count      = 0;
     uint32_t  high_variance_sbs_count   = 0;
     uint32_t  picture_width_in_sbs      = (picture_control_set_ptr->enhanced_picture_ptr->width + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE ;
-
 
     // Check the variance of the current LCU
     if ((picture_control_set_ptr->variance[sb_adrr][ME_TIER_ZERO_PU_64x64]) > IS_COMPLEX_SB_VARIANCE_TH) {
@@ -640,14 +627,14 @@ void derive_blockiness_present_flag(
             sb_params_ptr->origin_y)
             && picture_control_set_ptr->non_moving_index_array[sb_index]  != INVALID_NON_MOVING_SCORE
             && picture_control_set_ptr->non_moving_average_score          != INVALID_NON_MOVING_SCORE
-        
+
             ) {
 
-            // Active LCU within an active scene (added a check on 4K & non-BASE to restrict the action - could be generated for all resolutions/layers) 
+            // Active LCU within an active scene (added a check on 4K & non-BASE to restrict the action - could be generated for all resolutions/layers)
             if (picture_control_set_ptr->non_moving_index_array[sb_index] == SB_COMPLEXITY_NON_MOVING_INDEX_TH_0 && picture_control_set_ptr->non_moving_average_score >= SB_COMPLEXITY_NON_MOVING_INDEX_TH_1 && picture_control_set_ptr->temporal_layer_index > 0 && sequence_control_set_ptr->input_resolution == INPUT_SIZE_4K_RANGE) {
                 picture_control_set_ptr->complex_sb_array[sb_index] = SB_COMPLEXITY_STATUS_2;
             }
-            // Active LCU within a scene with a moderate acitivity (eg. active foregroud & static background) 
+            // Active LCU within a scene with a moderate acitivity (eg. active foregroud & static background)
             else if (picture_control_set_ptr->non_moving_index_array[sb_index] == SB_COMPLEXITY_NON_MOVING_INDEX_TH_0 && picture_control_set_ptr->non_moving_average_score >= SB_COMPLEXITY_NON_MOVING_INDEX_TH_2 && picture_control_set_ptr->non_moving_average_score < SB_COMPLEXITY_NON_MOVING_INDEX_TH_1) {
                 picture_control_set_ptr->complex_sb_array[sb_index] = SB_COMPLEXITY_STATUS_1;
             }
@@ -667,7 +654,7 @@ void derive_min_max_me_distortion(
     PictureParentControlSet *picture_control_set_ptr)
 {
     uint32_t me_distortion;
-    
+
     picture_control_set_ptr->min_me_distortion = ~0u;
     picture_control_set_ptr->max_me_distortion =   0;
 
@@ -682,7 +669,6 @@ void derive_min_max_me_distortion(
         }
     }
 }
-
 
 void stationary_edge_over_update_over_time_sb(
     SequenceControlSet      *sequence_control_set_ptr,
@@ -788,7 +774,6 @@ void stationary_edge_over_update_over_time_sb(
 
         }
     }
-
 
     {
 
@@ -935,7 +920,6 @@ void stationary_edge_over_update_over_time_sb(
     }
 }
 
-
 /************************************************
  * Source Based Operations Kernel
  ************************************************/
@@ -984,7 +968,7 @@ void* source_based_operations_kernel(void *input_ptr)
             context_ptr->cr_mean_ptr = cr_mean_ptr;
             context_ptr->cb_mean_ptr = cb_mean_ptr;
 
-            // Grass & Skin detection 
+            // Grass & Skin detection
             grass_skin_sb(
                 context_ptr,
                 sequence_control_set_ptr,
@@ -1044,12 +1028,12 @@ void* source_based_operations_kernel(void *input_ptr)
             sequence_control_set_ptr,
             picture_control_set_ptr);
 
-        // Skin & Grass detection 
+        // Skin & Grass detection
         grass_skin_picture(
             context_ptr,
             picture_control_set_ptr);
 
-        // Stationary edge over time (final stage) 
+        // Stationary edge over time (final stage)
         if (!picture_control_set_ptr->end_of_sequence_flag && sequence_control_set_ptr->look_ahead_distance != 0) {
             stationary_edge_over_update_over_time_sb(
                 sequence_control_set_ptr,
@@ -1058,7 +1042,7 @@ void* source_based_operations_kernel(void *input_ptr)
                 picture_control_set_ptr->sb_total_count);
         }
 
-        // Derive Min/Max ME distortion 
+        // Derive Min/Max ME distortion
         if (picture_control_set_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
             derive_min_max_me_distortion(
                 sequence_control_set_ptr,

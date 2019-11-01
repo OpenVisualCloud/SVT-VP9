@@ -196,7 +196,6 @@ static VPX_INLINE void mem_put_be32(void *vmem, MEM_VALUE_T val) {
   mem[3] = (MAU_T)((val >>  0) & 0xff);
 }
 
-
 #undef  mem_put_le16
 #define mem_put_le16 mem_ops_wrap_symbol(mem_put_le16)
 static VPX_INLINE void mem_put_le16(void *vmem, MEM_VALUE_T val) {

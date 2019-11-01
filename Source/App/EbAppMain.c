@@ -96,7 +96,6 @@ int32_t main(int32_t argc, char* argv[])
     AppExitConditionType    exit_conditions_recon[MAX_CHANNEL_NUMBER];         // Processing loop exit condition
     AppExitConditionType    exit_conditions_input[MAX_CHANNEL_NUMBER];          // Processing loop exit condition
 
-
     EbBool                 channel_active[MAX_CHANNEL_NUMBER];
 
     EbConfig             *configs[MAX_CHANNEL_NUMBER];        // Encoder Configuration
@@ -243,7 +242,6 @@ int32_t main(int32_t argc, char* argv[])
                         }
                         printf("\nSUMMARY --------------------------------- Channel %u  --------------------------------\n", instance_count + 1);
 
-
                         printf("Total Frames\t\tFrame Rate\t\tByte Count\t\tBitrate\n");
                         printf("%12d\t\t%4.2f fps\t\t%10.0f\t\t%5.2f kbps\n",
                                 (int32_t)configs[instance_count]->performance_context.frame_count,
@@ -306,4 +304,3 @@ int32_t main(int32_t argc, char* argv[])
 
     return (return_error == 0) ? 0 : 1;
 }
-

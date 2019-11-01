@@ -23,7 +23,6 @@ void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_
         neighbor_array_unit_reset(picture_control_set_ptr->md_cb_recon_neighbor_array[neighbor_array_count]);
         neighbor_array_unit_reset(picture_control_set_ptr->md_cr_recon_neighbor_array[neighbor_array_count]);
 
-
         // Note: this memset assumes above_context[0], [1] and [2]
         // are allocated as part of the same buffer.
         memset(picture_control_set_ptr->md_above_context[neighbor_array_count], 0, sizeof(*picture_control_set_ptr->md_above_context[neighbor_array_count]) * MAX_MB_PLANE * 2 * mi_cols_aligned_to_sb(cm->mi_cols));
@@ -31,7 +30,6 @@ void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_
 
         memset(picture_control_set_ptr->md_left_context[neighbor_array_count], 0, sizeof(*picture_control_set_ptr->md_left_context[neighbor_array_count])*MAX_MB_PLANE * 2 * mi_cols_aligned_to_sb(cm->mi_rows));
         memset(picture_control_set_ptr->md_left_seg_context[neighbor_array_count], 0, sizeof(*picture_control_set_ptr->md_left_seg_context[neighbor_array_count]) *  mi_cols_aligned_to_sb(cm->mi_rows));
-
 
     }
 

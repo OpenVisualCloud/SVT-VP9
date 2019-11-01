@@ -26,15 +26,14 @@
 extern "C" {
 #endif
 
-
 void unpack_uni_pred_ref10_bit(
-    EbPictureBufferDesc *ref_frame_pic_list0, 
+    EbPictureBufferDesc *ref_frame_pic_list0,
     uint32_t             pos_x,
     uint32_t             pos_y,
     uint32_t             pu_width,
     uint32_t             pu_height,
     EbPictureBufferDesc *dst,
-    uint32_t             dst_luma_index, 
+    uint32_t             dst_luma_index,
     uint32_t             dst_chroma_index,          //input parameter, please refer to the detailed explanation above.
     uint32_t             component_mask,
     EbByte               temp_buf);
@@ -49,7 +48,7 @@ void unpack_bi_pred_ref10_bit(
     uint32_t             pu_width,
     uint32_t             pu_height,
     EbPictureBufferDesc *bi_dst,
-    uint32_t             dst_luma_index, 
+    uint32_t             dst_luma_index,
     uint32_t             dst_chroma_index,
     uint32_t             component_mask,
     EbByte               ref_list0_temp_dst,
@@ -76,7 +75,6 @@ typedef void(*PictureAverage)(
     uint32_t area_width,
     uint32_t area_height);
 
-
 /***************************************
 * Function Tables
 ***************************************/
@@ -96,8 +94,6 @@ static const AvcStyleInterpolationFilterNew FUNC_TABLE avc_style_uni_pred_luma_i
     }
 };
 
-
-
 static const PictureAverage FUNC_TABLE picture_average_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
     picture_average_kernel,
@@ -106,10 +102,10 @@ static const PictureAverage FUNC_TABLE picture_average_array[ASM_TYPE_TOTAL] = {
 };
 
 typedef void(*PictureAverage1Line)(
-    EbByte   src0,   
-    EbByte   src1,   
-    EbByte   dst,  
-    uint32_t area_width);  
+    EbByte   src0,
+    EbByte   src1,
+    EbByte   dst,
+    uint32_t area_width);
 
 #ifdef __cplusplus
 }

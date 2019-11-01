@@ -12,7 +12,6 @@
 #include "EbAppContext.h"
 #include "EbAppConfig.h"
 
-
 #define INPUT_SIZE_576p_TH                0x90000        // 0.58 Million
 #define INPUT_SIZE_1080i_TH                0xB71B0        // 0.75 Million
 #define INPUT_SIZE_1080p_TH                0x1AB3F0    // 1.75 Million
@@ -62,7 +61,6 @@ void allocate_memory_table(
 
     return;
 }
-
 
 /*************************************
 **************************************
@@ -126,7 +124,6 @@ void process_input_field_buffering_mode(
     // Step back 1 chroma row if bottom field (undo the previous jump), and skip 1 chroma row if bottom field (point to the bottom field)
     // => no action
 
-
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
 
         *filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
@@ -140,7 +137,6 @@ void process_input_field_buffering_mode(
         fseeko64(input_file, -(long)source_chroma_row_size, SEEK_CUR);
     }
 }
-
 
 /***********************************************
 * Copy configuration parameters from
@@ -272,7 +268,6 @@ static EbErrorType  allocate_frame_buffer(
     return return_error;
 }
 
-
 EbErrorType AllocateInputBuffers(
     EbConfig     *config,
     EbAppContext *callback_data)
@@ -358,7 +353,6 @@ EbErrorType  preload_frames_into_ram(
 
     int filled_len;
 
-
     int input_padded_width = config->source_width;
     int input_padded_height = config->source_height;
 
@@ -366,16 +360,12 @@ EbErrorType  preload_frames_into_ram(
     unsigned char *eb_input_ptr;
     FILE *input_file = config->input_file;
 
-
-
     read_size = input_padded_width * input_padded_height * 3 * (config->encoder_bit_depth > 8 ? 2 : 1) / 2;
 
     EB_APP_MALLOC(unsigned char **, config->sequence_buffer, sizeof(unsigned char*) * config->buffered_input, EB_N_PTR, EB_ErrorInsufficientResources);
 
-
     for (processed_frame_count = 0; processed_frame_count < config->buffered_input; ++processed_frame_count) {
         EB_APP_MALLOC(unsigned char*, config->sequence_buffer[processed_frame_count], read_size, EB_N_PTR, EB_ErrorInsufficientResources);
-
 
         // Fill the buffer with a complete frame
         filled_len = 0;
@@ -488,7 +478,6 @@ EbErrorType init_encoder(
     if (return_error != EB_ErrorNone) {
         return return_error;
     }
-
 
     ///********************** APPLICATION INIT [END] ******************////////
 

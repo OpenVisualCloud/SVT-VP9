@@ -3,11 +3,9 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
-
 #include "EbDefinitions.h"
 #include "EbTransQuantBuffers.h"
 #include "EbPictureBufferDesc.h"
-
 
 EbErrorType eb_trans_quant_buffers_ctor(
     EbTransQuantBuffers *trans_quant_buffers_ptr)
@@ -61,4 +59,3 @@ EbErrorType eb_trans_quant_buffers_ctor(
 
     return EB_ErrorNone;
 }
-

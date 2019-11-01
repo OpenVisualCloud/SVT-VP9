@@ -19,16 +19,15 @@ extern "C" {
 // 1-D interpolation shift value
 #define if_shift 6
 
-
 #define VARIANCE_PRECISION      16
 
 #define MEAN_PRECISION      (VARIANCE_PRECISION >> 1)
 
 #define HME_RECTANGULAR    0
-#define HME_SPARSE         1       
-    
+#define HME_SPARSE         1
+
 // Quater pel refinement methods
-typedef enum EbQuarterPelRefinementMethod 
+typedef enum EbQuarterPelRefinementMethod
 {
     EB_QUARTER_IN_FULL,
     EB_QUARTER_IN_HALF_HORIZONTAL,
@@ -40,7 +39,7 @@ typedef enum EbQuarterPelRefinementMethod
 
 #define HME_DECIM_FILTER_TAP     9
 
-typedef enum EbMeTierZeroPu 
+typedef enum EbMeTierZeroPu
 {
 
     // 2Nx2N [85 partitions]
@@ -129,7 +128,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_8x8_61      =    82,
     ME_TIER_ZERO_PU_8x8_62      =    83,
     ME_TIER_ZERO_PU_8x8_63      =    84,
-    // 2NxN  [42 partitions]    
+    // 2NxN  [42 partitions]
     ME_TIER_ZERO_PU_64x32_0     =    85,
     ME_TIER_ZERO_PU_64x32_1     =    86,
     ME_TIER_ZERO_PU_32x16_0     =    87,
@@ -172,7 +171,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_16x8_29     =    124,
     ME_TIER_ZERO_PU_16x8_30     =    125,
     ME_TIER_ZERO_PU_16x8_31     =    126,
-    // Nx2N  [42 partitions]      
+    // Nx2N  [42 partitions]
     ME_TIER_ZERO_PU_32x64_0     =    127,
     ME_TIER_ZERO_PU_32x64_1     =    128,
     ME_TIER_ZERO_PU_16x32_0     =    129,
@@ -216,7 +215,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_8x16_30     =    167,
     ME_TIER_ZERO_PU_8x16_31     =    168,
 
-    // 2NxnU [10 partitions]     
+    // 2NxnU [10 partitions]
     ME_TIER_ZERO_PU_64x16_0     =    169,
     ME_TIER_ZERO_PU_64x16_1     =    170,
     ME_TIER_ZERO_PU_32x8_0      =    171,
@@ -227,7 +226,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_32x8_5      =    176,
     ME_TIER_ZERO_PU_32x8_6      =    177,
     ME_TIER_ZERO_PU_32x8_7      =    178,
-    // 2NxnD [10 partitions]   
+    // 2NxnD [10 partitions]
     ME_TIER_ZERO_PU_64x48_0     =    179,
     ME_TIER_ZERO_PU_64x48_1     =    180,
     ME_TIER_ZERO_PU_32x24_0     =    181,
@@ -238,7 +237,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_32x24_5     =    186,
     ME_TIER_ZERO_PU_32x24_6     =    187,
     ME_TIER_ZERO_PU_32x24_7     =    188,
-    // nLx2N [10 partitions]     
+    // nLx2N [10 partitions]
     ME_TIER_ZERO_PU_16x64_0     =    189,
     ME_TIER_ZERO_PU_16x64_1     =    190,
     ME_TIER_ZERO_PU_8x32_0      =    191,
@@ -249,7 +248,7 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_8x32_5      =    196,
     ME_TIER_ZERO_PU_8x32_6      =    197,
     ME_TIER_ZERO_PU_8x32_7      =    198,
-    // nRx2N [10 partitions]     
+    // nRx2N [10 partitions]
     ME_TIER_ZERO_PU_48x64_0     =    199,
     ME_TIER_ZERO_PU_48x64_1     =    200,
     ME_TIER_ZERO_PU_24x32_0     =    201,
@@ -262,12 +261,11 @@ typedef enum EbMeTierZeroPu
     ME_TIER_ZERO_PU_24x32_7     =    208
 } EbMeTierZeroPu;
 
-
-typedef struct MePredUnit 
+typedef struct MePredUnit
 {
     uint32_t         distortion;
     EB_PREDDIRECTION prediction_direction;
-    uint32_t         Mv[MAX_NUM_OF_REF_PIC_LIST]; 
+    uint32_t         Mv[MAX_NUM_OF_REF_PIC_LIST];
 
 } MePredUnit;
 
@@ -275,7 +273,7 @@ typedef struct MotionEstimationTierZero {
     MePredUnit pu[MAX_ME_PU_COUNT];
 } MotionEstimationTierZero;
 
-typedef struct MeContext 
+typedef struct MeContext
 {\
     // MV offset (search center)
     int16_t   x_mv_offset;
@@ -294,7 +292,7 @@ typedef struct MeContext
     uint8_t *sb_buffer;
     uint8_t *sb_buffer_ptr;
     uint32_t sb_buffer_stride;
-    uint8_t *hme_sb_buffer; 
+    uint8_t *hme_sb_buffer;
     uint32_t hme_sb_buffer_stride;
     uint8_t *sb_src_ptr;
     uint32_t sb_src_stride;
@@ -304,8 +302,8 @@ typedef struct MeContext
     uint32_t sixteenth_sb_buffer_stride;
 
     uint8_t *integer_buffer[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
-    uint8_t *integer_buffer_ptr[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];    
-    uint8_t *posb_buffer[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX]; 
+    uint8_t *integer_buffer_ptr[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
+    uint8_t *posb_buffer[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
     uint8_t *posh_buffer[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
     uint8_t *posj_buffer[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
 
@@ -369,28 +367,28 @@ typedef struct MeContext
 
     uint32_t p_sb_best_sad[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
     uint32_t p_sb_best_mv[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
-    uint32_t p_sb_bipred_sad[MAX_ME_PU_COUNT];//needs to be upgraded to 209 pus    
+    uint32_t p_sb_bipred_sad[MAX_ME_PU_COUNT];//needs to be upgraded to 209 pus
 
     uint32_t p_sb_best_ssd[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
     uint32_t *p_best_ssd8x8;
     uint32_t *p_best_ssd16x16;
     uint32_t *p_best_ssd32x32;
     uint32_t *p_best_ssd64x64;
-             
+
     uint16_t *p_eight_pos_sad16x16;
-             
+
     uint8_t  hme_search_type;
 
     // Multi-Mode signal(s)
-    uint8_t  fractional_search_method;           
+    uint8_t  fractional_search_method;
     uint8_t  fractional_search_model;
     EB_BOOL  fractional_search64x64;
     EB_BOOL  single_hme_quadrant;
-            
-    // ME  
+
+    // ME
     uint8_t  search_area_width;
     uint8_t  search_area_height;
-    // HME  
+    // HME
     uint16_t number_hme_search_region_in_width;
     uint16_t number_hme_search_region_in_height;
     uint16_t hme_level0_total_search_area_width;
@@ -402,12 +400,11 @@ typedef struct MeContext
     uint16_t hme_level2_search_area_in_width_array[EB_HME_SEARCH_AREA_COLUMN_MAX_COUNT];
     uint16_t hme_level2_search_area_in_height_array[EB_HME_SEARCH_AREA_ROW_MAX_COUNT];
 
-
 } MeContext;
 
 extern EbErrorType me_context_ctor(
     MeContext **object_dbl_ptr);
-    
+
 #ifdef __cplusplus
 }
 #endif

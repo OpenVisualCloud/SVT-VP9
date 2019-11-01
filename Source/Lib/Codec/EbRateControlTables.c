@@ -4,7 +4,7 @@
 */
 
 #include "EbRateControlTables.h"
-static const EbBitNumber initial_rate_control_sad64x64_tables[] = {                
+static const EbBitNumber initial_rate_control_sad64x64_tables[] = {
      //Q0.txt
     8433,    15005,    17578,    20095,
     22006,    23178,    24255,    25537,
@@ -1093,8 +1093,8 @@ static const EbBitNumber initial_rate_control_sad64x64_tables[] = {
     162,    165,    166,    170,
     176,    178,    184,    187,
     186,    192,    190,    212,
-};                
-                
+};
+
 static const EbBitNumber initial_rate_control_intra_sad64x64_tables[] = {
      //Q00.txt
     23321,    25349,    27949,    29185,
@@ -2186,10 +2186,6 @@ static const EbBitNumber initial_rate_control_intra_sad64x64_tables[] = {
     286,    305,    276,    321
 };
 
-
-
-
-
 /**************************************
  * Function Declarations
  **************************************/
@@ -2197,17 +2193,17 @@ EbErrorType rate_control_tables_ctor(
     RateControlTables *initial_rate_control_tables_array)
 {
     int qp_index, interval_index, temporal_index;
-    for(qp_index = 0; qp_index < 64; qp_index++){ 
+    for(qp_index = 0; qp_index < 64; qp_index++){
         for(interval_index= 0; interval_index < NUMBER_OF_SAD_INTERVALS;interval_index++){
              for (temporal_index=0; temporal_index < MAX_TEMPORAL_LAYERS; temporal_index++){
                      if (interval_index < (NUMBER_OF_SAD_INTERVALS >> 1)){
                     // intrinsics used in initial RC are assuming signed 16 bits is the maximum
-                    initial_rate_control_tables_array[qp_index].sad_bits_array[temporal_index][interval_index] = 
+                    initial_rate_control_tables_array[qp_index].sad_bits_array[temporal_index][interval_index] =
                         CLIP3(1,
                         (uint16_t)((1<<15)-1),
                         (uint16_t)initial_rate_control_sad64x64_tables[qp_index*(NUMBER_OF_SAD_INTERVALS >> 1) + interval_index]);
 
-                    initial_rate_control_tables_array[qp_index].intra_sad_bits_array[temporal_index][interval_index] = 
+                    initial_rate_control_tables_array[qp_index].intra_sad_bits_array[temporal_index][interval_index] =
                         CLIP3(1,
                         (uint16_t)((1<<15)-1),
                         (uint16_t)initial_rate_control_intra_sad64x64_tables[qp_index*(NUMBER_OF_SAD_INTERVALS >> 1) + interval_index]);
@@ -2215,22 +2211,19 @@ EbErrorType rate_control_tables_ctor(
                 }
                 else{
 
-                    initial_rate_control_tables_array[qp_index].sad_bits_array[temporal_index][interval_index] = 
+                    initial_rate_control_tables_array[qp_index].sad_bits_array[temporal_index][interval_index] =
                         CLIP3(1,
                         (uint16_t)((1<<15)-1),
                         (uint16_t)initial_rate_control_sad64x64_tables[qp_index*(NUMBER_OF_SAD_INTERVALS >> 1) + ((NUMBER_OF_SAD_INTERVALS >> 1) - 1)]);
-                    initial_rate_control_tables_array[qp_index].intra_sad_bits_array[temporal_index][interval_index] = 
+                    initial_rate_control_tables_array[qp_index].intra_sad_bits_array[temporal_index][interval_index] =
                         CLIP3(1,
                         (uint16_t)((1<<15)-1),
                         initial_rate_control_intra_sad64x64_tables[qp_index*(NUMBER_OF_SAD_INTERVALS >> 1) + ((NUMBER_OF_SAD_INTERVALS >> 1) - 1)]);
 
                 }
 
-
              }
         }
     }
     return EB_ErrorNone;
 }
-
-

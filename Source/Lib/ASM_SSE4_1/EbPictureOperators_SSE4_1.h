@@ -40,4 +40,3 @@ uint64_t spatialfull_distortion_kernel16_mx_n_ssse3_intrin(
 }
 #endif
 #endif // EbPictureOperators_SSE4_1_h
-

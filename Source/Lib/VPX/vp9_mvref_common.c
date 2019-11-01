@@ -130,7 +130,7 @@ static void find_mv_refs_idx(EncDecContext   *context_ptr, const VP9_COMMON *cm,
       const POSITION *mv_ref = &mv_ref_search[i];
       if (is_inside(tile, mi_col, mi_row, cm->mi_rows, mv_ref)) {
 
-#if 1 
+#if 1
           ModeInfo *candidate_mi = context_ptr->mode_info_array[(context_ptr->mi_col + mv_ref->col) + (context_ptr->mi_row + mv_ref->row) * context_ptr->mi_stride];
 #else
           const ModeInfo *const candidate_mi =
@@ -144,10 +144,10 @@ static void find_mv_refs_idx(EncDecContext   *context_ptr, const VP9_COMMON *cm,
   }
 
 #if 1
-  //if (cm->use_prev_frame_mvs == EB_TRUE) 
-  {  
+  //if (cm->use_prev_frame_mvs == EB_TRUE)
+  {
       // Hsan : SVT-VP9 does not support temporal MV(s) as reference MV(s)
-      // If here then reference MV(s) will not be used (i.e. only ZERO_MV as INTER canidate)   
+      // If here then reference MV(s) will not be used (i.e. only ZERO_MV as INTER canidate)
       mode_context[ref_frame] = (uint8_t)counter_to_context[context_counter];
 
       // Clamp vectors

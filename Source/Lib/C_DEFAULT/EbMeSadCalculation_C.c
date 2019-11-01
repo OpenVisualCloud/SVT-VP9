@@ -31,7 +31,6 @@ void sad_calculation_8x8_16x16(
     uint32_t   src_stride_sub = (src_stride << 1); //TODO get these from outside
     uint32_t   ref_stride_sub = (ref_stride << 1);
 
-
     sad8x8_0 = (compute8x4_sad_kernel(src, src_stride_sub, ref, ref_stride_sub)) << 1;
     if (sad8x8_0 < p_best_sad8x8[0]) {
         p_best_sad8x8[0] = (uint32_t)sad8x8_0;
@@ -125,7 +124,6 @@ void initialize_buffer_32bits(
         pointer[block_index] = value;
     }
 }
-
 
 /*******************************************
 * weight_search_region

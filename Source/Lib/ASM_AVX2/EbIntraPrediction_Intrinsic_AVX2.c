@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright(c) 2019 Intel Corporation
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
@@ -43,7 +43,7 @@ static INLINE __m256i d117_avg3(const uint8_t *const ref) {
 static INLINE void d117_avg3_last(
     const uint8_t *const ref,
     __m256i *const       b0h,
-    __m256i *const       b) 
+    __m256i *const       b)
 {
     const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
@@ -53,7 +53,7 @@ static INLINE void d117_avg3_last(
 }
 
 void vpx_d117_predictor_32x32_avx2(
-    uint8_t       *dst, 
+    uint8_t       *dst,
     ptrdiff_t      stride,
     const uint8_t *above,
     const uint8_t *left)
@@ -141,9 +141,9 @@ static INLINE __m256i d135_avg3(const uint8_t *const ref) {
 }
 
 void vpx_d135_predictor_32x32_avx2(
-    uint8_t       *dst, 
+    uint8_t       *dst,
     ptrdiff_t      stride,
-    const uint8_t *above, 
+    const uint8_t *above,
     const uint8_t *left)
 {
     // ref[] has an extra element to facilitate optimization.

@@ -34,7 +34,6 @@
 #include "vp9_cost.h"
 #include "vp9_quant_common.h"
 
-
 static const struct vp9_token intra_mode_encodings[INTRA_MODES] = {
   { 0, 1 },  { 6, 3 },   { 28, 5 },  { 30, 5 }, { 58, 6 },
   { 59, 6 }, { 126, 7 }, { 127, 7 }, { 62, 6 }, { 2, 2 }
@@ -228,7 +227,7 @@ static void pack_inter_mode_mvs(
     VP9_COMP *cpi, const MACROBLOCKD *const xd,
     const MbModeInfoExt *const mbmi_ext, VpxWriter *w,
     unsigned int *const max_mv_magnitude
-#if 0 
+#if 0
     ,
     int interp_filter_selected[MAX_REF_FRAMES][SWITCHABLE]
 #endif
@@ -256,7 +255,7 @@ static void pack_inter_mode_mvs(
       vpx_prob pred_prob = vp9_get_pred_prob_seg_id(seg, xd);
       vpx_write(w, pred_flag, pred_prob);
       if (!pred_flag) write_segment_id(w, seg, segment_id);
-    } else 
+    } else
 #endif
     {
       write_segment_id(w, seg, segment_id);
@@ -338,7 +337,6 @@ static void pack_inter_mode_mvs(
   }
 }
 
-
 static void write_mb_modes_kf(const VP9_COMMON *cm, const MACROBLOCKD *xd,
                               VpxWriter *w) {
 #if SEG_SUPPORT
@@ -408,7 +406,7 @@ void write_modes_b(
   if (frame_is_intra_only(cm)) {
     write_mb_modes_kf(cm, xd, w);
   } else {
-#if 0 
+#if 0
     pack_inter_mode_mvs(cpi, xd, mbmi_ext, w, max_mv_magnitude,
                         interp_filter_selected);
 #else
@@ -441,7 +439,7 @@ void write_partition(const VP9_COMMON *const cm,
     assert(p == PARTITION_SPLIT);
   }
 }
-#if 0 
+#if 0
 static void write_modes_sb(
     VP9_COMP *cpi, MACROBLOCKD *const xd, const TileInfo *const tile,
     VpxWriter *w, TOKENEXTRA **tok, const TOKENEXTRA *const tok_end,
@@ -1185,7 +1183,6 @@ static void write_frame_size_with_refs(VP9_COMP *cpi,
   write_render_size(cm, wb);
 }
 
-
 static void write_sync_code(struct vpx_write_bit_buffer *wb) {
   vpx_wb_write_literal(wb, VP9_SYNC_CODE_0, 8);
   vpx_wb_write_literal(wb, VP9_SYNC_CODE_1, 8);
@@ -1230,7 +1227,7 @@ static void write_bitdepth_colorspace_sampling(
 }
 
 void write_uncompressed_header(
-    PictureControlSet   *picture_control_set_ptr, 
+    PictureControlSet   *picture_control_set_ptr,
     VP9_COMP *cpi,
     struct vpx_write_bit_buffer *wb,
     int show_existing_frame,
@@ -1419,8 +1416,8 @@ size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data) {
 
 void vp9_pack_bitstream(
     PictureControlSet   *picture_control_set_ptr,
-    VP9_COMP            *cpi, 
-    uint8_t             *dest, 
+    VP9_COMP            *cpi,
+    uint8_t             *dest,
     size_t              *size,
     int                  show_existing_frame,
     int                  show_existing_frame_index) {
@@ -1432,11 +1429,10 @@ void vp9_pack_bitstream(
 
   write_uncompressed_header(
       picture_control_set_ptr,
-      cpi, 
+      cpi,
       &wb,
       show_existing_frame,
       show_existing_frame_index);
-  
 
   // Skip the rest coding process if use show existing frame.
   if (show_existing_frame) {
@@ -1456,7 +1452,6 @@ void vp9_pack_bitstream(
   data += first_part_size;
   // TODO(jbb): Figure out what to do if first_part_size > 16 bits.
   vpx_wb_write_literal(&saved_wb, (int)first_part_size, 16);
-
 
 #if 1 // Hsan ------------------------------------
   // Link data from EC stream to final stream.

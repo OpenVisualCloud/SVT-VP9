@@ -39,5 +39,5 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
 
 #ifdef __cplusplus
 }
-#endif        
+#endif
 #endif // EbComputeSAD_asm_h

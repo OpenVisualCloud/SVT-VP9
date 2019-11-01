@@ -26,10 +26,9 @@
 #error OS/Platform not supported.
 #endif
 
-
 static PaBlockStats pa_get_block_stats_array[] = {
 
-    //   Depth       Size      size_log2     origin_x    origin_y   cu_num_in_depth   Index                                  
+    //   Depth       Size      size_log2     origin_x    origin_y   cu_num_in_depth   Index
         {0,           64,         6,           0,         0,        0     ,   0    },  // 0
         {1,           32,         5,           0,         0,        0     ,   1    },  // 1
         {2,           16,         4,           0,         0,        0     ,   1    },  // 2
@@ -176,7 +175,7 @@ uint64_t log2f_high_precision(uint64_t x, uint8_t precision)
 
 static const MiniGopStats mini_gop_stats_array[] = {
 
-    //    hierarchical_levels    start_index    end_index    Lenght    mini_gop_index                                    
+    //    hierarchical_levels    start_index    end_index    Lenght    mini_gop_index
     { 5,  0, 31, 32 },    // 0
     { 4,  0, 15, 16 },    // 1
     { 3,  0,  7,  8 },    // 2
@@ -201,7 +200,6 @@ const MiniGopStats* get_mini_gop_stats(const uint32_t mini_gop_index)
 {
     return &mini_gop_stats_array[mini_gop_index];
 }
-
 
 EB_API void eb_start_time(uint64_t *start_seconds, uint64_t *start_useconds) {
 
@@ -298,7 +296,7 @@ uint8_t ns_quarter_off_mult[9/*Up to 9 part*/][2/*x+y*/][4/*Up to 4 ns blocks pe
 {
     //9 means not used.
 
-    //          |   x   |     |   y   |         
+    //          |   x   |     |   y   |
 
     /*P=0*/{ { 0,9,9,9 }  ,{ 0,9,9,9 } },
     /*P=1*/{ { 0,0,9,9 }  ,{ 0,2,9,9 } },
@@ -316,7 +314,7 @@ uint8_t ns_quarter_size_mult[9/*Up to 9 part*/][2/*h+v*/][4/*Up to 4 ns blocks p
 {
     //9 means not used.
 
-    //          |   h   |     |   v   |         
+    //          |   h   |     |   v   |
 
     /*P=0*/{ { 4,9,9,9 }  ,{ 4,9,9,9 } },
     /*P=1*/{ { 4,4,9,9 }  ,{ 2,2,9,9 } },
@@ -352,8 +350,8 @@ uint32_t  max_num_active_blocks;
 //     within a depth: square blk0 in raster scan (followed by all its ns blcoks),
 //     square blk1 in raster scan (followed by all its ns blcoks), etc
 //mds: top-down and Z scan.
-EpBlockStats ep_block_stats_ptr_dps[EP_BLOCK_MAX_COUNT];  //to access geom info of a particular block : use this table if you have the block index in depth scan 
-EpBlockStats ep_block_stats_ptr_mds[EP_BLOCK_MAX_COUNT];  //to access geom info of a particular block : use this table if you have the block index in md    scan 
+EpBlockStats ep_block_stats_ptr_dps[EP_BLOCK_MAX_COUNT];  //to access geom info of a particular block : use this table if you have the block index in depth scan
+EpBlockStats ep_block_stats_ptr_mds[EP_BLOCK_MAX_COUNT];  //to access geom info of a particular block : use this table if you have the block index in md    scan
 
 uint32_t search_matching_from_dps(
     uint8_t depth,
@@ -488,7 +486,6 @@ void md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint8_t y, 
             ep_block_stats_ptr_mds[*idx_mds].bheight_log2 = (uint8_t) Log2f(ep_block_stats_ptr_mds[*idx_mds].bheight);
             ep_block_stats_ptr_mds[*idx_mds].bsize = hvsize_to_bsize[ep_block_stats_ptr_mds[*idx_mds].bwidth_log2 - 2][ep_block_stats_ptr_mds[*idx_mds].bheight_log2 - 2];
 
-
             ep_block_stats_ptr_mds[*idx_mds].bwidth_uv = MAX(4, ep_block_stats_ptr_mds[*idx_mds].bwidth >> 1);
             ep_block_stats_ptr_mds[*idx_mds].bheight_uv = MAX(4, ep_block_stats_ptr_mds[*idx_mds].bheight >> 1);
             ep_block_stats_ptr_mds[*idx_mds].has_uv = 1;
@@ -496,7 +493,6 @@ void md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint8_t y, 
             if (ep_block_stats_ptr_mds[*idx_mds].bwidth == 4 && ep_block_stats_ptr_mds[*idx_mds].bheight == 4)
                 ep_block_stats_ptr_mds[*idx_mds].has_uv = is_last_quadrant ? 1 : 0;
             else
-
 
                 if ((ep_block_stats_ptr_mds[*idx_mds].bwidth >> 1) < ep_block_stats_ptr_mds[*idx_mds].bwidth_uv || (ep_block_stats_ptr_mds[*idx_mds].bheight >> 1) < ep_block_stats_ptr_mds[*idx_mds].bheight_uv) {
                     int num_blk_same_uv = 1;
@@ -718,11 +714,11 @@ void build_ep_block_stats()
     //(1) Construct depth scan ep_block_stats_ptr_dps
     depth_scan_all_blks();
 
-    //(2) Construct md scan ep_block_stats_ptr_mds:  use info from dps    
+    //(2) Construct md scan ep_block_stats_ptr_mds:  use info from dps
     uint16_t idx_mds = 0;
     md_scan_all_blks(&idx_mds, max_sb, 0, 0, 0);
 
-    //(3) Fill more info from mds to dps - print using dps     
+    //(3) Fill more info from mds to dps - print using dps
     finish_depth_scan_all_blks();
 }
 
@@ -730,11 +726,3 @@ const EpBlockStats *ep_get_block_stats(uint32_t bidx_mds)
 {
     return &ep_block_stats_ptr_mds[bidx_mds];
 }
-
-
-
-
-
-
-
-

@@ -21,4 +21,3 @@ EbErrorType entropy_coding_results_ctor(
 
     return EB_ErrorNone;
 }
-

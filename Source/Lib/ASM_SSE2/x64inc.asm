@@ -1,7 +1,7 @@
-; 
+;
 ; Copyright(c) 2018 Intel Corporation
 ; SPDX - License - Identifier: BSD - 2 - Clause - Patent
-; 
+;
 
 %ifdef PREFIX
     %define mangle(x) _ %+ x
@@ -310,7 +310,7 @@ bits 64
     ADD_RSP 16
     movdqu          xmm11,      [rsp]
     ADD_RSP 16
-    movdqu          xmm10,      [rsp] 
+    movdqu          xmm10,      [rsp]
     ADD_RSP 16
     movdqu          xmm9,       [rsp]
     ADD_RSP 16

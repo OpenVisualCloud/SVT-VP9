@@ -9,7 +9,7 @@
 #include "EbDefinitions.h"
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
 extern void initialize_buffer_32bits_sse2_intrin(
     uint32_t *pointer,
@@ -19,8 +19,8 @@ extern void initialize_buffer_32bits_sse2_intrin(
 
 void sad_calculation_8x8_16x16_sse2_intrin(
     uint8_t  *src,
-    uint32_t  src_stride,  
-    uint8_t  *ref,        
+    uint32_t  src_stride,
+    uint8_t  *ref,
     uint32_t  ref_stride,
     uint32_t *p_best_sad8x8,
     uint32_t *p_best_sad16x16,
@@ -41,4 +41,3 @@ void sad_calculation_8x8_16x16_sse2_intrin(
 }
 #endif
 #endif // EbMeSadCalculation_asm_h
-

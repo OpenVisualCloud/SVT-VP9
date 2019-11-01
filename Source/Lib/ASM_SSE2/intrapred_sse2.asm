@@ -343,7 +343,6 @@ cglobal dc_predictor_16x16, 4, 5, 3, dst, stride, above, left, goffset
   RESTORE_GOT
   REP_RET
 
-
 INIT_XMM sse2
 cglobal dc_top_predictor_16x16, 4, 5, 3, dst, stride, above, left, goffset
   GET_GOT     goffsetq
@@ -420,7 +419,6 @@ cglobal dc_128_predictor_16x16, 4, 5, 3, dst, stride, above, left, goffset
   jnz .loop
   RESTORE_GOT
   RET
-
 
 INIT_XMM sse2
 cglobal dc_predictor_32x32, 4, 5, 5, dst, stride, above, left, goffset

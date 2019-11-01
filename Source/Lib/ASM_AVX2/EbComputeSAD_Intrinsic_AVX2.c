@@ -1589,7 +1589,6 @@ void sad_loop_kernel_avx2_intrin(
     break;
   }
 
-
   *best_sad = low_sum;
   *x_search_center = x_best;
   *y_search_center = y_best;
@@ -1706,7 +1705,7 @@ uint32_t compute24x_m_sad_avx2_intrin(
     uint8_t  *ref,         // input parameter, reference samples Ptr
     uint32_t  ref_stride,  // input parameter, reference stride
     uint32_t  height,      // input parameter, block height (M)
-    uint32_t  width)       // input parameter, block width (N)  
+    uint32_t  width)       // input parameter, block width (N)
 {
     __m128i xmm0, xmm1;
     __m256i ymm0, ymm1;
@@ -1735,7 +1734,7 @@ uint32_t compute32x_m_sad_avx2_intrin(
     uint8_t  *ref,         // input parameter, reference samples Ptr
     uint32_t  ref_stride,  // input parameter, reference stride
     uint32_t  height,      // input parameter, block height (M)
-    uint32_t  width)       // input parameter, block width (N)  
+    uint32_t  width)       // input parameter, block width (N)
 {
     __m128i xmm0;
     __m256i ymm0, ymm1;
@@ -1764,7 +1763,7 @@ uint32_t compute48x_m_sad_avx2_intrin(
     uint8_t  *ref,         // input parameter, reference samples Ptr
     uint32_t  ref_stride,  // input parameter, reference stride
     uint32_t  height,      // input parameter, block height (M)
-    uint32_t  width)       // input parameter, block width (N)  
+    uint32_t  width)       // input parameter, block width (N)
 {
     __m128i xmm0, xmm1;
     __m256i ymm0, ymm1;
@@ -1797,7 +1796,7 @@ uint32_t compute64x_m_sad_avx2_intrin(
     uint8_t  *ref,         // input parameter, reference samples Ptr
     uint32_t  ref_stride,  // input parameter, reference stride
     uint32_t  height,      // input parameter, block height (M)
-    uint32_t  width)       // input parameter, block width (N) 
+    uint32_t  width)       // input parameter, block width (N)
 {
     __m128i xmm0;
     __m256i ymm0, ymm1, ymm2, ymm3;
@@ -1840,7 +1839,6 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     __m256i ss0, ss1, ss2, ss3, ss4;
     uint32_t tem_sum;
 
-
     /*
     -------------------------------------   -----------------------------------
     | 8x8_00 | 8x8_01 | 8x8_04 | 8x8_05 |   8x8_16 | 8x8_17 | 8x8_20 | 8x8_21 |
@@ -1875,7 +1873,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     -----------------------   -----------------------
     */
 
-    //8x8_0 & 8x8_1    
+    //8x8_0 & 8x8_1
     ss0 = _mm256_setr_m128i(_mm_loadu_si128((__m128i*)ref), _mm_loadu_si128((__m128i*)(ref + 2 * ref_stride)));
     ss1 = _mm256_setr_m128i(_mm_loadu_si128((__m128i*)(ref + 8)), _mm_loadu_si128((__m128i*)(ref + 2 * ref_stride + 8)));
     ss2 = _mm256_setr_m128i(_mm_loadu_si128((__m128i*)src), _mm_loadu_si128((__m128i*)(src + 2 * src_stride)));
@@ -1922,7 +1920,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     s3 = _mm_adds_epu16(_mm_adds_epu16(sad_0, sad_1), _mm_adds_epu16(sad_2, sad_3));
     //sotore the 8 SADs(16x8 SADs)
     _mm_store_si128((__m128i*)p_sad16x16, s3);
-    //find the best for 16x16      
+    //find the best for 16x16
     s3 = _mm_minpos_epu16(s3);
     tem_sum = _mm_extract_epi16(s3, 0) << 1;
     if (tem_sum <  p_best_sad16x16[0]) {
@@ -2000,13 +1998,11 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     ss6 = _mm256_setzero_si256();
     ss7 = _mm256_setzero_si256();
 
-
     /*--------------------
     |  32x32_0  |  32x32_1
     ----------------------
     |  32x32_2  |  32x32_3
     ----------------------*/
-
 
     /*  data ordering in p_sad16x16 buffer
 
@@ -2218,7 +2214,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     ss2 = _mm256_min_epi32(ss2, ss3);
     ss5 = _mm256_sub_epi32(ss5, _mm256_set1_epi32(2)); // ss5-2
 
-
                                                        // *** 4 search points per position ***
     ss6 = _mm256_cmpgt_epi32(ss0, ss2);
     //ss6 = _mm256_or_si256(_mm256_cmpgt_epi32(ss0, ss2), _mm256_cmpeq_epi32(ss0, ss2));
@@ -2268,7 +2263,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     //SVT_LOG("mv0 %d, %d, %d, %d\n", _mm_extract_epi32(s2, 0), _mm_extract_epi32(s2, 1), _mm_extract_epi32(s2, 2), _mm_extract_epi32(s2, 3)); // DEBUG
     //SVT_LOG("mv1 %d, %d, %d, %d\n", _mm_extract_epi32(s3, 0), _mm_extract_epi32(s3, 1), _mm_extract_epi32(s3, 2), _mm_extract_epi32(s3, 3)); // DEBUG
 
-
     // Choose the best MV out of the two, use s4 to hold results of min
     s4 = _mm_cmpgt_epi32(s0, s1);
 
@@ -2277,8 +2271,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
 
     //s4 = _mm_or_si128(_mm_cmpgt_epi32(s0, s1), _mm_cmpeq_epi32(s0, s1));
     s0 = _mm_min_epi32(s0, s1);
-
-
 
     // Extract MV's based on the blocks to s2
     s3 = _mm_sub_epi32(s3, _mm_set1_epi32(4)); // s3-4
@@ -2292,17 +2284,16 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     s2 = _mm_sub_epi32(_mm_setzero_si128(), s2);
     s2 = _mm_slli_epi32(s2, 2); // mv info
 
-
                                 // ***SAD***
                                 // s0: current SAD candidates for each 32x32
                                 // s1: best SAD's for 32x32
 
                                 // << 1 to compensate for every other line
-    s0 = _mm_slli_epi32(s0, 1); // best sad info 
+    s0 = _mm_slli_epi32(s0, 1); // best sad info
                                 // Load best SAD's
     s1 = _mm_loadu_si128((__m128i*)p_best_sad32x32);
 
-    // Determine which candidates are better than the current best SAD's. 
+    // Determine which candidates are better than the current best SAD's.
     // s4 is used to determine the MV's of the new best SAD's
     s4 = _mm_cmpgt_epi32(s1, s0);
     // not different SVT_LOG("%d, %d, %d, %d\n", _mm_extract_epi32(s4, 0), _mm_extract_epi32(s4, 1), _mm_extract_epi32(s4, 2), _mm_extract_epi32(s4, 3)); // DEBUG
@@ -2311,7 +2302,6 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     s0 = _mm_min_epu32(s0, s1);
     // Store new best SAD's back to memory
     _mm_storeu_si128((__m128i*)p_best_sad32x32, s0);
-
 
     // ***Motion Vectors***
     // Load best MV's

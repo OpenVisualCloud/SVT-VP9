@@ -13,7 +13,6 @@
 
 #include <EbSvtVp9Enc.h>
 
-
 G_BEGIN_DECLS
 #define GST_TYPE_SVTVP9ENC \
   (gst_svtvp9enc_get_type())

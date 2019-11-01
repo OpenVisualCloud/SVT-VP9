@@ -51,7 +51,7 @@ extern "C" {
 
 #define NUM_PING_PONG_BUFFERS 2
 
-#if 1 
+#if 1
 // Generates 4 bit field in which each bit set to 1 represents
 // a block_size partition  1111 means we split 64x64, 32x32, 16x16
 // and 8x8.  1000 means we just split the 64x64 to 32x32
@@ -402,7 +402,6 @@ static INLINE void set_skip_context(MACROBLOCKD *xd, int mi_row, int mi_col) {
     pd->left_context = &xd->left_context[i][left_idx >> pd->subsampling_y];
   }
 }
-
 
 static INLINE int calc_mi_size(int len) {
   // len is in mi units.

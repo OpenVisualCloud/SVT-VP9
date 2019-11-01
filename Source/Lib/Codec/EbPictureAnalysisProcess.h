@@ -10,13 +10,12 @@
 #include "EbSystemResourceManager.h"
 #include "EbNoiseExtractAVX2.h"
 
-
 /**************************************
  * Context
  **************************************/
 typedef struct PictureAnalysisContext
-{ 
-    EB_ALIGN(64) uint8_t   local_cache[64];  
+{
+    EB_ALIGN(64) uint8_t   local_cache[64];
     EbFifo                *resource_coordination_results_input_fifo_ptr;
     EbFifo                *picture_analysis_results_output_fifo_ptr;
     EbPictureBufferDesc   *denoised_picture_ptr;
@@ -35,7 +34,7 @@ extern EbErrorType picture_analysis_context_ctor(
     EbFifo                       *resource_coordination_results_input_fifo_ptr,
     EbFifo                       *picture_analysis_results_output_fifo_ptr,
     uint16_t                      sb_total_count);
-    
+
 extern void* picture_analysis_kernel(void *input_ptr);
 
 void noise_extract_luma_weak(
@@ -76,7 +75,6 @@ static EbWeakLumaFilterType FUNC_TABLE weak_luma_filter_sb_func_ptr_array[ASM_TY
     noise_extract_luma_weak_sb_avx2_intrin,
 
 };
-
 
 void noise_extract_luma_strong(
     EbPictureBufferDesc *input_picture_ptr,
@@ -139,6 +137,5 @@ static EbWeakChromaFilterType FUNC_TABLE weak_chroma_filter_func_ptr_array[ASM_T
     noise_extract_chroma_weak_avx2_intrin,
 
 };
-
 
 #endif // EbPictureAnalysis_h

@@ -20,7 +20,7 @@ extern "C" {
 #include <stdint.h>
 #include "vp9_encoder.h"
 #include "bitwriter.h"
-#include "EbPictureControlSet.h" 
+#include "EbPictureControlSet.h"
 #include "EbBitstreamUnit.h"
 #include "EbEntropyCodingProcess.h"
 
@@ -43,9 +43,9 @@ int vp9_get_refresh_mask(VP9_COMP *cpi);
 void vp9_bitstream_encode_tiles_buffer_dealloc(VP9_COMP *const cpi);
 
 void vp9_pack_bitstream(
-    PictureControlSet   *picture_control_set_ptr, 
-    VP9_COMP            *cpi, 
-    uint8_t             *dest, 
+    PictureControlSet   *picture_control_set_ptr,
+    VP9_COMP            *cpi,
+    uint8_t             *dest,
     size_t              *size,
     int                  show_existing_frame,
     int                  show_existing_frame_index);
