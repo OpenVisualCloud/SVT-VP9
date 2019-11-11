@@ -138,7 +138,7 @@ void* set_me_hme_params_sq(
 /************************************************
  * Set ME/HME Params
  ************************************************/
-void* set_me_hme_params_oq(
+void* eb_vp9_set_me_hme_params_oq(
     MeContext               *me_context_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
@@ -261,7 +261,7 @@ void* set_me_hme_params_vmaf(
 /************************************************
  * Set ME/HME Params from Config
  ************************************************/
-void* set_me_hme_params_from_config(
+void* eb_vp9_set_me_hme_params_from_confi(
     SequenceControlSet *sequence_control_set_ptr,
     MeContext          *me_context_ptr)
 {
@@ -276,7 +276,7 @@ void* set_me_hme_params_from_config(
  * Motion Analysis Context Constructor
  ************************************************/
 
-EbErrorType motion_estimation_context_ctor(
+EbErrorType eb_vp9_motion_estimation_context_ctor(
     MotionEstimationContext **context_dbl_ptr,
     EbFifo                   *picture_decision_results_input_fifo_ptr,
     EbFifo                   *motion_estimation_results_output_fifo_ptr) {
@@ -290,7 +290,7 @@ EbErrorType motion_estimation_context_ctor(
     context_ptr->picture_decision_results_input_fifo_ptr = picture_decision_results_input_fifo_ptr;
     context_ptr->motion_estimation_results_output_fifo_ptr = motion_estimation_results_output_fifo_ptr;
 
-    return_error = me_context_ctor(&(context_ptr->me_context_ptr));
+    return_error = eb_vp9_me_context_ctor(&(context_ptr->me_context_ptr));
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
@@ -441,7 +441,7 @@ EbErrorType compute_zz_sad(
                 block_index = (previous_input->origin_y + sb_origin_y)* previous_input->stride_y + (previous_input->origin_x + sb_origin_x);
 
                 // 1/16 collocated LCU decimation
-                decimation_2d(
+                eb_vp9_decimation_2d(
                     &previous_input->buffer_y[block_index],
                     previous_input->stride_y,
                     MAX_SB_SIZE,
@@ -499,7 +499,7 @@ EbErrorType compute_zz_sad(
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType signal_derivation_me_kernel_sq(
+EbErrorType eb_vp9_signal_derivation_me_kernel_sq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     MotionEstimationContext *context_ptr)
@@ -516,7 +516,7 @@ EbErrorType signal_derivation_me_kernel_sq(
             sequence_control_set_ptr->input_resolution);
     }
     else {
-        set_me_hme_params_from_config(
+        eb_vp9_set_me_hme_params_from_confi(
             sequence_control_set_ptr,
             context_ptr->me_context_ptr);
     }
@@ -574,7 +574,7 @@ EbErrorType signal_derivation_me_kernel_sq(
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType signal_derivation_me_kernel_oq(
+EbErrorType eb_vp9_signal_derivation_me_kernel_oq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     MotionEstimationContext *context_ptr)
@@ -584,14 +584,14 @@ EbErrorType signal_derivation_me_kernel_oq(
 
     // Set ME/HME search regions
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-        set_me_hme_params_oq(
+        eb_vp9_set_me_hme_params_oq(
             context_ptr->me_context_ptr,
             picture_control_set_ptr,
             sequence_control_set_ptr,
             sequence_control_set_ptr->input_resolution);
     }
     else {
-        set_me_hme_params_from_config(
+        eb_vp9_set_me_hme_params_from_confi(
             sequence_control_set_ptr,
             context_ptr->me_context_ptr);
     }
@@ -649,7 +649,7 @@ EbErrorType signal_derivation_me_kernel_oq(
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType signal_derivation_me_kernel_vmaf(
+EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     MotionEstimationContext *context_ptr)
@@ -665,7 +665,7 @@ EbErrorType signal_derivation_me_kernel_vmaf(
             sequence_control_set_ptr->input_resolution);
     }
     else {
-        set_me_hme_params_from_config(
+        eb_vp9_set_me_hme_params_from_confi(
             sequence_control_set_ptr,
             context_ptr->me_context_ptr);
     }
@@ -750,7 +750,7 @@ void get_me_dist(
 /******************************************************
 * Derive Similar Collocated Flag
 ******************************************************/
-void derive_similar_collocated_flag(
+void eb_vp9_derive_similar_collocated_flag(
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                 sb_index)
 
@@ -893,7 +893,7 @@ void stationary_edge_over_update_over_time_sb_part2(
  * to the prediction structure pattern.  The Motion Analysis process is multithreaded,
  * so pictures can be processed out of order as long as all inputs are available.
  ************************************************/
-void* motion_estimation_kernel(void *input_ptr)
+void* eb_vp9_motion_estimation_kernel(void *input_ptr)
 {
     MotionEstimationContext *context_ptr = (MotionEstimationContext*)input_ptr;
 
@@ -941,7 +941,7 @@ void* motion_estimation_kernel(void *input_ptr)
     for (;;) {
 
         // Get Input Full Object
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->picture_decision_results_input_fifo_ptr,
             &input_results_wrapper_ptr);
 
@@ -966,19 +966,19 @@ void* motion_estimation_kernel(void *input_ptr)
 
         // ME Kernel Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            signal_derivation_me_kernel_sq(
+            eb_vp9_signal_derivation_me_kernel_sq(
                 sequence_control_set_ptr,
                 picture_control_set_ptr,
                 context_ptr);
         }
         else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-            signal_derivation_me_kernel_vmaf(
+            eb_vp9_signal_derivation_me_kernel_vmaf(
                 sequence_control_set_ptr,
                 picture_control_set_ptr,
                 context_ptr);
         }
         else {
-            signal_derivation_me_kernel_oq(
+            eb_vp9_signal_derivation_me_kernel_oq(
                 sequence_control_set_ptr,
                 picture_control_set_ptr,
                 context_ptr);
@@ -1073,7 +1073,7 @@ void* motion_estimation_kernel(void *input_ptr)
                 sb_index = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb);
 
                 // Derive Similar Collocated Flag
-                derive_similar_collocated_flag(
+                eb_vp9_derive_similar_collocated_flag(
                     picture_control_set_ptr,
                     sb_index);
 
@@ -1128,7 +1128,7 @@ void* motion_estimation_kernel(void *input_ptr)
         }
 
         // Calculate the ME Distortion and OIS Historgrams
-        eb_block_on_mutex(picture_control_set_ptr->rc_distortion_histogram_mutex);
+        eb_vp9_block_on_mutex(picture_control_set_ptr->rc_distortion_histogram_mutex);
         if (sequence_control_set_ptr->static_config.rate_control_mode){
             if (picture_control_set_ptr->slice_type != I_SLICE){
                 uint16_t sad_interval_index;
@@ -1241,9 +1241,9 @@ void* motion_estimation_kernel(void *input_ptr)
                 }
             }
         }
-        eb_release_mutex(picture_control_set_ptr->rc_distortion_histogram_mutex);
+        eb_vp9_release_mutex(picture_control_set_ptr->rc_distortion_histogram_mutex);
         // Get Empty Results Object
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             context_ptr->motion_estimation_results_output_fifo_ptr,
             &output_results_wrapper_ptr);
 
@@ -1252,10 +1252,10 @@ void* motion_estimation_kernel(void *input_ptr)
         output_results_ptr->segment_index = segment_index;
 
         // Release the Input Results
-        eb_release_object(input_results_wrapper_ptr);
+        eb_vp9_release_object(input_results_wrapper_ptr);
 
         // Post the Full Results Object
-        eb_post_full_object(output_results_wrapper_ptr);
+        eb_vp9_post_full_object(output_results_wrapper_ptr);
     }
     return EB_NULL;
 }

@@ -27,7 +27,7 @@ typedef struct PictureAnalysisContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType picture_analysis_context_ctor(
+extern EbErrorType eb_vp9_picture_analysis_context_ctor(
     EbPictureBufferDescInitData  *input_picture_buffer_desc_init_data,
     EB_BOOL                       denoise_flag,
     PictureAnalysisContext      **context_dbl_ptr,
@@ -35,9 +35,9 @@ extern EbErrorType picture_analysis_context_ctor(
     EbFifo                       *picture_analysis_results_output_fifo_ptr,
     uint16_t                      sb_total_count);
 
-extern void* picture_analysis_kernel(void *input_ptr);
+extern void* eb_vp9_picture_analysis_kernel(void *input_ptr);
 
-void noise_extract_luma_weak(
+void eb_vp9_noise_extract_luma_weak(
     EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
     EbPictureBufferDesc *noise_picture_ptr,
@@ -54,13 +54,13 @@ typedef void(*EbWeakLumaFilterType)(
 static EbWeakLumaFilterType FUNC_TABLE weak_luma_filter_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
-    noise_extract_luma_weak,
+    eb_vp9_noise_extract_luma_weak,
     // AVX2
-    noise_extract_luma_weak_avx2_intrin,
+    eb_vp9_noise_extract_luma_weak_avx2_intrin,
 
 };
 
-void noise_extract_luma_weak_sb(
+void eb_vp9_noise_extract_luma_weak_sb(
     EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
     EbPictureBufferDesc *noise_picture_ptr,
@@ -70,13 +70,13 @@ void noise_extract_luma_weak_sb(
 static EbWeakLumaFilterType FUNC_TABLE weak_luma_filter_sb_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
-    noise_extract_luma_weak_sb,
+    eb_vp9_noise_extract_luma_weak_sb,
     // AVX2
-    noise_extract_luma_weak_sb_avx2_intrin,
+    eb_vp9_noise_extract_luma_weak_sb_avx2_intrin,
 
 };
 
-void noise_extract_luma_strong(
+void eb_vp9_noise_extract_luma_strong(
     EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
     uint32_t             sb_origin_y,
@@ -91,12 +91,12 @@ typedef void(*EbStrongLumaFilterType)(
 static EbStrongLumaFilterType FUNC_TABLE strong_luma_filter_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
-    noise_extract_luma_strong,
+    eb_vp9_noise_extract_luma_strong,
     // AVX2
-    noise_extract_luma_strong_avx2_intrin,
+    eb_vp9_noise_extract_luma_strong_avx2_intrin,
 
 };
-void noise_extract_chroma_strong(
+void eb_vp9_noise_extract_chroma_strong(
     EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
     uint32_t             sb_origin_y,
@@ -111,13 +111,13 @@ typedef void(*EbStrongChromaFilterType)(
 static EbStrongChromaFilterType FUNC_TABLE strong_chroma_filter_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
-    noise_extract_chroma_strong,
+    eb_vp9_noise_extract_chroma_strong,
     // AVX2
-    noise_extract_chroma_strong_avx2_intrin,
+    eb_vp9_noise_extract_chroma_strong_avx2_intrin,
 
 };
 
-void noise_extract_chroma_weak(
+void eb_vp9_noise_extract_chroma_weak(
     EbPictureBufferDesc *input_picture_ptr,
     EbPictureBufferDesc *denoised_picture_ptr,
     uint32_t             sb_origin_y,
@@ -132,9 +132,9 @@ typedef void(*EbWeakChromaFilterType)(
 static EbWeakChromaFilterType FUNC_TABLE weak_chroma_filter_func_ptr_array[ASM_TYPE_TOTAL] =
 {
     // C_DEFAULT
-    noise_extract_chroma_weak,
+    eb_vp9_noise_extract_chroma_weak,
     // AVX2
-    noise_extract_chroma_weak_avx2_intrin,
+    eb_vp9_noise_extract_chroma_weak_avx2_intrin,
 
 };
 

@@ -115,7 +115,7 @@ void full_distortion_kernel_intra_16_mxn_32_bit_bt_sse2(
 /*******************************************************************************
                          PictureCopyKernel_INTRIN
 *******************************************************************************/
-void picture_copy_kernel4x4_sse_intrin(
+void eb_vp9_picture_copy_kernel4x4_sse_intrin(
     EbByte   src,
     uint32_t src_stride,
     EbByte   dst,
@@ -134,7 +134,7 @@ void picture_copy_kernel4x4_sse_intrin(
     return;
 }
 
-void picture_copy_kernel8x8_sse2_intrin(
+void eb_vp9_picture_copy_kernel8x8_sse2_intrin(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -161,7 +161,7 @@ void picture_copy_kernel8x8_sse2_intrin(
     return;
 }
 
-void picture_copy_kernel16x16_sse2_intrin(
+void eb_vp9_picture_copy_kernel16x16_sse2_intrin(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -207,7 +207,7 @@ void picture_copy_kernel16x16_sse2_intrin(
     return;
 }
 
-void picture_copy_kernel32x32_sse2_intrin(
+void eb_vp9_picture_copy_kernel32x32_sse2_intrin(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -249,7 +249,7 @@ void picture_copy_kernel32x32_sse2_intrin(
     return;
 }
 
-void picture_copy_kernel64x64_sse2_intrin(
+void eb_vp9_picture_copy_kernel64x64_sse2_intrin(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -309,7 +309,7 @@ void picture_copy_kernel64x64_sse2_intrin(
 /*******************************************************************************
                       PictureAdditionKernel_INTRIN
 *******************************************************************************/
-void picture_addition_kernel4x4_sse_intrin(
+void eb_vp9_picture_addition_kernel4x4_sse_intrin(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -338,7 +338,7 @@ void picture_addition_kernel4x4_sse_intrin(
     return;
 }
 
-void picture_addition_kernel8x8_sse2_intrin(
+void eb_vp9_picture_addition_kernel8x8_sse2_intrin(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -369,7 +369,7 @@ void picture_addition_kernel8x8_sse2_intrin(
     return;
 }
 
-void picture_addition_kernel16x16_sse2_intrin(
+void eb_vp9_picture_addition_kernel16x16_sse2_intrin(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -403,7 +403,7 @@ void picture_addition_kernel16x16_sse2_intrin(
     return;
 
 }
-void picture_addition_kernel32x32_sse2_intrin(
+void eb_vp9_picture_addition_kernel32x32_sse2_intrin(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -442,7 +442,7 @@ void picture_addition_kernel32x32_sse2_intrin(
     return;
 }
 
-void picture_addition_kernel64x64_sse2_intrin(
+void eb_vp9_picture_addition_kernel64x64_sse2_intrin(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -497,9 +497,9 @@ void picture_addition_kernel64x64_sse2_intrin(
 }
 
 /******************************************************************************************************
-residual_kernel
+eb_vp9_residual_kernel
 ***********************************************************************************************************/
-void residual_kernel_sub_sampled4x4_sse_intrin(
+void eb_vp9_residual_kernel_sub_sampled4x4_sse_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -547,7 +547,7 @@ void residual_kernel_sub_sampled4x4_sse_intrin(
     return;
 }
 
-void residual_kernel_sub_sampled8x8_sse2_intrin(
+void eb_vp9_residual_kernel_sub_sampled8x8_sse2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -599,7 +599,7 @@ void residual_kernel_sub_sampled8x8_sse2_intrin(
     return;
 }
 
-void residual_kernel_sub_sampled16x16_sse2_intrin(
+void eb_vp9_residual_kernel_sub_sampled16x16_sse2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -656,7 +656,7 @@ void residual_kernel_sub_sampled16x16_sse2_intrin(
     return;
 }
 
-void residual_kernel_sub_sampled32x32_sse2_intrin(
+void eb_vp9_residual_kernel_sub_sampled32x32_sse2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -721,7 +721,7 @@ void residual_kernel_sub_sampled32x32_sse2_intrin(
     return;
 }
 
-void residual_kernel_sub_sampled64x64_sse2_intrin(
+void eb_vp9_residual_kernel_sub_sampled64x64_sse2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -808,9 +808,9 @@ void residual_kernel_sub_sampled64x64_sse2_intrin(
     return;
 }
 /******************************************************************************************************
-                                       residual_kernel16bit_sse2_intrin
+                                       eb_vp9_residual_kernel16bit_sse2_intrin
 ******************************************************************************************************/
-void residual_kernel16bit_sse2_intrin(
+void eb_vp9_residual_kernel16bit_sse2_intrin(
     uint16_t   *input,
     uint32_t   input_stride,
     uint16_t   *pred,
@@ -967,10 +967,10 @@ void residual_kernel16bit_sse2_intrin(
 }
 
 /******************************************************************************************************
-                                   picture_addition_kernel16bit_sse2_intrin
+                                   eb_vp9_picture_addition_kernel16bit_sse2_intrin
 ******************************************************************************************************/
 
-void picture_addition_kernel16bit_sse2_intrin(
+void eb_vp9_picture_addition_kernel16bit_sse2_intrin(
     uint16_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,

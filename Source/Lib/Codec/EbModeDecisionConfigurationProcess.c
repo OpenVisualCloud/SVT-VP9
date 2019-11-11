@@ -108,7 +108,7 @@ static const uint8_t adp_luminosity_change_th_array[MAX_HIERARCHICAL_LEVEL][MAX_
 /******************************************************
  * Mode Decision Configuration Context Constructor
  ******************************************************/
-EbErrorType mode_decision_configuration_context_ctor(
+EbErrorType eb_vp9_mode_decision_configuration_context_ctor(
     ModeDecisionConfigurationContext **context_dbl_ptr,
     EbFifo                            *rate_control_input_fifo_ptr,
     EbFifo                            *mode_decision_configuration_output_fifo_ptr,
@@ -328,7 +328,7 @@ void aura_detection(
 return;
 }
 
-EbErrorType derive_default_segments(
+EbErrorType eb_vp9_derive_default_segments(
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
 {
@@ -768,7 +768,7 @@ Input   : cost per depth
 Output  : budget per picture
 ******************************************************/
 
-void set_target_budget_oq(
+void eb_vp9_set_target_budget_oq(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
@@ -1020,7 +1020,7 @@ EB_BOOL is_avc_partitioning_mode(
     Input   : the offline derived cost per search method, detection signals
     Output  : valid cost_depth_mode and valid sensitivePicture
 ******************************************************/
-void configure_adp(
+void eb_vp9_configure_adp(
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
 {
@@ -1083,7 +1083,7 @@ void configure_adp(
     Input   : allocated budget per LCU
     Output  : search method per LCU
 ******************************************************/
-void derive_search_method(
+void eb_vp9_derive_search_method(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
@@ -1183,7 +1183,7 @@ void derive_search_method(
     Input   : LCU score, detection signals, iteration
     Output  : predicted budget for the LCU
 ******************************************************/
-void set_sb_budget(
+void eb_vp9_set_sb_budget(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     SbUnit                           *sb_ptr,
@@ -1258,7 +1258,7 @@ void set_sb_budget(
     Input   : budget per picture, ditortion, detection signals, iteration
     Output  : optimal budget for each LCU
 ******************************************************/
-void  derive_optimal_budget_per_sb(
+void  eb_vp9_derive_optimal_budget_per_sb(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
@@ -1293,7 +1293,7 @@ void  derive_optimal_budget_per_sb(
 
             SbUnit* sb_ptr = picture_control_set_ptr->sb_ptr_array[sb_index];
 
-            set_sb_budget(
+            eb_vp9_set_sb_budget(
                 sequence_control_set_ptr,
                 picture_control_set_ptr,
                 sb_ptr,
@@ -1373,7 +1373,7 @@ void compute_refinement_cost(
     Input   : distortion, detection signals
     Output  : LCU score
 ******************************************************/
-void derive_sb_score(
+void eb_vp9_derive_sb_score(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
@@ -1473,7 +1473,7 @@ void derive_sb_score(
 /******************************************************
 * BudgetingOutlierRemovalLcu
     Input   : LCU score histogram
-    Output  : Adjusted min & max LCU score (to be used to clip the LCU score @ set_sb_budget)
+    Output  : Adjusted min & max LCU score (to be used to clip the LCU score @ eb_vp9_set_sb_budget)
  Performs outlier removal by:
  1. dividing the total distance between the maximum sb_score and the minimum sb_score into NI intervals(NI = 10).
  For each sb_score interval,
@@ -1574,13 +1574,13 @@ void perform_outlier_removal(
     Input   : LCU score, detection signals
     Output  : search method for each LCU
 ******************************************************/
-void derive_sb_md_mode(
+void eb_vp9_derive_sb_md_mode(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr) {
 
     // Configure ADP
-    configure_adp(
+    eb_vp9_configure_adp(
         picture_control_set_ptr,
         context_ptr);
 
@@ -1598,14 +1598,14 @@ void derive_sb_md_mode(
             context_ptr);
     }
     else {
-        set_target_budget_oq(
+        eb_vp9_set_target_budget_oq(
             sequence_control_set_ptr,
             picture_control_set_ptr,
             context_ptr);
     }
 
     // Set the percentage based thresholds
-    derive_default_segments(
+    eb_vp9_derive_default_segments(
         picture_control_set_ptr,
         context_ptr);
 
@@ -1616,7 +1616,7 @@ void derive_sb_md_mode(
         context_ptr);
 
     // Derive LCU score
-    derive_sb_score(
+    eb_vp9_derive_sb_score(
         sequence_control_set_ptr,
         picture_control_set_ptr,
         context_ptr);
@@ -1628,13 +1628,13 @@ void derive_sb_md_mode(
         context_ptr);
 
     // Perform Budgetting
-    derive_optimal_budget_per_sb(
+    eb_vp9_derive_optimal_budget_per_sb(
         sequence_control_set_ptr,
         picture_control_set_ptr,
         context_ptr);
 
     // Set the search method using the LCU cost (mapping)
-    derive_search_method(
+    eb_vp9_derive_search_method(
         sequence_control_set_ptr,
         picture_control_set_ptr,
         context_ptr);
@@ -1646,7 +1646,7 @@ void derive_sb_md_mode(
 Input   : encoder mode and tune
 Output  : EncDec Kernel signal(s)
 ******************************************************/
-EbErrorType signal_derivation_mode_decision_config_kernel_sq(
+EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_sq(
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
 {
@@ -1663,7 +1663,7 @@ EbErrorType signal_derivation_mode_decision_config_kernel_sq(
 Input   : encoder mode and tune
 Output  : EncDec Kernel signal(s)
 ******************************************************/
-EbErrorType signal_derivation_mode_decision_config_kernel_oq_vmaf(
+EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr)
 {
@@ -1726,7 +1726,7 @@ mdcSetDepth : set depth to be tested
 #define PA_DEPTH_TWO_STEP      5
 #define PA_DEPTH_THREE_STEP    1
 
-void MdcInterDepthDecision(
+void eb_vp9_MdcInterDepthDecision(
     ModeDecisionConfigurationContext *context_ptr,
     uint32_t                          origin_x,
     uint32_t                          origin_y,
@@ -2072,7 +2072,7 @@ void prediction_partition_loop(
                     context_ptr->group_of16x16_blocks_count = depth == 1 ? incremental_count[block_index_in_rater_scan] : 0;
                 }
 
-                MdcInterDepthDecision(
+                eb_vp9_MdcInterDepthDecision(
                     context_ptr,
                     block_stats_ptr->origin_x,
                     block_stats_ptr->origin_y,
@@ -2975,7 +2975,7 @@ EbErrorType qpm_derive_bea(
 /******************************************************
  * Mode Decision Configuration Kernel
  ******************************************************/
-void* mode_decision_configuration_kernel(void *input_ptr)
+void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr)
 {
     // Context & SCS & PCS
     ModeDecisionConfigurationContext *context_ptr = (ModeDecisionConfigurationContext*) input_ptr;
@@ -2994,7 +2994,7 @@ void* mode_decision_configuration_kernel(void *input_ptr)
     for(;;) {
 
         // Get RateControl Results
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->rate_control_input_fifo_ptr,
             &rate_control_results_wrapper_ptr);
 
@@ -3004,12 +3004,12 @@ void* mode_decision_configuration_kernel(void *input_ptr)
 
         // Mode Decision Configuration Kernel Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            signal_derivation_mode_decision_config_kernel_sq(
+            eb_vp9_signal_derivation_mode_decision_config_kernel_sq(
                 picture_control_set_ptr,
                 context_ptr);
         }
         else {
-            signal_derivation_mode_decision_config_kernel_oq_vmaf(
+            eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(
                 picture_control_set_ptr,
                 context_ptr);
         }
@@ -3115,7 +3115,7 @@ void* mode_decision_configuration_kernel(void *input_ptr)
 
         if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
 
-            derive_sb_md_mode(
+            eb_vp9_derive_sb_md_mode(
                 sequence_control_set_ptr,
                 picture_control_set_ptr,
                 context_ptr);
@@ -3172,7 +3172,7 @@ void* mode_decision_configuration_kernel(void *input_ptr)
         }
 
         // Post the results to the MD processes
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             context_ptr->mode_decision_configuration_output_fifo_ptr,
             &enc_dec_tasks_wrapper_ptr);
 
@@ -3181,10 +3181,10 @@ void* mode_decision_configuration_kernel(void *input_ptr)
         enc_dec_tasks_ptr->input_type = ENCDEC_TASKS_MDC_INPUT;
 
         // Post the Full Results Object
-        eb_post_full_object(enc_dec_tasks_wrapper_ptr);
+        eb_vp9_post_full_object(enc_dec_tasks_wrapper_ptr);
 
         // Release Rate Control Results
-        eb_release_object(rate_control_results_wrapper_ptr);
+        eb_vp9_release_object(rate_control_results_wrapper_ptr);
 
     }
 

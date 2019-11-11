@@ -82,7 +82,7 @@ EbErrorType sb_unit_ctor(
     coeff_init_data.max_width = MAX_SB_SIZE;
     coeff_init_data.max_height = MAX_SB_SIZE;
 
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *) &(sb_unit_ptr->quantized_coeff),
         (EbPtr)&coeff_init_data);
 

@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 #ifndef DISABLE_AVX512
-void sad_loop_kernel_avx512_hme_l0_intrin(
+void eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
     uint8_t  *src,                             // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                             // input parameter, reference samples Ptr
@@ -28,7 +28,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
     int16_t   search_area_width,
     int16_t   search_area_height);
 #else
-    void sad_loop_kernel_avx2_hme_l0_intrin(
+    void eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
         uint8_t  *src,                            // input parameter, source samples Ptr
         uint32_t  src_stride,                     // input parameter, source stride
         uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -44,7 +44,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
 #endif
 
 #ifndef DISABLE_AVX512
-extern void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
+extern void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
         MeContext *context_ptr,
         uint32_t   list_index,
         uint32_t   search_region_index,

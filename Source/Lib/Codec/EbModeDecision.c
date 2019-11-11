@@ -192,7 +192,7 @@ static const uint32_t ep_to_pa_cu_index[EP_BLOCK_MAX_COUNT] =
 /***************************************
 * Mode Decision Candidate Ctor
 ***************************************/
-EbErrorType mode_decision_candidate_buffer_ctor(
+EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(
     ModeDecisionCandidateBuffer **buffer_dbl_ptr,
     uint16_t                      sb_max_size,
     EbBitDepth                    max_bitdepth,
@@ -232,14 +232,14 @@ EbErrorType mode_decision_candidate_buffer_ctor(
     buffer_ptr->candidate_ptr = (ModeDecisionCandidate    *)EB_NULL;
 
     // Video Buffers
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->prediction_ptr),
         (EbPtr)&picture_buffer_desc_init_data);
 
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->residual_quant_coeff_ptr),
         (EbPtr)&double_width_picture_buffer_desc_init_data);
 
@@ -247,14 +247,14 @@ EbErrorType mode_decision_candidate_buffer_ctor(
         return EB_ErrorInsufficientResources;
     }
 
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->recon_coeff_ptr),
         (EbPtr)&double_width_picture_buffer_desc_init_data);
 
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->recon_ptr),
         (EbPtr)&picture_buffer_desc_init_data);
 

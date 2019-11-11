@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbPictureDemuxResults.h"
 
-EbErrorType picture_results_ctor(
+EbErrorType eb_vp9_picture_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

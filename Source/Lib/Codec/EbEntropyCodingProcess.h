@@ -53,13 +53,13 @@ typedef struct EntropyCodingContext
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType entropy_coding_context_ctor(
+extern EbErrorType eb_vp9_entropy_coding_context_ctor(
     EntropyCodingContext **context_dbl_ptr,
     EbFifo                *enc_dec_input_fifo_ptr,
     EbFifo                *packetization_output_fifo_ptr,
     EbFifo                *rate_control_output_fifo_ptr,
     EB_BOOL                is16bit);
 
-extern void* entropy_coding_kernel(void *input_ptr);
+extern void* eb_vp9_entropy_coding_kernel(void *input_ptr);
 
 #endif // EbEntropyCodingProcess_h

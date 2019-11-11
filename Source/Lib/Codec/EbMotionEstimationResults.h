@@ -27,7 +27,7 @@ typedef struct MotionEstimationResultsInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType motion_estimation_results_ctor(
+extern EbErrorType eb_vp9_motion_estimation_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

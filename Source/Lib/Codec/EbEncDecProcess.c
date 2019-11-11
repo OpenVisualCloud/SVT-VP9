@@ -32,7 +32,7 @@
 #include "vp9_pred_common.h"
 
 // compute the cost of curr depth, and the depth above
-void compute_depth_costs(
+void eb_vp9_compute_depth_costs(
     PictureControlSet *picture_control_set_ptr,
     SbUnit            *sb_ptr,
     EncDecContext     *context_ptr,
@@ -119,7 +119,7 @@ uint32_t inter_depth_decision(
 
             parent_depth_bsize = ep_get_block_stats(parent_depth_idx_mds)->bsize;
 
-            compute_depth_costs(
+            eb_vp9_compute_depth_costs(
                 picture_control_set_ptr,
                 sb_ptr,
                 context_ptr,
@@ -460,7 +460,7 @@ void perform_coding_loop(
     switch (tx_size) {
     case TX_32X32:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][32 >> 3](
+            eb_vp9_residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][32 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -527,7 +527,7 @@ void perform_coding_loop(
 
     case TX_16X16:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][16 >> 3](
+            eb_vp9_residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][16 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -589,7 +589,7 @@ void perform_coding_loop(
 
     case TX_8X8:
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][8 >> 3](
+            eb_vp9_residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][8 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -651,7 +651,7 @@ void perform_coding_loop(
     default:
         assert(tx_size == TX_4X4);
         if (!(is_encode_pass && context_ptr->skip_eob_zero_mode_ep &&  *eob == 0)) {
-            residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4 >> 3](
+            eb_vp9_residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][4 >> 3](
                 input_buffer,
                 input_stride,
                 pred_buffer,
@@ -1523,7 +1523,7 @@ static void perform_dist_rate_calc(
             if (context_ptr->intra_md_open_loop_flag) {
 
                 // Input Samples - Luma
-                neighbor_array_unit_sample_write(
+                eb_vp9_neighbor_array_unit_sample_write(
                     context_ptr->luma_recon_neighbor_array,
                     input_picture_ptr->buffer_y,
                     input_picture_ptr->stride_y,
@@ -1538,7 +1538,7 @@ static void perform_dist_rate_calc(
                 if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) && context_ptr->ep_block_stats_ptr->has_uv) {
 
                     // Input Samples - Cb
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         context_ptr->cb_recon_neighbor_array,
                         input_picture_ptr->buffer_cb,
                         input_picture_ptr->stride_cb,
@@ -1551,7 +1551,7 @@ static void perform_dist_rate_calc(
                         NEIGHBOR_ARRAY_UNIT_FULL_MASK);
 
                     // Input Samples - Cr
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         context_ptr->cr_recon_neighbor_array,
                         input_picture_ptr->buffer_cr,
                         input_picture_ptr->stride_cr,
@@ -1573,7 +1573,7 @@ static void perform_dist_rate_calc(
                     candidate_buffer->recon_ptr;
 
                 // Recon Samples - Luma
-                neighbor_array_unit_sample_write(
+                eb_vp9_neighbor_array_unit_sample_write(
                     context_ptr->luma_recon_neighbor_array,
                     recon_buffer->buffer_y,
                     recon_buffer->stride_y,
@@ -1587,7 +1587,7 @@ static void perform_dist_rate_calc(
 
                 if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) && context_ptr->ep_block_stats_ptr->has_uv) {
                     // Recon Samples - Cb
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         context_ptr->cb_recon_neighbor_array,
                         recon_buffer->buffer_cb,
                         recon_buffer->stride_cb,
@@ -1600,7 +1600,7 @@ static void perform_dist_rate_calc(
                         NEIGHBOR_ARRAY_UNIT_FULL_MASK);
 
                     // Recon Samples - Cr
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         context_ptr->cr_recon_neighbor_array,
                         recon_buffer->buffer_cr,
                         recon_buffer->stride_cr,
@@ -1629,7 +1629,7 @@ static void perform_dist_rate_calc(
             if (context_ptr->intra_md_open_loop_flag) {
 
                 // Input Samples - Luma
-                neighbor_array_unit_sample_write(
+                eb_vp9_neighbor_array_unit_sample_write(
                     picture_control_set_ptr->md_luma_recon_neighbor_array[depth_part_stage],
                     input_picture_ptr->buffer_y,
                     input_picture_ptr->stride_y,
@@ -1644,7 +1644,7 @@ static void perform_dist_rate_calc(
                 if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) && context_ptr->ep_block_stats_ptr->has_uv) {
 
                     // Input Samples - Cb
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         picture_control_set_ptr->md_cb_recon_neighbor_array[depth_part_stage],
                         input_picture_ptr->buffer_cb,
                         input_picture_ptr->stride_cb,
@@ -1657,7 +1657,7 @@ static void perform_dist_rate_calc(
                         NEIGHBOR_ARRAY_UNIT_FULL_MASK);
 
                     // Input Samples - Cr
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         picture_control_set_ptr->md_cr_recon_neighbor_array[depth_part_stage],
                         input_picture_ptr->buffer_cr,
                         input_picture_ptr->stride_cr,
@@ -1674,7 +1674,7 @@ static void perform_dist_rate_calc(
             else {
 
                 // Recon Samples - Luma
-                neighbor_array_unit_sample_write(
+                eb_vp9_neighbor_array_unit_sample_write(
                     picture_control_set_ptr->md_luma_recon_neighbor_array[depth_part_stage],
                     candidate_buffer->recon_ptr->buffer_y,
                     candidate_buffer->recon_ptr->stride_y,
@@ -1688,7 +1688,7 @@ static void perform_dist_rate_calc(
 
                 if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) && context_ptr->ep_block_stats_ptr->has_uv) {
                     // Recon Samples - Cb
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         picture_control_set_ptr->md_cb_recon_neighbor_array[depth_part_stage],
                         candidate_buffer->recon_ptr->buffer_cb,
                         candidate_buffer->recon_ptr->stride_cb,
@@ -1701,7 +1701,7 @@ static void perform_dist_rate_calc(
                         NEIGHBOR_ARRAY_UNIT_FULL_MASK);
 
                     // Recon Samples - Cr
-                    neighbor_array_unit_sample_write(
+                    eb_vp9_neighbor_array_unit_sample_write(
                         picture_control_set_ptr->md_cr_recon_neighbor_array[depth_part_stage],
                         candidate_buffer->recon_ptr->buffer_cr,
                         candidate_buffer->recon_ptr->stride_cr,
@@ -2180,7 +2180,7 @@ static void perform_dist_rate_calc(
             }
         }
 
-        void mode_decision_sb(
+        void eb_vp9_mode_decision_sb(
             SequenceControlSet *sequence_control_set_ptr,
             PictureControlSet   *picture_control_set_ptr,
             EncDecContext       *context_ptr,
@@ -4260,7 +4260,7 @@ static void perform_dist_rate_calc(
                         }
                         if (do_recon) {
                             // Recon Samples - Luma
-                            neighbor_array_unit_sample_write(
+                            eb_vp9_neighbor_array_unit_sample_write(
                                 context_ptr->luma_recon_neighbor_array,
                                 context_ptr->recon_buffer->buffer_y,
                                 context_ptr->recon_buffer->stride_y,
@@ -4274,7 +4274,7 @@ static void perform_dist_rate_calc(
 
                             if (context_ptr->ep_block_stats_ptr->has_uv) {
                                 // Recon Samples - Cb
-                                neighbor_array_unit_sample_write(
+                                eb_vp9_neighbor_array_unit_sample_write(
                                     context_ptr->cb_recon_neighbor_array,
                                     context_ptr->recon_buffer->buffer_cb,
                                     context_ptr->recon_buffer->stride_cb,
@@ -4287,7 +4287,7 @@ static void perform_dist_rate_calc(
                                     NEIGHBOR_ARRAY_UNIT_FULL_MASK);
 
                                 // Recon Samples - Cr
-                                neighbor_array_unit_sample_write(
+                                eb_vp9_neighbor_array_unit_sample_write(
                                     context_ptr->cr_recon_neighbor_array,
                                     context_ptr->recon_buffer->buffer_cr,
                                     context_ptr->recon_buffer->stride_cr,
@@ -4372,7 +4372,7 @@ static void perform_dist_rate_calc(
         /******************************************************
          * Enc Dec Context Constructor
          ******************************************************/
-        EbErrorType enc_dec_context_ctor(
+        EbErrorType eb_vp9_enc_dec_context_ctor(
             EncDecContext **context_dbl_ptr,
             EbFifo         *mode_decision_configuration_input_fifo_ptr,
             EbFifo         *packetization_output_fifo_ptr,
@@ -4404,14 +4404,14 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->residual_buffer,
                     (EbPtr)&init_data);
                 if (return_error == EB_ErrorInsufficientResources) {
                     return EB_ErrorInsufficientResources;
                 }
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->transform_buffer,
                     (EbPtr)&init_data);
                 if (return_error == EB_ErrorInsufficientResources) {
@@ -4433,7 +4433,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->prediction_buffer,
                     (EbPtr)&init_data);
 
@@ -4456,7 +4456,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->bdp_pillar_scratch_recon_buffer,
                     (EbPtr)&init_data);
 
@@ -4479,7 +4479,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->uv_mode_search_prediction_buffer,
                     (EbPtr)&init_data);
 
@@ -4501,7 +4501,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->uv_mode_search_residual_quant_coeff_buffer,
                     (EbPtr)&init_data);
 
@@ -4523,7 +4523,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->uv_mode_search_recon_coeff_buffer,
                     (EbPtr)&init_data);
 
@@ -4545,7 +4545,7 @@ static void perform_dist_rate_calc(
                 init_data.bot_padding = 0;
                 init_data.split_mode = EB_FALSE;
 
-                return_error = eb_picture_buffer_desc_ctor(
+                return_error = eb_vp9_picture_buffer_desc_ctor(
                     (EbPtr *)&context_ptr->uv_mode_search_recon_buffer,
                     (EbPtr)&init_data);
 
@@ -4568,7 +4568,7 @@ static void perform_dist_rate_calc(
             // Transform and Quantization Buffers
             EB_MALLOC(EbTransQuantBuffers*, context_ptr->trans_quant_buffers_ptr, sizeof(EbTransQuantBuffers), EB_N_PTR);
 
-            return_error = eb_trans_quant_buffers_ctor(
+            return_error = eb_vp9_trans_quant_buffers_ctor(
                 context_ptr->trans_quant_buffers_ptr);
 
             if (return_error == EB_ErrorInsufficientResources) {
@@ -4583,7 +4583,7 @@ static void perform_dist_rate_calc(
             EB_MALLOC(ModeDecisionCandidateBuffer  **, context_ptr->candidate_buffer_ptr_array, sizeof(ModeDecisionCandidateBuffer  *) * MODE_DECISION_CANDIDATE_BUFFER_MAX_COUNT, EB_N_PTR);
 
             for (uint32_t buffer_index = 0; buffer_index < MODE_DECISION_CANDIDATE_BUFFER_MAX_COUNT; ++buffer_index) {
-                return_error = mode_decision_candidate_buffer_ctor(
+                return_error = eb_vp9_mode_decision_candidate_buffer_ctor(
                     &(context_ptr->candidate_buffer_ptr_array[buffer_index]),
                     MAX_SB_SIZE,
                     EB_8BIT,
@@ -4630,9 +4630,9 @@ static void perform_dist_rate_calc(
          *************************************************/
         static void reset_encode_pass_neighbor_arrays(PictureControlSet *picture_control_set_ptr)
         {
-            neighbor_array_unit_reset(picture_control_set_ptr->ep_luma_recon_neighbor_array);
-            neighbor_array_unit_reset(picture_control_set_ptr->ep_cb_recon_neighbor_array);
-            neighbor_array_unit_reset(picture_control_set_ptr->ep_cr_recon_neighbor_array);
+            eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->ep_luma_recon_neighbor_array);
+            eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->ep_cb_recon_neighbor_array);
+            eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->ep_cr_recon_neighbor_array);
             return;
         }
 
@@ -4766,7 +4766,7 @@ static void perform_dist_rate_calc(
                 // Right Neighbor
                 if (segment_index < segment_ptr->row_array[row_segment_index].ending_seg_index)
                 {
-                    eb_block_on_mutex(segment_ptr->row_array[row_segment_index].assignment_mutex);
+                    eb_vp9_block_on_mutex(segment_ptr->row_array[row_segment_index].assignment_mutex);
 
                     --segment_ptr->dep_map.dependency_map[right_segment_index];
 
@@ -4781,13 +4781,13 @@ static void perform_dist_rate_calc(
                         //    *segment_in_out_index);
                     }
 
-                    eb_release_mutex(segment_ptr->row_array[row_segment_index].assignment_mutex);
+                    eb_vp9_release_mutex(segment_ptr->row_array[row_segment_index].assignment_mutex);
                 }
 
                 // Bottom-left Neighbor
                 if (row_segment_index < segment_ptr->segment_row_count - 1 && bottom_left_segment_index >= segment_ptr->row_array[row_segment_index + 1].starting_seg_index)
                 {
-                    eb_block_on_mutex(segment_ptr->row_array[row_segment_index + 1].assignment_mutex);
+                    eb_vp9_block_on_mutex(segment_ptr->row_array[row_segment_index + 1].assignment_mutex);
 
                     --segment_ptr->dep_map.dependency_map[bottom_left_segment_index];
 
@@ -4806,18 +4806,18 @@ static void perform_dist_rate_calc(
                             //    *segment_in_out_index);
                         }
                     }
-                    eb_release_mutex(segment_ptr->row_array[row_segment_index + 1].assignment_mutex);
+                    eb_vp9_release_mutex(segment_ptr->row_array[row_segment_index + 1].assignment_mutex);
                 }
 
                 if (feedback_row_index > 0) {
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         srm_fifo_ptr,
                         &wrapper_ptr);
                     feedback_task_ptr = (EncDecTasks*)wrapper_ptr->object_ptr;
                     feedback_task_ptr->input_type = ENCDEC_TASKS_ENCDEC_INPUT;
                     feedback_task_ptr->enc_dec_segment_row = feedback_row_index;
                     feedback_task_ptr->picture_control_set_wrapper_ptr = task_ptr->picture_control_set_wrapper_ptr;
-                    eb_post_full_object(wrapper_ptr);
+                    eb_vp9_post_full_object(wrapper_ptr);
                 }
 
                 break;
@@ -4839,10 +4839,10 @@ static void perform_dist_rate_calc(
             // The totalNumberOfReconFrames counter has to be write/read protected as
             //   it is used to determine the end of the stream.  If it is not protected
             //   the encoder might not properly terminate.
-            eb_block_on_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
+            eb_vp9_block_on_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
 
             // Get Recon Buffer
-            eb_get_empty_object(
+            eb_vp9_get_empty_object(
                 sequence_control_set_ptr->encode_context_ptr->recon_output_fifo_ptr,
                 &outputReconWrapperPtr);
             outputReconPtr = (EbBufferHeaderType*)outputReconWrapperPtr->object_ptr;
@@ -4891,7 +4891,7 @@ static void perform_dist_rate_calc(
                     EB_ENC_ROB_OF_ERROR);
 
                 // Initialize Y recon buffer
-                picture_copy_kernel(
+                eb_vp9_picture_copy_kernel(
                     reconReadPtr,
                     reconPtr->stride_y,
                     reconWritePtr,
@@ -4913,7 +4913,7 @@ static void perform_dist_rate_calc(
                     EB_ENC_ROB_OF_ERROR);
 
                 // Initialize U recon buffer
-                picture_copy_kernel(
+                eb_vp9_picture_copy_kernel(
                     reconReadPtr,
                     reconPtr->stride_cb,
                     reconWritePtr,
@@ -4935,7 +4935,7 @@ static void perform_dist_rate_calc(
 
                 // Initialize V recon buffer
 
-                picture_copy_kernel(
+                eb_vp9_picture_copy_kernel(
                     reconReadPtr,
                     reconPtr->stride_cr,
                     reconWritePtr,
@@ -4948,8 +4948,8 @@ static void perform_dist_rate_calc(
             }
 
             // Post the Recon object
-            eb_post_full_object(outputReconWrapperPtr);
-            eb_release_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
+            eb_vp9_post_full_object(outputReconWrapperPtr);
+            eb_vp9_release_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
         }
 
         void pad_ref_and_set_flags(
@@ -4965,7 +4965,7 @@ static void perform_dist_rate_calc(
 
             if (!is16bit) {
                 // Y samples
-                generate_padding(
+                eb_vp9_generate_padding(
                     ref_pic_ptr->buffer_y,
                     ref_pic_ptr->stride_y,
                     ref_pic_ptr->width,
@@ -4974,7 +4974,7 @@ static void perform_dist_rate_calc(
                     ref_pic_ptr->origin_y);
 
                 // Cb samples
-                generate_padding(
+                eb_vp9_generate_padding(
                     ref_pic_ptr->buffer_cb,
                     ref_pic_ptr->stride_cb,
                     ref_pic_ptr->width >> 1,
@@ -4983,7 +4983,7 @@ static void perform_dist_rate_calc(
                     ref_pic_ptr->origin_y >> 1);
 
                 // Cr samples
-                generate_padding(
+                eb_vp9_generate_padding(
                     ref_pic_ptr->buffer_cr,
                     ref_pic_ptr->stride_cr,
                     ref_pic_ptr->width >> 1,
@@ -4995,7 +4995,7 @@ static void perform_dist_rate_calc(
             //We need this for MCP
             if (is16bit) {
                 // Y samples
-                generate_padding_16bit(
+                eb_vp9_generate_padding_16bit(
                     ref_pic16_bit_ptr->buffer_y,
                     ref_pic16_bit_ptr->stride_y << 1,
                     ref_pic16_bit_ptr->width << 1,
@@ -5004,7 +5004,7 @@ static void perform_dist_rate_calc(
                     ref_pic16_bit_ptr->origin_y);
 
                 // Cb samples
-                generate_padding_16bit(
+                eb_vp9_generate_padding_16bit(
                     ref_pic16_bit_ptr->buffer_cb,
                     ref_pic16_bit_ptr->stride_cb << 1,
                     ref_pic16_bit_ptr->width,
@@ -5013,7 +5013,7 @@ static void perform_dist_rate_calc(
                     ref_pic16_bit_ptr->origin_y >> 1);
 
                 // Cr samples
-                generate_padding_16bit(
+                eb_vp9_generate_padding_16bit(
                     ref_pic16_bit_ptr->buffer_cr,
                     ref_pic16_bit_ptr->stride_cr << 1,
                     ref_pic16_bit_ptr->width,
@@ -5050,7 +5050,7 @@ static void perform_dist_rate_calc(
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-        EbErrorType signal_derivation_enc_dec_kernel_sq(
+        EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_sq(
             SequenceControlSet *sequence_control_set_ptr,
             PictureControlSet  *picture_control_set_ptr,
             EncDecContext      *context_ptr) {
@@ -5201,7 +5201,7 @@ static void perform_dist_rate_calc(
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-        EbErrorType signal_derivation_enc_dec_kernel_oq(
+        EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_oq(
             SequenceControlSet *sequence_control_set_ptr,
             PictureControlSet  *picture_control_set_ptr,
             EncDecContext      *context_ptr) {
@@ -5364,7 +5364,7 @@ static void perform_dist_rate_calc(
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-        EbErrorType signal_derivation_enc_dec_kernel_vmaf(
+        EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_vmaf(
             SequenceControlSet *sequence_control_set_ptr,
             PictureControlSet  *picture_control_set_ptr,
             EncDecContext      *context_ptr) {
@@ -5508,7 +5508,7 @@ static void perform_dist_rate_calc(
         /******************************************************
          * EncDec Kernel
          ******************************************************/
-        void* enc_dec_kernel(void *input_ptr)
+        void* eb_vp9_enc_dec_kernel(void *input_ptr)
         {
 
             EncDecContext          *context_ptr = (EncDecContext  *)input_ptr;
@@ -5553,7 +5553,7 @@ static void perform_dist_rate_calc(
             for (;;) {
 
                 // Get Mode Decision Results
-                eb_get_full_object(
+                eb_vp9_get_full_object(
                     context_ptr->mode_decision_input_fifo_ptr,
                     &enc_dec_tasks_wrapper_ptr);
 
@@ -5573,19 +5573,19 @@ static void perform_dist_rate_calc(
 
                 // EncDec Kernel Signal(s) derivation
                 if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-                    signal_derivation_enc_dec_kernel_sq(
+                    eb_vp9_signal_derivation_enc_dec_kernel_sq(
                         sequence_control_set_ptr,
                         picture_control_set_ptr,
                         context_ptr);
                 }
                 else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-                    signal_derivation_enc_dec_kernel_vmaf(
+                    eb_vp9_signal_derivation_enc_dec_kernel_vmaf(
                         sequence_control_set_ptr,
                         picture_control_set_ptr,
                         context_ptr);
                 }
                 else {
-                    signal_derivation_enc_dec_kernel_oq(
+                    eb_vp9_signal_derivation_enc_dec_kernel_oq(
                         sequence_control_set_ptr,
                         picture_control_set_ptr,
                         context_ptr);
@@ -5672,7 +5672,7 @@ static void perform_dist_rate_calc(
                     segment_band_size = (segments_ptr->sb_band_count * (segment_band_index + 1) + segments_ptr->segment_band_count - 1) / segments_ptr->segment_band_count;
 
                     // Reset Coding Loop State
-                    reset_mode_decision(
+                    eb_vp9_reset_mode_decision(
                         context_ptr,
                         picture_control_set_ptr,
                         segment_index);
@@ -5730,7 +5730,7 @@ static void perform_dist_rate_calc(
 
                                 // MDC depth partitioning
                                 context_ptr->depth_part_stage = 0;
-                                mode_decision_sb(
+                                eb_vp9_mode_decision_sb(
                                     sequence_control_set_ptr,
                                     picture_control_set_ptr,
                                     context_ptr,
@@ -5931,7 +5931,7 @@ static void perform_dist_rate_calc(
                                 input_picture_ptr->width / 2);
                         }
 
-                        generate_padding(
+                        eb_vp9_generate_padding(
                             ref_den_pic->buffer_y,
                             ref_den_pic->stride_y,
                             ref_den_pic->width,
@@ -5939,7 +5939,7 @@ static void perform_dist_rate_calc(
                             ref_den_pic->origin_x,
                             ref_den_pic->origin_y);
 
-                        generate_padding(
+                        eb_vp9_generate_padding(
                             ref_den_pic->buffer_cb,
                             ref_den_pic->stride_cb,
                             ref_den_pic->width >> 1,
@@ -5947,7 +5947,7 @@ static void perform_dist_rate_calc(
                             ref_den_pic->origin_x >> 1,
                             ref_den_pic->origin_y >> 1);
 
-                        generate_padding(
+                        eb_vp9_generate_padding(
                             ref_den_pic->buffer_cr,
                             ref_den_pic->stride_cr,
                             ref_den_pic->width >> 1,
@@ -5965,7 +5965,7 @@ static void perform_dist_rate_calc(
                     if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag) {
 
                         // Get Empty EntropyCoding Results
-                        eb_get_empty_object(
+                        eb_vp9_get_empty_object(
                             context_ptr->picture_demux_output_fifo_ptr,
                             &picture_demux_results_wrapper_ptr);
 
@@ -5976,7 +5976,7 @@ static void perform_dist_rate_calc(
                         picture_demux_results_ptr->picture_type = EB_PIC_REFERENCE;
 
                         // Post Reference Picture
-                        eb_post_full_object(picture_demux_results_wrapper_ptr);
+                        eb_vp9_post_full_object(picture_demux_results_wrapper_ptr);
                     }
 
                     // When de interlacing is performed in the lib, each two consecutive pictures (fields: top & bottom) are going to use the same input buffer
@@ -5991,7 +5991,7 @@ static void perform_dist_rate_calc(
                 if (end_of_row_flag == EB_TRUE) {
 
                     // Get Empty EncDec Results
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         context_ptr->enc_dec_output_fifo_ptr,
                         &enc_dec_results_wrapper_ptr);
                     enc_dec_results_ptr = (EncDecResults*)enc_dec_results_wrapper_ptr->object_ptr;
@@ -6000,11 +6000,11 @@ static void perform_dist_rate_calc(
                     enc_dec_results_ptr->completed_sb_row_count = sb_row_index_count;
 
                     // Post EncDec Results
-                    eb_post_full_object(enc_dec_results_wrapper_ptr);
+                    eb_vp9_post_full_object(enc_dec_results_wrapper_ptr);
                 }
 
                 // Release Mode Decision Results
-                eb_release_object(enc_dec_tasks_wrapper_ptr);
+                eb_vp9_release_object(enc_dec_tasks_wrapper_ptr);
 
             }
             return EB_NULL;

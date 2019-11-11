@@ -672,7 +672,7 @@ void eb_enc_un_pack8_bit_data_sse2_intrin(
 
     return;
 }
-void unpack_avg_sse2_intrin(
+void eb_vp9_unpack_avg_sse2_intrin(
     uint16_t *ref16_l0,
     uint32_t  ref_l0_stride,
     uint16_t *ref16_l1,

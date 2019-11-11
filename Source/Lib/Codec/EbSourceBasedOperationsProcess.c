@@ -49,7 +49,7 @@
 * Initial Rate Control Context Constructor
 ************************************************/
 
-EbErrorType source_based_operations_context_ctor(
+EbErrorType eb_vp9_source_based_operations_context_ctor(
     SourceBasedOperationsContext **context_dbl_ptr,
     EbFifo                        *initial_rate_control_results_input_fifo_ptr,
     EbFifo                        *picture_demux_results_output_fifo_ptr)
@@ -68,7 +68,7 @@ EbErrorType source_based_operations_context_ctor(
 * Derives BEA statistics and set activity flags
 ***************************************************/
 
-void derive_picture_activity_statistics(
+void eb_vp9_derive_picture_activity_statistics(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -337,7 +337,7 @@ static void determine_more_potential_aura_areas(
 /***************************************************
 * Detects the presence of dark area
 ***************************************************/
-void derive_high_dark_area_density_flag(
+void eb_vp9_derive_high_dark_area_density_flag(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -608,7 +608,7 @@ EB_BOOL is_spatially_complex_area(
 Input   : activity, layer index
 Output  : LCU complexity level
 ******************************************************/
-void derive_blockiness_present_flag(
+void eb_vp9_derive_blockiness_present_flag(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -649,7 +649,7 @@ void derive_blockiness_present_flag(
     }
 }
 
-void derive_min_max_me_distortion(
+void eb_vp9_derive_min_max_me_distortion(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -923,7 +923,7 @@ void stationary_edge_over_update_over_time_sb(
 /************************************************
  * Source Based Operations Kernel
  ************************************************/
-void* source_based_operations_kernel(void *input_ptr)
+void* eb_vp9_source_based_operations_kernel(void *input_ptr)
 {
     SourceBasedOperationsContext *context_ptr = (SourceBasedOperationsContext*)input_ptr;
     PictureParentControlSet      *picture_control_set_ptr;
@@ -936,7 +936,7 @@ void* source_based_operations_kernel(void *input_ptr)
     for (;;) {
 
         // Get Input Full Object
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->initial_rate_control_results_input_fifo_ptr,
             &input_results_wrapper_ptr);
 
@@ -1004,7 +1004,7 @@ void* source_based_operations_kernel(void *input_ptr)
 
         /*********************************************Picture-based operations**********************************************************/
         // Dark density derivation (histograms not available when no SCD)
-        derive_high_dark_area_density_flag(
+        eb_vp9_derive_high_dark_area_density_flag(
             sequence_control_set_ptr,
             picture_control_set_ptr);
 
@@ -1019,12 +1019,12 @@ void* source_based_operations_kernel(void *input_ptr)
             picture_control_set_ptr);
 
         // Activity statistics derivation
-        derive_picture_activity_statistics(
+        eb_vp9_derive_picture_activity_statistics(
             sequence_control_set_ptr,
             picture_control_set_ptr);
 
         // Derive blockinessPresentFlag
-        derive_blockiness_present_flag(
+        eb_vp9_derive_blockiness_present_flag(
             sequence_control_set_ptr,
             picture_control_set_ptr);
 
@@ -1044,13 +1044,13 @@ void* source_based_operations_kernel(void *input_ptr)
 
         // Derive Min/Max ME distortion
         if (picture_control_set_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
-            derive_min_max_me_distortion(
+            eb_vp9_derive_min_max_me_distortion(
                 sequence_control_set_ptr,
                 picture_control_set_ptr);
         }
 
         // Get Empty Results Object
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             context_ptr->picture_demux_results_output_fifo_ptr,
             &output_results_wrapper_ptr);
 
@@ -1059,10 +1059,10 @@ void* source_based_operations_kernel(void *input_ptr)
         output_results_ptr->picture_type = EB_PIC_INPUT;
 
         // Release the Input Results
-        eb_release_object(input_results_wrapper_ptr);
+        eb_vp9_release_object(input_results_wrapper_ptr);
 
         // Post the Full Results Object
-        eb_post_full_object(output_results_wrapper_ptr);
+        eb_vp9_post_full_object(output_results_wrapper_ptr);
 
     }
     return EB_NULL;

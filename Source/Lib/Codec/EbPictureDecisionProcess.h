@@ -44,11 +44,11 @@ typedef struct PictureDecisionContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType picture_decision_context_ctor(
+extern EbErrorType eb_vp9_picture_decision_context_ctor(
     PictureDecisionContext **context_dbl_ptr,
     EbFifo                  *picture_analysis_results_input_fifo_ptr,
     EbFifo                  *picture_decision_results_output_fifo_ptr);
 
-extern void* picture_decision_kernel(void *input_ptr);
+extern void* eb_vp9_picture_decision_kernel(void *input_ptr);
 
 #endif // EbPictureDecision_h

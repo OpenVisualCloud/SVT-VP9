@@ -441,7 +441,7 @@ typedef struct PictureControlSetInitData
     uint16_t    top_padding;
     uint16_t    bot_padding;
     EbBitDepth  bit_depth;
-    uint32_t    max_depth;
+    uint32_t    eb_vp9_max_depth;
     EB_BOOL     is16bit;
     uint16_t    enc_dec_segment_col;
     uint16_t    enc_dec_segment_row;
@@ -457,11 +457,11 @@ typedef struct PictureControlSetInitData
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType picture_control_set_ctor(
+extern EbErrorType eb_vp9_picture_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 
-extern EbErrorType picture_parent_control_set_ctor(
+extern EbErrorType eb_vp9_picture_parent_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

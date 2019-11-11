@@ -19,7 +19,7 @@
 extern "C" {
 #endif
 
-extern void generate_padding(
+extern void eb_vp9_generate_padding(
     EbByte   src_pic,
     uint32_t src_stride,
     uint32_t original_src_width,
@@ -27,7 +27,7 @@ extern void generate_padding(
     uint32_t padding_width,
     uint32_t padding_height);
 
-extern void generate_padding_16bit(
+extern void eb_vp9_generate_padding_16bit(
     EbByte   src_pic,
     uint32_t src_stride,
     uint32_t original_src_width,
@@ -35,7 +35,7 @@ extern void generate_padding_16bit(
     uint32_t padding_width,
     uint32_t padding_height);
 
-extern void pad_input_picture(
+extern void eb_vp9_pad_input_picture(
     EbByte   src_pic,
     uint32_t src_stride,
     uint32_t original_src_width,

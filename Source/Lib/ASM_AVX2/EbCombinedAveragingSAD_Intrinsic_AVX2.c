@@ -7,7 +7,7 @@
 #include "EbMemory_AVX2.h"
 #include "immintrin.h"
 
-uint32_t combined_averaging8x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging8x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -53,7 +53,7 @@ static INLINE __m256i CombinedAveragingSad16x2_AVX2(const uint8_t *const src,
     return _mm256_add_epi32(sum, sad);
 }
 
-uint32_t combined_averaging16x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging16x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -94,7 +94,7 @@ static INLINE __m256i CombinedAveragingSad24_AVX2(const uint8_t *const src,
     return _mm256_add_epi32(sum, sad);
 }
 
-uint32_t combined_averaging24x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging24x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -137,7 +137,7 @@ static INLINE __m256i CombinedAveragingSad32_AVX2(const uint8_t *const src,
     return _mm256_add_epi32(sum, sad);
 }
 
-uint32_t combined_averaging32x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging32x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -169,7 +169,7 @@ uint32_t combined_averaging32x_msad_avx2_intrin(
     return _mm_cvtsi128_si32(sad);
 }
 
-uint32_t combined_averaging48x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging48x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -204,7 +204,7 @@ uint32_t combined_averaging48x_msad_avx2_intrin(
     return _mm_cvtsi128_si32(sad);
 }
 
-uint32_t combined_averaging64x_msad_avx2_intrin(
+uint32_t eb_vp9_combined_averaging64x_msad_avx2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -236,7 +236,7 @@ uint32_t combined_averaging64x_msad_avx2_intrin(
     return _mm_cvtsi128_si32(sad);
 }
 
-uint64_t compute_mean8x8_avx2_intrin(
+uint64_t eb_vp9_compute_mean8x8_avx2_intrin(
     uint8_t *  input_samples,      // input parameter, input samples Ptr
     uint32_t   input_stride,       // input parameter, input stride
     uint32_t   input_area_width,    // input parameter, input area width
@@ -273,7 +273,7 @@ uint64_t compute_mean8x8_avx2_intrin(
 }
 
 /********************************************************************************************************************************/
-    void  compute_interm_var_four8x8_avx2_intrin(
+    void  eb_vp9_compute_interm_var_four8x8_avx2_intrin(
         uint8_t *  input_samples,
         uint16_t   input_stride,
         uint64_t * mean_of8x8_blocks,      // mean of four  8x8

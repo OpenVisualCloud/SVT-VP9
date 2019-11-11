@@ -8,10 +8,10 @@
 #include "EbDefinitions.h"
 
 /*******************************************
-* combined_averaging_sad
+* eb_vp9_combined_averaging_sad
 *
 *******************************************/
-uint32_t combined_averaging_sad(
+uint32_t eb_vp9_combined_averaging_sad(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -69,7 +69,7 @@ uint32_t compute8x4_sad_kernel(
     return sad_block8x4;
 }
 
-void sad_loop_kernel_sparse(
+void eb_vp9_sad_loop_kernel_sparse(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -135,7 +135,7 @@ Note: moved from picture operators.
 keep this function here for profiling
 issues.
 *******************************************/
-uint32_t fast_loop_nx_m_sad_kernel(
+uint32_t eb_vp9_fast_loop_nx_m_sad_kernel(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -159,7 +159,7 @@ uint32_t fast_loop_nx_m_sad_kernel(
     return sad;
 }
 
-void sad_loop_kernel(
+void eb_vp9_sad_loop_kernel(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -235,9 +235,9 @@ static uint32_t Subsad8x8(
 }
 
 /*******************************************
-* get_eight_horizontal_search_point_results_8x8_16x16_pu
+* eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu
 *******************************************/
-void get_eight_horizontal_search_point_results_8x8_16x16_pu(
+void eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(
     uint8_t   *src,
     uint32_t   src_stride,
     uint8_t   *ref,
@@ -345,7 +345,7 @@ Calcualte SAD for 32x32,64x64 from 16x16
 and check if there is improvement, if yes keep
 the best SAD+MV
 *******************************************/
-void get_eight_horizontal_search_point_results_32x32_64x64(
+void eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64(
     uint16_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
     uint32_t  *p_best_sad64x64,

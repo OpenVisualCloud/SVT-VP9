@@ -26,13 +26,13 @@ static const EbComputeMeanFunc compute_mean_func[2][ASM_TYPE_TOTAL] = {
         // C_DEFAULT
         compute_mean,
         // AVX2
-        compute_mean8x8_avx2_intrin
+        eb_vp9_compute_mean8x8_avx2_intrin
     },
     {
         // C_DEFAULT
         compute_mean_of_squared_values,
         // AVX2
-        compute_mean_of_squared_values8x8_sse2_intrin
+        eb_vp9_compute_mean_of_squared_values8x8_sse2_intrin
     }
 };
 

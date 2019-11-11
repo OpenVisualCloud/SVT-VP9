@@ -375,7 +375,7 @@ static void write_mb_modes_kf(const VP9_COMMON *cm, const MACROBLOCKD *xd,
   write_intra_mode(w, mi->uv_mode, vp9_kf_uv_mode_prob[mi->mode]);
 }
 
-void write_modes_b(
+void eb_vp9_write_modes_b(
     EntropyCodingContext *context_ptr,
     VP9_COMP *cpi, MACROBLOCKD *const xd, const TileInfo *const tile,
     VpxWriter *w, TOKENEXTRA **tok, const TOKENEXTRA *const tok_end,
@@ -393,7 +393,7 @@ void write_modes_b(
   const MbModeInfoExt *const mbmi_ext =
       cpi->td.mb.mbmi_ext_base + (mi_row * cm->mi_cols + mi_col);
 #endif
-#if 0 // now done prior to write_modes_b() call
+#if 0 // now done prior to eb_vp9_write_modes_b() call
   ModeInfo *m;
   xd->mi = cm->mi_grid_visible + (mi_row * cm->mi_stride + mi_col);
 
@@ -461,26 +461,26 @@ static void write_modes_sb(
   write_partition(cm, xd, bs, mi_row, mi_col, partition, bsize, w);
   subsize = get_subsize(bsize, partition);
   if (subsize < BLOCK_8X8) {
-    write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
+    eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
                   max_mv_magnitude, interp_filter_selected);
   } else {
     switch (partition) {
       case PARTITION_NONE:
-        write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
+        eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
                       max_mv_magnitude, interp_filter_selected);
         break;
       case PARTITION_HORZ:
-        write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
+        eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
                       max_mv_magnitude, interp_filter_selected);
         if (mi_row + bs < cm->mi_rows)
-          write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row + bs, mi_col,
+          eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row + bs, mi_col,
                         max_mv_magnitude, interp_filter_selected);
         break;
       case PARTITION_VERT:
-        write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
+        eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col,
                       max_mv_magnitude, interp_filter_selected);
         if (mi_col + bs < cm->mi_cols)
-          write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col + bs,
+          eb_vp9_write_modes_b(cpi, xd, tile, w, tok, tok_end, mi_row, mi_col + bs,
                         max_mv_magnitude, interp_filter_selected);
         break;
       default:

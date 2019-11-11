@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void avc_style_copy_sse2(
+void eb_vp9_avc_style_copy_sse2(
     EbByte    ref_pic,
     uint32_t  src_stride,
     EbByte    dst,

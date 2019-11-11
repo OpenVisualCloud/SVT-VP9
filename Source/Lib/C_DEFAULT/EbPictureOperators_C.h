@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-void picture_average_kernel(
+void eb_vp9_picture_average_kernel(
     EbByte    src0,
     uint32_t  src0_stride,
     EbByte    src1,
@@ -21,13 +21,13 @@ void picture_average_kernel(
     uint32_t  area_width,
     uint32_t  area_height);
 
-void picture_average_kernel1_line_c(
+void eb_vp9_picture_average_kernel1_line_c(
     EbByte    src0,
     EbByte    src1,
     EbByte    dst,
     uint32_t  area_width);
 
-void picture_copy_kernel(
+void eb_vp9_picture_copy_kernel(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -36,7 +36,7 @@ void picture_copy_kernel(
     uint32_t  area_height,
     uint32_t  bytes_per_sample);
 
-void picture_addition_kernel(
+void eb_vp9_picture_addition_kernel(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -46,7 +46,7 @@ void picture_addition_kernel(
     uint32_t  width,
     uint32_t  height);
 
-void picture_addition_kernel16bit(
+void eb_vp9_picture_addition_kernel16bit(
     uint16_t  *pred_ptr,
     uint32_t   pred_stride,
     int16_t   *residual_ptr,
@@ -72,7 +72,7 @@ void copy_kernel16_bit(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel_sub_sampled(
+void eb_vp9_residual_kernel_sub_sampled(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -83,7 +83,7 @@ void residual_kernel_sub_sampled(
     uint32_t   area_height,
     uint8_t    last_line);
 
-void residual_kernel(
+void eb_vp9_residual_kernel(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -93,7 +93,7 @@ void residual_kernel(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel16bit(
+void eb_vp9_residual_kernel16bit(
     uint16_t  *input,
     uint32_t   input_stride,
     uint16_t  *pred,
@@ -137,7 +137,7 @@ void full_distortion_kernel_intra32bit(
     uint32_t   area_width,
     uint32_t   area_height);
 
-uint64_t spatial_full_distortion_kernel(
+uint64_t eb_vp9_spatial_full_distortion_kernel(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *recon,

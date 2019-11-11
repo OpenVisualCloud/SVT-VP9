@@ -8,7 +8,7 @@
 section .text
 ; ----------------------------------------------------------------------------------------
 
-cglobal picture_copy_kernel_sse2
+cglobal eb_vp9_picture_copy_kernel_sse2
 
 ; Requirement: areaWidthInBytes = 4, 8, 12, 16, 24, 32, 48, 64 or 128
 ; Requirement: area_height % 2 = 0
@@ -209,7 +209,7 @@ Label_PictureCopyKernel_SSE2_WIDTH16:
     ret
 ; ----------------------------------------------------------------------------------------
 
-cglobal zero_out_coeff4x4_sse
+cglobal eb_vp9_zero_out_coeff4x4_sse
 
     lea             r0,             [r0+2*r2]
     lea             r3,             [r1+2*r1]
@@ -228,7 +228,7 @@ cglobal zero_out_coeff4x4_sse
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal zero_out_coeff8x8_sse2
+cglobal eb_vp9_zero_out_coeff8x8_sse2
 
 ; TODO: use "movdqa" if coeff_buffer is guaranteed to be 16-byte aligned.
 
@@ -250,7 +250,7 @@ cglobal zero_out_coeff8x8_sse2
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal zero_out_coeff16x16_sse2
+cglobal eb_vp9_zero_out_coeff16x16_sse2
 
 ; TODO: use "movdqa" if coeff_buffer is guaranteed to be 16-byte aligned.
 
@@ -299,7 +299,7 @@ cglobal zero_out_coeff16x16_sse2
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal zero_out_coeff32x32_sse2
+cglobal eb_vp9_zero_out_coeff32x32_sse2
 
 ; TODO: use "movdqa" if coeff_buffer is guaranteed to be 16-byte aligned.
 
@@ -350,7 +350,7 @@ Label_ZeroOutCoeff32x32_SSE2_01:
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal picture_average_kernel_sse2
+cglobal eb_vp9_picture_average_kernel_sse2
 
 ; Requirement: pu_width         = 4, 8, 12, 16, 24, 32, 48 or 64
 ; Requirement: pu_height   %  2 = 0
@@ -620,6 +620,6 @@ Label_PictureAverageKernel_SSE2_WIDTH16:
     ret
 
 ; ----------------------------------------------------------------------------------------
-    cglobal Log2f_SSE2
+    cglobal eb_vp9_Log2f_SSE2
     bsr rax, r0
     ret

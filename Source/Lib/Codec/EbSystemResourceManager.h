@@ -134,7 +134,7 @@ typedef struct EbSystemResource
 } EbSystemResource;
 
 /*********************************************************************
- * eb_object_release_enable
+ * eb_vp9_object_release_enable
  *   Enables the release_enable member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to control whether
  *   EbObjectWrappers are allowed to be released or not.
@@ -147,11 +147,11 @@ typedef struct EbSystemResource
  *   wrapper_ptr
  *      pointer to the EbObjectWrapper to be modified.
  *********************************************************************/
-extern EbErrorType eb_object_release_enable(
+extern EbErrorType eb_vp9_object_release_enable(
     EbObjectWrapper *wrapper_ptr);
 
 /*********************************************************************
- * eb_object_release_disable
+ * eb_vp9_object_release_disable
  *   Disables the release_enable member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to control whether
  *   EbObjectWrappers are allowed to be released or not.
@@ -164,11 +164,11 @@ extern EbErrorType eb_object_release_enable(
  *   wrapper_ptr
  *      pointer to the EbObjectWrapper to be modified.
  *********************************************************************/
-extern EbErrorType eb_object_release_disable(
+extern EbErrorType eb_vp9_object_release_disable(
     EbObjectWrapper *wrapper_ptr);
 
 /*********************************************************************
- * eb_object_inc_live_count
+ * eb_vp9_object_inc_live_count
  *   Increments the live_count member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to count the number of active
  *   pointers of a EbObjectWrapper in pipeline at any point in time.
@@ -184,12 +184,12 @@ extern EbErrorType eb_object_release_disable(
  *   increment_number
  *      The number to increment the live count by.
  *********************************************************************/
-extern EbErrorType eb_object_inc_live_count(
+extern EbErrorType eb_vp9_object_inc_live_count(
     EbObjectWrapper *wrapper_ptr,
     uint32_t         increment_number);
 
 /*********************************************************************
- * eb_system_resource_ctor
+ * eb_vp9_system_resource_ctor
  *   Constructor for EbSystemResource.  Fully constructs all members
  *   of EbSystemResource including the object with the passed
  *   object_ctor function.
@@ -215,7 +215,7 @@ extern EbErrorType eb_object_inc_live_count(
  *     the object. object_init_data_ptr is passed to object_ctor when
  *     object_ctor is called.
  *********************************************************************/
-extern EbErrorType eb_system_resource_ctor(
+extern EbErrorType eb_vp9_system_resource_ctor(
     EbSystemResource **resource_dbl_ptr,
     uint32_t           object_total_count,
     uint32_t           producer_process_total_count,
@@ -260,7 +260,7 @@ extern void eb_system_resource_dtor(
  *      Double pointer used to pass the pointer to the empty
  *      EbObjectWrapper pointer.
  *********************************************************************/
-extern EbErrorType eb_get_empty_object(
+extern EbErrorType eb_vp9_get_empty_object(
     EbFifo           *empty_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr);
 
@@ -278,7 +278,7 @@ extern EbErrorType eb_get_empty_object(
  *   wrapper_ptr
  *      pointer to EbObjectWrapper to be posted.
  *********************************************************************/
-extern EbErrorType eb_post_full_object(
+extern EbErrorType eb_vp9_post_full_object(
     EbObjectWrapper *object_ptr);
 
 /*********************************************************************
@@ -296,11 +296,11 @@ extern EbErrorType eb_post_full_object(
  *      Double pointer used to pass the pointer to the full
  *      EbObjectWrapper pointer.
  *********************************************************************/
-extern EbErrorType eb_get_full_object(
+extern EbErrorType eb_vp9_get_full_object(
     EbFifo           *full_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr);
 
-extern EbErrorType eb_get_full_object_non_blocking(
+extern EbErrorType eb_vp9_get_full_object_non_blocking(
     EbFifo           *full_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr);
 
@@ -314,7 +314,7 @@ extern EbErrorType eb_get_full_object_non_blocking(
  *   object_ptr
  *      pointer to EbObjectWrapper to be released.
  *********************************************************************/
-extern EbErrorType eb_release_object(
+extern EbErrorType eb_vp9_release_object(
     EbObjectWrapper *object_ptr);
 #ifdef __cplusplus
 }

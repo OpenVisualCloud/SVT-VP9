@@ -25,7 +25,7 @@ typedef struct PictureManagerContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType picture_manager_context_ctor(
+extern EbErrorType eb_vp9_picture_manager_context_ctor(
     PictureManagerContext **context_dbl_ptr,
     EbFifo                 *picture_input_fifo_ptr,
     EbFifo                 *picture_manager_output_fifo_ptr,

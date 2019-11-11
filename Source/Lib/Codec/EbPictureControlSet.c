@@ -12,7 +12,7 @@
 
 #include "vp9_encoder.h"
 
-EbErrorType picture_control_set_ctor(
+EbErrorType eb_vp9_picture_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {
@@ -76,14 +76,14 @@ EbErrorType picture_control_set_ctor(
 
     // Reconstructed Picture Buffer
     if(init_data_ptr->is16bit == EB_TRUE){
-        return_error = eb_recon_picture_buffer_desc_ctor(
+        return_error = eb_vp9_recon_picture_buffer_desc_ctor(
         (EbPtr*) &(object_ptr->recon_picture_16bit_ptr),
         (EbPtr) &coeff_buffer_desc_init_data);
     }
     else
     {
 
-        return_error = eb_recon_picture_buffer_desc_ctor(
+        return_error = eb_vp9_recon_picture_buffer_desc_ctor(
         (EbPtr*) &(object_ptr->recon_picture_ptr),
         (EbPtr) &input_picture_buffer_desc_init_data);
     }
@@ -92,7 +92,7 @@ EbErrorType picture_control_set_ctor(
         return EB_ErrorInsufficientResources;
     }
     // Entropy Coder
-    return_error = entropy_coder_ctor(
+    return_error = eb_vp9_entropy_coder_ctor(
         &object_ptr->entropy_coder_ptr,
         SEGMENT_ENTROPY_BUFFER_SIZE);
 
@@ -101,7 +101,7 @@ EbErrorType picture_control_set_ctor(
     }
 
     // Packetization process Bitstream
-    return_error = bitstream_ctor(
+    return_error = eb_vp9_bitstream_ctor(
         &object_ptr->bitstream_ptr,
         PACKETIZATION_PROCESS_BUFFER_SIZE);
 
@@ -114,7 +114,7 @@ EbErrorType picture_control_set_ctor(
     object_ptr->temporal_layer_index   = 0;
 
     // LCU Array
-    object_ptr->sb_max_depth = (uint8_t) init_data_ptr->max_depth;
+    object_ptr->sb_max_depth = (uint8_t) init_data_ptr->eb_vp9_max_depth;
     object_ptr->sb_total_count = picturesb_width * picturesb_height;
     EB_MALLOC(SbUnit**, object_ptr->sb_ptr_array, sizeof(SbUnit*) * object_ptr->sb_total_count, EB_N_PTR);
 
@@ -145,7 +145,7 @@ EbErrorType picture_control_set_ctor(
     uint8_t depth;
     for (depth = 0; depth < NEIGHBOR_ARRAY_TOTAL_COUNT; depth++) {
 
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->md_luma_recon_neighbor_array[depth],
             MAX_PICTURE_WIDTH_SIZE,
             MAX_PICTURE_HEIGHT_SIZE,
@@ -157,7 +157,7 @@ EbErrorType picture_control_set_ctor(
             return EB_ErrorInsufficientResources;
         }
 
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->md_cb_recon_neighbor_array[depth],
             MAX_PICTURE_WIDTH_SIZE >> 1,
             MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -170,7 +170,7 @@ EbErrorType picture_control_set_ctor(
             return EB_ErrorInsufficientResources;
         }
 
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->md_cr_recon_neighbor_array[depth],
             MAX_PICTURE_WIDTH_SIZE >> 1,
             MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -183,7 +183,7 @@ EbErrorType picture_control_set_ctor(
         }
     }
 
-    return_error = neighbor_array_unit_ctor(
+    return_error = eb_vp9_neighbor_array_unit_ctor(
         &object_ptr->ep_luma_recon_neighbor_array,
         MAX_PICTURE_WIDTH_SIZE,
         MAX_PICTURE_HEIGHT_SIZE,
@@ -195,7 +195,7 @@ EbErrorType picture_control_set_ctor(
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = neighbor_array_unit_ctor(
+    return_error = eb_vp9_neighbor_array_unit_ctor(
         &object_ptr->ep_cb_recon_neighbor_array,
         MAX_PICTURE_WIDTH_SIZE >> 1,
         MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -207,7 +207,7 @@ EbErrorType picture_control_set_ctor(
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = neighbor_array_unit_ctor(
+    return_error = eb_vp9_neighbor_array_unit_ctor(
         &object_ptr->ep_cr_recon_neighbor_array,
         MAX_PICTURE_WIDTH_SIZE >> 1,
         MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -221,7 +221,7 @@ EbErrorType picture_control_set_ctor(
     }
 
     if(is16bit){
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->ep_luma_recon_neighbor_array_16bit,
             MAX_PICTURE_WIDTH_SIZE,
             MAX_PICTURE_HEIGHT_SIZE,
@@ -233,7 +233,7 @@ EbErrorType picture_control_set_ctor(
         if (return_error == EB_ErrorInsufficientResources){
             return EB_ErrorInsufficientResources;
         }
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->ep_cb_recon_neighbor_array_16bit,
             MAX_PICTURE_WIDTH_SIZE >> 1,
             MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -245,7 +245,7 @@ EbErrorType picture_control_set_ctor(
         if (return_error == EB_ErrorInsufficientResources){
             return EB_ErrorInsufficientResources;
         }
-        return_error = neighbor_array_unit_ctor(
+        return_error = eb_vp9_neighbor_array_unit_ctor(
             &object_ptr->ep_cr_recon_neighbor_array_16bit,
             MAX_PICTURE_WIDTH_SIZE >> 1,
             MAX_PICTURE_HEIGHT_SIZE >> 1,
@@ -280,7 +280,7 @@ EbErrorType picture_control_set_ctor(
 #endif
 
     // Segments
-    return_error = enc_dec_segments_ctor(
+    return_error = eb_vp9_enc_dec_segments_ctor(
         &object_ptr->enc_dec_segment_ctrl,
         init_data_ptr->enc_dec_segment_col,
         init_data_ptr->enc_dec_segment_row);
@@ -293,7 +293,7 @@ EbErrorType picture_control_set_ctor(
     return EB_ErrorNone;
 }
 
-EbErrorType picture_parent_control_set_ctor(
+EbErrorType eb_vp9_picture_parent_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

@@ -11,7 +11,7 @@
 /**********************************
  * Constructor
  **********************************/
-EbErrorType output_bitstream_unit_ctor(
+EbErrorType eb_vp9_output_bitstream_unit_ctor(
     OutputBitstreamUnit *bitstream_ptr,
     uint32_t             buffer_size )
 {
@@ -44,7 +44,7 @@ EbErrorType output_bitstream_unit_ctor(
 /**********************************
  * Reset Bitstream
  **********************************/
-EbErrorType output_bitstream_reset(
+EbErrorType eb_vp9_output_bitstream_reset(
     OutputBitstreamUnit *bitstream_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -87,7 +87,7 @@ EbErrorType output_bitstream_write (
 
         // add the last bits
         bitstream_ptr->byte_holder |= bits >> shift_count;
-        *bitstream_ptr->buffer++   = (uint8_t)endian_swap( bitstream_ptr->byte_holder );
+        *bitstream_ptr->buffer++   = (uint8_t)eb_vp9_endian_swap( bitstream_ptr->byte_holder );
 
         // note: there is a problem with left shift with 32
         bitstream_ptr->valid_bits_count = 32 - shift_count;
@@ -115,7 +115,7 @@ EbErrorType output_bitstream_write_byte(
     }
     else
     {
-        *bitstream_ptr->buffer++ = (uint8_t)endian_swap( bitstream_ptr->byte_holder | bits );
+        *bitstream_ptr->buffer++ = (uint8_t)eb_vp9_endian_swap( bitstream_ptr->byte_holder | bits );
 
         bitstream_ptr->valid_bits_count = 32;
         bitstream_ptr->byte_holder  = 0;
@@ -144,7 +144,7 @@ EbErrorType output_bitstream_write_align_zero(OutputBitstreamUnit *bitstream_ptr
  * Output RBSP to payload
  *   Intended to be used in CABAC
  **********************************/
-EbErrorType output_bitstream_rbsp_to_payload(
+EbErrorType eb_vp9_output_bitstream_rbsp_to_payload(
     OutputBitstreamUnit *bitstream_ptr,
     EbByte               output_buffer,
     uint32_t            *output_buffer_index,

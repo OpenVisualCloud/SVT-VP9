@@ -62,7 +62,7 @@ void write_partition(const VP9_COMMON *const cm,
     int mi_col, PARTITION_TYPE p, BLOCK_SIZE bsize,
     VpxWriter *w);
 
-void write_modes_b(
+void eb_vp9_write_modes_b(
     EntropyCodingContext *context_ptr,
     VP9_COMP *cpi, MACROBLOCKD *const xd, const TileInfo *const tile,
     VpxWriter *w, TOKENEXTRA **tok, const TOKENEXTRA *const tok_end,

@@ -129,7 +129,7 @@ EB_BOOL check_mv_for_non_uniform_motion(
 
 }
 
-void DetectGlobalMotion(
+void eb_vp9_DetectGlobalMotion(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -265,7 +265,7 @@ void DetectGlobalMotion(
 /************************************************
 * Initial Rate Control Context Constructor
 ************************************************/
-EbErrorType initial_rate_control_context_ctor(
+EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(
     InitialRateControlContext **context_dbl_ptr,
     EbFifo                     *motion_estimation_results_input_fifo_ptr,
     EbFifo                     *initialrate_control_results_output_fifo_ptr)
@@ -284,7 +284,7 @@ EbErrorType initial_rate_control_context_ctor(
 ** Check if reference pictures are needed
 ** release them when appropriate
 ************************************************/
-void ReleasePaReferenceObjects(
+void eb_vp9_ReleasePaReferenceObjects(
     PictureParentControlSet *picture_control_set_ptr)
 {
     // PA Reference Pictures
@@ -300,16 +300,16 @@ void ReleasePaReferenceObjects(
                 // Release PA Reference Pictures
                 if (picture_control_set_ptr->ref_pa_pic_ptr_array[list_index] != EB_NULL) {
 
-                    eb_release_object(((EbPaReferenceObject  *)picture_control_set_ptr->ref_pa_pic_ptr_array[list_index]->object_ptr)->p_pcs_ptr->p_pcs_wrapper_ptr);
-                    eb_release_object(picture_control_set_ptr->ref_pa_pic_ptr_array[list_index]);
+                    eb_vp9_release_object(((EbPaReferenceObject  *)picture_control_set_ptr->ref_pa_pic_ptr_array[list_index]->object_ptr)->p_pcs_ptr->p_pcs_wrapper_ptr);
+                    eb_vp9_release_object(picture_control_set_ptr->ref_pa_pic_ptr_array[list_index]);
                 }
         }
     }
 
     if (picture_control_set_ptr->pareference_picture_wrapper_ptr != EB_NULL) {
 
-        eb_release_object(picture_control_set_ptr->p_pcs_wrapper_ptr);
-        eb_release_object(picture_control_set_ptr->pareference_picture_wrapper_ptr);
+        eb_vp9_release_object(picture_control_set_ptr->p_pcs_wrapper_ptr);
+        eb_vp9_release_object(picture_control_set_ptr->pareference_picture_wrapper_ptr);
     }
 
     return;
@@ -330,7 +330,7 @@ void me_based_global_motion_detection(
     picture_control_set_ptr->is_tilt                = EB_FALSE;
 
     if (picture_control_set_ptr->slice_type != I_SLICE) {
-        DetectGlobalMotion(
+        eb_vp9_DetectGlobalMotion(
             sequence_control_set_ptr,
             picture_control_set_ptr);
     }
@@ -451,7 +451,7 @@ void update_global_motion_detection_over_time(
 ** LAD Window: min (2xmgpos+1 or sliding window size)
 ************************************************/
 
-void UpdateBeaInfoOverTime(
+void eb_vp9_UpdateBeaInfoOverTime(
     EncodeContext           *encode_context_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -681,7 +681,7 @@ void get_histogram_queue_data(
     int32_t                      histogram_queue_entry_index;
 
     // Determine offset from the Head Ptr for HLRC histogram queue
-    eb_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
+    eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     histogram_queue_entry_index = (int32_t)(picture_control_set_ptr->picture_number - encode_context_ptr->hl_rate_control_historgram_queue[encode_context_ptr->hl_rate_control_historgram_queue_head_index]->picture_number);
     histogram_queue_entry_index += encode_context_ptr->hl_rate_control_historgram_queue_head_index;
     histogram_queue_entry_index = (histogram_queue_entry_index > HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH - 1) ?
@@ -710,7 +710,7 @@ void get_histogram_queue_data(
         picture_control_set_ptr->ois_distortion_histogram,
         sizeof(uint16_t) * NUMBER_OF_INTRA_SAD_INTERVALS);
 
-    eb_release_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
+    eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     //SVT_LOG("Test1 POC: %d\t POC: %d\t life_count: %d\n", histogram_queue_entry_ptr->picture_number, picture_control_set_ptr->picture_number,  histogram_queue_entry_ptr->life_count);
 
     return;
@@ -727,7 +727,7 @@ void update_histogram_queue_entry(
     HlRateControlHistogramEntry *histogram_queue_entry_ptr;
     int32_t                      histogram_queue_entry_index;
 
-    eb_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
+    eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 
     histogram_queue_entry_index = (int32_t)(picture_control_set_ptr->picture_number - encode_context_ptr->hl_rate_control_historgram_queue[encode_context_ptr->hl_rate_control_historgram_queue_head_index]->picture_number);
     histogram_queue_entry_index += encode_context_ptr->hl_rate_control_historgram_queue_head_index;
@@ -745,7 +745,7 @@ void update_histogram_queue_entry(
         histogram_queue_entry_ptr->life_count += picture_control_set_ptr->historgram_life_count;
     }
     histogram_queue_entry_ptr->frames_in_sw = frames_in_sw;
-    eb_release_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
+    eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 
     return;
 
@@ -769,7 +769,7 @@ EB_AURA_STATUS aura_detection64x64(
 * P.S. Temporal noise reduction is now performed in Initial Rate Control Process.
 * In future we might decide to move it to Motion Analysis Process.
 ************************************************/
-void* initial_rate_control_kernel(void *input_ptr)
+void* eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr)
 {
     InitialRateControlContext      *context_ptr = (InitialRateControlContext*)input_ptr;
     PictureParentControlSet        *picture_control_set_ptr;
@@ -802,7 +802,7 @@ void* initial_rate_control_kernel(void *input_ptr)
     for (;;) {
 
         // Get Input Full Object
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->motion_estimation_results_input_fifo_ptr,
             &input_results_wrapper_ptr);
 
@@ -826,7 +826,7 @@ void* initial_rate_control_kernel(void *input_ptr)
                 picture_control_set_ptr);
 
             // Release Pa Ref pictures when not needed
-            ReleasePaReferenceObjects(
+            eb_vp9_ReleasePaReferenceObjects(
                 picture_control_set_ptr);
 
             //****************************************************
@@ -949,7 +949,7 @@ void* initial_rate_control_kernel(void *input_ptr)
                     }
                     else {
                         if (picture_control_set_ptr->slice_type != I_SLICE) {
-                            DetectGlobalMotion(
+                            eb_vp9_DetectGlobalMotion(
                                 sequence_control_set_ptr,
                                 picture_control_set_ptr);
                         }
@@ -958,7 +958,7 @@ void* initial_rate_control_kernel(void *input_ptr)
                     // BACKGROUND ENHANCEMENT PART II
                     if (!picture_control_set_ptr->end_of_sequence_flag && sequence_control_set_ptr->look_ahead_distance != 0) {
                         // Update BEA information based on Lookahead information
-                        UpdateBeaInfoOverTime(
+                        eb_vp9_UpdateBeaInfoOverTime(
                             encode_context_ptr,
                             picture_control_set_ptr);
 
@@ -992,23 +992,23 @@ void* initial_rate_control_kernel(void *input_ptr)
                     }
 
                     // Get Empty Reference Picture Object
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         sequence_control_set_ptr->encode_context_ptr->reference_picture_pool_fifo_ptr,
                         &reference_picture_wrapper_ptr);
                     ((PictureParentControlSet  *)(queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr))->reference_picture_wrapper_ptr = reference_picture_wrapper_ptr;
 
                     // Give the new Reference a nominal live_count of 1
-                    eb_object_inc_live_count(
+                    eb_vp9_object_inc_live_count(
                         ((PictureParentControlSet  *)(queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr))->reference_picture_wrapper_ptr,
                         1);
                     //OPTION 1:  get the buffer in resource coordination
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         sequence_control_set_ptr->encode_context_ptr->stream_output_fifo_ptr,
                         &output_stream_wrapper_ptr);
                     picture_control_set_ptr->output_stream_wrapper_ptr = output_stream_wrapper_ptr;
 
                     // Get Empty Results Object
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         context_ptr->initialrate_control_results_output_fifo_ptr,
                         &output_results_wrapper_ptr);
 
@@ -1016,7 +1016,7 @@ void* initial_rate_control_kernel(void *input_ptr)
                     output_results_ptr->picture_control_set_wrapper_ptr = queue_entry_ptr->parent_pcs_wrapper_ptr;
                     /////////////////////////////
                     // Post the Full Results Object
-                    eb_post_full_object(output_results_wrapper_ptr);
+                    eb_vp9_post_full_object(output_results_wrapper_ptr);
 
                     // Reset the Reorder Queue Entry
                     queue_entry_ptr->picture_number += INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH;
@@ -1032,7 +1032,7 @@ void* initial_rate_control_kernel(void *input_ptr)
         }
 
         // Release the Input Results
-        eb_release_object(input_results_wrapper_ptr);
+        eb_vp9_release_object(input_results_wrapper_ptr);
 
     }
     return EB_NULL;

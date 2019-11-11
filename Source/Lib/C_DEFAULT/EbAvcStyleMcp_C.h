@@ -23,7 +23,7 @@ void avc_style_copy_new(
     EbByte   temp_buf,
     uint32_t frac_pos);
 
-void avc_style_luma_interpolation_filter_horizontal(
+void eb_vp9_avc_style_luma_interpolation_filter_horizontal(
     EbByte   ref_pic,
     uint32_t src_stride,
     EbByte   dst,
@@ -33,7 +33,7 @@ void avc_style_luma_interpolation_filter_horizontal(
     EbByte   temp_buf,
     uint32_t frac_pos);
 
-void avc_style_luma_interpolation_filter_vertical(
+void eb_vp9_avc_style_luma_interpolation_filter_vertical(
     EbByte   ref_pic,
     uint32_t src_stride,
     EbByte   dst,

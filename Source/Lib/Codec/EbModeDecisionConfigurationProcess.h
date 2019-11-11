@@ -129,13 +129,13 @@ typedef struct ModeDecisionConfigurationContext
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType mode_decision_configuration_context_ctor(
+extern EbErrorType eb_vp9_mode_decision_configuration_context_ctor(
     ModeDecisionConfigurationContext **context_dbl_ptr,
     EbFifo                            *rate_control_input_fifo_ptr,
     EbFifo                            *mode_decision_configuration_output_fifo_ptr,
     uint16_t                           sb_total_count);
 
-extern void* mode_decision_configuration_kernel(void *input_ptr);
+extern void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }

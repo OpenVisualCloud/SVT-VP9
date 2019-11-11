@@ -17,7 +17,7 @@
 /*********************************
  * x86 implememtation of Picture Addition
  *********************************/
-void picture_addition(
+void eb_vp9_picture_addition(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -113,7 +113,7 @@ void picture_sub_sampled_residual(
     uint8_t   last_line)    //the last line has correct prediction data, so no duplication to be done.
 {
 
-    residual_kernel_sub_sampled_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    eb_vp9_residual_kernel_sub_sampled_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -141,7 +141,7 @@ void picture_residual(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    eb_vp9_residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -169,7 +169,7 @@ void picture_residual16bit(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array16_bit[(ASM_TYPES & PREAVX2_MASK) && 1](
+    eb_vp9_residual_kernel_func_ptr_array16_bit[(ASM_TYPES & PREAVX2_MASK) && 1](
         input,
         input_stride,
         pred,
@@ -214,7 +214,7 @@ EbErrorType picture_full_distortion(
     return return_error;
 }
 
-void extract_8bit_data(
+void eb_vp9_extract_8bit_data(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
@@ -232,7 +232,7 @@ void extract_8bit_data(
         width,
         height);
 }
-void unpack_l0l1_avg(
+void eb_vp9_unpack_l0l1_avg(
         uint16_t *ref16_l0,
         uint32_t  ref_l0_stride,
         uint16_t *ref16_l1,
@@ -243,7 +243,7 @@ void unpack_l0l1_avg(
         uint32_t  height)
  {
 
-     unpack_avg_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+     eb_vp9_unpack_avg_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
         ref16_l0,
         ref_l0_stride,
         ref16_l1,
@@ -254,7 +254,7 @@ void unpack_l0l1_avg(
         height);
 
  }
-void extract8_bitdata_safe_sub(
+void eb_vp9_extract8_bitdata_safe_sub(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
@@ -273,7 +273,7 @@ void extract8_bitdata_safe_sub(
         height
         );
 }
-void unpack_l0l1_avg_safe_sub(
+void eb_vp9_unpack_l0l1_avg_safe_sub(
         uint16_t *ref16_l0,
         uint32_t  ref_l0_stride,
         uint16_t *ref16_l1,
@@ -285,7 +285,7 @@ void unpack_l0l1_avg_safe_sub(
  {
      //fix C
 
-     unpack_avg_safe_sub_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+     eb_vp9_unpack_avg_safe_sub_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
         ref16_l0,
         ref_l0_stride,
         ref16_l1,
@@ -425,9 +425,9 @@ void memset16bit(
     }
 }
 /*******************************************
- * memcpy16bit
+ * eb_vp9_memcpy16bit
  *******************************************/
-void memcpy16bit(
+void eb_vp9_memcpy16bit(
     uint16_t *out_ptr,
     uint16_t *in_ptr,
     uint64_t  num_of_elements )

@@ -7,7 +7,7 @@
 
 #include "EbInitialRateControlResults.h"
 
-EbErrorType initial_rate_control_results_ctor(
+EbErrorType eb_vp9_initial_eb_vp9_rate_control_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

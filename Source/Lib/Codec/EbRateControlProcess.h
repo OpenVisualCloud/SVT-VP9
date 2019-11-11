@@ -239,22 +239,22 @@ typedef struct RateControlContext
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType rate_control_layer_context_ctor(
+extern EbErrorType eb_vp9_rate_control_layer_context_ctor(
     RateControlLayerContext **entry_dbl_ptr);
 
-extern EbErrorType rate_control_interval_param_context_ctor(
+extern EbErrorType eb_vp9_rate_control_interval_param_context_ctor(
     RateControlIntervalParamContext **entry_dbl_ptr);
 
-extern EbErrorType rate_control_coded_frames_stats_context_ctor(
+extern EbErrorType eb_vp9_rate_control_coded_frames_stats_context_ctor(
     CodedFramesStatsEntry **entry_dbl_ptr,
     uint64_t                picture_number);
 
-extern EbErrorType rate_control_context_ctor(
+extern EbErrorType eb_vp9_rate_control_context_ctor(
     RateControlContext **context_dbl_ptr,
     EbFifo              *rate_control_input_tasks_fifo_ptr,
     EbFifo              *rate_control_output_results_fifo_ptr,
     int32_t              intra_period);
 
-extern void* rate_control_kernel(void *input_ptr);
+extern void* eb_vp9_rate_control_kernel(void *input_ptr);
 
 #endif // EbRateControl_h

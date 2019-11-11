@@ -19,7 +19,7 @@ typedef struct PictureDecisionReorderEntry
 
 } PictureDecisionReorderEntry;
 
-extern EbErrorType picture_decision_reorder_entry_ctor(
+extern EbErrorType eb_vp9_picture_decision_reorder_entry_ctor(
     PictureDecisionReorderEntry **entry_dbl_ptr,
     uint32_t                      picture_number);
 

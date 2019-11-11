@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbPictureManagerQueue.h"
 
-EbErrorType input_queue_entry_ctor(
+EbErrorType eb_vp9_input_queue_entry_ctor(
     InputQueueEntry **entry_dbl_ptr)
 {
     InputQueueEntry *entry_ptr;
@@ -23,7 +23,7 @@ EbErrorType input_queue_entry_ctor(
     return EB_ErrorNone;
 }
 
-EbErrorType reference_queue_entry_ctor(
+EbErrorType eb_vp9_reference_queue_entry_ctor(
     ReferenceQueueEntry **entry_dbl_ptr)
 {
     ReferenceQueueEntry *entry_ptr;

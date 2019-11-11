@@ -13,7 +13,7 @@ Calcualte SAD for 16x16 and its 8x8 sublcoks
 and check if there is improvment, if yes keep
 the best SAD+MV
 *******************************************/
-void sad_calculation_8x8_16x16(
+void eb_vp9_sad_calculation_8x8_16x16(
     uint8_t   *src,
     uint32_t   src_stride,
     uint8_t   *ref,
@@ -69,7 +69,7 @@ Calcualte SAD for 32x32,64x64 from 16x16
 and check if there is improvment, if yes keep
 the best SAD+MV
 *******************************************/
-void sad_calculation_32x32_64x64(
+void eb_vp9_sad_calculation_32x32_64x64(
     uint32_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
     uint32_t  *p_best_sad64x64,
@@ -111,7 +111,7 @@ void sad_calculation_32x32_64x64(
     }
 }
 
-void initialize_buffer_32bits(
+void eb_vp9_initialize_buffer_32bits(
     uint32_t *pointer,
     uint32_t  count128,
     uint32_t  count32,

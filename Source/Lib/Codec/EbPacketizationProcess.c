@@ -33,7 +33,7 @@ struct vpx_write_bit_buffer *wb; // needs to be here
 #include "vp9_bitstream.h"
 #include "mem_ops.h"
 #define RC_PRECISION                16
-EbErrorType packetization_context_ctor(
+EbErrorType eb_vp9_packetization_context_ctor(
     PacketizationContext **context_dbl_ptr,
     EbFifo                *entropy_coding_input_fifo_ptr,
     EbFifo                *rate_control_tasks_output_fifo_ptr)
@@ -66,7 +66,7 @@ void ivf_write_frame_header(
 }
 
 #if  VP9_RC
-void update_rc_rate_tables(
+void eb_vp9_update_rc_rate_tables(
     PictureControlSet  *picture_control_set_ptr,
     SequenceControlSet *sequence_control_set_ptr){
 
@@ -112,7 +112,7 @@ void update_rc_rate_tables(
             }
         }
         {
-            eb_block_on_mutex(encode_context_ptr->rate_table_update_mutex);
+            eb_vp9_block_on_mutex(encode_context_ptr->rate_table_update_mutex);
 
             uint64_t ref_qindex_dequant = (uint64_t)picture_control_set_ptr->parent_pcs_ptr->cpi->y_dequant[picture_control_set_ptr->base_qindex][1];
             uint64_t sad_bits_ref_dequant = 0;
@@ -242,13 +242,13 @@ void update_rc_rate_tables(
             //    }
             //}
 
-            eb_release_mutex(encode_context_ptr->rate_table_update_mutex);
+            eb_vp9_release_mutex(encode_context_ptr->rate_table_update_mutex);
         }
     }
 }
 #endif
 
-void* packetization_kernel(void *input_ptr)
+void* eb_vp9_packetization_kernel(void *input_ptr)
 {
     // Context
     PacketizationContext      *context_ptr = (PacketizationContext*) input_ptr;
@@ -281,7 +281,7 @@ void* packetization_kernel(void *input_ptr)
     for(;;) {
 
         // Get EntropyCoding Results
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->entropy_coding_input_fifo_ptr,
             &entropy_coding_results_wrapper_ptr);
         entropy_coding_results_ptr = (EntropyCodingResults*) entropy_coding_results_wrapper_ptr->object_ptr;
@@ -315,7 +315,7 @@ void* packetization_kernel(void *input_ptr)
         output_stream_ptr->p_app_private = picture_control_set_ptr->parent_pcs_ptr->eb_input_ptr->p_app_private;
 
         // Get Empty Rate Control Input Tasks
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             context_ptr->rate_control_tasks_output_fifo_ptr,
             &rate_control_tasks_wrapper_ptr);
         rate_control_tasks_ptr                                 = (RateControlTasks*) rate_control_tasks_wrapper_ptr->object_ptr;
@@ -326,7 +326,7 @@ void* packetization_kernel(void *input_ptr)
         uint64_t size;
 
         size = 0;
-        reset_bitstream(
+        eb_vp9_reset_bitstream(
             picture_control_set_ptr->bitstream_ptr->output_bitstream_ptr);
 
         vp9_pack_bitstream(
@@ -370,7 +370,7 @@ void* packetization_kernel(void *input_ptr)
             for (int show_existing_frame_index = 0; show_existing_frame_index < 4; show_existing_frame_index++) {
 
                 size = 0;
-                reset_bitstream(
+                eb_vp9_reset_bitstream(
                     picture_control_set_ptr->bitstream_ptr->output_bitstream_ptr);
 
                 vp9_pack_bitstream(
@@ -417,7 +417,7 @@ void* packetization_kernel(void *input_ptr)
 
 #if  VP9_RC
         // update the rate tables used in RC based on the encoded bits of each sb
-        update_rc_rate_tables(
+        eb_vp9_update_rc_rate_tables(
             picture_control_set_ptr,
             sequence_control_set_ptr);
 #endif
@@ -443,19 +443,19 @@ void* packetization_kernel(void *input_ptr)
 
         if (sequence_control_set_ptr->static_config.speed_control_flag) {
             // update speed control variables
-            eb_block_on_mutex(encode_context_ptr->sc_buffer_mutex);
+            eb_vp9_block_on_mutex(encode_context_ptr->sc_buffer_mutex);
             encode_context_ptr->sc_frame_out++;
-            eb_release_mutex(encode_context_ptr->sc_buffer_mutex);
+            eb_vp9_release_mutex(encode_context_ptr->sc_buffer_mutex);
         }
 
         // Post Rate Control Taks
-        eb_post_full_object(rate_control_tasks_wrapper_ptr);
+        eb_vp9_post_full_object(rate_control_tasks_wrapper_ptr);
 
         //Release the Parent PCS then the Child PCS
-        eb_release_object(entropy_coding_results_ptr->picture_control_set_wrapper_ptr);//Child
+        eb_vp9_release_object(entropy_coding_results_ptr->picture_control_set_wrapper_ptr);//Child
 
         // Release the Entropy Coding Result
-        eb_release_object(entropy_coding_results_wrapper_ptr);
+        eb_vp9_release_object(entropy_coding_results_wrapper_ptr);
 
         //****************************************************
         // Process the head of the queue
@@ -635,7 +635,7 @@ void* packetization_kernel(void *input_ptr)
                 //printf("totalNumBits = %lld \t bufferFill = %lld \t pictureNumber = %lld \n", queue_entry_ptr->actual_bits, encode_context_ptr->bufferFill, picture_control_set_ptr->picture_number);
             }
             // Release the Bitstream wrapper object
-            eb_post_full_object(output_stream_wrapper_ptr);
+            eb_vp9_post_full_object(output_stream_wrapper_ptr);
             // Reset the Reorder Queue Entry
             queue_entry_ptr->picture_number += PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;
             queue_entry_ptr->output_stream_wrapper_ptr = (EbObjectWrapper *)EB_NULL;

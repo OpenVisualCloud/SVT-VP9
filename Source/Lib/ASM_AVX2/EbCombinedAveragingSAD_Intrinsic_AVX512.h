@@ -13,13 +13,13 @@
 extern "C" {
 #endif
 
-uint64_t compute_mean8x8_avx2_intrin(
+uint64_t eb_vp9_compute_mean8x8_avx2_intrin(
     uint8_t   *input_samples,       // input parameter, input samples Ptr
     uint32_t   input_stride,        // input parameter, input stride
     uint32_t   input_area_width,    // input parameter, input area width
     uint32_t   input_area_height);
 
-void compute_interm_var_four8x8_avx2_intrin(
+void eb_vp9_compute_interm_var_four8x8_avx2_intrin(
     uint8_t   *input_samples,
     uint16_t   input_stride,
     uint64_t  *mean_of8x8_blocks,      // mean of four  8x8

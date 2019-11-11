@@ -24,11 +24,11 @@ typedef struct EntropyCoder
 
 } EntropyCoder;
 
-extern EbErrorType bitstream_ctor(
+extern EbErrorType eb_vp9_bitstream_ctor(
     Bitstream **bitstream_dbl_ptr,
     uint32_t    buffer_size);
 
-extern EbErrorType entropy_coder_ctor(
+extern EbErrorType eb_vp9_entropy_coder_ctor(
     EntropyCoder **entropy_coder_dbl_ptr,
     uint32_t       buffer_size);
 

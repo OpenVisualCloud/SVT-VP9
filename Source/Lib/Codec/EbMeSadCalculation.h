@@ -46,25 +46,25 @@ typedef void(*EbInializeBuffer32Bits)(
 /***************************************
 * Function Tables
 ***************************************/
-static EbSadCalculation8x8and16x16Type sad_calculation_8x8_16x16_func_ptr_array[ASM_TYPE_TOTAL] = {
+static EbSadCalculation8x8and16x16Type eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
-    sad_calculation_8x8_16x16,
+    eb_vp9_sad_calculation_8x8_16x16,
     // AVX2
-    sad_calculation_8x8_16x16_sse2_intrin,
+    eb_vp9_sad_calculation_8x8_16x16_sse2_intrin,
 };
 
-static EbSadCalculation32x32and64x64Type sad_calculation_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] = {
+static EbSadCalculation32x32and64x64Type eb_vp9_sad_calculation_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
-    sad_calculation_32x32_64x64,
+    eb_vp9_sad_calculation_32x32_64x64,
     // AVX2
-    sad_calculation_32x32_64x64_sse2_intrin,
+    eb_vp9_sad_calculation_32x32_64x64_sse2_intrin,
 };
 
-static EbInializeBuffer32Bits initialize_buffer_32bits_func_ptr_array[ASM_TYPE_TOTAL] = {
+static EbInializeBuffer32Bits eb_vp9_initialize_buffer_32bits_func_ptr_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
-    initialize_buffer_32bits,
+    eb_vp9_initialize_buffer_32bits,
     // AVX2
-    initialize_buffer_32bits_sse2_intrin
+    eb_vp9_initialize_buffer_32bits_sse2_intrin
 };
 
 #ifdef __cplusplus

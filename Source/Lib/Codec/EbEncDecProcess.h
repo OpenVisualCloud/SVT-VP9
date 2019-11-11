@@ -202,19 +202,19 @@ typedef struct EncDecContext
 /**************************************
 * Extern Function Declarations
 **************************************/
-extern void reset_mode_decision(
+extern void eb_vp9_reset_mode_decision(
     EncDecContext     *context_ptr,
     PictureControlSet *picture_control_set_ptr,
     uint32_t           segment_index);
 
-extern EbErrorType enc_dec_context_ctor(
+extern EbErrorType eb_vp9_enc_dec_context_ctor(
     EncDecContext **context_dbl_ptr,
     EbFifo         *mode_decision_configuration_input_fifo_ptr,
     EbFifo         *packetization_output_fifo_ptr,
     EbFifo         *feedback_fifo_ptr,
     EbFifo         *picture_demux_fifo_ptr);
 
-extern void* enc_dec_kernel(void *input_ptr);
+extern void* eb_vp9_enc_dec_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }

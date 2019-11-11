@@ -29,7 +29,7 @@
 /************************************************
  * Picture Manager Context Constructor
  ************************************************/
-EbErrorType picture_manager_context_ctor(
+EbErrorType eb_vp9_picture_manager_context_ctor(
     PictureManagerContext **context_dbl_ptr,
     EbFifo                 *picture_input_fifo_ptr,
     EbFifo                 *picture_manager_output_fifo_ptr,
@@ -123,7 +123,7 @@ void* PictureManagerKernel(void *input_ptr)
     for(;;) {
 
         // Get Input Full Object
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->picture_input_fifo_ptr,
             &input_picture_demux_wrapper_ptr);
 
@@ -184,7 +184,7 @@ void* PictureManagerKernel(void *input_ptr)
                        if (reference_entry_ptr->picture_number == (picture_control_set_ptr->picture_number - 1)) { // Picture where the change happened
 
                            // Get the prediction struct entry of the next GOP structure
-                           nextPredStructPtr = get_prediction_structure(
+                           nextPredStructPtr = eb_vp9_get_prediction_structure(
                                encode_context_ptr->prediction_structure_group_ptr,
                                picture_control_set_ptr->pred_structure,
                                1,
@@ -303,7 +303,7 @@ void* PictureManagerKernel(void *input_ptr)
                        if (reference_entry_ptr->picture_number == (picture_control_set_ptr->picture_number - 1)) { // Picture where the change happened
 
                            // Get the prediction struct entry of the next GOP structure
-                           nextpred_struct_ptr = get_prediction_structure(
+                           nextpred_struct_ptr = eb_vp9_get_prediction_structure(
                                encode_context_ptr->prediction_structure_group_ptr,
                                picture_control_set_ptr->pred_structure,
                                1,
@@ -552,7 +552,7 @@ void* PictureManagerKernel(void *input_ptr)
                // Release the Reference Buffer once we know it is not a reference
                if (picture_control_set_ptr->is_used_as_reference_flag == EB_FALSE){
                    // Release the nominal live_count value
-                   eb_release_object(picture_control_set_ptr->reference_picture_wrapper_ptr);
+                   eb_vp9_release_object(picture_control_set_ptr->reference_picture_wrapper_ptr);
                    picture_control_set_ptr->reference_picture_wrapper_ptr = (EbObjectWrapper*)EB_NULL;
                }
 
@@ -608,7 +608,7 @@ void* PictureManagerKernel(void *input_ptr)
 
             //keep the relase of SCS here because we still need the encodeContext strucutre here
             // Release the Reference's SequenceControlSet
-            eb_release_object(input_picture_demux_ptr->sequence_control_set_wrapper_ptr);
+            eb_vp9_release_object(input_picture_demux_ptr->sequence_control_set_wrapper_ptr);
 
             break;
 
@@ -719,12 +719,12 @@ void* PictureManagerKernel(void *input_ptr)
 
                 if(availability_flag == EB_TRUE) {
                     // Get New  Empty Child PCS from PCS Pool
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         context_ptr->picture_control_set_fifo_ptr_array[0],
                         &child_picture_control_set_wrapper_ptr);
 
                     // Child PCS is released by Packetization
-                    eb_object_inc_live_count(
+                    eb_vp9_object_inc_live_count(
                         child_picture_control_set_wrapper_ptr,
                         1);
 
@@ -752,7 +752,7 @@ void* PictureManagerKernel(void *input_ptr)
                     picture_height_in_sb = (uint8_t)((entrysequence_control_set_ptr->luma_height + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE);
 
                     // EncDec Segments
-                    enc_dec_segments_init(
+                    eb_vp9_enc_dec_segments_init(
                         child_picture_control_set_ptr->enc_dec_segment_ctrl,
                         entrysequence_control_set_ptr->enc_dec_segment_col_count_array[entry_picture_control_set_ptr->temporal_layer_index],
                         entrysequence_control_set_ptr->enc_dec_segment_row_count_array[entry_picture_control_set_ptr->temporal_layer_index],
@@ -803,7 +803,7 @@ void* PictureManagerKernel(void *input_ptr)
                             child_picture_control_set_ptr->ref_slice_type_array[REF_LIST_0] = ((EbReferenceObject  *) reference_entry_ptr->reference_object_ptr->object_ptr)->slice_type;
 
                             // Increment the Reference's live_count by the number of tiles in the input picture
-                            eb_object_inc_live_count(
+                            eb_vp9_object_inc_live_count(
                                 reference_entry_ptr->reference_object_ptr,
                                 1);
 
@@ -835,7 +835,7 @@ void* PictureManagerKernel(void *input_ptr)
                             child_picture_control_set_ptr->ref_slice_type_array[REF_LIST_1] = ((EbReferenceObject  *) reference_entry_ptr->reference_object_ptr->object_ptr)->slice_type;
 
                             // Increment the Reference's live_count by the number of tiles in the input picture
-                            eb_object_inc_live_count(
+                            eb_vp9_object_inc_live_count(
                                 reference_entry_ptr->reference_object_ptr,
                                 1);
 
@@ -857,13 +857,13 @@ void* PictureManagerKernel(void *input_ptr)
 
                     // Increment the sequenceControlSet Wrapper's live count by 1 for only the pictures which are used as reference
                     if(child_picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag) {
-                        eb_object_inc_live_count(
+                        eb_vp9_object_inc_live_count(
                             child_picture_control_set_ptr->parent_pcs_ptr->sequence_control_set_wrapper_ptr,
                             1);
                     }
 
                     // Get Empty Results Object
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         context_ptr->picture_manager_output_fifo_ptr,
                         &output_wrapper_ptr);
 
@@ -872,7 +872,7 @@ void* PictureManagerKernel(void *input_ptr)
                     rate_control_tasks_ptr->task_type                    = RC_PICTURE_MANAGER_RESULT;
 
                     // Post the Full Results Object
-                    eb_post_full_object(output_wrapper_ptr);
+                    eb_vp9_post_full_object(output_wrapper_ptr);
 
                     // Remove the Input Entry from the Input Queue
                     input_entry_ptr->input_object_ptr = (EbObjectWrapper*) EB_NULL;
@@ -904,7 +904,7 @@ void* PictureManagerKernel(void *input_ptr)
                (reference_entry_ptr->reference_object_ptr))
             {
                 // Release the nominal live_count value
-                eb_release_object(reference_entry_ptr->reference_object_ptr);
+                eb_vp9_release_object(reference_entry_ptr->reference_object_ptr);
 
                 reference_entry_ptr->reference_object_ptr = (EbObjectWrapper*) EB_NULL;
                 reference_entry_ptr->reference_available = EB_FALSE;
@@ -925,7 +925,7 @@ void* PictureManagerKernel(void *input_ptr)
         }
 
         // Release the Input Picture Demux Results
-        eb_release_object(input_picture_demux_wrapper_ptr);
+        eb_vp9_release_object(input_picture_demux_wrapper_ptr);
 
     }
 return EB_NULL;

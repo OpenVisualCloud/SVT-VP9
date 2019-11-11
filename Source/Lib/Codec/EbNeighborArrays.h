@@ -47,7 +47,7 @@ typedef struct NeighborArrayUnit
 
 } NeighborArrayUnit;
 
-extern EbErrorType neighbor_array_unit_ctor(
+extern EbErrorType eb_vp9_neighbor_array_unit_ctor(
     NeighborArrayUnit **na_unit_dbl_ptr,
     uint32_t            maxpicture_width,
     uint32_t            maxpicture_height,
@@ -56,7 +56,7 @@ extern EbErrorType neighbor_array_unit_ctor(
     uint32_t            granularity_top_left,
     uint32_t            type_mask);
 
-extern void neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr);
+extern void eb_vp9_neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr);
 
 extern uint32_t get_neighbor_array_unit_left_index(
     NeighborArrayUnit *na_unit_ptr,
@@ -66,12 +66,12 @@ extern uint32_t get_neighbor_array_unit_top_index(
     NeighborArrayUnit *na_unit_ptr,
     uint32_t           loc_x);
 
-extern uint32_t get_neighbor_array_unit_top_left_index(
+extern uint32_t eb_vp9_get_neighbor_array_unit_top_left_index(
     NeighborArrayUnit *na_unit_ptr,
     int32_t            loc_x,
     int32_t            loc_y);
 
-extern void neighbor_array_unit_sample_write(
+extern void eb_vp9_neighbor_array_unit_sample_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *src_ptr,
     uint32_t           stride,
@@ -83,7 +83,7 @@ extern void neighbor_array_unit_sample_write(
     uint32_t           block_height,
     uint32_t           neighbor_array_type_mask);
 
-extern void neighbor_array_unit16bit_sample_write(
+extern void eb_vp9_neighbor_array_unit16bit_sample_write(
     NeighborArrayUnit *na_unit_ptr,
     uint16_t          *src_ptr,
     uint32_t           stride,
@@ -95,7 +95,7 @@ extern void neighbor_array_unit16bit_sample_write(
     uint32_t           block_height,
     uint32_t           neighbor_array_type_mask);
 
-extern void neighbor_array_unit_mode_write(
+extern void eb_vp9_neighbor_array_unit_mode_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *value,
     uint32_t           origin_x,
@@ -118,7 +118,7 @@ extern void neighbor_array_unit_mode_type_write(
     uint32_t           origin_y,
     uint32_t           block_size);
 
-extern void neighbor_array_unit_mv_write(
+extern void eb_vp9_neighbor_array_unit_mv_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *value,
     uint32_t           origin_x,

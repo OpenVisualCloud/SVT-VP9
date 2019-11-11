@@ -28,12 +28,12 @@ typedef struct PacketizationContext
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType packetization_context_ctor(
+extern EbErrorType eb_vp9_packetization_context_ctor(
     PacketizationContext **context_dbl_ptr,
     EbFifo                 *entropy_coding_input_fifo_ptr,
     EbFifo                 *rate_control_tasks_output_fifo_ptr);
 
-extern void* packetization_kernel(void *input_ptr);
+extern void* eb_vp9_packetization_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }

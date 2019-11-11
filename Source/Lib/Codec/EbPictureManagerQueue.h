@@ -75,10 +75,10 @@ typedef struct RcFeedbackQueueEntry
 
 } RcFeedbackQueueEntry;
 
-extern EbErrorType input_queue_entry_ctor(
+extern EbErrorType eb_vp9_input_queue_entry_ctor(
     InputQueueEntry **entry_dbl_ptr);
 
-extern EbErrorType reference_queue_entry_ctor(
+extern EbErrorType eb_vp9_reference_queue_entry_ctor(
     ReferenceQueueEntry **entry_dbl_ptr);
 
 #ifdef __cplusplus

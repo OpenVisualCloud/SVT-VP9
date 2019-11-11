@@ -22,7 +22,7 @@ typedef struct EbTransQuantBuffers
 
 } EbTransQuantBuffers;
 
-extern EbErrorType eb_trans_quant_buffers_ctor(
+extern EbErrorType eb_vp9_trans_quant_buffers_ctor(
     EbTransQuantBuffers *trans_quant_buffers_ptr);
 
 #ifdef __cplusplus

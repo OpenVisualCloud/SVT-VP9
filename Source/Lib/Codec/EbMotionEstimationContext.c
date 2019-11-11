@@ -23,7 +23,7 @@ void motion_estimetion_pred_unit_ctor(
     return;
 }
 
-EbErrorType me_context_ctor(
+EbErrorType eb_vp9_me_context_ctor(
     MeContext **object_dbl_ptr)
 {
     uint32_t list_index;

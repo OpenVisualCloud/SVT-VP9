@@ -8,7 +8,7 @@
 #include "EbDefinitions.h"
 #include "EbEncDecTasks.h"
 
-EbErrorType enc_dec_tasks_ctor(
+EbErrorType eb_vp9_enc_dec_tasks_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

@@ -34,11 +34,11 @@ typedef struct OutputBitstreamUnit
 /**********************************
  * Extern Function Declarations
  **********************************/
-extern EbErrorType output_bitstream_unit_ctor(
+extern EbErrorType eb_vp9_output_bitstream_unit_ctor(
     OutputBitstreamUnit *bitstream_ptr,
     uint32_t             buffer_size );
 
-extern EbErrorType output_bitstream_reset(OutputBitstreamUnit *bitstream_ptr);
+extern EbErrorType eb_vp9_output_bitstream_reset(OutputBitstreamUnit *bitstream_ptr);
 
 extern EbErrorType output_bitstream_write (
     OutputBitstreamUnit *bitstream_ptr,
@@ -51,7 +51,7 @@ extern EbErrorType output_bitstream_write_byte(
 
 extern EbErrorType output_bitstream_write_align_zero(OutputBitstreamUnit *bitstream_ptr);
 
-extern EbErrorType output_bitstream_rbsp_to_payload(
+extern EbErrorType eb_vp9_output_bitstream_rbsp_to_payload(
     OutputBitstreamUnit *bitstream_ptr,
     EbByte               output_buffer,
     uint32_t            *output_buffer_index,

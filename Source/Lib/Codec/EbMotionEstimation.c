@@ -96,7 +96,7 @@ static const uint8_t sub_position_type[16] = { 0, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 
 /*******************************************
 * GetEightHorizontalSearchPointResultsAll85CUs
 *******************************************/
-static void get_eight_horizontal_search_point_results_all85_p_us_c(
+static void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_c(
     MeContext *context_ptr,
     uint32_t   list_index,
     uint32_t   search_region_index,
@@ -151,73 +151,73 @@ static void get_eight_horizontal_search_point_results_all85_p_us_c(
     //---- 16x16_0
     block_index = 0;
     search_position_index = search_position_tl_index;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
     //---- 16x16_1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
     //---- 16x16_4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
     //---- 16x16_5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
 
     //---- 16x16_2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
     //---- 16x16_3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
     //---- 16x16_6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
     //---- 16x16_7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
 
     //---- 16x16_8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
     //---- 16x16_9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
     //---- 16x16_12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
     //---- 16x1_13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
 
     //---- 16x16_10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
     //---- 16x16_11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
     //---- 16x16_14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
     //---- 16x16_15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
 
     //32x32 and 64x64
-    get_eight_horizontal_search_point_results_32x32_64x64(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 
@@ -225,7 +225,7 @@ static void get_eight_horizontal_search_point_results_all85_p_us_c(
 /*******************************************
 * GetEightHorizontalSearchPointResultsAll85CUs
 *******************************************/
-static void get_eight_horizontal_search_point_results_all85_p_us(
+static void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us(
     MeContext *context_ptr,
     uint32_t   list_index,
     uint32_t   search_region_index,
@@ -280,73 +280,73 @@ static void get_eight_horizontal_search_point_results_all85_p_us(
     //---- 16x16_0
     block_index = 0;
     search_position_index = search_position_tl_index;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
     //---- 16x16_1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
     //---- 16x16_4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
     //---- 16x16_5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
 
     //---- 16x16_2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
     //---- 16x16_3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
     //---- 16x16_6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
     //---- 16x16_7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
 
     //---- 16x16_8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
     //---- 16x16_9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
     //---- 16x16_12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
     //---- 16x1_13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
 
     //---- 16x16_10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
     //---- 16x16_11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
     //---- 16x16_14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
     //---- 16x16_15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
 
     //32x32 and 64x64
-    get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 #endif
@@ -361,13 +361,13 @@ typedef void(*EbFpSearchFunc)(
 /*****************************
 * Function Tables
 *****************************/
-static EbFpSearchFunc FUNC_TABLE get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ASM_TYPE_TOTAL] =
+static EbFpSearchFunc FUNC_TABLE eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ASM_TYPE_TOTAL] =
 {
-    get_eight_horizontal_search_point_results_all85_p_us_c,
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_c,
 #ifndef DISABLE_AVX512
-    get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin
 #else
-    get_eight_horizontal_search_point_results_all85_p_us
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us
 #endif
 };
 
@@ -417,84 +417,84 @@ static void get_search_point_results(
     //---- 16x16 : 0
     block_index                     = 0;
     search_position_index = search_position_tl_index;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_sad16x16[0], &p_best_mv8x8[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_sad16x16[0], &p_best_mv8x8[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0]);
 
     //---- 16x16 : 1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_sad16x16[1], &p_best_mv8x8[4], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_sad16x16[1], &p_best_mv8x8[4], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1]);
 
     //---- 16x16 : 4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_sad16x16[4], &p_best_mv8x8[16], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_sad16x16[4], &p_best_mv8x8[16], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4]);
 
     //---- 16x16 : 5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_sad16x16[5], &p_best_mv8x8[20], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_sad16x16[5], &p_best_mv8x8[20], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5]);
 
     //---- 16x16 : 2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_sad16x16[2], &p_best_mv8x8[8], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_sad16x16[2], &p_best_mv8x8[8], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2]);
 
     //---- 16x16 : 3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_sad16x16[3], &p_best_mv8x8[12], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_sad16x16[3], &p_best_mv8x8[12], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3]);
 
     //---- 16x16 : 6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_sad16x16[6], &p_best_mv8x8[24], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_sad16x16[6], &p_best_mv8x8[24], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6]);
 
     //---- 16x16 : 7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_sad16x16[7], &p_best_mv8x8[28], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_sad16x16[7], &p_best_mv8x8[28], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7]);
 
     //---- 16x16 : 8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_sad16x16[8], &p_best_mv8x8[32], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_sad16x16[8], &p_best_mv8x8[32], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8]);
 
     //---- 16x16 : 9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_sad16x16[9], &p_best_mv8x8[36], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_sad16x16[9], &p_best_mv8x8[36], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9]);
 
     //---- 16x16 : 12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;    search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_sad16x16[12], &p_best_mv8x8[48], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_sad16x16[12], &p_best_mv8x8[48], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12]);
 
     //---- 16x16 : 13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_sad16x16[13], &p_best_mv8x8[52], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_sad16x16[13], &p_best_mv8x8[52], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13]);
 
     //---- 16x16 : 10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_sad16x16[10], &p_best_mv8x8[40], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_sad16x16[10], &p_best_mv8x8[40], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10]);
 
     //---- 16x16 : 11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_sad16x16[11], &p_best_mv8x8[44], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_sad16x16[11], &p_best_mv8x8[44], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11]);
 
     //---- 16x16 : 14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_sad16x16[14], &p_best_mv8x8[56], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_sad16x16[14], &p_best_mv8x8[56], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14]);
 
     //---- 16x16 : 15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_sad16x16[15], &p_best_mv8x8[60], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_sad16x16[15], &p_best_mv8x8[60], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15]);
 
-    sad_calculation_32x32_64x64_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_sad_calculation_32x32_64x64_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 
@@ -522,7 +522,7 @@ static void full_pel_search_sb(
 
             //this function will do:  x_search_index, +1, +2, ..., +7
 
-            get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ (ASM_TYPES & AVX2_MASK) && 1 ](
+            eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ (ASM_TYPES & AVX2_MASK) && 1 ](
                 context_ptr,
                 list_index,
                 x_search_index + y_search_index * context_ptr->interpolated_full_stride[list_index][0],
@@ -1088,10 +1088,10 @@ void half_pel_search_sb(
 }
 
 /*******************************************
-* combined_averaging_ssd
+* eb_vp9_combined_averaging_ssd
 *
 *******************************************/
-uint32_t combined_averaging_ssd(
+uint32_t eb_vp9_combined_averaging_ssd(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -1206,7 +1206,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[0] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[0] + search_region_index1, buf1_stride[0] << 1, buf2[0] + search_region_index2, buf2_stride[0] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width);
@@ -1233,7 +1233,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[1] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[1] + search_region_index1, buf1_stride[1] << 1, buf2[1] + search_region_index2, buf2_stride[1] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width);
@@ -1260,7 +1260,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[2] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[2] + search_region_index1, buf1_stride[2] << 1, buf2[2] + search_region_index2, buf2_stride[2] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width);
@@ -1287,7 +1287,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[3] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[3] + search_region_index1, buf1_stride[3] << 1, buf2[3] + search_region_index2, buf2_stride[3] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width);
@@ -1314,7 +1314,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[4] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[4] + search_region_index1, buf1_stride[4] << 1, buf2[4] + search_region_index2, buf2_stride[4] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width);
@@ -1342,7 +1342,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[5] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width) :\
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width) :\
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[5] + search_region_index1, buf1_stride[5] << 1, buf2[5] + search_region_index2, buf2_stride[5] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width);
@@ -1369,7 +1369,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[6] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[6] + search_region_index1, buf1_stride[6] << 1, buf2[6] + search_region_index2, buf2_stride[6] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width);
@@ -1396,7 +1396,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[7] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
                     (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[7] + search_region_index1, buf1_stride[7] << 1, buf2[7] + search_region_index2, buf2_stride[7] << 1, pu_height >> 1, pu_width)) << 1 :
                     nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width);
@@ -1826,7 +1826,7 @@ void single_hme_quadrant_level0(
         if (((search_area_width & 15) == 0) && ((ASM_TYPES & AVX2_MASK) && 1))
         {
 #ifndef DISABLE_AVX512
-            sad_loop_kernel_avx512_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1842,7 +1842,7 @@ void single_hme_quadrant_level0(
                 search_area_height
                 );
 #else
-            sad_loop_kernel_avx2_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1865,7 +1865,7 @@ void single_hme_quadrant_level0(
                 // Only width equals 16 (LCU equals 64) is updated
                 // other width sizes work with the old code as the one in"SadLoopKernel_SSE4_1_INTRIN"
 
-                sad_loop_kernel(
+                eb_vp9_sad_loop_kernel(
                     &context_ptr->sixteenth_sb_buffer[0],
                     context_ptr->sixteenth_sb_buffer_stride,
                     &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1989,7 +1989,7 @@ void hme_level0(
         if (((search_area_width & 15) == 0) && ((ASM_TYPES & AVX2_MASK) && 1))
         {
 #ifndef DISABLE_AVX512
-            sad_loop_kernel_avx512_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2005,7 +2005,7 @@ void hme_level0(
                 search_area_height
                 );
 #else
-            sad_loop_kernel_avx2_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2044,7 +2044,7 @@ void hme_level0(
     }
     else
     {
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             &context_ptr->sixteenth_sb_buffer[0],
             context_ptr->sixteenth_sb_buffer_stride,
             &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2164,7 +2164,7 @@ void hme_level1(
     }
     else
     {
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             &context_ptr->quarter_sb_buffer[0],
             context_ptr->quarter_sb_buffer_stride * 2,
             &quarter_ref_pic_ptr->buffer_y[search_region_index],
@@ -2287,7 +2287,7 @@ void hme_level2(
     else
     {
         // Put the first search location into level0 results
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             context_ptr->sb_src_ptr,
             context_ptr->sb_src_stride * 2,
             &ref_pic_ptr->buffer_y[search_region_index],
@@ -4012,7 +4012,7 @@ EbErrorType motion_estimate_sb(
             {
                 {
 
-                    initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](context_ptr->p_sb_best_sad[list_index][0], 21, 1, MAX_SAD_VALUE);
+                    eb_vp9_initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](context_ptr->p_sb_best_sad[list_index][0], 21, 1, MAX_SAD_VALUE);
                     context_ptr->p_best_sad64x64 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_64x64]);
                     context_ptr->p_best_sad32x32 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_32x32_0]);
                     context_ptr->p_best_sad16x16 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_16x16_0]);

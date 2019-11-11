@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-extern void eb_enc_msb_pack2_d_avx2_intrin_al(
+extern void eb_vp9_enc_msb_pack2_d_avx2_intrin_al(
     uint8_t    *in8_bit_buffer,
     uint32_t    in8_stride,
     uint8_t    *inn_bit_buffer,
@@ -22,7 +22,7 @@ extern void eb_enc_msb_pack2_d_avx2_intrin_al(
     uint32_t    width,
     uint32_t    height);
 
-extern void compressed_packmsb_avx2_intrin(
+extern void eb_vp9_compressed_packmsb_avx2_intrin(
     uint8_t    *in8_bit_buffer,
     uint32_t    in8_stride,
     uint8_t    *inn_bit_buffer,
@@ -32,7 +32,7 @@ extern void compressed_packmsb_avx2_intrin(
     uint32_t    width,
     uint32_t    height);
 
-void c_pack_avx2_intrin(
+void eb_vp9_c_pack_avx2_intrin(
     const uint8_t  *inn_bit_buffer,
     uint32_t        inn_stride,
     uint8_t        *in_compn_bit_buffer,
@@ -41,7 +41,7 @@ void c_pack_avx2_intrin(
     uint32_t        width,
     uint32_t        height);
 
-void unpack_avg_avx2_intrin(
+void eb_vp9_unpack_avg_avx2_intrin(
     uint16_t  *ref16_l0,
     uint32_t   ref_l0_stride,
     uint16_t  *ref16_l1,
@@ -51,19 +51,19 @@ void unpack_avg_avx2_intrin(
     uint32_t   width,
     uint32_t   height);
 
-int32_t  sum_residual8bit_avx2_intrin(
+int32_t  eb_vp9_sum_residual8bit_avx2_intrin(
     int16_t *in_ptr,
     uint32_t size,
     uint32_t stride_in );
 
-void memset16bit_block_avx2_intrin (
+void eb_vp9_memset16bit_block_avx2_intrin (
     int16_t  *in_ptr,
     uint32_t  stride_in,
     uint32_t  size,
     int16_t   value
     );
 
-void unpack_avg_safe_sub_avx2_intrin(
+void eb_vp9_unpack_avg_safe_sub_avx2_intrin(
     uint16_t *ref16_l0,
     uint32_t  ref_l0_stride,
     uint16_t *ref16_l1,
@@ -127,7 +127,7 @@ void full_distortion_kernel_16_32_bit_bt_avx2(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void picture_average_kernel_avx2_intrin(
+void eb_vp9_picture_average_kernel_avx2_intrin(
     EbByte   src0,
     uint32_t src0_stride,
     EbByte   src1,
@@ -137,7 +137,7 @@ void picture_average_kernel_avx2_intrin(
     uint32_t area_width,
     uint32_t area_height);
 
-void residual_kernel4x4_avx2_intrin(
+void eb_vp9_residual_kernel4x4_avx2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -147,7 +147,7 @@ void residual_kernel4x4_avx2_intrin(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel8x8_avx2_intrin(
+void eb_vp9_residual_kernel8x8_avx2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -157,7 +157,7 @@ void residual_kernel8x8_avx2_intrin(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel16x16_avx2_intrin(
+void eb_vp9_residual_kernel16x16_avx2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -167,7 +167,7 @@ void residual_kernel16x16_avx2_intrin(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel32x32_avx2_intrin(
+void eb_vp9_residual_kernel32x32_avx2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -177,7 +177,7 @@ void residual_kernel32x32_avx2_intrin(
     uint32_t   area_width,
     uint32_t   area_height);
 
-void residual_kernel64x64_avx2_intrin(
+void eb_vp9_residual_kernel64x64_avx2_intrin(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,

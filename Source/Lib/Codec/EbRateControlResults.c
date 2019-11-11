@@ -8,7 +8,7 @@
 #include "EbDefinitions.h"
 #include "EbRateControlResults.h"
 
-EbErrorType rate_control_results_ctor(
+EbErrorType eb_vp9_rate_control_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

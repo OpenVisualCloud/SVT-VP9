@@ -40,7 +40,7 @@ typedef struct PacketizationReorderEntry
     uint64_t          actual_bits;
 } PacketizationReorderEntry;
 
-extern EbErrorType packetization_reorder_entry_ctor(
+extern EbErrorType eb_vp9_packetization_reorder_entry_ctor(
     PacketizationReorderEntry **entry_dbl_ptr,
     uint32_t                    picture_number);
 

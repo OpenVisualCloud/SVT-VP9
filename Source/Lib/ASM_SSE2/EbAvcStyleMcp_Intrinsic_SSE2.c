@@ -6,7 +6,7 @@
 #include "EbAvcStyleMcp_SSE2.h"
 #include "EbMcp_SSE2.h" // THIS SHOULD BE _SSE2 in the future
 
-void avc_style_copy_sse2(
+void eb_vp9_avc_style_copy_sse2(
     EbByte   ref_pic,
     uint32_t src_stride,
     EbByte   dst,
@@ -19,5 +19,5 @@ void avc_style_copy_sse2(
     (void)temp_buf;
     (void)frac_pos;
 
-    picture_copy_kernel_sse2(ref_pic, src_stride, dst, dst_stride, pu_width, pu_height);
+    eb_vp9_picture_copy_kernel_sse2(ref_pic, src_stride, dst, dst_stride, pu_width, pu_height);
 }

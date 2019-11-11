@@ -101,7 +101,7 @@ void tx_counts_to_branch_counts_16x16(const unsigned int *tx_count_16x16p,
                                       unsigned int (*ct_16x16p)[2]);
 void tx_counts_to_branch_counts_8x8(const unsigned int *tx_count_8x8p,
                                     unsigned int (*ct_8x8p)[2]);
-void init_mode_probs(FRAME_CONTEXT *fc);
+void eb_vp9_init_mode_probs(FRAME_CONTEXT *fc);
 
 #ifdef __cplusplus
 }  // extern "C"

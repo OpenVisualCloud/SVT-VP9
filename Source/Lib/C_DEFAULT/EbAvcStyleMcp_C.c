@@ -27,10 +27,10 @@ void avc_style_copy_new(
 {
     (void)temp_buf;
     (void)frac_pos;
-    picture_copy_kernel(ref_pic, src_stride, dst, dst_stride, pu_width, pu_height, 1);
+    eb_vp9_picture_copy_kernel(ref_pic, src_stride, dst, dst_stride, pu_width, pu_height, 1);
 }
 
-void avc_style_luma_interpolation_filter_horizontal(
+void eb_vp9_avc_style_luma_interpolation_filter_horizontal(
     EbByte    ref_pic,
     uint32_t  src_stride,
     EbByte    dst,
@@ -58,7 +58,7 @@ void avc_style_luma_interpolation_filter_horizontal(
     }
 }
 
-void avc_style_luma_interpolation_filter_vertical(
+void eb_vp9_avc_style_luma_interpolation_filter_vertical(
     EbByte    ref_pic,
     uint32_t  src_stride,
     EbByte    dst,

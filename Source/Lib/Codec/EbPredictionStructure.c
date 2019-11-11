@@ -648,7 +648,7 @@ static const PredictionStructureConfig prediction_structure_config_array[] = {
 /************************************************
  * Get Prediction Structure
  ************************************************/
-PredictionStructure* get_prediction_structure(
+PredictionStructure* eb_vp9_get_prediction_structure(
     PredictionStructureGroup *prediction_structure_group_ptr,
     EB_PRED                   pred_structure,
     uint32_t                  number_of_references,
@@ -1759,7 +1759,7 @@ static EbErrorType prediction_structure_ctor(
  *      # Random Access
  *
  *************************************************/
-EbErrorType prediction_structure_group_ctor(
+EbErrorType eb_vp9_prediction_structure_group_ctor(
     PredictionStructureGroup **prediction_structure_group_dbl_ptr,
     uint32_t                   base_layer_switch_mode)
 {

@@ -9,7 +9,7 @@
 /*********************************
 * Picture Average
 *********************************/
-void picture_average_kernel(
+void eb_vp9_picture_average_kernel(
     EbByte    src0,
     uint32_t  src0_stride,
     EbByte    src1,
@@ -31,7 +31,7 @@ void picture_average_kernel(
     }
 }
 
-void picture_average_kernel1_line_c(
+void eb_vp9_picture_average_kernel1_line_c(
     EbByte    src0,
     EbByte    src1,
     EbByte    dst,
@@ -46,7 +46,7 @@ void picture_average_kernel1_line_c(
 /*********************************
 * Picture Copy Kernel
 *********************************/
-void picture_copy_kernel(
+void eb_vp9_picture_copy_kernel(
     EbByte    src,
     uint32_t  src_stride,
     EbByte    dst,
@@ -75,7 +75,7 @@ void picture_copy_kernel(
 /*********************************
 * Picture Single Channel Kernel
 *********************************/
-void picture_addition_kernel(
+void eb_vp9_picture_addition_kernel(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -109,7 +109,7 @@ void picture_addition_kernel(
 /*********************************
 * Picture addtion 16bit Kernel
 *********************************/
-void picture_addition_kernel16bit(
+void eb_vp9_picture_addition_kernel16bit(
     uint16_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -202,7 +202,7 @@ void copy_kernel16_bit(
 }
 
 //computes a subsampled residual and then duplicate it
-void residual_kernel_sub_sampled(
+void eb_vp9_residual_kernel_sub_sampled(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -258,7 +258,7 @@ void residual_kernel_sub_sampled(
 * Residual Kernel
 Computes the residual data
 *******************************************/
-void residual_kernel(
+void eb_vp9_residual_kernel(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *pred,
@@ -291,7 +291,7 @@ void residual_kernel(
 * Residual Kernel 16bit
 Computes the residual data
 *******************************************/
-void residual_kernel16bit(
+void eb_vp9_residual_kernel16bit(
     uint16_t   *input,
     uint32_t   input_stride,
     uint16_t   *pred,
@@ -438,7 +438,7 @@ EB_EXTERN void full_distortion_kernel_eob_zero32bit(
     distortion_result[1] = prediction_distortion;
 }
 
-uint64_t spatial_full_distortion_kernel(
+uint64_t eb_vp9_spatial_full_distortion_kernel(
     uint8_t   *input,
     uint32_t   input_stride,
     uint8_t   *recon,

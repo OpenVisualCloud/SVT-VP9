@@ -10,7 +10,7 @@
 #include "EbThreads.h"
 #include "EbDefinitions.h"
 
-EbErrorType enc_dec_segments_ctor(
+EbErrorType eb_vp9_enc_dec_segments_ctor(
     EncDecSegments **segments_dbl_ptr,
     uint32_t         segment_col_count,
     uint32_t         segment_row_count)
@@ -47,7 +47,7 @@ EbErrorType enc_dec_segments_ctor(
     return EB_ErrorNone;
 }
 
-void enc_dec_segments_init(
+void eb_vp9_enc_dec_segments_init(
     EncDecSegments *segments_ptr,
     uint32_t        seg_col_count,
     uint32_t        seg_row_count,
