@@ -28,7 +28,7 @@
 #include "EbSvtVp9Time.h"
 #include "stdint.h"
 
-struct vpx_write_bit_buffer *wb; // needs to be here
+//struct vpx_write_bit_buffer *wb; // needs to be here
 
 #include "vp9_bitstream.h"
 #include "mem_ops.h"

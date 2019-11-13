@@ -1226,7 +1226,7 @@ static void write_bitdepth_colorspace_sampling(
   }
 }
 
-void write_uncompressed_header(
+static void write_uncompressed_header(
     PictureControlSet   *picture_control_set_ptr,
     VP9_COMP *cpi,
     struct vpx_write_bit_buffer *wb,

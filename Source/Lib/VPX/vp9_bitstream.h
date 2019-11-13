@@ -68,13 +68,6 @@ void eb_vp9_write_modes_b(
     VpxWriter *w, TOKENEXTRA **tok, const TOKENEXTRA *const tok_end,
     int mi_row, int mi_col, unsigned int *const max_mv_magnitude,
     int interp_filter_selected[MAX_REF_FRAMES][SWITCHABLE]);
-struct vpx_write_bit_buffer *wb;
-void write_uncompressed_header(
-    PictureControlSet   *picture_control_set_ptr,
-    VP9_COMP *cpi,
-    struct vpx_write_bit_buffer *wb,
-    int show_existing_frame,
-    int show_existing_frame_index);
 
 size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data);
 
