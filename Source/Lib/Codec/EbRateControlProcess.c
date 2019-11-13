@@ -52,8 +52,8 @@ uint32_t eb_vp9_qp_scaling_calc(
     uint32_t    scaled_qp;
     int         base_qindex;
 
-    int qindex      = vp9_quantizer_to_qindex(base_qp);
-    const double q  = vp9_convert_qindex_to_q(qindex, (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
+    int qindex      = eb_vp9_quantizer_to_qindex(base_qp);
+    const double q  = eb_vp9_convert_qindex_to_q(qindex, (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
     RATE_CONTROL rc;
     rc.worst_quality = MAXQ;
     rc.best_quality = MINQ;
@@ -61,7 +61,7 @@ uint32_t eb_vp9_qp_scaling_calc(
 
     if (slice_type == I_SLICE) {
 
-        delta_qindex = vp9_compute_qdelta(
+        delta_qindex = eb_vp9_compute_qdelta(
             &rc,
             q,
             q* 0.25,
@@ -71,7 +71,7 @@ uint32_t eb_vp9_qp_scaling_calc(
     else {
 
         if (sequence_control_set_ptr->static_config.tune == TUNE_OQ) {
-            delta_qindex = vp9_compute_qdelta(
+            delta_qindex = eb_vp9_compute_qdelta(
                 &rc,
                 q,
 #if NEW_PRED_STRUCT
@@ -82,14 +82,14 @@ uint32_t eb_vp9_qp_scaling_calc(
                 (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
         }
         else if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            delta_qindex = vp9_compute_qdelta(
+            delta_qindex = eb_vp9_compute_qdelta(
                 &rc,
                 q,
                 q* delta_rate_sq[temporal_layer_index],
                 (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
         }
         else {
-            delta_qindex = vp9_compute_qdelta(
+            delta_qindex = eb_vp9_compute_qdelta(
                 &rc,
                 q,
                 q* delta_rate_vmaf[temporal_layer_index],
@@ -4275,7 +4275,7 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
 
                 if (sequence_control_set_ptr->enable_qp_scaling_flag && picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == EB_FALSE) {
 
-                    int qindex = vp9_quantizer_to_qindex(sequence_control_set_ptr->qp);
+                    int qindex = eb_vp9_quantizer_to_qindex(sequence_control_set_ptr->qp);
                     RATE_CONTROL rc;
                     rc.worst_quality = MAXQ;
                     rc.best_quality  = MINQ;
@@ -4326,8 +4326,8 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
 
                             // Convert the adjustment factor to a qindex delta
                             // on active_best_quality.
-                            q_val = vp9_convert_qindex_to_q(active_best_quality, cm->bit_depth);
-                            active_best_quality += vp9_compute_qdelta(&rc, q_val, q_val * q_adj_factor, cm->bit_depth);
+                            q_val = eb_vp9_convert_qindex_to_q(active_best_quality, cm->bit_depth);
+                            active_best_quality += eb_vp9_compute_qdelta(&rc, q_val, q_val * q_adj_factor, cm->bit_depth);
                         }
                         else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag) {
                             rate_factor_level = GF_ARF_STD;
@@ -4352,7 +4352,7 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
                             cpi->twopass.last_kfgroup_zeromotion_pct < STATIC_MOTION_THRESH)
 #endif
                         {
-                            int qdelta = vp9_frame_type_qdelta(cpi, rate_factor_level,
+                            int qdelta = eb_vp9_frame_type_qdelta(cpi, rate_factor_level,
                                 active_worst_quality);
                             active_worst_quality =
                                 VPXMAX(active_worst_quality + qdelta, active_best_quality);
@@ -4370,12 +4370,12 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
 
                     }
                     else {
-                        const double q = vp9_convert_qindex_to_q(qindex, (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
+                        const double q = eb_vp9_convert_qindex_to_q(qindex, (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
                         int delta_qindex;
 
                         if (picture_control_set_ptr->slice_type == I_SLICE) {
 
-                            delta_qindex = vp9_compute_qdelta(
+                            delta_qindex = eb_vp9_compute_qdelta(
                                 &rc,
                                 q,
                                 q* 0.25,
@@ -4386,7 +4386,7 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
                         }
                         else {
                             if (sequence_control_set_ptr->static_config.tune == TUNE_OQ) {
-                                delta_qindex = vp9_compute_qdelta(
+                                delta_qindex = eb_vp9_compute_qdelta(
                                     &rc,
                                     q,
 #if NEW_PRED_STRUCT
@@ -4397,14 +4397,14 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
                                     (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
                             }
                             else if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-                                delta_qindex = vp9_compute_qdelta(
+                                delta_qindex = eb_vp9_compute_qdelta(
                                     &rc,
                                     q,
                                     q* delta_rate_sq[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index],
                                     (vpx_bit_depth_t)sequence_control_set_ptr->static_config.encoder_bit_depth);
                             }
                             else {
-                                delta_qindex = vp9_compute_qdelta(
+                                delta_qindex = eb_vp9_compute_qdelta(
                                     &rc,
                                     q,
                                     q* delta_rate_vmaf[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index],
@@ -4418,7 +4418,7 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
                 }
                 else if (picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == EB_TRUE){
                     picture_control_set_ptr->picture_qp = (uint8_t)CLIP3((int32_t)sequence_control_set_ptr->static_config.min_qp_allowed, (int32_t)sequence_control_set_ptr->static_config.max_qp_allowed,picture_control_set_ptr->parent_pcs_ptr->picture_qp);
-                    picture_control_set_ptr->parent_pcs_ptr->cpi->common.base_qindex = picture_control_set_ptr->base_qindex = vp9_quantizer_to_qindex(picture_control_set_ptr->picture_qp);
+                    picture_control_set_ptr->parent_pcs_ptr->cpi->common.base_qindex = picture_control_set_ptr->base_qindex = eb_vp9_quantizer_to_qindex(picture_control_set_ptr->picture_qp);
                 }
 
             }
@@ -4456,7 +4456,7 @@ void* eb_vp9_rate_control_kernel(void *input_ptr)
                     sequence_control_set_ptr->static_config.max_qp_allowed,
                     picture_control_set_ptr->picture_qp);
 
-                picture_control_set_ptr->parent_pcs_ptr->cpi->common.base_qindex = picture_control_set_ptr->base_qindex = vp9_quantizer_to_qindex(picture_control_set_ptr->picture_qp);
+                picture_control_set_ptr->parent_pcs_ptr->cpi->common.base_qindex = picture_control_set_ptr->base_qindex = eb_vp9_quantizer_to_qindex(picture_control_set_ptr->picture_qp);
             }
             if (encode_context_ptr->vbv_buf_size && encode_context_ptr->vbv_max_rate)
             {

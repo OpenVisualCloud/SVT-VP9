@@ -30,7 +30,7 @@ static INLINE __m128i partial_butterfly_cospi16_ssse3(const __m128i in) {
   return _mm_mulhrs_epi16(in, coef_pair);
 }
 
-void vpx_idct8x8_12_add_ssse3(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct8x8_12_add_ssse3(const tran_low_t *input, uint8_t *dest,
                               int stride) {
   __m128i io[8];
 
@@ -151,7 +151,7 @@ static INLINE void idct32_34_8x32_quarter_3_4(
   idct32_8x32_quarter_3_4_stage_4_to_7(step1, out);
 }
 
-void idct32_34_8x32_ssse3(const __m128i *const in /*in[32]*/,
+void eb_vp9_idct32_34_8x32_ssse3(const __m128i *const in /*in[32]*/,
                           __m128i *const out /*out[32]*/) {
   __m128i temp[32];
 
@@ -308,7 +308,7 @@ static INLINE void idct32_135_8x32_quarter_3_4(
   idct32_8x32_quarter_3_4_stage_4_to_7(step1, out);
 }
 
-void idct32_135_8x32_ssse3(const __m128i *const in /*in[32]*/,
+void eb_vp9_idct32_135_8x32_ssse3(const __m128i *const in /*in[32]*/,
                            __m128i *const out /*out[32]*/) {
   __m128i temp[32];
   idct32_135_8x32_quarter_1_2(in, temp);

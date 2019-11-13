@@ -95,7 +95,7 @@ EbErrorType EntropyCodingSb(
     // Reset above context @ the 1st SB
     if (sb_ptr->sb_index == 0) {
 
-        vpx_start_encode(residual_bc, data + total_size);
+        eb_vp9_start_encode(residual_bc, data + total_size);
 
         // Note: this memset assumes above_context[0], [1] and [2]
         // are allocated as part of the same buffer.
@@ -153,7 +153,7 @@ EbErrorType EntropyCodingSb(
         }
 
         if (partition != PARTITION_INVALID) {
-            const int  bsl = b_width_log2_lookup[context_ptr->ep_block_stats_ptr->bsize];
+            const int  bsl = eb_vp9_b_width_log2_lookup[context_ptr->ep_block_stats_ptr->bsize];
             const int  bs = (1 << bsl) / 4;
             BLOCK_SIZE subsize = get_subsize(context_ptr->ep_block_stats_ptr->bsize, partition);
 
@@ -174,9 +174,9 @@ EbErrorType EntropyCodingSb(
 
                 // Set WebM relevant fields
                 xd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                xd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                xd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                 xd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                xd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                xd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                 xd->plane[0].subsampling_x = xd->plane[0].subsampling_y = 0;
                 xd->plane[1].subsampling_x = xd->plane[1].subsampling_y = 1;
@@ -339,7 +339,7 @@ EbErrorType EntropyCodingSb(
                 context_ptr->tok_start = context_ptr->tok;
 
                 // Tokonize the SB
-                vp9_tokenize_sb(cpi, xd, &cpi->td, &context_ptr->tok, 0, 0,  VPXMAX(context_ptr->ep_block_stats_ptr->bsize, BLOCK_8X8));
+                eb_vp9_tokenize_sb(cpi, xd, &cpi->td, &context_ptr->tok, 0, 0,  VPXMAX(context_ptr->ep_block_stats_ptr->bsize, BLOCK_8X8));
 
                 // Add EOSB_TOKEN
                 context_ptr->tok->token  = EOSB_TOKEN;
@@ -382,7 +382,7 @@ EbErrorType EntropyCodingSb(
 
     // Stop writing
     if (sb_ptr->sb_index == (unsigned) picture_control_set_ptr->sb_total_count - 1) {
-        vpx_stop_encode(residual_bc);
+        eb_vp9_stop_encode(residual_bc);
     }
 
     return return_error;

@@ -45,9 +45,9 @@ typedef struct {
   EXTRABIT extra;
 } TOKENEXTRA;
 
-extern const vpx_tree_index vp9_coef_tree[];
-extern const vpx_tree_index vp9_coef_con_tree[];
-extern const struct vp9_token vp9_coef_encodings[];
+extern const vpx_tree_index eb_vp9_coef_tree[];
+extern const vpx_tree_index eb_vp9_coef_con_tree[];
+extern const struct vp9_token eb_vp9_coef_encodings[];
 #if 0
 int vp9_is_skippable_in_plane(MACROBLOCK *x, BLOCK_SIZE bsize, int plane);
 int vp9_has_high_freq_in_plane(MACROBLOCK *x, BLOCK_SIZE bsize, int plane);
@@ -55,7 +55,7 @@ int vp9_has_high_freq_in_plane(MACROBLOCK *x, BLOCK_SIZE bsize, int plane);
 struct VP9_COMP;
 struct ThreadData;
 
-void vp9_tokenize_sb(struct VP9_COMP *cpi, MACROBLOCKD *const xd, struct ThreadData *td,
+void eb_vp9_tokenize_sb(struct VP9_COMP *cpi, MACROBLOCKD *const xd, struct ThreadData *td,
                      TOKENEXTRA **t, int dry_run, int seg_skip,
                      BLOCK_SIZE bsize);
 
@@ -67,10 +67,10 @@ typedef struct {
 } vp9_extra_bit;
 
 // indexed by token value
-extern const vp9_extra_bit vp9_extra_bits[ENTROPY_TOKENS];
+extern const vp9_extra_bit eb_vp9_extra_bits[ENTROPY_TOKENS];
 #if CONFIG_VP9_HIGHBITDEPTH
-extern const vp9_extra_bit vp9_extra_bits_high10[ENTROPY_TOKENS];
-extern const vp9_extra_bit vp9_extra_bits_high12[ENTROPY_TOKENS];
+extern const vp9_extra_bit eb_vp9_extra_bits_high10[ENTROPY_TOKENS];
+extern const vp9_extra_bit eb_vp9_extra_bits_high12[ENTROPY_TOKENS];
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
 extern const int16_t *vp9_dct_value_cost_ptr;
@@ -79,23 +79,23 @@ extern const int16_t *vp9_dct_value_cost_ptr;
  *  fields are not.
  */
 extern const TOKENVALUE *vp9_dct_value_tokens_ptr;
-extern const TOKENVALUE *vp9_dct_cat_lt_10_value_tokens;
-extern const int *vp9_dct_cat_lt_10_value_cost;
-extern const int16_t vp9_cat6_low_cost[256];
-extern const uint16_t vp9_cat6_high_cost[64];
+extern const TOKENVALUE *eb_vp9_dct_cat_lt_10_value_tokens;
+extern const int *eb_vp9_dct_cat_lt_10_value_cost;
+extern const int16_t eb_vp9_cat6_low_cost[256];
+extern const uint16_t eb_vp9_cat6_high_cost[64];
 extern const uint16_t vp9_cat6_high10_high_cost[256];
 extern const uint16_t vp9_cat6_high12_high_cost[1024];
 
 #if CONFIG_VP9_HIGHBITDEPTH
 static INLINE const uint16_t *vp9_get_high_cost_table(int bit_depth) {
-  return bit_depth == 8 ? vp9_cat6_high_cost
+  return bit_depth == 8 ? eb_vp9_cat6_high_cost
                         : (bit_depth == 10 ? vp9_cat6_high10_high_cost
                                            : vp9_cat6_high12_high_cost);
 }
 #else
 static INLINE const uint16_t *vp9_get_high_cost_table(int bit_depth) {
   (void)bit_depth;
-  return vp9_cat6_high_cost;
+  return eb_vp9_cat6_high_cost;
 }
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
@@ -108,12 +108,12 @@ static INLINE void vp9_get_token_extra(int v, int16_t *token, EXTRABIT *extra) {
       *extra = (EXTRABIT) (-2 * v - 2 * CAT6_MIN_VAL + 1);
     return;
   }
-  *token = vp9_dct_cat_lt_10_value_tokens[v].token;
-  *extra = vp9_dct_cat_lt_10_value_tokens[v].extra;
+  *token = eb_vp9_dct_cat_lt_10_value_tokens[v].token;
+  *extra = eb_vp9_dct_cat_lt_10_value_tokens[v].extra;
 }
 static INLINE int16_t vp9_get_token(int v) {
   if (v >= CAT6_MIN_VAL || v <= -CAT6_MIN_VAL) return 10;
-  return vp9_dct_cat_lt_10_value_tokens[v].token;
+  return eb_vp9_dct_cat_lt_10_value_tokens[v].token;
 }
 
 static INLINE int vp9_get_token_cost(int v, int16_t *token,
@@ -122,11 +122,11 @@ static INLINE int vp9_get_token_cost(int v, int16_t *token,
     EXTRABIT extra_bits;
     *token = CATEGORY6_TOKEN;
     extra_bits = (EXTRABIT)(abs(v) - CAT6_MIN_VAL);
-    return vp9_cat6_low_cost[extra_bits & 0xff] +
+    return eb_vp9_cat6_low_cost[extra_bits & 0xff] +
            cat6_high_table[extra_bits >> 8];
   }
-  *token = vp9_dct_cat_lt_10_value_tokens[v].token;
-  return vp9_dct_cat_lt_10_value_cost[v];
+  *token = eb_vp9_dct_cat_lt_10_value_tokens[v].token;
+  return eb_vp9_dct_cat_lt_10_value_cost[v];
 }
 
 #ifdef __cplusplus

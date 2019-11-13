@@ -36,7 +36,7 @@ void intra_prediction(
         mode = plane == 0 ? xd->mi[0]->mode : xd->mi[0]->uv_mode;
     }
 
-    vp9_predict_intra_block(
+    eb_vp9_predict_intra_block(
         context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
         xd,
@@ -65,8 +65,8 @@ void inter_prediction(
 
     const BLOCK_SIZE plane_bsize = plane ? context_ptr->ep_block_stats_ptr->bsize_uv: context_ptr->ep_block_stats_ptr->bsize;
 
-    const int num_4x4_w = num_4x4_blocks_wide_lookup[plane_bsize];
-    const int num_4x4_h = num_4x4_blocks_high_lookup[plane_bsize];
+    const int num_4x4_w = eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize];
+    const int num_4x4_h = eb_vp9_num_4x4_blocks_high_lookup[plane_bsize];
     const int bw = num_4x4_w << 2;
     const int bh = num_4x4_h << 2;
 

@@ -15,7 +15,7 @@
 #include "EbTranspose_AVX2.h"
 #include "mem_sse2.h"
 
-void vpx_lpf_horizontal_16_avx2(unsigned char *s, int p,
+void eb_vp9_lpf_horizontal_16_avx2(unsigned char *s, int p,
                                 const unsigned char *_blimit,
                                 const unsigned char *_limit,
                                 const unsigned char *_thresh) {
@@ -707,7 +707,7 @@ static INLINE void lpf_horizontal_16_dual_avx2(const unsigned char *_blimit,
 #endif
     }
 }
-void vpx_lpf_horizontal_16_dual_avx2(unsigned char *s, int p,
+void eb_vp9_lpf_horizontal_16_dual_avx2(unsigned char *s, int p,
                                      const unsigned char *_blimit,
                                      const unsigned char *_limit,
                                      const unsigned char *_thresh) {

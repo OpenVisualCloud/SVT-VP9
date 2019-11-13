@@ -107,8 +107,8 @@
 
 SECTION .text
 
-global sym(vpx_filter_block1d4_v2_ssse3) PRIVATE
-sym(vpx_filter_block1d4_v2_ssse3):
+global sym(eb_vp9_filter_block1d4_v2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d4_v2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -131,8 +131,8 @@ sym(vpx_filter_block1d4_v2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d8_v2_ssse3) PRIVATE
-sym(vpx_filter_block1d8_v2_ssse3):
+global sym(eb_vp9_filter_block1d8_v2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d8_v2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -157,8 +157,8 @@ sym(vpx_filter_block1d8_v2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d16_v2_ssse3) PRIVATE
-sym(vpx_filter_block1d16_v2_ssse3):
+global sym(eb_vp9_filter_block1d16_v2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d16_v2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -184,8 +184,8 @@ sym(vpx_filter_block1d16_v2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d4_v2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d4_v2_avg_ssse3):
+global sym(eb_vp9_filter_block1d4_v2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d4_v2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -208,8 +208,8 @@ sym(vpx_filter_block1d4_v2_avg_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d8_v2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d8_v2_avg_ssse3):
+global sym(eb_vp9_filter_block1d8_v2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d8_v2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -234,8 +234,8 @@ sym(vpx_filter_block1d8_v2_avg_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d16_v2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d16_v2_avg_ssse3):
+global sym(eb_vp9_filter_block1d16_v2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d16_v2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -261,8 +261,8 @@ sym(vpx_filter_block1d16_v2_avg_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d4_h2_ssse3) PRIVATE
-sym(vpx_filter_block1d4_h2_ssse3):
+global sym(eb_vp9_filter_block1d4_h2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d4_h2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -286,8 +286,8 @@ sym(vpx_filter_block1d4_h2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d8_h2_ssse3) PRIVATE
-sym(vpx_filter_block1d8_h2_ssse3):
+global sym(eb_vp9_filter_block1d8_h2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d8_h2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -313,8 +313,8 @@ sym(vpx_filter_block1d8_h2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d16_h2_ssse3) PRIVATE
-sym(vpx_filter_block1d16_h2_ssse3):
+global sym(eb_vp9_filter_block1d16_h2_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d16_h2_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -340,8 +340,8 @@ sym(vpx_filter_block1d16_h2_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d4_h2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d4_h2_avg_ssse3):
+global sym(eb_vp9_filter_block1d4_h2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d4_h2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -365,8 +365,8 @@ sym(vpx_filter_block1d4_h2_avg_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d8_h2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d8_h2_avg_ssse3):
+global sym(eb_vp9_filter_block1d8_h2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d8_h2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6
@@ -392,8 +392,8 @@ sym(vpx_filter_block1d8_h2_avg_ssse3):
     pop         rbp
     ret
 
-global sym(vpx_filter_block1d16_h2_avg_ssse3) PRIVATE
-sym(vpx_filter_block1d16_h2_avg_ssse3):
+global sym(eb_vp9_filter_block1d16_h2_avg_ssse3) PRIVATE
+sym(eb_vp9_filter_block1d16_h2_avg_ssse3):
     push        rbp
     mov         rbp, rsp
     SHADOW_ARGS_TO_STACK 6

@@ -302,9 +302,9 @@ static INLINE void lower_mv_precision(MV *mv, int allow_hp) {
 
 typedef void (*find_mv_refs_sync)(void *const data, int mi_row);
 #if 1
-int vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
+int eb_vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
 #else
-void vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
+void eb_vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
 #endif
                       ModeInfo *mi, MV_REFERENCE_FRAME ref_frame,
                       int_mv *mv_ref_list, int mi_row, int mi_col,
@@ -313,7 +313,7 @@ void vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const 
 // check a list of motion vectors by sad score using a number rows of pixels
 // above and a number cols of pixels in the left to select the one with best
 // score to use as ref motion vector
-void vp9_find_best_ref_mvs(MACROBLOCKD *xd, int allow_hp, int_mv *mvlist,
+void eb_vp9_find_best_ref_mvs(MACROBLOCKD *xd, int allow_hp, int_mv *mvlist,
                            int_mv *nearest_mv, int_mv *near_mv);
 
 void vp9_append_sub8x8_mvs_for_idx(VP9_COMMON *cm, MACROBLOCKD *xd, int block,

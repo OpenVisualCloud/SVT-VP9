@@ -1019,7 +1019,7 @@ void vp9_set_row_mt(VP9_COMP *cpi);
  ***********************************************************************
  * The following 2 functions ('cal_nmvjointsadcost' and                *
  * 'cal_nmvsadcosts') are used to calculate cost lookup tables         *
- * used by 'vp9_diamond_search_sad'. The C implementation of the       *
+ * used by 'eb_vp9_diamond_search_sad'. The C implementation of the       *
  * function is generic, but the AVX intrinsics optimised version       *
  * relies on the following properties of the computed tables:          *
  * For cal_nmvjointsadcost:                                            *
@@ -1030,7 +1030,7 @@ void vp9_set_row_mt(VP9_COMP *cpi);
  *   - For all i: mvsadcost[0][i] == mvsadcost[0][-i]                  *
  *         (Cost function is even)                                     *
  * If these do not hold, then the AVX optimised version of the         *
- * 'vp9_diamond_search_sad' function cannot be used as it is, in which *
+ * 'eb_vp9_diamond_search_sad' function cannot be used as it is, in which *
  * case you can revert to using the C function instead.                *
  ***********************************************************************/
 

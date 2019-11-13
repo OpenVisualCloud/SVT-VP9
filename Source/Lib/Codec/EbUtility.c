@@ -422,7 +422,7 @@ static   BLOCK_SIZE get_plane_block_size(BLOCK_SIZE bsize,
     int subsampling_x,
     int subsampling_y) {
     if (bsize == BLOCK_INVALID) return BLOCK_INVALID;
-    return ss_size_lookup[bsize][subsampling_x][subsampling_y];
+    return eb_vp9_ss_size_lookup[bsize][subsampling_x][subsampling_y];
 }
 
 void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint8_t y, int is_last_quadrant)

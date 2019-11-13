@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include "prob.h"
 
-const uint8_t vpx_norm[256] = {
+const uint8_t eb_vp9_norm[256] = {
   0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
   3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -44,7 +44,7 @@ static unsigned int tree_merge_probs_impl(unsigned int i,
   return left_count + right_count;
 }
 
-void vpx_tree_merge_probs(const vpx_tree_index *tree, const vpx_prob *pre_probs,
+void eb_vp9_tree_merge_probs(const vpx_tree_index *tree, const vpx_prob *pre_probs,
                           const unsigned int *counts, vpx_prob *probs) {
   tree_merge_probs_impl(0, tree, pre_probs, counts, probs);
 }

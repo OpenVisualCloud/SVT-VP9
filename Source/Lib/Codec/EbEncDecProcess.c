@@ -445,15 +445,15 @@ void perform_coding_loop(
     const scan_order *scan_order;
     if (tx_size == TX_4X4) {
         tx_type = get_tx_type_4x4(get_plane_type(plane), xd, block);
-        scan_order = &vp9_scan_orders[TX_4X4][tx_type];
+        scan_order = &eb_vp9_scan_orders[TX_4X4][tx_type];
     }
     else {
         if (tx_size == TX_32X32) {
-            scan_order = &vp9_default_scan_orders[TX_32X32];
+            scan_order = &eb_vp9_default_scan_orders[TX_32X32];
         }
         else {
             tx_type = get_tx_type(get_plane_type(plane), xd);
-            scan_order = &vp9_scan_orders[tx_size][tx_type];
+            scan_order = &eb_vp9_scan_orders[tx_size][tx_type];
         }
     }
 
@@ -478,13 +478,13 @@ void perform_coding_loop(
                     residual_quant_coeff_stride);
             }
             else {
-                vpx_fdct32x32(
+                eb_vp9_fdct32x32(
                     residual_quant_coeff_buffer,
                     trans_coeff_buffer,
                     residual_quant_coeff_stride);
             }
 
-            vpx_quantize_b_32x32(
+            eb_vp9_quantize_b_32x32(
                 trans_coeff_buffer,
                 1024,
                 0,
@@ -516,7 +516,7 @@ void perform_coding_loop(
                 32);
 
             if (*eob) {
-                vp9_idct32x32_add(
+                eb_vp9_idct32x32_add(
                     recon_coeff_buffer,
                     recon_buffer,
                     recon_stride,
@@ -543,7 +543,7 @@ void perform_coding_loop(
                 residual_quant_coeff_stride,
                 tx_type);
 
-            vpx_quantize_b(
+            eb_vp9_quantize_b(
                 trans_coeff_buffer,
                 256,
                 0,
@@ -576,7 +576,7 @@ void perform_coding_loop(
                 16);
 
             if (*eob) {
-                vp9_iht16x16_add(
+                eb_vp9_iht16x16_add(
                     tx_type,
                     recon_coeff_buffer,
                     recon_buffer,
@@ -605,7 +605,7 @@ void perform_coding_loop(
                 residual_quant_coeff_stride,
                 tx_type);
 
-            vpx_quantize_b(
+            eb_vp9_quantize_b(
                 trans_coeff_buffer,
                 64,
                 0,
@@ -638,7 +638,7 @@ void perform_coding_loop(
                 8);
 
             if (*eob) {
-                vp9_iht8x8_add(
+                eb_vp9_iht8x8_add(
                     tx_type,
                     recon_coeff_buffer,
                     recon_buffer,
@@ -673,7 +673,7 @@ void perform_coding_loop(
                     trans_coeff_buffer,
                     residual_quant_coeff_stride);
 
-            vpx_quantize_b(
+            eb_vp9_quantize_b(
                 trans_coeff_buffer,
                 16,
                 0,
@@ -710,7 +710,7 @@ void perform_coding_loop(
                     // this is like vp9_short_idct4x4 but has a special case around eob<=1
                     // which is significant (not just an optimization) for the lossless
                     // case.
-                    vp9_idct4x4_add(
+                    eb_vp9_idct4x4_add(
                         recon_coeff_buffer,
                         recon_buffer,
                         recon_stride,
@@ -764,7 +764,7 @@ void perform_inv_trans_add(
             32);
 
         if (*eob) {
-            vp9_idct32x32_add(
+            eb_vp9_idct32x32_add(
                 recon_coeff_buffer,
                 recon_buffer,
                 recon_stride,
@@ -784,7 +784,7 @@ void perform_inv_trans_add(
             16);
 
         if (*eob) {
-            vp9_iht16x16_add(
+            eb_vp9_iht16x16_add(
                 tx_type,
                 recon_coeff_buffer,
                 recon_buffer,
@@ -804,7 +804,7 @@ void perform_inv_trans_add(
             8);
 
         if (*eob) {
-            vp9_iht8x8_add(
+            eb_vp9_iht8x8_add(
                 tx_type,
                 recon_coeff_buffer,
                 recon_buffer,
@@ -830,7 +830,7 @@ void perform_inv_trans_add(
                 // this is like vp9_short_idct4x4 but has a special case around eob<=1
                 // which is significant (not just an optimization) for the lossless
                 // case.
-                vp9_idct4x4_add(
+                eb_vp9_idct4x4_add(
                     recon_coeff_buffer,
                     recon_buffer,
                     recon_stride,
@@ -1061,7 +1061,7 @@ static void perform_dist_rate_calc(
 #if SEG_SUPPORT
             VP9_COMMON *const cm = &cpi->common;
             struct segmentation *const seg = &cm->seg;
-            const int qindex = vp9_get_qindex(seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
+            const int qindex = eb_vp9_get_qindex(seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
 
 #else
             const int qindex = picture_control_set_ptr->base_qindex;
@@ -1333,7 +1333,7 @@ static void perform_dist_rate_calc(
             struct macroblockd_plane *const pd = &xd->plane[plane];
             const TX_SIZE tx_size = plane ? context_ptr->ep_block_stats_ptr->tx_size_uv : context_ptr->ep_block_stats_ptr->tx_size;
             const BLOCK_SIZE plane_bsize = get_plane_block_size(VPXMAX(context_ptr->ep_block_stats_ptr->bsize, BLOCK_8X8), pd);
-            const int bwl = b_width_log2_lookup[plane_bsize];
+            const int bwl = eb_vp9_b_width_log2_lookup[plane_bsize];
             const int aoff = context_ptr->bmi_index & 0x1;
             const int loff = context_ptr->bmi_index >> 1;
 
@@ -1806,21 +1806,21 @@ static void perform_dist_rate_calc(
                 context_ptr->ref_costs_comp,
                 &context_ptr->comp_mode_p);
 
-            vp9_get_entropy_contexts(
+            eb_vp9_get_entropy_contexts(
                 context_ptr->ep_block_stats_ptr->bsize,
                 context_ptr->ep_block_stats_ptr->tx_size,
                 &context_ptr->e_mbd->plane[0],
                 context_ptr->t_above[0],
                 context_ptr->t_left[0]);
 
-            vp9_get_entropy_contexts(
+            eb_vp9_get_entropy_contexts(
                 context_ptr->ep_block_stats_ptr->bsize,
                 context_ptr->ep_block_stats_ptr->tx_size_uv,
                 &context_ptr->e_mbd->plane[1],
                 context_ptr->t_above[1],
                 context_ptr->t_left[1]);
 
-            vp9_get_entropy_contexts(
+            eb_vp9_get_entropy_contexts(
                 context_ptr->ep_block_stats_ptr->bsize,
                 context_ptr->ep_block_stats_ptr->tx_size_uv,
                 &context_ptr->e_mbd->plane[2],
@@ -1838,7 +1838,7 @@ static void perform_dist_rate_calc(
             set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
 
             if (context_ptr->ep_block_stats_ptr->bsize < BLOCK_8X8) {
-                vp9_set_contexts(xd,
+                eb_vp9_set_contexts(xd,
                     pd,
                     context_ptr->ep_block_stats_ptr->bsize,
                     context_ptr->ep_block_stats_ptr->tx_size,
@@ -1851,7 +1851,7 @@ static void perform_dist_rate_calc(
                     int blk_col = (tu_index & 0x1)*(1 << context_ptr->ep_block_stats_ptr->tx_size);
                     int blk_row = (tu_index >> 1)*(1 << context_ptr->ep_block_stats_ptr->tx_size);
 
-                    vp9_set_contexts(xd,
+                    eb_vp9_set_contexts(xd,
                         pd,
                         context_ptr->ep_block_stats_ptr->bsize,
                         context_ptr->ep_block_stats_ptr->tx_size,
@@ -1864,7 +1864,7 @@ static void perform_dist_rate_calc(
                 struct macroblockd_plane *pd = &xd->plane[1];
                 // Set skip context. point to the right location
                 set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
-                vp9_set_contexts(xd,
+                eb_vp9_set_contexts(xd,
                     pd,
                     context_ptr->ep_block_stats_ptr->bsize,
                     context_ptr->ep_block_stats_ptr->tx_size_uv,
@@ -1873,7 +1873,7 @@ static void perform_dist_rate_calc(
                     0);
 
                 pd = &xd->plane[2];
-                vp9_set_contexts(xd,
+                eb_vp9_set_contexts(xd,
                     pd,
                     context_ptr->ep_block_stats_ptr->bsize,
                     context_ptr->ep_block_stats_ptr->tx_size_uv,
@@ -1996,7 +1996,7 @@ static void perform_dist_rate_calc(
 #if SEG_SUPPORT
             VP9_COMMON *const cm = &cpi->common;
             struct segmentation *const seg = &cm->seg;
-            const int qindex = vp9_get_qindex(seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
+            const int qindex = eb_vp9_get_qindex(seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
 
 #else
             const int qindex = picture_control_set_ptr->base_qindex;
@@ -2264,9 +2264,9 @@ static void perform_dist_rate_calc(
                         context_ptr->block_chroma_origin_index = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * (MAX_SB_SIZE >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1);
 
                         context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                        context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                        context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                         context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                        context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                        context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                         // Set above_mi and left_mi
                         context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -2277,7 +2277,7 @@ static void perform_dist_rate_calc(
 #if SEG_SUPPORT
                         VP9_COMMON *const cm = &cpi->common;
                         struct segmentation *const seg = &cm->seg;
-                        const int qindex = vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
+                        const int qindex = eb_vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
 #endif
 
                         // Initialize Fast Loop
@@ -2739,9 +2739,9 @@ static void perform_dist_rate_calc(
                         context_ptr->block_chroma_origin_index = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * (MAX_SB_SIZE >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1);
 
                         context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                        context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                        context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                         context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                        context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                        context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                         // Set above_mi and left_mi
                         context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -2999,9 +2999,9 @@ static void perform_dist_rate_calc(
                 context_ptr->block_chroma_origin_index = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * (MAX_SB_SIZE >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1);
 
                 context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                 context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                 // Set above_mi and left_mi
                 context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -3315,9 +3315,9 @@ static void perform_dist_rate_calc(
                             context_ptr->block_chroma_origin_index = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * (MAX_SB_SIZE >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1);
 
                             context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                            context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                            context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                             context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                            context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                            context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                             // Set above_mi and left_mi
                             context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -3610,9 +3610,9 @@ static void perform_dist_rate_calc(
                     context_ptr->block_chroma_origin_index = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) * (MAX_SB_SIZE >> 1) + (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1);
 
                     context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                    context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                    context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                     context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                    context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                    context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                     // Set above_mi and left_mi
                     context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -3913,9 +3913,9 @@ static void perform_dist_rate_calc(
                     context_ptr->mi_stride = input_picture_ptr->width >> MI_SIZE_LOG2;
                     context_ptr->bmi_index = ((context_ptr->block_origin_x >> 2) & 0x1) + (((context_ptr->block_origin_y >> 2) & 0x1) << 1);
                     context_ptr->e_mbd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                    context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                    context_ptr->e_mbd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                     context_ptr->e_mbd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                    context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                    context_ptr->e_mbd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                     // Set above_mi and left_mi
                     context_ptr->e_mbd->above_mi = (context_ptr->mi_row > 0) ? context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * cm->mi_stride - cm->mi_stride] : NULL;
@@ -3941,21 +3941,21 @@ static void perform_dist_rate_calc(
                     // Set skip context
                     set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
 
-                    vp9_get_entropy_contexts(
+                    eb_vp9_get_entropy_contexts(
                         context_ptr->ep_block_stats_ptr->bsize,
                         context_ptr->ep_block_stats_ptr->tx_size,
                         &context_ptr->e_mbd->plane[0],
                         context_ptr->t_above[0],
                         context_ptr->t_left[0]);
 
-                    vp9_get_entropy_contexts(
+                    eb_vp9_get_entropy_contexts(
                         context_ptr->ep_block_stats_ptr->bsize,
                         context_ptr->ep_block_stats_ptr->tx_size_uv,
                         &context_ptr->e_mbd->plane[1],
                         context_ptr->t_above[1],
                         context_ptr->t_left[1]);
 
-                    vp9_get_entropy_contexts(
+                    eb_vp9_get_entropy_contexts(
                         context_ptr->ep_block_stats_ptr->bsize,
                         context_ptr->ep_block_stats_ptr->tx_size_uv,
                         &context_ptr->e_mbd->plane[2],
@@ -4002,7 +4002,7 @@ static void perform_dist_rate_calc(
 #if SEG_SUPPORT
                     VP9_COMMON *const cm = &cpi->common;
                     struct segmentation *const seg = &cm->seg;
-                    const int qindex = vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
+                    const int qindex = eb_vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
 
 #else
                     const int qindex = picture_control_set_ptr->base_qindex;
@@ -4306,7 +4306,7 @@ static void perform_dist_rate_calc(
                         set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
 
                         if (context_ptr->ep_block_stats_ptr->bsize < BLOCK_8X8) {
-                            vp9_set_contexts(xd,
+                            eb_vp9_set_contexts(xd,
                                 pd,
                                 context_ptr->ep_block_stats_ptr->bsize,
                                 context_ptr->ep_block_stats_ptr->tx_size,
@@ -4319,7 +4319,7 @@ static void perform_dist_rate_calc(
                                 int blk_col = (tu_index & 0x1)*(1 << context_ptr->ep_block_stats_ptr->tx_size);
                                 int blk_row = (tu_index >> 1)*(1 << context_ptr->ep_block_stats_ptr->tx_size);
 
-                                vp9_set_contexts(xd,
+                                eb_vp9_set_contexts(xd,
                                     pd,
                                     context_ptr->ep_block_stats_ptr->bsize,
                                     context_ptr->ep_block_stats_ptr->tx_size,
@@ -4333,7 +4333,7 @@ static void perform_dist_rate_calc(
                             struct macroblockd_plane *pd = &xd->plane[1];
                             // Set skip context. point to the right location
                             set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
-                            vp9_set_contexts(xd,
+                            eb_vp9_set_contexts(xd,
                                 pd,
                                 context_ptr->ep_block_stats_ptr->bsize,
                                 context_ptr->ep_block_stats_ptr->tx_size_uv,
@@ -4342,7 +4342,7 @@ static void perform_dist_rate_calc(
                                 0);
 
                             pd = &xd->plane[2];
-                            vp9_set_contexts(xd,
+                            eb_vp9_set_contexts(xd,
                                 pd,
                                 context_ptr->ep_block_stats_ptr->bsize,
                                 context_ptr->ep_block_stats_ptr->tx_size_uv,
@@ -5643,7 +5643,7 @@ static void perform_dist_rate_calc(
                 context_ptr->eob_zero_mode = (sequence_control_set_ptr->static_config.tune != TUNE_SQ || picture_control_set_ptr->temporal_layer_index > 0);
 
                 // Hsan: could be simplified
-                vp9_setup_scale_factors_for_frame(
+                eb_vp9_setup_scale_factors_for_frame(
                     context_ptr->sf,
                     picture_control_set_ptr->parent_pcs_ptr->cpi->common.width,      // Hsan: should be ref width
                     picture_control_set_ptr->parent_pcs_ptr->cpi->common.height,     // Hsan: should be ref height
@@ -5651,7 +5651,7 @@ static void perform_dist_rate_calc(
                     picture_control_set_ptr->parent_pcs_ptr->cpi->common.height);
 
                 // Hsan: could move to resource coordination
-                vp9_tile_init(&context_ptr->e_mbd->tile, &(picture_control_set_ptr->parent_pcs_ptr->cpi->common), 0, 0);
+                eb_vp9_tile_init(&context_ptr->e_mbd->tile, &(picture_control_set_ptr->parent_pcs_ptr->cpi->common), 0, 0);
 
                 context_ptr->e_mbd->plane[0].subsampling_x = context_ptr->e_mbd->plane[0].subsampling_y = 0;
                 context_ptr->e_mbd->plane[1].subsampling_x = context_ptr->e_mbd->plane[1].subsampling_y = 1;
@@ -5712,11 +5712,11 @@ static void perform_dist_rate_calc(
 #if SEG_SUPPORT
                             VP9_COMMON *const cm = &picture_control_set_ptr->parent_pcs_ptr->cpi->common;
                             struct segmentation *const seg = &cm->seg;
-                            const int qindex = vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
+                            const int qindex = eb_vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
 #else
                             const int qindex = picture_control_set_ptr->base_qindex;
 #endif
-                            context_ptr->RDMULT = vp9_compute_rd_mult(picture_control_set_ptr->parent_pcs_ptr->cpi, qindex);
+                            context_ptr->RDMULT = eb_vp9_compute_rd_mult(picture_control_set_ptr->parent_pcs_ptr->cpi, qindex);
                             context_ptr->rd_mult_sad = (int)MAX(round(sqrtf((float)context_ptr->RDMULT / 128) * 128), 1);
 
 #if SEG_SUPPORT
@@ -5837,7 +5837,7 @@ static void perform_dist_rate_calc(
 
                     if (sequence_control_set_ptr->static_config.loop_filter) {
 
-                        vp9_pick_filter_level(
+                        eb_vp9_pick_filter_level(
 #if 0
                             picture_control_set_ptr->parent_pcs_ptr->cpi->Source,
 #endif
@@ -5854,8 +5854,8 @@ static void perform_dist_rate_calc(
                         }
 
                         if (lf_application_enable_flag) {
-                            vp9_loop_filter_init(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
-                            vp9_reset_lfm(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
+                            eb_vp9_loop_filter_init(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
+                            eb_vp9_reset_lfm(&picture_control_set_ptr->parent_pcs_ptr->cpi->common);
 
                             // Set mi_grid_visible
                             picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_grid_visible = picture_control_set_ptr->mode_info_array;
@@ -5869,12 +5869,12 @@ static void perform_dist_rate_calc(
                             context_ptr->e_mbd->plane[2].dst.buf = &context_ptr->recon_buffer->buffer_cr[(context_ptr->recon_buffer->origin_x >> 1) + context_ptr->recon_buffer->stride_cr * (context_ptr->recon_buffer->origin_y >> 1)];
                             context_ptr->e_mbd->plane[2].dst.stride = context_ptr->recon_buffer->stride_cr;
 
-                            vp9_build_mask_frame(
+                            eb_vp9_build_mask_frame(
                                 &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
                                 lf->filter_level,
                                 0);
 
-                            vp9_loop_filter_frame(
+                            eb_vp9_loop_filter_frame(
 #if 0
                                 cm->frame_to_show,
 #endif

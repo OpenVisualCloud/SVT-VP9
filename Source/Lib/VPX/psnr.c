@@ -14,7 +14,7 @@
 #include "psnr.h"
 #include "yv12config.h"
 
-double vpx_sse_to_psnr(double samples, double peak, double sse) {
+double eb_vp9_sse_to_psnr(double samples, double peak, double sse) {
   if (sse > 0.0) {
     const double psnr = 10.0 * log10(samples * peak * peak / sse);
     return psnr > MAX_PSNR ? MAX_PSNR : psnr;
@@ -106,7 +106,7 @@ static int64_t get_sse(const uint8_t *a, int a_stride, const uint8_t *b,
     const uint8_t *pa = a;
     const uint8_t *pb = b;
     for (x = 0; x < width / 16; ++x) {
-      vpx_mse16x16(pa, a_stride, pb, b_stride, &sse);
+      eb_vp9_mse16x16(pa, a_stride, pb, b_stride, &sse);
       total_sse += sse;
 
       pa += 16;
@@ -175,7 +175,7 @@ static int64_t highbd_get_sse(const uint8_t *a, int a_stride, const uint8_t *b,
 }
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
-int64_t vpx_get_y_sse(const YV12_BUFFER_CONFIG *a,
+int64_t eb_vp9_get_y_sse(const YV12_BUFFER_CONFIG *a,
                       const YV12_BUFFER_CONFIG *b) {
   assert(a->y_crop_width == b->y_crop_width);
   assert(a->y_crop_height == b->y_crop_height);
@@ -232,7 +232,7 @@ void vpx_calc_highbd_psnr(const YV12_BUFFER_CONFIG *a,
     }
     psnr->sse[1 + i] = sse;
     psnr->samples[1 + i] = samples;
-    psnr->psnr[1 + i] = vpx_sse_to_psnr(samples, peak, (double)sse);
+    psnr->psnr[1 + i] = eb_vp9_sse_to_psnr(samples, peak, (double)sse);
 
     total_sse += sse;
     total_samples += samples;
@@ -241,12 +241,12 @@ void vpx_calc_highbd_psnr(const YV12_BUFFER_CONFIG *a,
   psnr->sse[0] = total_sse;
   psnr->samples[0] = total_samples;
   psnr->psnr[0] =
-      vpx_sse_to_psnr((double)total_samples, peak, (double)total_sse);
+      eb_vp9_sse_to_psnr((double)total_samples, peak, (double)total_sse);
 }
 
 #endif  // !CONFIG_VP9_HIGHBITDEPTH
 
-void vpx_calc_psnr(const YV12_BUFFER_CONFIG *a, const YV12_BUFFER_CONFIG *b,
+void eb_vp9_calc_psnr(const YV12_BUFFER_CONFIG *a, const YV12_BUFFER_CONFIG *b,
                    PSNR_STATS *psnr) {
   static const double peak = 255.0;
   const int widths[3] = { a->y_crop_width, a->uv_crop_width, a->uv_crop_width };
@@ -268,7 +268,7 @@ void vpx_calc_psnr(const YV12_BUFFER_CONFIG *a, const YV12_BUFFER_CONFIG *b,
         get_sse(a_planes[i], a_strides[i], b_planes[i], b_strides[i], w, h);
     psnr->sse[1 + i] = sse;
     psnr->samples[1 + i] = samples;
-    psnr->psnr[1 + i] = vpx_sse_to_psnr(samples, peak, (double)sse);
+    psnr->psnr[1 + i] = eb_vp9_sse_to_psnr(samples, peak, (double)sse);
 
     total_sse += sse;
     total_samples += samples;
@@ -277,5 +277,5 @@ void vpx_calc_psnr(const YV12_BUFFER_CONFIG *a, const YV12_BUFFER_CONFIG *b,
   psnr->sse[0] = total_sse;
   psnr->samples[0] = total_samples;
   psnr->psnr[0] =
-      vpx_sse_to_psnr((double)total_samples, peak, (double)total_sse);
+      eb_vp9_sse_to_psnr((double)total_samples, peak, (double)total_sse);
 }

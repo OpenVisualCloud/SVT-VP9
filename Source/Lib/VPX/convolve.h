@@ -22,7 +22,7 @@ typedef void filter8_1dfunction(const uint8_t *src_ptr, ptrdiff_t src_pitch,
                                 uint32_t output_height, const int16_t *filter);
 
 #define FUN_CONV_1D(name, offset, step_q4, dir, src_start, avg, opt)         \
-  void vpx_convolve8_##name##_##opt(                                         \
+  void eb_vp9_convolve8_##name##_##opt(                                         \
       const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,                \
       ptrdiff_t dst_stride, const InterpKernel *filter_kernel, int x0_q4,    \
       int x_step_q4, int y0_q4, int y_step_q4, int w, int h) {               \
@@ -67,7 +67,7 @@ typedef void filter8_1dfunction(const uint8_t *src_ptr, ptrdiff_t src_pitch,
   }
 
 #define FUN_CONV_2D(avg, opt)                                                  \
-  void vpx_convolve8_##avg##opt(                                               \
+  void eb_vp9_convolve8_##avg##opt(                                               \
       const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,                  \
       ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4,             \
       int x_step_q4, int y0_q4, int y_step_q4, int w, int h) {                 \
@@ -82,17 +82,17 @@ typedef void filter8_1dfunction(const uint8_t *src_ptr, ptrdiff_t src_pitch,
     assert(y_step_q4 == 16);                                                   \
     if (filter_x[0] | filter_x[1] | filter_x[2]) {                             \
       DECLARE_ALIGNED(16, uint8_t, fdata2[64 * 71]);                           \
-      vpx_convolve8_horiz_##opt(src - 3 * src_stride, src_stride, fdata2, 64,  \
+      eb_vp9_convolve8_horiz_##opt(src - 3 * src_stride, src_stride, fdata2, 64,  \
                                 filter, x0_q4, x_step_q4, y0_q4, y_step_q4, w, \
                                 h + 7);                                        \
-      vpx_convolve8_##avg##vert_##opt(fdata2 + 3 * 64, 64, dst, dst_stride,    \
+      eb_vp9_convolve8_##avg##vert_##opt(fdata2 + 3 * 64, 64, dst, dst_stride,    \
                                       filter, x0_q4, x_step_q4, y0_q4,         \
                                       y_step_q4, w, h);                        \
     } else {                                                                   \
       DECLARE_ALIGNED(16, uint8_t, fdata2[64 * 65]);                           \
-      vpx_convolve8_horiz_##opt(src, src_stride, fdata2, 64, filter, x0_q4,    \
+      eb_vp9_convolve8_horiz_##opt(src, src_stride, fdata2, 64, filter, x0_q4,    \
                                 x_step_q4, y0_q4, y_step_q4, w, h + 1);        \
-      vpx_convolve8_##avg##vert_##opt(fdata2, 64, dst, dst_stride, filter,     \
+      eb_vp9_convolve8_##avg##vert_##opt(fdata2, 64, dst, dst_stride, filter,     \
                                       x0_q4, x_step_q4, y0_q4, y_step_q4, w,   \
                                       h);                                      \
     }                                                                          \

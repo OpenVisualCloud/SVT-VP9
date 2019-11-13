@@ -37,22 +37,22 @@ typedef struct {
 } highbd_transform_2d;
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
-void vp9_iwht4x4_add(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_iwht4x4_add(const tran_low_t *input, uint8_t *dest, int stride,
                      int eob);
-void vp9_idct4x4_add(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_idct4x4_add(const tran_low_t *input, uint8_t *dest, int stride,
                      int eob);
-void vp9_idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride,
                      int eob);
-void vp9_idct16x16_add(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_idct16x16_add(const tran_low_t *input, uint8_t *dest, int stride,
                        int eob);
-void vp9_idct32x32_add(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_idct32x32_add(const tran_low_t *input, uint8_t *dest, int stride,
                        int eob);
 
-void vp9_iht4x4_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
+void eb_vp9_iht4x4_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
                     int stride, int eob);
-void vp9_iht8x8_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
+void eb_vp9_iht8x8_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
                     int stride, int eob);
-void vp9_iht16x16_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
+void eb_vp9_iht16x16_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest,
                       int stride, int eob);
 
 #if CONFIG_VP9_HIGHBITDEPTH

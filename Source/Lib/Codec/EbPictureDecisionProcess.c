@@ -1983,7 +1983,7 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                         }
 
                         if (picture_control_set_ptr->cpi->common.reference_mode != SINGLE_REFERENCE)
-                            vp9_setup_compound_reference_mode(&picture_control_set_ptr->cpi->common);
+                            eb_vp9_setup_compound_reference_mode(&picture_control_set_ptr->cpi->common);
 
 #if USE_SRC_REF
                         picture_control_set_ptr->use_src_ref = (picture_control_set_ptr->temporal_layer_index > 0) ?

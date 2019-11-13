@@ -203,9 +203,9 @@ Done:
 #endif
 }
 #if 1
-int vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
+int eb_vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
 #else
-void vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
+void eb_vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
 #endif
                       ModeInfo *mi, MV_REFERENCE_FRAME ref_frame,
                       int_mv *mv_ref_list, int mi_row, int mi_col,
@@ -218,7 +218,7 @@ void vp9_find_mv_refs(EncDecContext   *context_ptr, const VP9_COMMON *cm, const 
 #endif
 }
 
-void vp9_find_best_ref_mvs(MACROBLOCKD *xd, int allow_hp, int_mv *mvlist,
+void eb_vp9_find_best_ref_mvs(MACROBLOCKD *xd, int allow_hp, int_mv *mvlist,
                            int_mv *nearest_mv, int_mv *near_mv) {
   int i;
   // Make sure all the candidates are properly clamped etc

@@ -15,20 +15,20 @@
 #include "vp9_entropymv.h"
 #include "vp9_mv.h"
 
-const vpx_tree_index vp9_mv_joint_tree[TREE_SIZE(MV_JOINTS)] = {
+const vpx_tree_index eb_vp9_mv_joint_tree[TREE_SIZE(MV_JOINTS)] = {
   -MV_JOINT_ZERO, 2, -MV_JOINT_HNZVZ, 4, -MV_JOINT_HZVNZ, -MV_JOINT_HNZVNZ
 };
 
-const vpx_tree_index vp9_mv_class_tree[TREE_SIZE(MV_CLASSES)] = {
+const vpx_tree_index eb_vp9_mv_class_tree[TREE_SIZE(MV_CLASSES)] = {
   -MV_CLASS_0, 2,           -MV_CLASS_1, 4,           6,
   8,           -MV_CLASS_2, -MV_CLASS_3, 10,          12,
   -MV_CLASS_4, -MV_CLASS_5, -MV_CLASS_6, 14,          16,
   18,          -MV_CLASS_7, -MV_CLASS_8, -MV_CLASS_9, -MV_CLASS_10,
 };
 
-const vpx_tree_index vp9_mv_class0_tree[TREE_SIZE(CLASS0_SIZE)] = { -0, -1 };
+const vpx_tree_index eb_vp9_mv_class0_tree[TREE_SIZE(CLASS0_SIZE)] = { -0, -1 };
 
-const vpx_tree_index vp9_mv_fp_tree[TREE_SIZE(MV_FP_SIZE)] = { -0, 2,  -1,
+const vpx_tree_index eb_vp9_mv_fp_tree[TREE_SIZE(MV_FP_SIZE)] = { -0, 2,  -1,
                                                                4,  -2, -3 };
 
 static const nmv_context default_nmv_context = {
@@ -104,7 +104,7 @@ static INLINE int mv_class_base(MV_CLASS_TYPE c) {
   return c ? CLASS0_SIZE << (c + 2) : 0;
 }
 
-MV_CLASS_TYPE vp9_get_mv_class(int z, int *offset) {
+MV_CLASS_TYPE eb_vp9_get_mv_class(int z, int *offset) {
   const MV_CLASS_TYPE c = (z >= CLASS0_SIZE * 4096)
                               ? MV_CLASS_10
                               : (MV_CLASS_TYPE)log_in_base_2[z >> 3];
@@ -120,7 +120,7 @@ static void inc_mv_component(int v, nmv_component_counts *comp_counts, int incr,
   comp_counts->sign[s] += incr;
   z = (s ? -v : v) - 1; /* magnitude - 1 */
 
-  c = vp9_get_mv_class(z, &o);
+  c = eb_vp9_get_mv_class(z, &o);
   comp_counts->classes[c] += incr;
 
   d = (o >> 3);     /* int mv data */
@@ -140,7 +140,7 @@ static void inc_mv_component(int v, nmv_component_counts *comp_counts, int incr,
   }
 }
 
-void vp9_inc_mv(const MV *mv, nmv_context_counts *counts) {
+void eb_vp9_inc_mv(const MV *mv, nmv_context_counts *counts) {
   if (counts != NULL) {
     const MV_JOINT_TYPE j = vp9_get_mv_joint(mv);
     ++counts->joints[j];
@@ -155,14 +155,14 @@ void vp9_inc_mv(const MV *mv, nmv_context_counts *counts) {
   }
 }
 
-void vp9_adapt_mv_probs(VP9_COMMON *cm, int allow_hp) {
+void eb_vp9_adapt_mv_probs(VP9_COMMON *cm, int allow_hp) {
   int i, j;
 
   nmv_context *fc = &cm->fc->nmvc;
   const nmv_context *pre_fc = &cm->frame_contexts[cm->frame_context_idx].nmvc;
   const nmv_context_counts *counts = &cm->counts.mv;
 
-  vpx_tree_merge_probs(vp9_mv_joint_tree, pre_fc->joints, counts->joints,
+  eb_vp9_tree_merge_probs(eb_vp9_mv_joint_tree, pre_fc->joints, counts->joints,
                        fc->joints);
 
   for (i = 0; i < 2; ++i) {
@@ -171,19 +171,19 @@ void vp9_adapt_mv_probs(VP9_COMMON *cm, int allow_hp) {
     const nmv_component_counts *c = &counts->comps[i];
 
     comp->sign = mode_mv_merge_probs(pre_comp->sign, c->sign);
-    vpx_tree_merge_probs(vp9_mv_class_tree, pre_comp->classes, c->classes,
+    eb_vp9_tree_merge_probs(eb_vp9_mv_class_tree, pre_comp->classes, c->classes,
                          comp->classes);
-    vpx_tree_merge_probs(vp9_mv_class0_tree, pre_comp->class0, c->class0,
+    eb_vp9_tree_merge_probs(eb_vp9_mv_class0_tree, pre_comp->class0, c->class0,
                          comp->class0);
 
     for (j = 0; j < MV_OFFSET_BITS; ++j)
       comp->bits[j] = mode_mv_merge_probs(pre_comp->bits[j], c->bits[j]);
 
     for (j = 0; j < CLASS0_SIZE; ++j)
-      vpx_tree_merge_probs(vp9_mv_fp_tree, pre_comp->class0_fp[j],
+      eb_vp9_tree_merge_probs(eb_vp9_mv_fp_tree, pre_comp->class0_fp[j],
                            c->class0_fp[j], comp->class0_fp[j]);
 
-    vpx_tree_merge_probs(vp9_mv_fp_tree, pre_comp->fp, c->fp, comp->fp);
+    eb_vp9_tree_merge_probs(eb_vp9_mv_fp_tree, pre_comp->fp, c->fp, comp->fp);
 
     if (allow_hp) {
       comp->class0_hp = mode_mv_merge_probs(pre_comp->class0_hp, c->class0_hp);
@@ -192,4 +192,4 @@ void vp9_adapt_mv_probs(VP9_COMMON *cm, int allow_hp) {
   }
 }
 
-void vp9_init_mv_probs(VP9_COMMON *cm) { cm->fc->nmvc = default_nmv_context; }
+void eb_vp9_init_mv_probs(VP9_COMMON *cm) { cm->fc->nmvc = default_nmv_context; }

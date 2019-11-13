@@ -111,12 +111,12 @@ static void encode_term_subexp(VpxWriter *w, int word) {
   }
 }
 
-void vp9_write_prob_diff_update(VpxWriter *w, vpx_prob newp, vpx_prob oldp) {
+void eb_vp9_write_prob_diff_update(VpxWriter *w, vpx_prob newp, vpx_prob oldp) {
   const int delp = remap_prob(newp, oldp);
   encode_term_subexp(w, delp);
 }
 
-int vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp,
+int eb_vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp,
                                         vpx_prob *bestp, vpx_prob upd) {
   const int old_b = cost_branch256(ct, oldp);
   int bestsavings = 0;
@@ -140,7 +140,7 @@ int vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp,
   return bestsavings;
 }
 
-int vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
+int eb_vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
                                               const vpx_prob oldp,
                                               vpx_prob *bestp, vpx_prob upd,
                                               int stepsize) {
@@ -152,7 +152,7 @@ int vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
   const int upd_cost = vp9_cost_one(upd) - vp9_cost_zero(upd);
   const vpx_prob *newplist, *oldplist;
   vpx_prob bestnewp;
-  oldplist = vp9_pareto8_full[oldp - 1];
+  oldplist = eb_vp9_pareto8_full[oldp - 1];
   old_b = cost_branch256(ct + 2 * PIVOT_NODE, oldp);
   for (i = UNCONSTRAINED_NODES; i < ENTROPY_NODES; ++i)
     old_b += cost_branch256(ct + 2 * i, oldplist[i - UNCONSTRAINED_NODES]);
@@ -165,7 +165,7 @@ int vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
   if (old_b > upd_cost + (MIN_DELP_BITS << VP9_PROB_COST_SHIFT)) {
     for (newp = *bestp; (newp - oldp) * step_sign < 0; newp += step) {
       if (newp < 1 || newp > 255) continue;
-      newplist = vp9_pareto8_full[newp - 1];
+      newplist = eb_vp9_pareto8_full[newp - 1];
       new_b = cost_branch256(ct + 2 * PIVOT_NODE, (vpx_prob)newp);
       for (i = UNCONSTRAINED_NODES; i < ENTROPY_NODES; ++i)
         new_b += cost_branch256(ct + 2 * i, newplist[i - UNCONSTRAINED_NODES]);
@@ -182,16 +182,16 @@ int vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
   return bestsavings;
 }
 
-void vp9_cond_prob_diff_update(VpxWriter *w, vpx_prob *oldp,
+void eb_vp9_cond_prob_diff_update(VpxWriter *w, vpx_prob *oldp,
                                const unsigned int ct[2]) {
   const vpx_prob upd = DIFF_UPDATE_PROB;
   vpx_prob newp = get_binary_prob(ct[0], ct[1]);
   const int savings =
-      vp9_prob_diff_update_savings_search(ct, *oldp, &newp, upd);
+      eb_vp9_prob_diff_update_savings_search(ct, *oldp, &newp, upd);
   assert(newp >= 1);
   if (savings > 0) {
     vpx_write(w, 1, upd);
-    vp9_write_prob_diff_update(w, newp, *oldp);
+    eb_vp9_write_prob_diff_update(w, newp, *oldp);
     *oldp = newp;
   } else {
     vpx_write(w, 0, upd);

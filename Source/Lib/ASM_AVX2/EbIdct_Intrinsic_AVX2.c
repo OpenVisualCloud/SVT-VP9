@@ -656,7 +656,7 @@ static void idct32_34_16x32_avx2(
 }
 
 // Only upper-left 8x8 has non-zero coeff
-void vpx_idct32x32_34_add_avx2(
+void eb_vp9_idct32x32_34_add_avx2(
     const tran_low_t *input,
     uint8_t          *dest,
     int               stride)
@@ -667,7 +667,7 @@ void vpx_idct32x32_34_add_avx2(
 
     // Load input data. Only need to load the top left 8x8 block.
     load_transpose_16bit_8x8(input, 32, in);
-    idct32_34_8x32_ssse3(in, col);
+    eb_vp9_idct32_34_8x32_ssse3(in, col);
 
     for (i = 0; i < 32; i += 16) {
         int j;
@@ -872,7 +872,7 @@ static INLINE void store_buffer_16x32_avx2(
     }
 }
 
-void vpx_idct32x32_135_add_avx2(
+void eb_vp9_idct32x32_135_add_avx2(
     const tran_low_t *input,
     uint8_t          *dest,
     int               stride)

@@ -19,7 +19,7 @@
 extern "C" {
 #endif
 
-void vp9_tree_probs_from_distribution(vpx_tree tree,
+void eb_vp9_tree_probs_from_distribution(vpx_tree tree,
                                       unsigned int branch_ct[/* n - 1 */][2],
                                       const unsigned int num_events[/* n */]);
 
@@ -28,7 +28,7 @@ struct vp9_token {
   int len;
 };
 
-void vp9_tokens_from_tree(struct vp9_token *, const vpx_tree_index *);
+void eb_vp9_tokens_from_tree(struct vp9_token *, const vpx_tree_index *);
 
 static INLINE void vp9_write_tree(VpxWriter *w, const vpx_tree_index *tree,
                                   const vpx_prob *probs, int bits, int len,

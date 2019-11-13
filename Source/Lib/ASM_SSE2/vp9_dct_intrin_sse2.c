@@ -26,31 +26,31 @@
 #define ADD_EPI16 _mm_adds_epi16
 #define SUB_EPI16 _mm_subs_epi16
 #if FDCT32x32_HIGH_PRECISION
-void vpx_fdct32x32_rows_c(const int16_t *intermediate, tran_low_t *out) {
+void eb_vp9_fdct32x32_rows_c(const int16_t *intermediate, tran_low_t *out) {
     int i, j;
     for (i = 0; i < 32; ++i) {
         tran_high_t temp_in[32], temp_out[32];
         for (j = 0; j < 32; ++j) temp_in[j] = intermediate[j * 32 + i];
-        vpx_fdct32(temp_in, temp_out, 0);
+        eb_vp9_fdct32(temp_in, temp_out, 0);
         for (j = 0; j < 32; ++j)
             out[j + i * 32] =
             (tran_low_t)((temp_out[j] + 1 + (temp_out[j] < 0)) >> 2);
     }
 }
 #define HIGH_FDCT32x32_2D_C vpx_highbd_fdct32x32_c
-#define HIGH_FDCT32x32_2D_ROWS_C vpx_fdct32x32_rows_c
+#define HIGH_FDCT32x32_2D_ROWS_C eb_vp9_fdct32x32_rows_c
 #else
-void vpx_fdct32x32_rd_rows_c(const int16_t *intermediate, tran_low_t *out) {
+void eb_vp9_fdct32x32_rd_rows_c(const int16_t *intermediate, tran_low_t *out) {
     int i, j;
     for (i = 0; i < 32; ++i) {
         tran_high_t temp_in[32], temp_out[32];
         for (j = 0; j < 32; ++j) temp_in[j] = intermediate[j * 32 + i];
-        vpx_fdct32(temp_in, temp_out, 1);
+        eb_vp9_fdct32(temp_in, temp_out, 1);
         for (j = 0; j < 32; ++j) out[j + i * 32] = (tran_low_t)temp_out[j];
     }
 }
 #define HIGH_FDCT32x32_2D_C vpx_highbd_fdct32x32_rd_c
-#define HIGH_FDCT32x32_2D_ROWS_C vpx_fdct32x32_rd_rows_c
+#define HIGH_FDCT32x32_2D_ROWS_C eb_vp9_fdct32x32_rd_rows_c
 #endif  // FDCT32x32_HIGH_PRECISION
 #else
 #define ADD_EPI16 _mm_add_epi16
@@ -188,7 +188,7 @@ static void fadst4_sse2(__m128i *in) {
     in[1] = _mm_packs_epi32(u[1], u[3]);
     transpose_4x4(in);
 }
-void vpx_fdct4x4_sse2(const int16_t *input, tran_low_t *output, int stride) {
+void eb_vp9_fdct4x4_sse2(const int16_t *input, tran_low_t *output, int stride) {
     // This 2D transform implements 4 vertical 1D transforms followed
     // by 4 horizontal 1D transforms.  The multiplies and adds are as given
     // by Chen, Smith and Fralick ('77).  The commands for moving the data
@@ -415,12 +415,12 @@ void vpx_fdct4x4_sse2(const int16_t *input, tran_low_t *output, int stride) {
     storeu_output(in1, output + 2 * 4);
 }
 
-void vp9_fht4x4_sse2(const int16_t *input, tran_low_t *output, int stride,
+void eb_vp9_fht4x4_sse2(const int16_t *input, tran_low_t *output, int stride,
     int tx_type) {
     __m128i in[4];
 
     switch (tx_type) {
-    case DCT_DCT: vpx_fdct4x4_sse2(input, output, stride); break;
+    case DCT_DCT: eb_vp9_fdct4x4_sse2(input, output, stride); break;
     case ADST_DCT:
         load_buffer_4x4(input, in, stride);
         fadst4_sse2(in);

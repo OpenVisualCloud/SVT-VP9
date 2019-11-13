@@ -20,7 +20,7 @@ extern "C" {
 struct yv12_buffer_config;
 struct VP9_COMP;
 
-void vp9_pick_filter_level(
+void eb_vp9_pick_filter_level(
 #if 0
     const struct yv12_buffer_config *sd,
 #endif

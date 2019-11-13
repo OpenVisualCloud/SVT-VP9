@@ -236,7 +236,7 @@ static uint8_t get_filter_level(const loop_filter_info_n *lfi_n,
 #endif
 }
 
-void vp9_loop_filter_init(VP9_COMMON *cm) {
+void eb_vp9_loop_filter_init(VP9_COMMON *cm) {
   loop_filter_info_n *lfi = &cm->lf_info;
   struct loop_filter *lf = &cm->lf;
   int lvl;
@@ -250,7 +250,7 @@ void vp9_loop_filter_init(VP9_COMMON *cm) {
     memset(lfi->lfthr[lvl].hev_thr, (lvl >> 4), SIMD_WIDTH);
 }
 
-void vp9_loop_filter_frame_init(VP9_COMMON *cm, int default_filt_lvl) {
+void eb_vp9_loop_filter_frame_init(VP9_COMMON *cm, int default_filt_lvl) {
   int seg_id;
   // n_shift is the multiplier for lf_deltas
   // the multiplier is 1 for when filter_lvl is between 0 and 31;
@@ -466,11 +466,11 @@ static void filter_selectively_horiz(
 
       if (mask_16x16 & 1) {
         if ((mask_16x16 & 3) == 3) {
-          vpx_lpf_horizontal_16_dual(s, pitch, lfi->mblim, lfi->lim,
+          eb_vp9_lpf_horizontal_16_dual(s, pitch, lfi->mblim, lfi->lim,
                                      lfi->hev_thr);
           count = 2;
         } else {
-          vpx_lpf_horizontal_16(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+          eb_vp9_lpf_horizontal_16(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
         }
       } else if (mask_8x8 & 1) {
         if ((mask_8x8 & 3) == 3) {
@@ -655,7 +655,7 @@ static void build_masks(const loop_filter_info_n *const lfi_n,
                         const int shift_uv, LOOP_FILTER_MASK *lfm) {
   const BLOCK_SIZE block_size = mi->sb_type;
   const TX_SIZE tx_size_y = mi->tx_size;
-  const TX_SIZE tx_size_uv = uv_txsize_lookup[block_size][tx_size_y][1][1];
+  const TX_SIZE tx_size_uv = eb_vp9_uv_txsize_lookup[block_size][tx_size_y][1][1];
   const int filter_level = get_filter_level(lfi_n, mi);
   uint64_t *const left_y = &lfm->left_y[tx_size_y];
   uint64_t *const above_y = &lfm->above_y[tx_size_y];
@@ -669,8 +669,8 @@ static void build_masks(const loop_filter_info_n *const lfi_n,
   if (!filter_level) {
     return;
   } else {
-    const int w = num_8x8_blocks_wide_lookup[block_size];
-    const int h = num_8x8_blocks_high_lookup[block_size];
+    const int w = eb_vp9_num_8x8_blocks_wide_lookup[block_size];
+    const int h = eb_vp9_num_8x8_blocks_high_lookup[block_size];
     int index = shift_y;
     for (i = 0; i < h; i++) {
       memset(&lfm->lfl_y[index], filter_level, w);
@@ -741,8 +741,8 @@ static void build_y_mask(const loop_filter_info_n *const lfi_n,
   if (!filter_level) {
     return;
   } else {
-    const int w = num_8x8_blocks_wide_lookup[block_size];
-    const int h = num_8x8_blocks_high_lookup[block_size];
+    const int w = eb_vp9_num_8x8_blocks_wide_lookup[block_size];
+    const int h = eb_vp9_num_8x8_blocks_high_lookup[block_size];
     int index = shift_y;
     for (i = 0; i < h; i++) {
       memset(&lfm->lfl_y[index], filter_level, w);
@@ -764,7 +764,7 @@ static void build_y_mask(const loop_filter_info_n *const lfi_n,
   if (tx_size_y == TX_4X4) *int_4x4_y |= size_mask[block_size] << shift_y;
 }
 
-void vp9_adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
+void eb_vp9_adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
                      LOOP_FILTER_MASK *lfm) {
   int i;
 
@@ -880,7 +880,7 @@ void vp9_adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
 
 // This function sets up the bit masks for the entire 64x64 region represented
 // by mi_row, mi_col.
-void vp9_setup_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
+void eb_vp9_setup_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
                     ModeInfo **mi, const int mode_info_stride,
                     LOOP_FILTER_MASK *lfm) {
   int idx_32, idx_16, idx_8;
@@ -1109,14 +1109,14 @@ void vp9_filter_block_plane_non420(VP9_COMMON *cm,
       const int skip_this = mi[0].skip && is_inter_block(mi);
       // left edge of current unit is block/partition edge -> no skip
       const int block_edge_left =
-          (num_4x4_blocks_wide_lookup[sb_type] > 1)
-              ? !(c & (num_8x8_blocks_wide_lookup[sb_type] - 1))
+          (eb_vp9_num_4x4_blocks_wide_lookup[sb_type] > 1)
+              ? !(c & (eb_vp9_num_8x8_blocks_wide_lookup[sb_type] - 1))
               : 1;
       const int skip_this_c = skip_this && !block_edge_left;
       // top edge of current unit is block/partition edge -> no skip
       const int block_edge_above =
-          (num_4x4_blocks_high_lookup[sb_type] > 1)
-              ? !(r & (num_8x8_blocks_high_lookup[sb_type] - 1))
+          (eb_vp9_num_4x4_blocks_high_lookup[sb_type] > 1)
+              ? !(r & (eb_vp9_num_8x8_blocks_high_lookup[sb_type] - 1))
               : 1;
       const int skip_this_r = skip_this && !block_edge_above;
       const TX_SIZE tx_size = get_uv_tx_size(mi, plane);
@@ -1235,7 +1235,7 @@ void vp9_filter_block_plane_non420(VP9_COMMON *cm,
 }
 #endif
 
-void vp9_filter_block_plane_ss00(VP9_COMMON *const cm,
+void eb_vp9_filter_block_plane_ss00(VP9_COMMON *const cm,
                                  struct macroblockd_plane *const plane,
                                  int mi_row, LOOP_FILTER_MASK *lfm) {
   struct buf_2d *const dst = &plane->dst;
@@ -1320,7 +1320,7 @@ void vp9_filter_block_plane_ss00(VP9_COMMON *const cm,
   }
 }
 
-void vp9_filter_block_plane_ss11(VP9_COMMON *const cm,
+void eb_vp9_filter_block_plane_ss11(VP9_COMMON *const cm,
                                  struct macroblockd_plane *const plane,
                                  int mi_row, LOOP_FILTER_MASK *lfm) {
   struct buf_2d *const dst = &plane->dst;
@@ -1459,19 +1459,19 @@ static void loop_filter_rows(
       vp9_setup_dst_planes(planes, frame_buffer, mi_row, mi_col);
 #endif
       // TODO(jimbankoski): For 444 only need to do y mask.
-      vp9_adjust_mask(cm, mi_row, mi_col, lfm);
+      eb_vp9_adjust_mask(cm, mi_row, mi_col, lfm);
 
-      vp9_filter_block_plane_ss00(cm, &planes[0], mi_row, lfm);
+      eb_vp9_filter_block_plane_ss00(cm, &planes[0], mi_row, lfm);
       for (plane = 1; plane < num_planes; ++plane) {
 #if 1
-          vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
+          eb_vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
 #else
         switch (path) {
           case LF_PATH_420:
-            vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
+            eb_vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
             break;
           case LF_PATH_444:
-            vp9_filter_block_plane_ss00(cm, &planes[plane], mi_row, lfm);
+            eb_vp9_filter_block_plane_ss00(cm, &planes[plane], mi_row, lfm);
             break;
           case LF_PATH_SLOW:
             vp9_filter_block_plane_non420(cm, &planes[plane], mi + mi_col,
@@ -1484,7 +1484,7 @@ static void loop_filter_rows(
   }
 }
 
-void vp9_loop_filter_frame(
+void eb_vp9_loop_filter_frame(
 #if 0
     YV12_BUFFER_CONFIG *frame,
 #endif
@@ -1510,7 +1510,7 @@ void vp9_loop_filter_frame(
 // Used by the encoder to build the loop_filter masks.
 // TODO(slavarnway): Do the encoder the same way the decoder does it and
 //                   build the masks in line as part of the encode process.
-void vp9_build_mask_frame(VP9_COMMON *cm, int frame_filter_level,
+void eb_vp9_build_mask_frame(VP9_COMMON *cm, int frame_filter_level,
                           int partial_frame) {
   int start_mi_row, end_mi_row, mi_rows_to_filter;
   int mi_col, mi_row;
@@ -1524,13 +1524,13 @@ void vp9_build_mask_frame(VP9_COMMON *cm, int frame_filter_level,
   }
   end_mi_row = start_mi_row + mi_rows_to_filter;
 
-  vp9_loop_filter_frame_init(cm, frame_filter_level);
+  eb_vp9_loop_filter_frame_init(cm, frame_filter_level);
 
   for (mi_row = start_mi_row; mi_row < end_mi_row; mi_row += MI_BLOCK_SIZE) {
     ModeInfo **mi = cm->mi_grid_visible + mi_row * cm->mi_stride;
     for (mi_col = 0; mi_col < cm->mi_cols; mi_col += MI_BLOCK_SIZE) {
-      // vp9_setup_mask() zeros lfm
-      vp9_setup_mask(cm, mi_row, mi_col, mi + mi_col, cm->mi_stride,
+      // eb_vp9_setup_mask() zeros lfm
+      eb_vp9_setup_mask(cm, mi_row, mi_col, mi + mi_col, cm->mi_stride,
                      get_lfm(&cm->lf, mi_row, mi_col));
     }
   }
@@ -1548,13 +1548,13 @@ static const uint8_t first_block_in_16x16[8][8] = {
 // This function sets up the bit masks for a block represented
 // by mi_row, mi_col in a 64x64 region.
 // TODO(SJL): This function only works for yv12.
-void vp9_build_mask(VP9_COMMON *cm, const ModeInfo *mi, int mi_row, int mi_col,
+void eb_vp9_build_mask(VP9_COMMON *cm, const ModeInfo *mi, int mi_row, int mi_col,
                     int bw, int bh) {
   const BLOCK_SIZE block_size = mi->sb_type;
   const TX_SIZE tx_size_y = mi->tx_size;
   const loop_filter_info_n *const lfi_n = &cm->lf_info;
   const int filter_level = get_filter_level(lfi_n, mi);
-  const TX_SIZE tx_size_uv = uv_txsize_lookup[block_size][tx_size_y][1][1];
+  const TX_SIZE tx_size_uv = eb_vp9_uv_txsize_lookup[block_size][tx_size_y][1][1];
   LOOP_FILTER_MASK *const lfm = get_lfm(&cm->lf, mi_row, mi_col);
   uint64_t *const left_y = &lfm->left_y[tx_size_y];
   uint64_t *const above_y = &lfm->above_y[tx_size_y];
@@ -1630,7 +1630,7 @@ void vp9_build_mask(VP9_COMMON *cm, const ModeInfo *mi, int mi_row, int mi_col,
     *int_4x4_uv |= (size_mask_uv[block_size] & 0xffff) << shift_uv;
 }
 
-void vp9_loop_filter_data_reset(
+void eb_vp9_loop_filter_data_reset(
     LFWorkerData *lf_data, YV12_BUFFER_CONFIG *frame_buffer,
     struct VP9Common *cm, const struct macroblockd_plane planes[MAX_MB_PLANE]) {
   lf_data->frame_buffer = frame_buffer;
@@ -1641,7 +1641,7 @@ void vp9_loop_filter_data_reset(
   memcpy(lf_data->planes, planes, sizeof(lf_data->planes));
 }
 
-void vp9_reset_lfm(VP9_COMMON *const cm) {
+void eb_vp9_reset_lfm(VP9_COMMON *const cm) {
   if (cm->lf.filter_level) {
     memset(cm->lf.lfm, 0,
            ((cm->mi_rows + (MI_BLOCK_SIZE - 1)) >> 3) * cm->lf.lfm_stride *
@@ -1649,7 +1649,7 @@ void vp9_reset_lfm(VP9_COMMON *const cm) {
   }
 }
 
-int vp9_loop_filter_worker(void *arg1, void *unused) {
+int eb_vp9_loop_filter_worker(void *arg1, void *unused) {
   LFWorkerData *const lf_data = (LFWorkerData *)arg1;
   (void)unused;
   loop_filter_rows(

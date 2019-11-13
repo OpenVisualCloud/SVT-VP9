@@ -13,7 +13,7 @@
 #include "vpx_dsp_rtcd.h"
 #include "mem.h"
 
-void vpx_quantize_dc(const tran_low_t *coeff_ptr, int n_coeffs, int skip_block,
+void eb_vp9_quantize_dc(const tran_low_t *coeff_ptr, int n_coeffs, int skip_block,
                      const int16_t *round_ptr, const int16_t quant,
                      tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr,
                      const int16_t dequant_ptr, uint16_t *eob_ptr) {
@@ -61,7 +61,7 @@ void vpx_highbd_quantize_dc(const tran_low_t *coeff_ptr, int n_coeffs,
 }
 #endif
 
-void vpx_quantize_dc_32x32(const tran_low_t *coeff_ptr, int skip_block,
+void eb_vp9_quantize_dc_32x32(const tran_low_t *coeff_ptr, int skip_block,
                            const int16_t *round_ptr, const int16_t quant,
                            tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr,
                            const int16_t dequant_ptr, uint16_t *eob_ptr) {
@@ -113,7 +113,7 @@ void vpx_highbd_quantize_dc_32x32(const tran_low_t *coeff_ptr, int skip_block,
 }
 #endif
 
-void vpx_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
+void eb_vp9_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
                       int skip_block, const int16_t *zbin_ptr,
                       const int16_t *round_ptr, const int16_t *quant_ptr,
                       const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr,
@@ -213,7 +213,7 @@ void vpx_highbd_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
 }
 #endif
 
-void vpx_quantize_b_32x32_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
+void eb_vp9_quantize_b_32x32_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
                             int skip_block, const int16_t *zbin_ptr,
                             const int16_t *round_ptr, const int16_t *quant_ptr,
                             const int16_t *quant_shift_ptr,

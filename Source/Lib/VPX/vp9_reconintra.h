@@ -22,9 +22,9 @@
 extern "C" {
 #endif
 
-void vp9_init_intra_predictors(void);
+void eb_vp9_init_intra_predictors(void);
 
-void vp9_predict_intra_block(EncDecContext   *context_ptr,
+void eb_vp9_predict_intra_block(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                              const MACROBLOCKD *xd,
 #endif

@@ -28,8 +28,8 @@ typedef struct {
   const int16_t *neighbors;
 } scan_order;
 
-extern const scan_order vp9_default_scan_orders[TX_SIZES];
-extern const scan_order vp9_scan_orders[TX_SIZES][TX_TYPES];
+extern const scan_order eb_vp9_default_scan_orders[TX_SIZES];
+extern const scan_order eb_vp9_scan_orders[TX_SIZES][TX_TYPES];
 
 static INLINE int get_coef_context(const int16_t *neighbors,
                                    const uint8_t *token_cache, int c) {
@@ -43,10 +43,10 @@ static INLINE const scan_order *get_scan(const MACROBLOCKD *xd, TX_SIZE tx_size,
   const ModeInfo *const mi = xd->mi[0];
 
   if (is_inter_block(mi) || type != PLANE_TYPE_Y || xd->lossless) {
-    return &vp9_default_scan_orders[tx_size];
+    return &eb_vp9_default_scan_orders[tx_size];
   } else {
     const PREDICTION_MODE mode = get_y_mode(mi, block_idx);
-    return &vp9_scan_orders[tx_size][intra_mode_to_tx_type_lookup[mode]];
+    return &eb_vp9_scan_orders[tx_size][eb_vp9_intra_mode_to_tx_type_lookup[mode]];
   }
 }
 

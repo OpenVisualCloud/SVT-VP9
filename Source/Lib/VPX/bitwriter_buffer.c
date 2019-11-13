@@ -16,11 +16,11 @@
 #include <stdint.h>
 #include "bitwriter_buffer.h"
 
-size_t vpx_wb_bytes_written(const struct vpx_write_bit_buffer *wb) {
+size_t eb_vp9_wb_bytes_written(const struct vpx_write_bit_buffer *wb) {
   return wb->bit_offset / CHAR_BIT + (wb->bit_offset % CHAR_BIT > 0);
 }
 
-void vpx_wb_write_bit(struct vpx_write_bit_buffer *wb, int bit) {
+void eb_vp9_wb_write_bit(struct vpx_write_bit_buffer *wb, int bit) {
   const int off = (int)wb->bit_offset;
   const int p = off / CHAR_BIT;
   const int q = CHAR_BIT - 1 - off % CHAR_BIT;
@@ -33,13 +33,13 @@ void vpx_wb_write_bit(struct vpx_write_bit_buffer *wb, int bit) {
   wb->bit_offset = off + 1;
 }
 
-void vpx_wb_write_literal(struct vpx_write_bit_buffer *wb, int data, int bits) {
+void eb_vp9_wb_write_literal(struct vpx_write_bit_buffer *wb, int data, int bits) {
   int bit;
-  for (bit = bits - 1; bit >= 0; bit--) vpx_wb_write_bit(wb, (data >> bit) & 1);
+  for (bit = bits - 1; bit >= 0; bit--) eb_vp9_wb_write_bit(wb, (data >> bit) & 1);
 }
 
-void vpx_wb_write_inv_signed_literal(struct vpx_write_bit_buffer *wb, int data,
+void eb_vp9_wb_write_inv_signed_literal(struct vpx_write_bit_buffer *wb, int data,
                                      int bits) {
-  vpx_wb_write_literal(wb, abs(data), bits);
-  vpx_wb_write_bit(wb, data < 0);
+  eb_vp9_wb_write_literal(wb, abs(data), bits);
+  eb_vp9_wb_write_bit(wb, data < 0);
 }

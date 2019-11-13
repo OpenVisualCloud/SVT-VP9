@@ -30,7 +30,7 @@ extern "C" {
 
 typedef uint8_t INTERP_FILTER;
 
-extern const InterpKernel *vp9_filter_kernels[4];
+extern const InterpKernel *eb_vp9_filter_kernels[4];
 
 #ifdef __cplusplus
 }  // extern "C"

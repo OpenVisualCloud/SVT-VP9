@@ -597,7 +597,7 @@ void* eb_vp9_resource_coordination_kernel(void *input_ptr)
         memset(picture_control_set_ptr->cpi->interp_filter_selected, 0, sizeof(picture_control_set_ptr->cpi->interp_filter_selected[0][0]) * SWITCHABLE);
         picture_control_set_ptr->cpi->sf.mv.auto_mv_step_size = 0;
 
-        vp9_entropy_mv_init();
+        eb_vp9_entropy_mv_init();
 
         // variable
         picture_control_set_ptr->cpi->common.bit_depth = VPX_BITS_8;
@@ -606,7 +606,7 @@ void* eb_vp9_resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->cpi->common.render_width = picture_control_set_ptr->cpi->common.width;
         picture_control_set_ptr->cpi->common.render_height = picture_control_set_ptr->cpi->common.height;
 
-        vp9_set_mb_mi(
+        eb_vp9_set_mb_mi(
             &picture_control_set_ptr->cpi->common,
             picture_control_set_ptr->cpi->common.width,
             picture_control_set_ptr->cpi->common.height);
@@ -641,25 +641,25 @@ void* eb_vp9_resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->cpi->common.tx_mode = ALLOW_32X32;
 
         // Hsan: is it the right spot ?
-        vp9_default_coef_probs(&picture_control_set_ptr->cpi->common);
-        vp9_init_mv_probs(&picture_control_set_ptr->cpi->common);
+        eb_vp9_default_coef_probs(&picture_control_set_ptr->cpi->common);
+        eb_vp9_init_mv_probs(&picture_control_set_ptr->cpi->common);
 
         eb_vp9_init_mode_probs(picture_control_set_ptr->cpi->common.fc);
         vp9_zero(*picture_control_set_ptr->cpi->td.counts);        // Hsan  could be completely removed
         vp9_zero(picture_control_set_ptr->cpi->td.rd_counts);      // Hsan  could be completely removed
 
-        vp9_init_intra_predictors();
+        eb_vp9_init_intra_predictors();
 
-        /* vp9_init_quantizer() `is first called here. Add check in
-         * vp9_frame_init_quantizer() so that vp9_init_quantizer is only
+        /* eb_vp9_init_quantizer() `is first called here. Add check in
+         * vp9_frame_init_quantizer() so that eb_vp9_init_quantizer is only
          * called later when needed. This will avoid unnecessary calls of
-         * vp9_init_quantizer() for every frame.
+         * eb_vp9_init_quantizer() for every frame.
          */
-        vp9_init_quantizer(picture_control_set_ptr->cpi);
+        eb_vp9_init_quantizer(picture_control_set_ptr->cpi);
 
-        vp9_rc_init_minq_luts();
+        eb_vp9_rc_init_minq_luts();
 #if SEG_SUPPORT
-        vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
+        eb_vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
 #endif
         // Set the Encoder mode
         picture_control_set_ptr->enc_mode = sequence_control_set_ptr->static_config.enc_mode;

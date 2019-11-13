@@ -28,8 +28,8 @@ typedef struct VpxWriter {
   uint8_t *buffer;
 } VpxWriter;
 
-void vpx_start_encode(VpxWriter *bc, uint8_t *buffer);
-void vpx_stop_encode(VpxWriter *bc);
+void eb_vp9_start_encode(VpxWriter *bc, uint8_t *buffer);
+void eb_vp9_stop_encode(VpxWriter *bc);
 
 static INLINE void vpx_write(VpxWriter *br, int bit, int probability) {
   unsigned int split;
@@ -47,7 +47,7 @@ static INLINE void vpx_write(VpxWriter *br, int bit, int probability) {
     range = br->range - split;
   }
 
-  shift = vpx_norm[range];
+  shift = eb_vp9_norm[range];
 
   range <<= shift;
   count += shift;

@@ -20,7 +20,7 @@
 
 // Unconstrained Node Tree
 /* clang-format off */
-const vpx_tree_index vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)] = {
+const vpx_tree_index eb_vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)] = {
   2, 6,                                // 0 = LOW_VAL
   -TWO_TOKEN, 4,                       // 1 = TWO
   -THREE_TOKEN, -FOUR_TOKEN,           // 2 = THREE
@@ -32,21 +32,21 @@ const vpx_tree_index vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)] = {
 };
 /* clang-format on */
 
-const vpx_prob vp9_cat1_prob[] = { 159 };
-const vpx_prob vp9_cat2_prob[] = { 165, 145 };
-const vpx_prob vp9_cat3_prob[] = { 173, 148, 140 };
-const vpx_prob vp9_cat4_prob[] = { 176, 155, 140, 135 };
-const vpx_prob vp9_cat5_prob[] = { 180, 157, 141, 134, 130 };
-const vpx_prob vp9_cat6_prob[] = { 254, 254, 254, 252, 249, 243, 230,
+const vpx_prob eb_vp9_cat1_prob[] = { 159 };
+const vpx_prob eb_vp9_cat2_prob[] = { 165, 145 };
+const vpx_prob eb_vp9_cat3_prob[] = { 173, 148, 140 };
+const vpx_prob eb_vp9_cat4_prob[] = { 176, 155, 140, 135 };
+const vpx_prob eb_vp9_cat5_prob[] = { 180, 157, 141, 134, 130 };
+const vpx_prob eb_vp9_cat6_prob[] = { 254, 254, 254, 252, 249, 243, 230,
                                    196, 177, 153, 140, 133, 130, 129 };
 #if CONFIG_VP9_HIGHBITDEPTH
-const vpx_prob vp9_cat6_prob_high12[] = { 255, 255, 255, 255, 254, 254,
+const vpx_prob eb_vp9_cat6_prob_high12[] = { 255, 255, 255, 255, 254, 254,
                                           254, 252, 249, 243, 230, 196,
                                           177, 153, 140, 133, 130, 129 };
 #endif
 
 /* clang-format off */
-const uint8_t vp9_coefband_trans_8x8plus[1024] = {
+const uint8_t eb_vp9_coefband_trans_8x8plus[1024] = {
   0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5,
   // beyond MAXBAND_INDEX+1 all values are filled as 5
   5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -91,11 +91,11 @@ const uint8_t vp9_coefband_trans_8x8plus[1024] = {
 };
 /* clang-format on */
 
-const uint8_t vp9_coefband_trans_4x4[16] = {
+const uint8_t eb_vp9_coefband_trans_4x4[16] = {
   0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5,
 };
 
-const uint8_t vp9_pt_energy_class[ENTROPY_TOKENS] = { 0, 1, 2, 3, 3, 4,
+const uint8_t eb_vp9_pt_energy_class[ENTROPY_TOKENS] = { 0, 1, 2, 3, 3, 4,
                                                       4, 5, 5, 5, 5, 5 };
 
 // Model obtained from a 2-sided zero-centerd distribuition derived
@@ -110,9 +110,9 @@ const uint8_t vp9_pt_energy_class[ENTROPY_TOKENS] = { 0, 1, 2, 3, 3, 4,
 
 // Every odd line in this table can be generated from the even lines
 // by averaging :
-// vp9_pareto8_full[l][node] = (vp9_pareto8_full[l-1][node] +
-//                              vp9_pareto8_full[l+1][node] ) >> 1;
-const vpx_prob vp9_pareto8_full[COEFF_PROB_MODELS][MODEL_NODES] = {
+// eb_vp9_pareto8_full[l][node] = (eb_vp9_pareto8_full[l-1][node] +
+//                              eb_vp9_pareto8_full[l+1][node] ) >> 1;
+const vpx_prob eb_vp9_pareto8_full[COEFF_PROB_MODELS][MODEL_NODES] = {
   { 3, 86, 128, 6, 86, 23, 88, 29 },
   { 6, 86, 128, 11, 87, 42, 91, 52 },
   { 9, 86, 129, 17, 88, 61, 94, 76 },
@@ -1032,16 +1032,16 @@ static const vp9_coeff_probs_model default_coef_probs_32x32[PLANE_TYPES] = {
 
 static void extend_to_full_distribution(vpx_prob *probs, vpx_prob p) {
   assert(p != 0);
-  memcpy(probs, vp9_pareto8_full[p - 1], MODEL_NODES * sizeof(vpx_prob));
+  memcpy(probs, eb_vp9_pareto8_full[p - 1], MODEL_NODES * sizeof(vpx_prob));
 }
 
-void vp9_model_to_full_probs(const vpx_prob *model, vpx_prob *full) {
+void eb_vp9_model_to_full_probs(const vpx_prob *model, vpx_prob *full) {
   if (full != model)
     memcpy(full, model, sizeof(vpx_prob) * UNCONSTRAINED_NODES);
   extend_to_full_distribution(&full[UNCONSTRAINED_NODES], model[PIVOT_NODE]);
 }
 
-void vp9_default_coef_probs(VP9_COMMON *cm) {
+void eb_vp9_default_coef_probs(VP9_COMMON *cm) {
   vp9_copy(cm->fc->coef_probs[TX_4X4], default_coef_probs_4x4);
   vp9_copy(cm->fc->coef_probs[TX_8X8], default_coef_probs_8x8);
   vp9_copy(cm->fc->coef_probs[TX_16X16], default_coef_probs_16x16);
@@ -1084,7 +1084,7 @@ static void adapt_coef_probs(VP9_COMMON *cm, TX_SIZE tx_size,
         }
 }
 
-void vp9_adapt_coef_probs(VP9_COMMON *cm) {
+void eb_vp9_adapt_coef_probs(VP9_COMMON *cm) {
   TX_SIZE t;
   unsigned int count_sat, update_factor;
 

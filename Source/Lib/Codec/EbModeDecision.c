@@ -868,7 +868,7 @@ EbErrorType prepare_fast_loop_candidates(
 
         // [LAST_FRAME] Gets an initial list of candidate vectors from neighbours and orders them
         candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[LAST_FRAME];
-        context_ptr->use_ref_mvs_flag[LAST_FRAME] = vp9_find_mv_refs(
+        context_ptr->use_ref_mvs_flag[LAST_FRAME] = eb_vp9_find_mv_refs(
             context_ptr,
             &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
             context_ptr->e_mbd,
@@ -882,7 +882,7 @@ EbErrorType prepare_fast_loop_candidates(
         // [ALTREF_FRAME] Gets an initial list of candidate vectors from neighbours and orders them for
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
             candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[ALTREF_FRAME];
-            context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = vp9_find_mv_refs(
+            context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = eb_vp9_find_mv_refs(
                 context_ptr,
                 &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
                 context_ptr->e_mbd,

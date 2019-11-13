@@ -122,7 +122,7 @@ CONFIG_EMULATE_HARDWARE equ 0
 CONFIG_NON_GREEDY_MV equ 0
 
 %ifndef private_prefix
-    %define private_prefix vpx
+    %define private_prefix eb_vp9
 %endif
 
 %ifndef public_prefix

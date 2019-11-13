@@ -43,7 +43,7 @@ static INLINE __m256i k_packs_epi64_avx2(__m256i a, __m256i b) {
 }
 #endif
 
-void vpx_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride) {
+void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride) {
   // Calculate pre-multiplied strides
   const int str1 = stride;
   const int str2 = 2 * stride;

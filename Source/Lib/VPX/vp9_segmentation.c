@@ -16,30 +16,30 @@
 #include <stdint.h>
 #include "vp9_segmentation.h"
 
-void vp9_enable_segmentation(struct segmentation *seg) {
+void eb_vp9_enable_segmentation(struct segmentation *seg) {
   seg->enabled = 1;
   seg->update_map = 1;
   seg->update_data = 1;
 }
 
-void vp9_disable_segmentation(struct segmentation *seg) {
+void eb_vp9_disable_segmentation(struct segmentation *seg) {
   seg->enabled = 0;
   seg->update_map = 0;
   seg->update_data = 0;
 }
 
-void vp9_set_segment_data(struct segmentation *seg, signed char *feature_data,
+void eb_vp9_set_segment_data(struct segmentation *seg, signed char *feature_data,
                           unsigned char abs_delta) {
   seg->abs_delta = abs_delta;
 
   memcpy(seg->feature_data, feature_data, sizeof(seg->feature_data));
 }
-void vp9_disable_segfeature(struct segmentation *seg, int segment_id,
+void eb_vp9_disable_segfeature(struct segmentation *seg, int segment_id,
                             SEG_LVL_FEATURES feature_id) {
   seg->feature_mask[segment_id] &= ~(1 << feature_id);
 }
 
-void vp9_clear_segdata(struct segmentation *seg, int segment_id,
+void eb_vp9_clear_segdata(struct segmentation *seg, int segment_id,
                        SEG_LVL_FEATURES feature_id) {
   seg->feature_data[segment_id][feature_id] = 0;
 }
@@ -146,12 +146,12 @@ static void count_segs_sb(const VP9_COMMON *cm, MACROBLOCKD *xd,
                           BLOCK_SIZE bsize) {
   const int mis = cm->mi_stride;
   int bw, bh;
-  const int bs = num_8x8_blocks_wide_lookup[bsize], hbs = bs / 2;
+  const int bs = eb_vp9_num_8x8_blocks_wide_lookup[bsize], hbs = bs / 2;
 
   if (mi_row >= cm->mi_rows || mi_col >= cm->mi_cols) return;
 
-  bw = num_8x8_blocks_wide_lookup[mi[0]->sb_type];
-  bh = num_8x8_blocks_high_lookup[mi[0]->sb_type];
+  bw = eb_vp9_num_8x8_blocks_wide_lookup[mi[0]->sb_type];
+  bh = eb_vp9_num_8x8_blocks_high_lookup[mi[0]->sb_type];
 
   if (bw == bs && bh == bs) {
     count_segs(cm, xd, tile, mi, no_pred_segcounts, temporal_predictor_count,
@@ -169,7 +169,7 @@ static void count_segs_sb(const VP9_COMMON *cm, MACROBLOCKD *xd,
                temporal_predictor_count, t_unpred_segment_counts, hbs, bs, mi_row,
                mi_col + hbs);
   } else {
-    const BLOCK_SIZE subsize = subsize_lookup[PARTITION_SPLIT][bsize];
+    const BLOCK_SIZE subsize = eb_vp9_subsize_lookup[PARTITION_SPLIT][bsize];
     int n;
 
     assert(bw < bs && bh < bs);
@@ -211,7 +211,7 @@ void vp9_choose_segmap_coding_method(VP9_COMMON *cm, MACROBLOCKD *xd) {
   for (tile_col = 0; tile_col < 1 << cm->log2_tile_cols; tile_col++) {
     TileInfo tile;
     ModeInfo **mi_ptr;
-    vp9_tile_init(&tile, cm, 0, tile_col);
+    eb_vp9_tile_init(&tile, cm, 0, tile_col);
 
     mi_ptr = cm->mi_grid_visible + tile.mi_col_start;
     for (mi_row = 0; mi_row < cm->mi_rows;
@@ -260,11 +260,11 @@ void vp9_choose_segmap_coding_method(VP9_COMMON *cm, MACROBLOCKD *xd) {
   }
 }
 #endif
-void vp9_reset_segment_features(struct segmentation *seg) {
+void eb_vp9_reset_segment_features(struct segmentation *seg) {
   // Set up default state for MB feature flags
   seg->enabled = 0;
   seg->update_map = 0;
   seg->update_data = 0;
   memset(seg->tree_probs, 255, sizeof(seg->tree_probs));
-  vp9_clearall_segfeatures(seg);
+  eb_vp9_clearall_segfeatures(seg);
 }

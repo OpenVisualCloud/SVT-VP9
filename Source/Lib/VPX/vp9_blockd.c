@@ -13,7 +13,7 @@
 
 #include "vp9_blockd.h"
 
-PREDICTION_MODE vp9_left_block_mode(const ModeInfo *cur_mi,
+PREDICTION_MODE eb_vp9_left_block_mode(const ModeInfo *cur_mi,
                                     const ModeInfo *left_mi, int b) {
   if (b == 0 || b == 2) {
     if (!left_mi || is_inter_block(left_mi)) return DC_PRED;
@@ -25,7 +25,7 @@ PREDICTION_MODE vp9_left_block_mode(const ModeInfo *cur_mi,
   }
 }
 
-PREDICTION_MODE vp9_above_block_mode(const ModeInfo *cur_mi,
+PREDICTION_MODE eb_vp9_above_block_mode(const ModeInfo *cur_mi,
                                      const ModeInfo *above_mi, int b) {
   if (b == 0 || b == 1) {
     if (!above_mi || is_inter_block(above_mi)) return DC_PRED;
@@ -37,7 +37,7 @@ PREDICTION_MODE vp9_above_block_mode(const ModeInfo *cur_mi,
   }
 }
 
-void vp9_foreach_transformed_block_in_plane(
+void eb_vp9_foreach_transformed_block_in_plane(
     MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
     foreach_transformed_block_visitor visit, void *arg) {
   const struct macroblockd_plane *const pd = &xd->plane[plane];
@@ -47,8 +47,8 @@ void vp9_foreach_transformed_block_in_plane(
   // transform size varies per plane, look it up in a common way.
   const TX_SIZE tx_size = plane ? get_uv_tx_size(mi, pd) : mi->tx_size;
   const BLOCK_SIZE plane_bsize = get_plane_block_size(bsize, pd);
-  const int num_4x4_w = num_4x4_blocks_wide_lookup[plane_bsize];
-  const int num_4x4_h = num_4x4_blocks_high_lookup[plane_bsize];
+  const int num_4x4_w = eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize];
+  const int num_4x4_h = eb_vp9_num_4x4_blocks_high_lookup[plane_bsize];
   const int step = 1 << (tx_size << 1);
   int i = 0, r, c;
 
@@ -77,17 +77,17 @@ void vp9_foreach_transformed_block_in_plane(
   }
 }
 
-void vp9_foreach_transformed_block(MACROBLOCKD *xd,
+void eb_vp9_foreach_transformed_block(MACROBLOCKD *xd,
                                    BLOCK_SIZE bsize,
                                    foreach_transformed_block_visitor visit,
                                    void *arg) {
   int plane;
 
   for (plane = 0; plane < MAX_MB_PLANE; ++plane)
-    vp9_foreach_transformed_block_in_plane(xd, bsize, plane, visit, arg);
+    eb_vp9_foreach_transformed_block_in_plane(xd, bsize, plane, visit, arg);
 }
 
-void vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
+void eb_vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
                       BLOCK_SIZE plane_bsize, TX_SIZE tx_size, int has_eob,
                       int aoff, int loff) {
 
@@ -98,7 +98,7 @@ void vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
   // above
   if (has_eob && xd->mb_to_right_edge < 0) {
     int i;
-    const int blocks_wide = num_4x4_blocks_wide_lookup[plane_bsize] +
+    const int blocks_wide = eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize] +
                             (xd->mb_to_right_edge >> (5 + pd->subsampling_x));
     int above_contexts = tx_size_in_blocks;
     if (above_contexts + aoff > blocks_wide)
@@ -113,7 +113,7 @@ void vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
   // left
   if (has_eob && xd->mb_to_bottom_edge < 0) {
     int i;
-    const int blocks_high = num_4x4_blocks_high_lookup[plane_bsize] +
+    const int blocks_high = eb_vp9_num_4x4_blocks_high_lookup[plane_bsize] +
                             (xd->mb_to_bottom_edge >> (5 + pd->subsampling_y));
     int left_contexts = tx_size_in_blocks;
     if (left_contexts + loff > blocks_high) left_contexts = blocks_high - loff;
@@ -125,7 +125,7 @@ void vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
   }
 }
 
-void vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y) {
+void eb_vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y) {
   int i;
 
   for (i = 0; i < MAX_MB_PLANE; i++) {

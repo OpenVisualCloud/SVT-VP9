@@ -685,14 +685,14 @@ DECLARE_ALIGNED(16, static const int16_t, vp9_default_iscan_32x32[1024]) = {
   967,  973,  988,  996,  1002, 1006, 1014, 1018, 1021, 1023,
 };
 
-const scan_order vp9_default_scan_orders[TX_SIZES] = {
+const scan_order eb_vp9_default_scan_orders[TX_SIZES] = {
   { default_scan_4x4, vp9_default_iscan_4x4, default_scan_4x4_neighbors },
   { default_scan_8x8, vp9_default_iscan_8x8, default_scan_8x8_neighbors },
   { default_scan_16x16, vp9_default_iscan_16x16, default_scan_16x16_neighbors },
   { default_scan_32x32, vp9_default_iscan_32x32, default_scan_32x32_neighbors },
 };
 
-const scan_order vp9_scan_orders[TX_SIZES][TX_TYPES] = {
+const scan_order eb_vp9_scan_orders[TX_SIZES][TX_TYPES] = {
   { // TX_4X4
     { default_scan_4x4, vp9_default_iscan_4x4, default_scan_4x4_neighbors },
     { row_scan_4x4, vp9_row_iscan_4x4, row_scan_4x4_neighbors },

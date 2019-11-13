@@ -20,12 +20,12 @@
 extern "C" {
 #endif
 
-extern const uint16_t vp9_prob_cost[256];
+extern const uint16_t eb_vp9_prob_cost[256];
 
-// The factor to scale from cost in bits to cost in vp9_prob_cost units.
+// The factor to scale from cost in bits to cost in eb_vp9_prob_cost units.
 #define VP9_PROB_COST_SHIFT 9
 
-#define vp9_cost_zero(prob) (vp9_prob_cost[prob])
+#define vp9_cost_zero(prob) (eb_vp9_prob_cost[prob])
 
 #define vp9_cost_one(prob) vp9_cost_zero(256 - (prob))
 
@@ -51,8 +51,8 @@ static INLINE int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits,
   return cost;
 }
 
-void vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree);
-void vp9_cost_tokens_skip(int *costs, const vpx_prob *probs, vpx_tree tree);
+void eb_vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree);
+void eb_vp9_cost_tokens_skip(int *costs, const vpx_prob *probs, vpx_tree tree);
 
 #ifdef __cplusplus
 }  // extern "C"

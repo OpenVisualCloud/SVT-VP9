@@ -25,9 +25,9 @@ extern "C" {
 
 struct VP9Common;
 
-void vp9_init_mv_probs(struct VP9Common *cm);
+void eb_vp9_init_mv_probs(struct VP9Common *cm);
 
-void vp9_adapt_mv_probs(struct VP9Common *cm, int usehp);
+void eb_vp9_adapt_mv_probs(struct VP9Common *cm, int usehp);
 
 static INLINE int use_mv_hp(const MV *ref) {
   const int kMvRefThresh = 64;  // threshold for use of high-precision 1/8 mv
@@ -82,10 +82,10 @@ typedef enum {
 #define MV_UPP ((1 << MV_IN_USE_BITS) - 1)
 #define MV_LOW (-(1 << MV_IN_USE_BITS))
 
-extern const vpx_tree_index vp9_mv_joint_tree[];
-extern const vpx_tree_index vp9_mv_class_tree[];
-extern const vpx_tree_index vp9_mv_class0_tree[];
-extern const vpx_tree_index vp9_mv_fp_tree[];
+extern const vpx_tree_index eb_vp9_mv_joint_tree[];
+extern const vpx_tree_index eb_vp9_mv_class_tree[];
+extern const vpx_tree_index eb_vp9_mv_class0_tree[];
+extern const vpx_tree_index eb_vp9_mv_fp_tree[];
 
 typedef struct {
   vpx_prob sign;
@@ -111,7 +111,7 @@ static INLINE MV_JOINT_TYPE vp9_get_mv_joint(const MV *mv) {
   }
 }
 
-MV_CLASS_TYPE vp9_get_mv_class(int z, int *offset);
+MV_CLASS_TYPE eb_vp9_get_mv_class(int z, int *offset);
 
 typedef struct {
   unsigned int sign[2];
@@ -129,7 +129,7 @@ typedef struct {
   nmv_component_counts comps[2];
 } nmv_context_counts;
 
-void vp9_inc_mv(const MV *mv, nmv_context_counts *mvctx);
+void eb_vp9_inc_mv(const MV *mv, nmv_context_counts *mvctx);
 
 #ifdef __cplusplus
 }  // extern "C"

@@ -35,7 +35,7 @@ static int get_max_filter_level(const VP9_COMP *cpi) {
 #endif
 }
 
-void vp9_pick_filter_level(
+void eb_vp9_pick_filter_level(
 #if 0
     const YV12_BUFFER_CONFIG *sd,
 #endif
@@ -52,7 +52,7 @@ void vp9_pick_filter_level(
   } else if (method >= LPF_PICK_FROM_Q) {
     const int min_filter_level = 0;
     const int max_filter_level = get_max_filter_level(cpi);
-    const int q = vp9_ac_quant(cm->base_qindex, 0, cm->bit_depth);
+    const int q = eb_vp9_ac_quant(cm->base_qindex, 0, cm->bit_depth);
 // These values were determined by linear fitting the result of the
 // searched level, filt_guess = q * 0.316206 + 3.87252
 #if CONFIG_VP9_HIGHBITDEPTH

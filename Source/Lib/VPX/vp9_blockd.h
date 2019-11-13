@@ -111,10 +111,10 @@ static INLINE int has_second_ref(const ModeInfo *mi) {
     return mi->ref_frame[1] > INTRA_FRAME;
 }
 
-PREDICTION_MODE vp9_left_block_mode(const ModeInfo *cur_mi,
+PREDICTION_MODE eb_vp9_left_block_mode(const ModeInfo *cur_mi,
     const ModeInfo *left_mi, int b);
 
-PREDICTION_MODE vp9_above_block_mode(const ModeInfo *cur_mi,
+PREDICTION_MODE eb_vp9_above_block_mode(const ModeInfo *cur_mi,
     const ModeInfo *above_mi, int b);
 
 enum mv_precision { MV_PRECISION_Q3, MV_PRECISION_Q4 };
@@ -217,10 +217,10 @@ static INLINE PLANE_TYPE get_plane_type(int plane) {
 
 static INLINE BLOCK_SIZE get_subsize(BLOCK_SIZE bsize,
     PARTITION_TYPE partition) {
-    return subsize_lookup[partition][bsize];
+    return eb_vp9_subsize_lookup[partition][bsize];
 }
 
-extern const TX_TYPE intra_mode_to_tx_type_lookup[INTRA_MODES];
+extern const TX_TYPE eb_vp9_intra_mode_to_tx_type_lookup[INTRA_MODES];
 
 static INLINE TX_TYPE get_tx_type(PLANE_TYPE plane_type,
     const MACROBLOCKD *xd) {
@@ -229,7 +229,7 @@ static INLINE TX_TYPE get_tx_type(PLANE_TYPE plane_type,
     if (plane_type != PLANE_TYPE_Y || xd->lossless || is_inter_block(mi))
         return DCT_DCT;
 
-    return intra_mode_to_tx_type_lookup[mi->mode];
+    return eb_vp9_intra_mode_to_tx_type_lookup[mi->mode];
 }
 
 static INLINE TX_TYPE get_tx_type_4x4(PLANE_TYPE plane_type,
@@ -239,23 +239,23 @@ static INLINE TX_TYPE get_tx_type_4x4(PLANE_TYPE plane_type,
     if (plane_type != PLANE_TYPE_Y || xd->lossless || is_inter_block(mi))
         return DCT_DCT;
 
-    return intra_mode_to_tx_type_lookup[get_y_mode(mi, ib)];
+    return eb_vp9_intra_mode_to_tx_type_lookup[get_y_mode(mi, ib)];
 }
 
-void vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y);
+void eb_vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y);
 
 static INLINE TX_SIZE get_uv_tx_size(const ModeInfo *mi,
     const struct macroblockd_plane *pd) {
     assert(mi->sb_type < BLOCK_8X8 ||
-        ss_size_lookup[mi->sb_type][pd->subsampling_x][pd->subsampling_y] !=
+        eb_vp9_ss_size_lookup[mi->sb_type][pd->subsampling_x][pd->subsampling_y] !=
         BLOCK_INVALID);
-    return uv_txsize_lookup[mi->sb_type][mi->tx_size][pd->subsampling_x]
+    return eb_vp9_uv_txsize_lookup[mi->sb_type][mi->tx_size][pd->subsampling_x]
         [pd->subsampling_y];
 }
 
 static INLINE BLOCK_SIZE
     get_plane_block_size(BLOCK_SIZE bsize, const struct macroblockd_plane *pd) {
-    return ss_size_lookup[bsize][pd->subsampling_x][pd->subsampling_y];
+    return eb_vp9_ss_size_lookup[bsize][pd->subsampling_x][pd->subsampling_y];
 }
 
 static INLINE void reset_skip_context(MACROBLOCKD *xd, BLOCK_SIZE bsize) {
@@ -264,9 +264,9 @@ static INLINE void reset_skip_context(MACROBLOCKD *xd, BLOCK_SIZE bsize) {
         struct macroblockd_plane *const pd = &xd->plane[i];
         const BLOCK_SIZE plane_bsize = get_plane_block_size(bsize, pd);
         memset(pd->above_context, 0,
-            sizeof(ENTROPY_CONTEXT) * num_4x4_blocks_wide_lookup[plane_bsize]);
+            sizeof(ENTROPY_CONTEXT) * eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize]);
         memset(pd->left_context, 0,
-            sizeof(ENTROPY_CONTEXT) * num_4x4_blocks_high_lookup[plane_bsize]);
+            sizeof(ENTROPY_CONTEXT) * eb_vp9_num_4x4_blocks_high_lookup[plane_bsize]);
     }
 }
 
@@ -274,9 +274,9 @@ static INLINE const vpx_prob *get_y_mode_probs(const ModeInfo *mi,
     const ModeInfo *above_mi,
     const ModeInfo *left_mi,
     int block) {
-    const PREDICTION_MODE above = vp9_above_block_mode(mi, above_mi, block);
-    const PREDICTION_MODE left = vp9_left_block_mode(mi, left_mi, block);
-    return vp9_kf_y_mode_prob[above][left];
+    const PREDICTION_MODE above = eb_vp9_above_block_mode(mi, above_mi, block);
+    const PREDICTION_MODE left = eb_vp9_left_block_mode(mi, left_mi, block);
+    return eb_vp9_kf_y_mode_prob[above][left];
 }
 
 typedef void(*foreach_transformed_block_visitor)(MACROBLOCKD *xd, int plane, int block, int row,
@@ -284,16 +284,16 @@ typedef void(*foreach_transformed_block_visitor)(MACROBLOCKD *xd, int plane, int
     BLOCK_SIZE plane_bsize,
     TX_SIZE tx_size, void *arg);
 
-void vp9_foreach_transformed_block_in_plane(
+void eb_vp9_foreach_transformed_block_in_plane(
     MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
     foreach_transformed_block_visitor visit, void *arg);
 
-void vp9_foreach_transformed_block(MACROBLOCKD *xd,
+void eb_vp9_foreach_transformed_block(MACROBLOCKD *xd,
     BLOCK_SIZE bsize,
     foreach_transformed_block_visitor visit,
     void *arg);
 
-void vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
+void eb_vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd,
     BLOCK_SIZE plane_bsize, TX_SIZE tx_size, int has_eob,
     int aoff, int loff);
 

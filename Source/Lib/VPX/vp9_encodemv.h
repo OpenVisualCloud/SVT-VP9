@@ -22,16 +22,16 @@
 extern "C" {
 #endif
 
-void vp9_entropy_mv_init(void);
+void eb_vp9_entropy_mv_init(void);
 
-void vp9_write_nmv_probs(VP9_COMMON *cm, int usehp, VpxWriter *w,
+void eb_vp9_write_nmv_probs(VP9_COMMON *cm, int usehp, VpxWriter *w,
                          nmv_context_counts *const counts);
 
-void vp9_encode_mv(VP9_COMP *cpi, VpxWriter *w, const MV *mv, const MV *ref,
+void eb_vp9_encode_mv(VP9_COMP *cpi, VpxWriter *w, const MV *mv, const MV *ref,
                    const nmv_context *mvctx, int usehp,
                    unsigned int *const max_mv_magnitude);
 
-void vp9_build_nmv_cost_table(int *mvjoint, int *mvcost[2],
+void eb_vp9_build_nmv_cost_table(int *mvjoint, int *mvcost[2],
                               const nmv_context *mvctx, int usehp);
 
 void vp9_update_mv_count(ThreadData *td);

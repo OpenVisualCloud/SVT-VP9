@@ -351,7 +351,7 @@ static INLINE void set_partition_probs(const VP9_COMMON *const cm,
                                        MACROBLOCKD *const xd) {
   xd->partition_probs =
       frame_is_intra_only(cm)
-          ? &vp9_kf_partition_probs[0]
+          ? &eb_vp9_kf_partition_probs[0]
           : (const vpx_prob(*)[PARTITION_TYPES - 1]) cm->fc->partition_prob;
 }
 // Hsan now does something different - to rename ?
@@ -427,8 +427,8 @@ static INLINE void update_partition_context(MACROBLOCKD *xd, int mi_row,
   PARTITION_CONTEXT *const above_ctx = xd->above_seg_context + mi_col;
   PARTITION_CONTEXT *const left_ctx = xd->left_seg_context + (mi_row & MI_MASK);
 
-  // num_4x4_blocks_wide_lookup[bsize] / 2
-  const int bs = num_8x8_blocks_wide_lookup[bsize];
+  // eb_vp9_num_4x4_blocks_wide_lookup[bsize] / 2
+  const int bs = eb_vp9_num_8x8_blocks_wide_lookup[bsize];
 
   // update the partition context at the end notes. set partition bits
   // of block sizes larger than the current one to be one, and partition
@@ -441,10 +441,10 @@ static INLINE int partition_plane_context(const MACROBLOCKD *xd, int mi_row,
                                           int mi_col, BLOCK_SIZE bsize) {
   const PARTITION_CONTEXT *above_ctx = xd->above_seg_context + mi_col;
   const PARTITION_CONTEXT *left_ctx = xd->left_seg_context + (mi_row & MI_MASK);
-  const int bsl = mi_width_log2_lookup[bsize];
+  const int bsl = eb_vp9_mi_width_log2_lookup[bsize];
   int above = (*above_ctx >> bsl) & 1, left = (*left_ctx >> bsl) & 1;
 
-  assert(b_width_log2_lookup[bsize] == b_height_log2_lookup[bsize]);
+  assert(eb_vp9_b_width_log2_lookup[bsize] == eb_vp9_b_height_log2_lookup[bsize]);
   assert(bsl >= 0);
 
   return (left * 2 + above) + bsl * PARTITION_PLOFFSET;

@@ -11,7 +11,7 @@
 #include "vp9_rtcd.h"
 #include "inv_txfm_sse2.h"
 
-void vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
     int tx_type) {
     __m128i in[2];
     const __m128i eight = _mm_set1_epi16(8);
@@ -21,21 +21,21 @@ void vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
 
     switch (tx_type) {
     case DCT_DCT:
-        idct4_sse2(in);
-        idct4_sse2(in);
+        eb_vp9_idct4_sse2(in);
+        eb_vp9_idct4_sse2(in);
         break;
     case ADST_DCT:
-        idct4_sse2(in);
-        iadst4_sse2(in);
+        eb_vp9_idct4_sse2(in);
+        eb_vp9_iadst4_sse2(in);
         break;
     case DCT_ADST:
-        iadst4_sse2(in);
-        idct4_sse2(in);
+        eb_vp9_iadst4_sse2(in);
+        eb_vp9_idct4_sse2(in);
         break;
     default:
         assert(tx_type == ADST_ADST);
-        iadst4_sse2(in);
-        iadst4_sse2(in);
+        eb_vp9_iadst4_sse2(in);
+        eb_vp9_iadst4_sse2(in);
         break;
     }
 
@@ -49,7 +49,7 @@ void vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
     recon_and_store4x4_sse2(in, dest, stride);
 }
 
-void vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
+void eb_vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
     int tx_type) {
     __m128i in[8];
     const __m128i final_rounding = _mm_set1_epi16(1 << 4);
@@ -66,21 +66,21 @@ void vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
 
     switch (tx_type) {
     case DCT_DCT:
-        vpx_idct8_sse2(in);
-        vpx_idct8_sse2(in);
+        eb_vp9_idct8_sse2(in);
+        eb_vp9_idct8_sse2(in);
         break;
     case ADST_DCT:
-        vpx_idct8_sse2(in);
-        iadst8_sse2(in);
+        eb_vp9_idct8_sse2(in);
+        eb_vp9_iadst8_sse2(in);
         break;
     case DCT_ADST:
-        iadst8_sse2(in);
-        vpx_idct8_sse2(in);
+        eb_vp9_iadst8_sse2(in);
+        eb_vp9_idct8_sse2(in);
         break;
     default:
         assert(tx_type == ADST_ADST);
-        iadst8_sse2(in);
-        iadst8_sse2(in);
+        eb_vp9_iadst8_sse2(in);
+        eb_vp9_iadst8_sse2(in);
         break;
     }
 

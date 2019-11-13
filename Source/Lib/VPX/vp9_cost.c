@@ -16,7 +16,7 @@
 
 /* round(-log2(i/256.) * (1 << VP9_PROB_COST_SHIFT))
    Begins with a bogus entry for simpler addressing. */
-const uint16_t vp9_prob_cost[256] = {
+const uint16_t eb_vp9_prob_cost[256] = {
   4096, 4096, 3584, 3284, 3072, 2907, 2772, 2659, 2560, 2473, 2395, 2325, 2260,
   2201, 2147, 2096, 2048, 2003, 1961, 1921, 1883, 1847, 1813, 1780, 1748, 1718,
   1689, 1661, 1635, 1609, 1584, 1559, 1536, 1513, 1491, 1470, 1449, 1429, 1409,
@@ -56,11 +56,11 @@ static void cost(int *costs, vpx_tree tree, const vpx_prob *probs, int i,
   }
 }
 
-void vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree) {
+void eb_vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree) {
   cost(costs, tree, probs, 0, 0);
 }
 
-void vp9_cost_tokens_skip(int *costs, const vpx_prob *probs, vpx_tree tree) {
+void eb_vp9_cost_tokens_skip(int *costs, const vpx_prob *probs, vpx_tree tree) {
   assert(tree[0] <= 0 && tree[1] > 0);
 
   costs[-tree[0]] = vp9_cost_bit(probs[0], 0);

@@ -42,7 +42,7 @@ int vp9_get_refresh_mask(VP9_COMP *cpi);
 #endif
 void vp9_bitstream_encode_tiles_buffer_dealloc(VP9_COMP *const cpi);
 
-void vp9_pack_bitstream(
+void eb_vp9_pack_bitstream(
     PictureControlSet   *picture_control_set_ptr,
     VP9_COMP            *cpi,
     uint8_t             *dest,

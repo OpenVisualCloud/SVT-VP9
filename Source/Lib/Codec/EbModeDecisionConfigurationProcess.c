@@ -1972,11 +1972,11 @@ void prediction_partition_loop(
 #if SEG_SUPPORT
     VP9_COMMON *const cm = &cpi->common;
     struct segmentation *const seg = &cm->seg;
-    const int qindex = vp9_get_qindex(seg, sb_ptr->segment_id, picture_control_set_ptr->base_qindex);
+    const int qindex = eb_vp9_get_qindex(seg, sb_ptr->segment_id, picture_control_set_ptr->base_qindex);
 #else
     const int qindex = picture_control_set_ptr->base_qindex;
 #endif
-    int RDMULT = vp9_compute_rd_mult(cpi, qindex);
+    int RDMULT = eb_vp9_compute_rd_mult(cpi, qindex);
     context_ptr->rd_mult_sad = (int)MAX(round(sqrtf((float)RDMULT / 128) * 128), 1);
 
     for (block_index = 0; block_index < PA_BLOCK_MAX_COUNT; ++block_index) {
@@ -3030,7 +3030,7 @@ void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr)
         picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvsadcost_hp[1] = &picture_control_set_ptr->parent_pcs_ptr->cpi->nmvsadcosts_hp[1][MV_MAX];
         cal_nmvsadcosts_hp(picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvsadcost_hp);
 
-        vp9_initialize_rd_consts(picture_control_set_ptr->parent_pcs_ptr->cpi);
+        eb_vp9_initialize_rd_consts(picture_control_set_ptr->parent_pcs_ptr->cpi);
 
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.allow_high_precision_mv) {
             picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.mvcost = picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvcost_hp;
@@ -3051,8 +3051,8 @@ void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr)
         VP9_COMMON *const cm = &cpi->common;
         struct segmentation *const seg = &cm->seg;
 
-        vp9_disable_segmentation(seg);
-        vp9_clearall_segfeatures(seg);
+        eb_vp9_disable_segmentation(seg);
+        eb_vp9_clearall_segfeatures(seg);
 
         if (sequence_control_set_ptr->static_config.rate_control_mode == 2 && picture_control_set_ptr->temporal_layer_index < 1 && picture_control_set_ptr->parent_pcs_ptr->non_moving_average_score > 5) {
             qpm_derive_bea(
@@ -3060,7 +3060,7 @@ void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr)
                 picture_control_set_ptr,
                 sequence_control_set_ptr);
 
-            vp9_enable_segmentation(seg);
+            eb_vp9_enable_segmentation(seg);
             // Select delta coding method.
             seg->abs_delta = SEGMENT_DELTADATA;
 
@@ -3071,8 +3071,8 @@ void* eb_vp9_mode_decision_configuration_kernel(void *input_ptr)
                 qindex_delta = context_ptr->qindex_delta[segment];
                 //if ((cm->base_qindex + qindex_delta) > 0) {
                 if ((cm->base_qindex + qindex_delta) > 0 && picture_control_set_ptr->segment_counts[segment]) {
-                    vp9_enable_segfeature(seg, segment, SEG_LVL_ALT_Q);
-                    vp9_set_segdata(seg, segment, SEG_LVL_ALT_Q, qindex_delta);
+                    eb_vp9_enable_segfeature(seg, segment, SEG_LVL_ALT_Q);
+                    eb_vp9_set_segdata(seg, segment, SEG_LVL_ALT_Q, qindex_delta);
                 }
             }
         }

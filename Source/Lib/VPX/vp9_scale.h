@@ -41,14 +41,14 @@ struct scale_factors {
 #endif
 };
 
-MV32 vp9_scale_mv(const MV *mv, int x, int y, const struct scale_factors *sf);
+MV32 eb_vp9_scale_mv(const MV *mv, int x, int y, const struct scale_factors *sf);
 
 #if CONFIG_VP9_HIGHBITDEPTH
-void vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w,
+void eb_vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w,
                                        int other_h, int this_w, int this_h,
                                        int use_high);
 #else
-void vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w,
+void eb_vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w,
                                        int other_h, int this_w, int this_h);
 #endif
 
