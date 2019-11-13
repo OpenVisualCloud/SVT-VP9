@@ -170,7 +170,7 @@ void eb_vp9_memcpy16bit(
     uint16_t *out_ptr,
     uint16_t *in_ptr,
     uint64_t  num_of_elements);
-void memset16bit(
+void eb_vp9_memset16bit(
     uint16_t *in_ptr,
     uint16_t  value,
     uint64_t  num_of_elements);

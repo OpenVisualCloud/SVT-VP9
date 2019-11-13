@@ -31,7 +31,7 @@ extern EbErrorType eb_vp9_picture_manager_context_ctor(
     EbFifo                 *picture_manager_output_fifo_ptr,
     EbFifo                **picture_control_set_fifo_ptr_array);
 
-extern void* PictureManagerKernel(void *input_ptr);
+extern void* eb_vp9_PictureManagerKernel(void *input_ptr);
 
 #ifdef __cplusplus
 }

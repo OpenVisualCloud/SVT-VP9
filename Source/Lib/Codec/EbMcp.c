@@ -80,8 +80,8 @@ void eb_vp9_generate_padding_16bit(
     {
         // horizontal padding
         //EB_MEMSET(temp_src_pic0 - padding_width, temp_src_pic0, padding_width);
-        memset16bit((uint16_t*)(temp_src_pic0 - padding_width), ((uint16_t*)(temp_src_pic0))[0], padding_width >> 1);
-        memset16bit((uint16_t*)(temp_src_pic0 + original_src_width), ((uint16_t*)(temp_src_pic0 + original_src_width - 2/*1*/))[0], padding_width >> 1);
+        eb_vp9_memset16bit((uint16_t*)(temp_src_pic0 - padding_width), ((uint16_t*)(temp_src_pic0))[0], padding_width >> 1);
+        eb_vp9_memset16bit((uint16_t*)(temp_src_pic0 + original_src_width), ((uint16_t*)(temp_src_pic0 + original_src_width - 2/*1*/))[0], padding_width >> 1);
 
         temp_src_pic0 += src_stride;
         --vertical_idx;

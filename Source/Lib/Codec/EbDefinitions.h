@@ -232,7 +232,7 @@ typedef uint8_t EbModeType;
 #define INTER_MODE 1
 #define INTRA_MODE 2
 
-extern uint32_t ASM_TYPES;
+extern uint32_t eb_vp9_ASM_TYPES;
 
 /** Depth offsets
 */

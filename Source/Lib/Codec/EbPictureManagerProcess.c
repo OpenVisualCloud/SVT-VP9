@@ -68,7 +68,7 @@ EbErrorType eb_vp9_picture_manager_context_ctor(
  *   -Picture Control Set with fully available Reference List
  *
  ***************************************************************************************************/
-void* PictureManagerKernel(void *input_ptr)
+void* eb_vp9_PictureManagerKernel(void *input_ptr)
 {
     PictureManagerContext        *context_ptr = (PictureManagerContext*) input_ptr;
 

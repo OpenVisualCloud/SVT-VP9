@@ -180,83 +180,83 @@ uint64_t compute_variance32x32(
     // (0,0)
     block_index = input_luma_origin_index;
 
-    mean_of8x8_blocks[0] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[0] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[0] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[0] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (0,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[1] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[1] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[1] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[1] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (0,2)
     block_index = block_index + 8;
-    mean_of8x8_blocks[2] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[2] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[2] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[2] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (0,3)
     block_index = block_index + 8;
-    mean_of8x8_blocks[3] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[3] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[3] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[3] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,0)
     block_index = input_luma_origin_index + (input_padded_picture_ptr->stride_y << 3);
-    mean_of8x8_blocks[4] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[4] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[4] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[4] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[5] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[5] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[5] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[5] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,2)
     block_index = block_index + 8;
-    mean_of8x8_blocks[6] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[6] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[6] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[6] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,3)
     block_index = block_index + 8;
-    mean_of8x8_blocks[7] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[7] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[7] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[7] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (2,0)
     block_index = input_luma_origin_index + (input_padded_picture_ptr->stride_y << 4);
-    mean_of8x8_blocks[8] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[8] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[8] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[8] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (2,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[9] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[9] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[9] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[9] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (2,2)
     block_index = block_index + 8;
-    mean_of8x8_blocks[10] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[10] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[10] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[10] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (2,3)
     block_index = block_index + 8;
-    mean_of8x8_blocks[11] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[11] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[11] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[11] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (3,0)
     block_index = input_luma_origin_index + (input_padded_picture_ptr->stride_y << 3) + (input_padded_picture_ptr->stride_y << 4);
-    mean_of8x8_blocks[12] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[12] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[12] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[12] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (3,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[13] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[13] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[13] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[13] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (3,2)
     block_index = block_index + 8;
-    mean_of8x8_blocks[14] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[14] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[14] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[14] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (3,3)
     block_index = block_index + 8;
-    mean_of8x8_blocks[15] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[15] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[15] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[15] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     /////////////////////////////////////////////
 
@@ -313,23 +313,23 @@ uint64_t compute_variance16x16(
     // (0,0)
     block_index = input_luma_origin_index;
 
-    mean_of8x8_blocks[0] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[0] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[0] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[0] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (0,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[1] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[1] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[1] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[1] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,0)
     block_index = input_luma_origin_index + (input_padded_picture_ptr->stride_y << 3);
-    mean_of8x8_blocks[2] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[2] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[2] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[2] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     // (1,1)
     block_index = block_index + 8;
-    mean_of8x8_blocks[3] = compute_mean_func[0][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
-    mean_of8x8_squared_values_blocks[3] = compute_mean_func[1][(ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_blocks[3] = compute_mean_func[0][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
+    mean_of8x8_squared_values_blocks[3] = compute_mean_func[1][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](&(input_padded_picture_ptr->buffer_y[block_index]), input_padded_picture_ptr->stride_y, 8, 8);
 
     variance8x8[0] = mean_of8x8_squared_values_blocks[0] - (mean_of8x8_blocks[0] * mean_of8x8_blocks[0]);
     variance8x8[1] = mean_of8x8_squared_values_blocks[1] - (mean_of8x8_blocks[1] * mean_of8x8_blocks[1]);
@@ -374,7 +374,7 @@ uint64_t compute_variance64x64(
     block_index = input_luma_origin_index;
     const uint16_t stride_y = input_padded_picture_ptr->stride_y;
 
-    if ((ASM_TYPES & AVX2_MASK) && 1) {
+    if ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) {
 
         eb_vp9_compute_interm_var_four8x8_avx2_intrin(&(input_padded_picture_ptr->buffer_y[block_index]), stride_y, &mean_of8x8_blocks[0], &mean_of8x8_squared_values_blocks[0]);
 
@@ -1740,7 +1740,7 @@ EbErrorType compute_block_mean_compute_variance(
 
     const uint16_t stride_y = input_padded_picture_ptr->stride_y;
 
-    if ((ASM_TYPES & AVX2_MASK) && 1) {
+    if ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) {
 
         eb_vp9_compute_interm_var_four8x8_avx2_intrin(&(input_padded_picture_ptr->buffer_y[block_index]), stride_y, &mean_of8x8_blocks[0], &mean_of8x8_squared_values_blocks[0]);
 
@@ -2436,7 +2436,7 @@ EbErrorType denoise_input_picture(
             sb_origin_y = sb_params->origin_y;
 
             if (sb_origin_x == 0)
-                strong_luma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                strong_luma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 input_picture_ptr,
                 denoised_picture_ptr,
                 sb_origin_y,
@@ -2469,7 +2469,7 @@ EbErrorType denoise_input_picture(
             sb_origin_y = sb_params->origin_y;
 
             if (sb_origin_x == 0)
-                strong_chroma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                strong_chroma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 input_picture_ptr,
                 denoised_picture_ptr,
                 sb_origin_y / 2,
@@ -2521,7 +2521,7 @@ EbErrorType denoise_input_picture(
             sb_origin_y = sb_params->origin_y;
 
             if (sb_origin_x == 0)
-                weak_chroma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_chroma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 input_picture_ptr,
                 denoised_picture_ptr,
                 sb_origin_y / 2,
@@ -2619,7 +2619,7 @@ EbErrorType detect_input_picture_noise(
         uint32_t  noise_origin_index = noise_picture_ptr->origin_x + sb_origin_x + noise_picture_ptr->origin_y * noise_picture_ptr->stride_y;
 
         if (sb_origin_x == 0)
-            weak_luma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+            weak_luma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
             input_picture_ptr,
             denoised_picture_ptr,
             noise_picture_ptr,
@@ -2785,7 +2785,7 @@ EbErrorType sub_sample_filter_noise(
             sb_origin_y = sb_params->origin_y;
 
             if (sb_origin_x == 0)
-                weak_luma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_luma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 input_picture_ptr,
                 denoised_picture_ptr,
                 noise_picture_ptr,
@@ -2819,7 +2819,7 @@ EbErrorType sub_sample_filter_noise(
             sb_origin_y = sb_params->origin_y;
 
             if (sb_origin_x == 0)
-                weak_chroma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_chroma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 input_picture_ptr,
                 denoised_picture_ptr,
                 sb_origin_y / 2,
@@ -2866,7 +2866,7 @@ EbErrorType sub_sample_filter_noise(
             if (sb_params->is_complete_sb && picture_control_set_ptr->sb_flat_noise_array[sb_index] == 1)
             {
 
-                weak_luma_filter_sb_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_luma_filter_sb_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                     input_picture_ptr,
                     denoised_picture_ptr,
                     noise_picture_ptr,
@@ -2984,7 +2984,7 @@ EbErrorType quarter_sample_detect_noise(
             block64x64_y = vert64x64_index * 64;
 
             if (block64x64_x == 0)
-                weak_luma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_luma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 quarter_decimated_picture_ptr,
                 denoised_picture_ptr,
                 noise_picture_ptr,
@@ -3119,7 +3119,7 @@ EbErrorType sub_sample_detect_noise(
             block64x64_y = vert64x64_index * 64;
 
             if (block64x64_x == 0)
-                weak_luma_filter_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                weak_luma_filter_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                 sixteenth_decimated_picture_ptr,
                 denoised_picture_ptr,
                 noise_picture_ptr,
@@ -3434,7 +3434,7 @@ void sub_sample_luma_generate_pixel_intensity_histogram_bins(
         for (region_in_picture_height_index = 0; region_in_picture_height_index < sequence_control_set_ptr->picture_analysis_number_of_regions_per_height; region_in_picture_height_index++){ // loop over vertical regions
 
             // Initialize bins to 1
-            eb_vp9_initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0], 64, 0, 1);
+            eb_vp9_initialize_buffer_32bits_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0], 64, 0, 1);
 
             region_width_offset = (region_in_picture_width_index == sequence_control_set_ptr->picture_analysis_number_of_regions_per_width - 1) ?
                 input_picture_ptr->width - (sequence_control_set_ptr->picture_analysis_number_of_regions_per_width * region_width) :
@@ -3492,8 +3492,8 @@ void sub_sample_chroma_generate_pixel_intensity_histogram_bins(
         for (region_in_picture_height_index = 0; region_in_picture_height_index < sequence_control_set_ptr->picture_analysis_number_of_regions_per_height; region_in_picture_height_index++){ // loop over vertical regions
 
             // Initialize bins to 1
-            eb_vp9_initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1], 64, 0, 1);
-            eb_vp9_initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2], 64, 0, 1);
+            eb_vp9_initialize_buffer_32bits_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1], 64, 0, 1);
+            eb_vp9_initialize_buffer_32bits_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](picture_control_set_ptr->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2], 64, 0, 1);
 
             region_width_offset = (region_in_picture_width_index == sequence_control_set_ptr->picture_analysis_number_of_regions_per_width - 1) ?
                 input_picture_ptr->width - (sequence_control_set_ptr->picture_analysis_number_of_regions_per_width * region_width) :

@@ -351,7 +351,7 @@ EbErrorType compute_zz_sad(
                 block_index      = (previous_input->origin_y + sb_origin_y) * previous_input->stride_y + (previous_input->origin_x + sb_origin_x);
 
                 // ZZ SAD between current and collocated
-                zz_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][MAX_SB_SIZE >> 3](
+                zz_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][MAX_SB_SIZE >> 3](
                     &(input_padded_picture_ptr->buffer_y[block_index_sub]),
                     input_padded_picture_ptr->stride_y,
                     &(previous_input->buffer_y[block_index]),
@@ -451,7 +451,7 @@ EbErrorType compute_zz_sad(
                     4);
 
                 // ZZ SAD between 1/16 current & 1/16 collocated
-                zz_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][2](
+                zz_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][2](
                     &(sixteenth_decimated_picture_ptr->buffer_y[block_index_sub]),
                     sixteenth_decimated_picture_ptr->stride_y,
                     context_ptr->me_context_ptr->sixteenth_sb_buffer,

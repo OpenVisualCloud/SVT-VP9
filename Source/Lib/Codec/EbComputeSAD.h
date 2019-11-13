@@ -81,7 +81,7 @@ extern "C" {
     /***************************************
     * Function Tables
     ***************************************/
-    static EbSadkernelNxMType FUNC_TABLE n_x_m_sad_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [ASM_TYPES][SAD - block height]
+    static EbSadkernelNxMType FUNC_TABLE n_x_m_sad_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [eb_vp9_ASM_TYPES][SAD - block height]
     {
         // C_DEFAULT
         {
@@ -109,7 +109,7 @@ extern "C" {
         },
     };
 
-    static EbSadavgkernelNxMType FUNC_TABLE nx_m_sad_averaging_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [ASM_TYPES][SAD - block height]
+    static EbSadavgkernelNxMType FUNC_TABLE nx_m_sad_averaging_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [eb_vp9_ASM_TYPES][SAD - block height]
     {
         // C_DEFAULT
         {

@@ -66,7 +66,7 @@ uint64_t compute_mean_of_squared_values(
     return block_mean;
 }
 
-uint64_t ComputeSubMeanOfSquaredValues(
+uint64_t eb_vp9_ComputeSubMeanOfSquaredValues(
     uint8_t  *input_samples,      // input parameter, input samples Ptr
     uint32_t  input_stride,       // input parameter, input stride
     uint32_t  input_area_width,    // input parameter, input area width
@@ -93,7 +93,7 @@ uint64_t ComputeSubMeanOfSquaredValues(
     return block_mean;
 }
 
-uint64_t ComputeSubMean8x8(
+uint64_t eb_vp9_ComputeSubMean8x8(
     uint8_t  *input_samples,      // input parameter, input samples Ptr
     uint32_t  input_stride,       // input parameter, input stride
     uint32_t  input_area_width,    // input parameter, input area width

@@ -104,7 +104,7 @@
 static uint64_t max_luma_picture_size[TOTAL_LEVEL_COUNT] = { 36864U, 122880U, 245760U, 552960U, 983040U, 2228224U, 2228224U, 8912896U, 8912896U, 8912896U, 35651584U, 35651584U, 35651584U };
 static uint64_t max_luma_sample_rate[TOTAL_LEVEL_COUNT] = { 552960U, 3686400U, 7372800U, 16588800U, 33177600U, 66846720U, 133693440U, 267386880U, 534773760U, 1069547520U, 1069547520U, 2139095040U, 4278190080U };
 
-uint32_t ASM_TYPES;
+uint32_t eb_vp9_ASM_TYPES;
 /**************************************
  * External Functions
  **************************************/
@@ -808,14 +808,14 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     ************************************/
 
     if (scs_ptr->static_config.asm_type == ASM_AVX2) {
-        ASM_TYPES = get_cpu_asm_type();
+        eb_vp9_ASM_TYPES = get_cpu_asm_type();
     }
     else if (scs_ptr->static_config.asm_type == ASM_NON_AVX2) {
-        ASM_TYPES = 0;
+        eb_vp9_ASM_TYPES = 0;
     }
 
-    setup_rtcd_internal(ASM_TYPES);
-    setup_rtcd_internal_vp9(ASM_TYPES);
+    setup_rtcd_internal(eb_vp9_ASM_TYPES);
+    setup_rtcd_internal_vp9(eb_vp9_ASM_TYPES);
     build_ep_block_stats();
 
     /************************************
@@ -1538,7 +1538,7 @@ EB_API EbErrorType  eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     }
 
     // Picture Manager
-    EB_CREATETHREAD(EbHandle, enc_handle_ptr->picture_manager_thread_handle, sizeof(EbHandle), EB_THREAD, PictureManagerKernel, enc_handle_ptr->picture_manager_context_ptr);
+    EB_CREATETHREAD(EbHandle, enc_handle_ptr->picture_manager_thread_handle, sizeof(EbHandle), EB_THREAD, eb_vp9_PictureManagerKernel, enc_handle_ptr->picture_manager_context_ptr);
 
     // Rate Control
     EB_CREATETHREAD(EbHandle, enc_handle_ptr->rate_control_thread_handle, sizeof(EbHandle), EB_THREAD, eb_vp9_rate_control_kernel, enc_handle_ptr->rate_control_context_ptr);

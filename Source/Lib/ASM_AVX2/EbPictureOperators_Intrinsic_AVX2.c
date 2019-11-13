@@ -1228,7 +1228,7 @@ int32_t  eb_vp9_sum_residual8bit_avx2_intrin(
 
 }
 
-void eb_vp9_memset16bit_block_avx2_intrin (
+void eb_vp9_eb_vp9_memset16bit_block_avx2_intrin (
                     int16_t * in_ptr,
                     uint32_t   stride_in,
                     uint32_t   size,
