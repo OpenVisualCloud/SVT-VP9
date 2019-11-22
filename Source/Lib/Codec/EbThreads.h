@@ -23,41 +23,41 @@ extern "C" {
 /**************************************
  * Threads
  **************************************/
-extern EbHandle eb_create_thread(
+extern EbHandle eb_vp9_create_thread(
     void *thread_function(void *),
     void *thread_context);
 extern EbErrorType eb_start_thread(
     EbHandle thread_handle);
 extern EbErrorType eb_stop_thread(
     EbHandle thread_handle);
-extern EbErrorType eb_destroy_thread(
+extern EbErrorType eb_vp9_destroy_thread(
     EbHandle thread_handle);
 
 /**************************************
  * Semaphores
  **************************************/
-extern EbHandle eb_create_semaphore(
+extern EbHandle eb_vp9_create_semaphore(
     uint32_t initial_count,
     uint32_t max_count);
-extern EbErrorType eb_post_semaphore(
+extern EbErrorType eb_vp9_post_semaphore(
     EbHandle semaphore_handle);
-extern EbErrorType eb_block_on_semaphore(
+extern EbErrorType eb_vp9_block_on_semaphore(
     EbHandle semaphore_handle);
-extern EbErrorType eb_destroy_semaphore(
+extern EbErrorType eb_vp9_destroy_semaphore(
     EbHandle semaphore_handle);
 /**************************************
  * Mutex
  **************************************/
-extern EbHandle eb_create_mutex(
+extern EbHandle eb_vp9_create_mutex(
     void);
-extern EbErrorType eb_release_mutex(
+extern EbErrorType eb_vp9_release_mutex(
     EbHandle mutex_handle);
-extern EbErrorType eb_block_on_mutex(
+extern EbErrorType eb_vp9_block_on_mutex(
     EbHandle mutex_handle);
-extern EbErrorType eb_block_on_mutex_timeout(
+extern EbErrorType eb_vp9_block_on_mutex_timeout(
     EbHandle mutex_handle,
     uint32_t timeout);
-extern EbErrorType eb_destroy_mutex(
+extern EbErrorType eb_vp9_destroy_mutex(
     EbHandle mutex_handle);
 
 extern    EbMemoryMapEntry *memory_map;                // library Memory table
@@ -67,7 +67,7 @@ extern    uint64_t         *total_lib_memory;          // library Memory malloc'
 #ifdef _WIN32
 
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
-    pointer = eb_create_thread(thread_function, thread_context); \
+    pointer = eb_vp9_create_thread(thread_function, thread_context); \
     if (pointer == (type)EB_NULL) { \
         return EB_ErrorInsufficientResources; \
     } \
@@ -80,12 +80,12 @@ extern    uint64_t         *total_lib_memory;          // library Memory malloc'
         else { \
             *total_lib_memory += ((n_elements) + (8 - ((n_elements) % 8))); \
         } \
-        if (num_groups == 2 && alternate_groups){ \
-            group_affinity.Group = 1 - group_affinity.Group; \
-            SetThreadGroupAffinity(pointer,&group_affinity,NULL); \
+        if (eb_vp9_num_groups == 2 && alternate_groups){ \
+            eb_vp9_group_affinity.Group = 1 - eb_vp9_group_affinity.Group; \
+            SetThreadGroupAffinity(pointer,&eb_vp9_group_affinity,NULL); \
         } \
-        else if (num_groups == 2 && !alternate_groups){ \
-            SetThreadGroupAffinity(pointer,&group_affinity,NULL); \
+        else if (eb_vp9_num_groups == 2 && !alternate_groups){ \
+            SetThreadGroupAffinity(pointer,&eb_vp9_group_affinity,NULL); \
         } \
     } \
     if (*(memory_map_index) >= MAX_NUM_PTR) { \
@@ -94,12 +94,12 @@ extern    uint64_t         *total_lib_memory;          // library Memory malloc'
     lib_thread_count++;
 #elif defined(__linux__)
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
-    pointer = eb_create_thread(thread_function, thread_context); \
+    pointer = eb_vp9_create_thread(thread_function, thread_context); \
     if (pointer == (type)EB_NULL) { \
         return EB_ErrorInsufficientResources; \
     } \
     else { \
-        pthread_setaffinity_np(*((pthread_t*)pointer),sizeof(cpu_set_t),&group_affinity); \
+        pthread_setaffinity_np(*((pthread_t*)pointer),sizeof(cpu_set_t),&eb_vp9_group_affinity); \
         memory_map[*(memory_map_index)].ptr_type = pointer_class; \
         memory_map[(*(memory_map_index))++].ptr = pointer; \
         if (n_elements % 8 == 0) { \
@@ -115,7 +115,7 @@ extern    uint64_t         *total_lib_memory;          // library Memory malloc'
     lib_thread_count++;
 #else
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
-    pointer = eb_create_thread(thread_function, thread_context); \
+    pointer = eb_vp9_create_thread(thread_function, thread_context); \
     if (pointer == (type)EB_NULL) { \
         return EB_ErrorInsufficientResources; \
     } \

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbPacketizationReorderQueue.h"
 
-EbErrorType packetization_reorder_entry_ctor(
+EbErrorType eb_vp9_packetization_reorder_entry_ctor(
     PacketizationReorderEntry **entry_dbl_ptr,
     uint32_t                    picture_number)
 {

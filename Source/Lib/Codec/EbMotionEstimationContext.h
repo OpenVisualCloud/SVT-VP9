@@ -402,7 +402,7 @@ typedef struct MeContext
 
 } MeContext;
 
-extern EbErrorType me_context_ctor(
+extern EbErrorType eb_vp9_me_context_ctor(
     MeContext **object_dbl_ptr);
 
 #ifdef __cplusplus

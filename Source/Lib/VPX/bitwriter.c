@@ -10,7 +10,7 @@
 
 #include "./bitwriter.h"
 
-void vpx_start_encode(VpxWriter *br, uint8_t *source) {
+void eb_vp9_start_encode(VpxWriter *br, uint8_t *source) {
   br->lowvalue = 0;
   br->range = 255;
   br->count = -24;
@@ -19,7 +19,7 @@ void vpx_start_encode(VpxWriter *br, uint8_t *source) {
   vpx_write_bit(br, 0);
 }
 
-void vpx_stop_encode(VpxWriter *br) {
+void eb_vp9_stop_encode(VpxWriter *br) {
   int i;
 
   for (i = 0; i < 32; i++) vpx_write_bit(br, 0);

@@ -42,7 +42,7 @@ int vp9_get_refresh_mask(VP9_COMP *cpi);
 #endif
 void vp9_bitstream_encode_tiles_buffer_dealloc(VP9_COMP *const cpi);
 
-void vp9_pack_bitstream(
+void eb_vp9_pack_bitstream(
     PictureControlSet   *picture_control_set_ptr,
     VP9_COMP            *cpi,
     uint8_t             *dest,
@@ -62,19 +62,12 @@ void write_partition(const VP9_COMMON *const cm,
     int mi_col, PARTITION_TYPE p, BLOCK_SIZE bsize,
     VpxWriter *w);
 
-void write_modes_b(
+void eb_vp9_write_modes_b(
     EntropyCodingContext *context_ptr,
     VP9_COMP *cpi, MACROBLOCKD *const xd, const TileInfo *const tile,
     VpxWriter *w, TOKENEXTRA **tok, const TOKENEXTRA *const tok_end,
     int mi_row, int mi_col, unsigned int *const max_mv_magnitude,
     int interp_filter_selected[MAX_REF_FRAMES][SWITCHABLE]);
-struct vpx_write_bit_buffer *wb;
-void write_uncompressed_header(
-    PictureControlSet   *picture_control_set_ptr,
-    VP9_COMP *cpi,
-    struct vpx_write_bit_buffer *wb,
-    int show_existing_frame,
-    int show_existing_frame_index);
 
 size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data);
 

@@ -19,7 +19,7 @@
 #include "vp9_blockd.h"
 #include "vp9_onyxc_int.h"
 
-const vpx_prob vp9_kf_y_mode_prob[INTRA_MODES][INTRA_MODES][INTRA_MODES - 1] = {
+const vpx_prob eb_vp9_kf_y_mode_prob[INTRA_MODES][INTRA_MODES][INTRA_MODES - 1] = {
   {
       // above = dc
       { 137, 30, 42, 148, 151, 207, 70, 52, 91 },   // left = dc
@@ -152,7 +152,7 @@ const vpx_prob vp9_kf_y_mode_prob[INTRA_MODES][INTRA_MODES][INTRA_MODES - 1] = {
   }
 };
 
-const vpx_prob vp9_kf_uv_mode_prob[INTRA_MODES][INTRA_MODES - 1] = {
+const vpx_prob eb_vp9_kf_uv_mode_prob[INTRA_MODES][INTRA_MODES - 1] = {
   { 144, 11, 54, 157, 195, 130, 46, 58, 108 },   // y = dc
   { 118, 15, 123, 148, 131, 101, 44, 93, 131 },  // y = v
   { 113, 12, 23, 188, 226, 142, 26, 32, 125 },   // y = h
@@ -185,7 +185,7 @@ static const vpx_prob default_if_uv_probs[INTRA_MODES][INTRA_MODES - 1] = {
   { 101, 21, 107, 181, 192, 103, 19, 67, 125 }  // y = tm
 };
 
-const vpx_prob vp9_kf_partition_probs[PARTITION_CONTEXTS][PARTITION_TYPES - 1] =
+const vpx_prob eb_vp9_kf_partition_probs[PARTITION_CONTEXTS][PARTITION_TYPES - 1] =
     {
       // 8x8 -> 4x4
       { 158, 97, 94 },  // a/l both not split
@@ -248,7 +248,7 @@ static const vpx_prob
     };
 
 /* Array indices are identical to previously-existing INTRAMODECONTEXTNODES. */
-const vpx_tree_index vp9_intra_mode_tree[TREE_SIZE(INTRA_MODES)] = {
+const vpx_tree_index eb_vp9_intra_mode_tree[TREE_SIZE(INTRA_MODES)] = {
   -DC_PRED,   2,          /* 0 = DC_NODE */
   -TM_PRED,   4,          /* 1 = TM_NODE */
   -V_PRED,    6,          /* 2 = V_NODE */
@@ -260,12 +260,12 @@ const vpx_tree_index vp9_intra_mode_tree[TREE_SIZE(INTRA_MODES)] = {
   -D153_PRED, -D207_PRED  /* 8 = D153_NODE */
 };
 
-const vpx_tree_index vp9_inter_mode_tree[TREE_SIZE(INTER_MODES)] = {
+const vpx_tree_index eb_vp9_inter_mode_tree[TREE_SIZE(INTER_MODES)] = {
   -INTER_OFFSET(ZEROMV), 2, -INTER_OFFSET(NEARESTMV), 4, -INTER_OFFSET(NEARMV),
   -INTER_OFFSET(NEWMV)
 };
 
-const vpx_tree_index vp9_partition_tree[TREE_SIZE(PARTITION_TYPES)] = {
+const vpx_tree_index eb_vp9_partition_tree[TREE_SIZE(PARTITION_TYPES)] = {
   -PARTITION_NONE, 2, -PARTITION_HORZ, 4, -PARTITION_VERT, -PARTITION_SPLIT
 };
 
@@ -289,7 +289,7 @@ static const struct tx_probs default_tx_probs = { { { 3, 136, 37 },
                                                   { { 20, 152 }, { 15, 101 } },
                                                   { { 100 }, { 66 } } };
 
-void tx_counts_to_branch_counts_32x32(const unsigned int *tx_count_32x32p,
+void eb_vp9_tx_counts_to_branch_counts_32x32(const unsigned int *tx_count_32x32p,
                                       unsigned int (*ct_32x32p)[2]) {
   ct_32x32p[0][0] = tx_count_32x32p[TX_4X4];
   ct_32x32p[0][1] = tx_count_32x32p[TX_8X8] + tx_count_32x32p[TX_16X16] +
@@ -300,7 +300,7 @@ void tx_counts_to_branch_counts_32x32(const unsigned int *tx_count_32x32p,
   ct_32x32p[2][1] = tx_count_32x32p[TX_32X32];
 }
 
-void tx_counts_to_branch_counts_16x16(const unsigned int *tx_count_16x16p,
+void eb_vp9_tx_counts_to_branch_counts_16x16(const unsigned int *tx_count_16x16p,
                                       unsigned int (*ct_16x16p)[2]) {
   ct_16x16p[0][0] = tx_count_16x16p[TX_4X4];
   ct_16x16p[0][1] = tx_count_16x16p[TX_8X8] + tx_count_16x16p[TX_16X16];
@@ -308,7 +308,7 @@ void tx_counts_to_branch_counts_16x16(const unsigned int *tx_count_16x16p,
   ct_16x16p[1][1] = tx_count_16x16p[TX_16X16];
 }
 
-void tx_counts_to_branch_counts_8x8(const unsigned int *tx_count_8x8p,
+void eb_vp9_tx_counts_to_branch_counts_8x8(const unsigned int *tx_count_8x8p,
                                     unsigned int (*ct_8x8p)[2]) {
   ct_8x8p[0][0] = tx_count_8x8p[TX_4X4];
   ct_8x8p[0][1] = tx_count_8x8p[TX_8X8];
@@ -324,9 +324,9 @@ static const vpx_prob default_switchable_interp_prob[SWITCHABLE_FILTER_CONTEXTS]
                                                       { 149, 144 },
                                                     };
 #if 1
-void init_mode_probs(FRAME_CONTEXT *fc) {
+void eb_vp9_init_mode_probs(FRAME_CONTEXT *fc) {
 #else
-static void init_mode_probs(FRAME_CONTEXT *fc) {
+static void eb_vp9_init_mode_probs(FRAME_CONTEXT *fc) {
 #endif
   vp9_copy(fc->uv_mode_prob, default_if_uv_probs);
   vp9_copy(fc->y_mode_prob, default_if_y_probs);
@@ -341,10 +341,10 @@ static void init_mode_probs(FRAME_CONTEXT *fc) {
   vp9_copy(fc->inter_mode_probs, default_inter_mode_probs);
 }
 
-const vpx_tree_index vp9_switchable_interp_tree[TREE_SIZE(SWITCHABLE_FILTERS)] =
+const vpx_tree_index eb_vp9_switchable_interp_tree[TREE_SIZE(SWITCHABLE_FILTERS)] =
     { -EIGHTTAP, 2, -EIGHTTAP_SMOOTH, -EIGHTTAP_SHARP };
 
-void vp9_adapt_mode_probs(VP9_COMMON *cm) {
+void eb_vp9_adapt_mode_probs(VP9_COMMON *cm) {
   int i, j;
   FRAME_CONTEXT *fc = cm->fc;
   const FRAME_CONTEXT *pre_fc = &cm->frame_contexts[cm->frame_context_idx];
@@ -365,25 +365,25 @@ void vp9_adapt_mode_probs(VP9_COMMON *cm) {
           pre_fc->single_ref_prob[i][j], counts->single_ref[i][j]);
 
   for (i = 0; i < INTER_MODE_CONTEXTS; i++)
-    vpx_tree_merge_probs(vp9_inter_mode_tree, pre_fc->inter_mode_probs[i],
+    eb_vp9_tree_merge_probs(eb_vp9_inter_mode_tree, pre_fc->inter_mode_probs[i],
                          counts->inter_mode[i], fc->inter_mode_probs[i]);
 
   for (i = 0; i < BLOCK_SIZE_GROUPS; i++)
-    vpx_tree_merge_probs(vp9_intra_mode_tree, pre_fc->y_mode_prob[i],
+    eb_vp9_tree_merge_probs(eb_vp9_intra_mode_tree, pre_fc->y_mode_prob[i],
                          counts->y_mode[i], fc->y_mode_prob[i]);
 
   for (i = 0; i < INTRA_MODES; ++i)
-    vpx_tree_merge_probs(vp9_intra_mode_tree, pre_fc->uv_mode_prob[i],
+    eb_vp9_tree_merge_probs(eb_vp9_intra_mode_tree, pre_fc->uv_mode_prob[i],
                          counts->uv_mode[i], fc->uv_mode_prob[i]);
 
   for (i = 0; i < PARTITION_CONTEXTS; i++)
-    vpx_tree_merge_probs(vp9_partition_tree, pre_fc->partition_prob[i],
+    eb_vp9_tree_merge_probs(eb_vp9_partition_tree, pre_fc->partition_prob[i],
                          counts->partition[i], fc->partition_prob[i]);
 #if 0 // Hsan: switchable interp_filter not supported
   if (cm->interp_filter == SWITCHABLE) {
     for (i = 0; i < SWITCHABLE_FILTER_CONTEXTS; i++)
-      vpx_tree_merge_probs(
-          vp9_switchable_interp_tree, pre_fc->switchable_interp_prob[i],
+      eb_vp9_tree_merge_probs(
+          eb_vp9_switchable_interp_tree, pre_fc->switchable_interp_prob[i],
           counts->switchable_interp[i], fc->switchable_interp_prob[i]);
   }
 #endif
@@ -393,17 +393,17 @@ void vp9_adapt_mode_probs(VP9_COMMON *cm) {
     unsigned int branch_ct_32x32p[TX_SIZES - 1][2];
 
     for (i = 0; i < TX_SIZE_CONTEXTS; ++i) {
-      tx_counts_to_branch_counts_8x8(counts->tx.p8x8[i], branch_ct_8x8p);
+      eb_vp9_tx_counts_to_branch_counts_8x8(counts->tx.p8x8[i], branch_ct_8x8p);
       for (j = 0; j < TX_SIZES - 3; ++j)
         fc->tx_probs.p8x8[i][j] =
             mode_mv_merge_probs(pre_fc->tx_probs.p8x8[i][j], branch_ct_8x8p[j]);
 
-      tx_counts_to_branch_counts_16x16(counts->tx.p16x16[i], branch_ct_16x16p);
+      eb_vp9_tx_counts_to_branch_counts_16x16(counts->tx.p16x16[i], branch_ct_16x16p);
       for (j = 0; j < TX_SIZES - 2; ++j)
         fc->tx_probs.p16x16[i][j] = mode_mv_merge_probs(
             pre_fc->tx_probs.p16x16[i][j], branch_ct_16x16p[j]);
 
-      tx_counts_to_branch_counts_32x32(counts->tx.p32x32[i], branch_ct_32x32p);
+      eb_vp9_tx_counts_to_branch_counts_32x32(counts->tx.p32x32[i], branch_ct_32x32p);
       for (j = 0; j < TX_SIZES - 1; ++j)
         fc->tx_probs.p32x32[i][j] = mode_mv_merge_probs(
             pre_fc->tx_probs.p32x32[i][j], branch_ct_32x32p[j]);
@@ -428,13 +428,13 @@ static void set_default_lf_deltas(struct loop_filter *lf) {
   lf->mode_deltas[1] = 0;
 }
 
-void vp9_setup_past_independence(VP9_COMMON *cm) {
+void eb_vp9_setup_past_independence(VP9_COMMON *cm) {
   // Reset the segment feature data to the default stats:
   // Features disabled, 0, with delta coding (Default state).
   struct loop_filter *const lf = &cm->lf;
 
   int i;
-  vp9_clearall_segfeatures(&cm->seg);
+  eb_vp9_clearall_segfeatures(&cm->seg);
   cm->seg.abs_delta = SEGMENT_DELTADATA;
 
   if (cm->last_frame_seg_map)
@@ -451,9 +451,9 @@ void vp9_setup_past_independence(VP9_COMMON *cm) {
   // To force update of the sharpness
   lf->last_sharpness_level = -1;
 
-  vp9_default_coef_probs(cm);
-  init_mode_probs(cm->fc);
-  vp9_init_mv_probs(cm);
+  eb_vp9_default_coef_probs(cm);
+  eb_vp9_init_mode_probs(cm->fc);
+  eb_vp9_init_mv_probs(cm);
   cm->fc->initialized = 1;
 
   if (cm->frame_type == KEY_FRAME || cm->error_resilient_mode ||

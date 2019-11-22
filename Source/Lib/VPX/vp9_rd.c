@@ -38,13 +38,13 @@
 // Factor to weigh the rate for switchable interp filters.
 #define SWITCHABLE_INTERP_RATE_FACTOR 1
 
-void vp9_rd_cost_reset(RD_COST *rd_cost) {
+void eb_vp9_rd_cost_reset(RD_COST *rd_cost) {
   rd_cost->rate = INT_MAX;
   rd_cost->dist = INT64_MAX;
   rd_cost->rdcost = INT64_MAX;
 }
 
-void vp9_rd_cost_init(RD_COST *rd_cost) {
+void eb_vp9_rd_cost_init(RD_COST *rd_cost) {
   rd_cost->rate = 0;
   rd_cost->dist = 0;
   rd_cost->rdcost = 0;
@@ -56,22 +56,22 @@ static void fill_mode_costs(VP9_COMP *cpi) {
 
   for (i = 0; i < INTRA_MODES; ++i) {
     for (j = 0; j < INTRA_MODES; ++j) {
-      vp9_cost_tokens(cpi->y_mode_costs[i][j], vp9_kf_y_mode_prob[i][j],
-                      vp9_intra_mode_tree);
+      eb_vp9_cost_tokens(cpi->y_mode_costs[i][j], eb_vp9_kf_y_mode_prob[i][j],
+                      eb_vp9_intra_mode_tree);
     }
   }
 
-  vp9_cost_tokens(cpi->mbmode_cost, fc->y_mode_prob[1], vp9_intra_mode_tree);
+  eb_vp9_cost_tokens(cpi->mbmode_cost, fc->y_mode_prob[1], eb_vp9_intra_mode_tree);
   for (i = 0; i < INTRA_MODES; ++i) {
-    vp9_cost_tokens(cpi->intra_uv_mode_cost[KEY_FRAME][i],
-                    vp9_kf_uv_mode_prob[i], vp9_intra_mode_tree);
-    vp9_cost_tokens(cpi->intra_uv_mode_cost[INTER_FRAME][i],
-                    fc->uv_mode_prob[i], vp9_intra_mode_tree);
+    eb_vp9_cost_tokens(cpi->intra_uv_mode_cost[KEY_FRAME][i],
+                    eb_vp9_kf_uv_mode_prob[i], eb_vp9_intra_mode_tree);
+    eb_vp9_cost_tokens(cpi->intra_uv_mode_cost[INTER_FRAME][i],
+                    fc->uv_mode_prob[i], eb_vp9_intra_mode_tree);
   }
 
   for (i = 0; i < SWITCHABLE_FILTER_CONTEXTS; ++i) {
-    vp9_cost_tokens(cpi->switchable_interp_costs[i],
-                    fc->switchable_interp_prob[i], vp9_switchable_interp_tree);
+    eb_vp9_cost_tokens(cpi->switchable_interp_costs[i],
+                    fc->switchable_interp_prob[i], eb_vp9_switchable_interp_tree);
   }
 
   for (i = TX_8X8; i < TX_SIZES; ++i) {
@@ -103,10 +103,10 @@ static void fill_token_costs(vp9_coeff_cost *c,
         for (k = 0; k < COEF_BANDS; ++k)
           for (l = 0; l < BAND_COEFF_CONTEXTS(k); ++l) {
             vpx_prob probs[ENTROPY_NODES];
-            vp9_model_to_full_probs(p[t][i][j][k][l], probs);
-            vp9_cost_tokens((int *)c[t][i][j][k][0][l], probs, vp9_coef_tree);
-            vp9_cost_tokens_skip((int *)c[t][i][j][k][1][l], probs,
-                                 vp9_coef_tree);
+            eb_vp9_model_to_full_probs(p[t][i][j][k][l], probs);
+            eb_vp9_cost_tokens((int *)c[t][i][j][k][0][l], probs, eb_vp9_coef_tree);
+            eb_vp9_cost_tokens_skip((int *)c[t][i][j][k][1][l], probs,
+                                 eb_vp9_coef_tree);
             assert(c[t][i][j][k][0][l][EOB_TOKEN] ==
                    c[t][i][j][k][1][l][EOB_TOKEN]);
           }
@@ -130,13 +130,13 @@ static void init_me_luts_bd(int *bit16lut, int *bit4lut, int range,
   // This is to make it easier to resolve the impact of experimental changes
   // to the quantizer tables.
   for (i = 0; i < range; i++) {
-    const double q = vp9_convert_qindex_to_q(i, bit_depth);
+    const double q = eb_vp9_convert_qindex_to_q(i, bit_depth);
     bit16lut[i] = (int)(0.0418 * q + 2.4107);
     bit4lut[i] = (int)(0.063 * q + 2.742);
   }
 }
 
-void vp9_init_me_luts(void) {
+void eb_vp9_init_me_luts(void) {
   init_me_luts_bd(sad_per_bit16lut_8, sad_per_bit4lut_8, QINDEX_RANGE,
                   VPX_BITS_8);
 #if CONFIG_VP9_HIGHBITDEPTH
@@ -156,8 +156,8 @@ void vp9_init_me_luts(void) {
 static const int rd_frame_type_factor[FRAME_UPDATE_TYPES] = { 128, 144, 128,
                                                               128, 144, 144 };
 #endif
-int64_t vp9_compute_rd_mult_based_on_qindex(const VP9_COMP *cpi, int qindex) {
-  const int64_t q = vp9_dc_quant(qindex, 0, cpi->common.bit_depth);
+int64_t eb_vp9_compute_rd_mult_based_on_qindex(const VP9_COMP *cpi, int qindex) {
+  const int64_t q = eb_vp9_dc_quant(qindex, 0, cpi->common.bit_depth);
 #if CONFIG_VP9_HIGHBITDEPTH
   int64_t rdmult = 0;
   switch (cpi->common.bit_depth) {
@@ -174,8 +174,8 @@ int64_t vp9_compute_rd_mult_based_on_qindex(const VP9_COMP *cpi, int qindex) {
   return rdmult;
 }
 
-int vp9_compute_rd_mult(const VP9_COMP *cpi, int qindex) {
-  int64_t rdmult = vp9_compute_rd_mult_based_on_qindex(cpi, qindex);
+int eb_vp9_compute_rd_mult(const VP9_COMP *cpi, int qindex) {
+  int64_t rdmult = eb_vp9_compute_rd_mult_based_on_qindex(cpi, qindex);
 #if 0
   if (cpi->oxcf.pass == 2 && (cpi->common.frame_type != KEY_FRAME)) {
     const GF_GROUP *const gf_group = &cpi->twopass.gf_group;
@@ -190,9 +190,9 @@ int vp9_compute_rd_mult(const VP9_COMP *cpi, int qindex) {
   return (int)rdmult;
 }
 
-int vp9_get_adaptive_rdmult(const VP9_COMP *cpi, double beta) {
+int eb_vp9_get_adaptive_rdmult(const VP9_COMP *cpi, double beta) {
   const VP9_COMMON *cm = &cpi->common;
-  int64_t q = vp9_dc_quant(cm->base_qindex, 0, cpi->common.bit_depth);
+  int64_t q = eb_vp9_dc_quant(cm->base_qindex, 0, cpi->common.bit_depth);
 
 #if CONFIG_VP9_HIGHBITDEPTH
   int64_t rdmult = 0;
@@ -223,7 +223,7 @@ int vp9_get_adaptive_rdmult(const VP9_COMP *cpi, double beta) {
   return (int)rdmult;
 }
 
-void vp9_initialize_me_consts(VP9_COMP *cpi, MACROBLOCK *x, int qindex) {
+void eb_vp9_initialize_me_consts(VP9_COMP *cpi, MACROBLOCK *x, int qindex) {
 #if CONFIG_VP9_HIGHBITDEPTH
   switch (cpi->common.bit_depth) {
     case VPX_BITS_8:
@@ -252,7 +252,7 @@ static void set_block_thresholds(const VP9_COMMON *cm, RD_OPT *rd) {
 
   for (segment_id = 0; segment_id < MAX_SEGMENTS; ++segment_id) {
     const int qindex =
-        clamp(vp9_get_qindex(&cm->seg, segment_id, cm->base_qindex) +
+        clamp(eb_vp9_get_qindex(&cm->seg, segment_id, cm->base_qindex) +
                   cm->y_dc_delta_q,
               0, MAXQ);
     const int q = compute_rd_thresh_factor(qindex, cm->bit_depth);
@@ -281,7 +281,7 @@ static void set_block_thresholds(const VP9_COMMON *cm, RD_OPT *rd) {
 #endif
 
 #if 1
-void vp9_initialize_rd_consts(VP9_COMP *cpi) {
+void eb_vp9_initialize_rd_consts(VP9_COMP *cpi) {
   VP9_COMMON *const cm = &cpi->common;
   MACROBLOCK *const x = &cpi->td.mb;
   MACROBLOCKD *const xd = &cpi->td.mb.e_mbd;
@@ -291,7 +291,7 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
   vpx_clear_system_state();
 #endif
   rd->RDDIV = RDDIV_BITS;  // In bits (to multiply D by 128).
-  rd->RDMULT = vp9_compute_rd_mult(cpi, cm->base_qindex + cm->y_dc_delta_q);
+  rd->RDMULT = eb_vp9_compute_rd_mult(cpi, cm->base_qindex + cm->y_dc_delta_q);
 #if VP9_RD
   rd->rd_mult_sad = (int)MAX(round(sqrtf((float)rd->RDMULT / 128) * 128),1);
 
@@ -309,7 +309,7 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
 #if 0
   if (cpi->oxcf.pass == 1) {
     if (!frame_is_intra_only(cm))
-      vp9_build_nmv_cost_table(
+      eb_vp9_build_nmv_cost_table(
           x->nmvjointcost,
           cm->allow_high_precision_mv ? x->nmvcost_hp : x->nmvcost,
           &cm->fc->nmvc, cm->allow_high_precision_mv);
@@ -323,8 +323,8 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
     //    cm->frame_type == KEY_FRAME)
     {
       for (i = 0; i < PARTITION_CONTEXTS; ++i)
-        vp9_cost_tokens(cpi->partition_cost[i], get_partition_probs(xd, i),
-                        vp9_partition_tree);
+        eb_vp9_cost_tokens(cpi->partition_cost[i], get_partition_probs(xd, i),
+                        eb_vp9_partition_tree);
     }
 
     //if (!cpi->sf.use_nonrd_pick_mode || (cm->current_video_frame & 0x07) == 1 ||
@@ -333,14 +333,14 @@ void vp9_initialize_rd_consts(VP9_COMP *cpi) {
       fill_mode_costs(cpi);
 
       if (!frame_is_intra_only(cm)) {
-        vp9_build_nmv_cost_table(
+        eb_vp9_build_nmv_cost_table(
             x->nmvjointcost,
             cm->allow_high_precision_mv ? x->nmvcost_hp : x->nmvcost,
             &cm->fc->nmvc, cm->allow_high_precision_mv);
 
         for (i = 0; i < INTER_MODE_CONTEXTS; ++i)
-          vp9_cost_tokens((int *)cpi->inter_mode_cost[i],
-                          cm->fc->inter_mode_probs[i], vp9_inter_mode_tree);
+          eb_vp9_cost_tokens((int *)cpi->inter_mode_cost[i],
+                          cm->fc->inter_mode_probs[i], eb_vp9_inter_mode_tree);
       }
     }
   }
@@ -430,7 +430,7 @@ static void model_rd_norm_vec(int xsq_q10[MAX_MB_PLANE],
 
 static const uint32_t MAX_XSQ_Q10 = 245727;
 
-void vp9_model_rd_from_var_lapndz(unsigned int var, unsigned int n_log2,
+void eb_vp9_model_rd_from_var_lapndz(unsigned int var, unsigned int n_log2,
                                   unsigned int qstep, int *rate,
                                   int64_t *dist) {
   // This function models the rate and distortion for a Laplacian
@@ -453,9 +453,9 @@ void vp9_model_rd_from_var_lapndz(unsigned int var, unsigned int n_log2,
   }
 }
 
-// Implements a fixed length vector form of vp9_model_rd_from_var_lapndz where
+// Implements a fixed length vector form of eb_vp9_model_rd_from_var_lapndz where
 // vectors are of length MAX_MB_PLANE and all elements of var are non-zero.
-void vp9_model_rd_from_var_lapndz_vec(unsigned int var[MAX_MB_PLANE],
+void eb_vp9_model_rd_from_var_lapndz_vec(unsigned int var[MAX_MB_PLANE],
                                       unsigned int n_log2[MAX_MB_PLANE],
                                       unsigned int qstep[MAX_MB_PLANE],
                                       int64_t *rate_sum, int64_t *dist_sum) {
@@ -477,13 +477,13 @@ void vp9_model_rd_from_var_lapndz_vec(unsigned int var[MAX_MB_PLANE],
   }
 }
 
-void vp9_get_entropy_contexts(BLOCK_SIZE bsize, TX_SIZE tx_size,
+void eb_vp9_get_entropy_contexts(BLOCK_SIZE bsize, TX_SIZE tx_size,
                               const struct macroblockd_plane *pd,
                               ENTROPY_CONTEXT t_above[16],
                               ENTROPY_CONTEXT t_left[16]) {
   const BLOCK_SIZE plane_bsize = get_plane_block_size(bsize, pd);
-  const int num_4x4_w = num_4x4_blocks_wide_lookup[plane_bsize];
-  const int num_4x4_h = num_4x4_blocks_high_lookup[plane_bsize];
+  const int num_4x4_w = eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize];
+  const int num_4x4_h = eb_vp9_num_4x4_blocks_high_lookup[plane_bsize];
   const ENTROPY_CONTEXT *const above = pd->above_context;
   const ENTROPY_CONTEXT *const left = pd->left_context;
 
@@ -602,7 +602,7 @@ void vp9_setup_pred_block(const MACROBLOCKD *xd,
 
 int vp9_raster_block_offset(BLOCK_SIZE plane_bsize, int raster_block,
                             int stride) {
-  const int bw = b_width_log2_lookup[plane_bsize];
+  const int bw = eb_vp9_b_width_log2_lookup[plane_bsize];
   const int y = 4 * (raster_block >> bw);
   const int x = 4 * (raster_block & ((1 << bw) - 1));
   return y * stride + x;
@@ -610,7 +610,7 @@ int vp9_raster_block_offset(BLOCK_SIZE plane_bsize, int raster_block,
 
 int16_t *vp9_raster_block_offset_int16(BLOCK_SIZE plane_bsize, int raster_block,
                                        int16_t *base) {
-  const int stride = 4 * num_4x4_blocks_wide_lookup[plane_bsize];
+  const int stride = 4 * eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize];
   return base + vp9_raster_block_offset(plane_bsize, raster_block, stride);
 }
 
@@ -739,9 +739,9 @@ int vp9_get_intra_cost_penalty(BLOCK_SIZE bsize, int qindex, int qdelta, int is_
   // Always use VPX_BITS_8 as input here because the penalty is applied
   // to rate not distortion so we want a consistent penalty for all bit
   // depths. If the actual bit depth were passed in here then the value
-  // retured by vp9_dc_quant() would scale with the bit depth and we would
+  // retured by eb_vp9_dc_quant() would scale with the bit depth and we would
   // then need to apply inverse scaling to correct back to a bit depth
   // independent rate penalty.
-  return (20 * vp9_dc_quant(qindex, qdelta, VPX_BITS_8)) >> reduction_fac;
+  return (20 * eb_vp9_dc_quant(qindex, qdelta, VPX_BITS_8)) >> reduction_fac;
 }
 #endif

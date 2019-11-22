@@ -82,23 +82,23 @@ static const AvcStyleInterpolationFilterNew FUNC_TABLE avc_style_uni_pred_luma_i
     // C_DEFAULT
     {
         avc_style_copy_new,                                     //copy
-        avc_style_luma_interpolation_filter_horizontal,           //a
-        avc_style_luma_interpolation_filter_vertical,             //d
+        eb_vp9_avc_style_luma_interpolation_filter_horizontal,           //a
+        eb_vp9_avc_style_luma_interpolation_filter_vertical,             //d
     },
     // AVX2
     {
-        avc_style_copy_sse2,                                         //copy
-        avc_style_luma_interpolation_filter_horizontal_avx2_intrin,     //a
-        avc_style_luma_interpolation_filter_vertical_avx2_intrin,       //d
+        eb_vp9_avc_style_copy_sse2,                                         //copy
+        eb_vp9_avc_style_luma_interpolation_filter_horizontal_avx2_intrin,     //a
+        eb_vp9_avc_style_luma_interpolation_filter_vertical_avx2_intrin,       //d
 
     }
 };
 
 static const PictureAverage FUNC_TABLE picture_average_array[ASM_TYPE_TOTAL] = {
     // C_DEFAULT
-    picture_average_kernel,
+    eb_vp9_picture_average_kernel,
     // AVX2
-    picture_average_kernel_avx2_intrin,
+    eb_vp9_picture_average_kernel_avx2_intrin,
 };
 
 typedef void(*PictureAverage1Line)(

@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-void sad_loop_kernel_sse4_1_hme_l0_intrin(
+void eb_vp9_sad_loop_kernel_sse4_1_hme_l0_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -25,7 +25,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
     int16_t   search_area_width,
     int16_t   search_area_height);
 
-void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
     uint8_t   *src,
     uint32_t   src_stride,
     uint8_t   *ref,

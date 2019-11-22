@@ -17,7 +17,7 @@
 #include "vpx_dsp_rtcd.h"
 #include "vpx_once.h"
 
-const TX_TYPE intra_mode_to_tx_type_lookup[INTRA_MODES] = {
+const TX_TYPE eb_vp9_intra_mode_to_tx_type_lookup[INTRA_MODES] = {
   DCT_DCT,    // DC
   ADST_DCT,   // V
   DCT_ADST,   // H
@@ -63,12 +63,12 @@ static intra_high_pred_fn pred_high[INTRA_MODES][4];
 static intra_high_pred_fn dc_pred_high[2][2][4];
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
-static void vp9_init_intra_predictors_internal(void) {
+static void eb_vp9_init_intra_predictors_internal(void) {
 #define INIT_ALL_SIZES(p, type)               \
-  p[TX_4X4] = vpx_##type##_predictor_4x4;     \
-  p[TX_8X8] = vpx_##type##_predictor_8x8;     \
-  p[TX_16X16] = vpx_##type##_predictor_16x16; \
-  p[TX_32X32] = vpx_##type##_predictor_32x32
+  p[TX_4X4] = eb_vp9_##type##_predictor_4x4;     \
+  p[TX_8X8] = eb_vp9_##type##_predictor_8x8;     \
+  p[TX_16X16] = eb_vp9_##type##_predictor_16x16; \
+  p[TX_32X32] = eb_vp9_##type##_predictor_32x32
 
   INIT_ALL_SIZES(pred[V_PRED], v);
   INIT_ALL_SIZES(pred[H_PRED], h);
@@ -414,7 +414,7 @@ static void build_intra_predictors(EncDecContext   *context_ptr,
   }
 }
 
-void vp9_predict_intra_block(EncDecContext   *context_ptr,
+void eb_vp9_predict_intra_block(EncDecContext   *context_ptr,
 #if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
                              const MACROBLOCKD *xd,
 #endif
@@ -461,6 +461,6 @@ void vp9_predict_intra_block(EncDecContext   *context_ptr,
       plane);
 }
 
-void vp9_init_intra_predictors(void) {
-  once(vp9_init_intra_predictors_internal);
+void eb_vp9_init_intra_predictors(void) {
+  once(eb_vp9_init_intra_predictors_internal);
 }

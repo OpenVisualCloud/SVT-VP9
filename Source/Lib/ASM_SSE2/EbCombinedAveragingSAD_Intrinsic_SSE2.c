@@ -7,7 +7,7 @@
 #include "emmintrin.h"
 #include "EbComputeSAD_SSE2.h"
 
-uint32_t combined_averaging4x_msad_sse2_intrin(
+uint32_t eb_vp9_combined_averaging4x_msad_sse2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -34,7 +34,7 @@ uint32_t combined_averaging4x_msad_sse2_intrin(
     return _mm_cvtsi128_si32(_mm_add_epi32(sad0, sad1));
 }
 
-uint32_t combined_averaging8x_msad_sse2_intrin(
+uint32_t eb_vp9_combined_averaging8x_msad_sse2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,

@@ -11,13 +11,13 @@
 extern "C" {
 #endif
 
-extern void initialize_buffer_32bits_sse2_intrin(
+extern void eb_vp9_initialize_buffer_32bits_sse2_intrin(
     uint32_t *pointer,
     uint32_t  count128,
     uint32_t  count32,
     uint32_t  value);
 
-void sad_calculation_8x8_16x16_sse2_intrin(
+void eb_vp9_sad_calculation_8x8_16x16_sse2_intrin(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref,
@@ -29,7 +29,7 @@ void sad_calculation_8x8_16x16_sse2_intrin(
     uint32_t  mv,
     uint32_t *p_sad16x16);
 
- void sad_calculation_32x32_64x64_sse2_intrin(
+ void eb_vp9_sad_calculation_32x32_64x64_sse2_intrin(
     uint32_t *p_sad16x16,
     uint32_t *p_best_sad32x32,
     uint32_t *p_best_sad64x64,

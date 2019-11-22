@@ -136,7 +136,7 @@ static INLINE void d117_avg3_last(const uint8_t *const ref, __m128i *const b0h,
     *b = avg3_sse2(r0, r1, r2);
 }
 
-void vpx_d117_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d117_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     // reverse left
@@ -168,7 +168,7 @@ void vpx_d117_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
     *(int *)(dst + 3 * stride) = _mm_cvtsi128_si32(_mm_srli_si128(b1, 1));
 }
 
-void vpx_d117_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d117_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     EB_ALIGN(16) uint8_t ref[16];
@@ -207,7 +207,7 @@ void vpx_d117_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
     _mm_storel_epi64((__m128i *)(dst + 7 * stride), b1);
 }
 
-void vpx_d117_predictor_16x16_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d117_predictor_16x16_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     EB_ALIGN(16) uint8_t ref[32];
@@ -284,7 +284,7 @@ static INLINE __m128i d135_avg3_last(const uint8_t *const ref) {
     return avg3_sse2(r0, r1, r2);
 }
 
-void vpx_d135_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d135_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     // reverse left
@@ -308,7 +308,7 @@ void vpx_d135_predictor_4x4_ssse3(uint8_t *dst, ptrdiff_t stride,
     *(int *)(dst + 3 * stride) = _mm_cvtsi128_si32(b);
 }
 
-void vpx_d135_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d135_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     EB_ALIGN(16) uint8_t ref[17];
@@ -339,7 +339,7 @@ void vpx_d135_predictor_8x8_ssse3(uint8_t *dst, ptrdiff_t stride,
     _mm_storel_epi64((__m128i *)(dst + 7 * stride), b);
 }
 
-void vpx_d135_predictor_16x16_ssse3(uint8_t *dst, ptrdiff_t stride,
+void eb_vp9_d135_predictor_16x16_ssse3(uint8_t *dst, ptrdiff_t stride,
     const uint8_t *above, const uint8_t *left)
 {
     EB_ALIGN(16) uint8_t ref[33];

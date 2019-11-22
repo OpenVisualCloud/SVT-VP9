@@ -29,7 +29,7 @@ void unpack_uni_pred_ref10_bit(
         uint32_t in_posy = (pos_y >> 2);
         uint16_t *ptr16    =  (uint16_t *)ref_frame_pic_list0->buffer_y  + in_posx + in_posy*ref_frame_pic_list0->stride_y;
 
-          extract8_bitdata_safe_sub(
+          eb_vp9_extract8_bitdata_safe_sub(
             ptr16,
             ref_frame_pic_list0->stride_y,
             dst->buffer_y + dst_luma_index,
@@ -48,7 +48,7 @@ void unpack_uni_pred_ref10_bit(
         uint32_t in_posy = (pos_y >> 3);
         uint16_t *ptr16    =  (uint16_t *)ref_frame_pic_list0->buffer_cb  + in_posx + in_posy*ref_frame_pic_list0->stride_cb;
 
-          extract_8bit_data(
+          eb_vp9_extract_8bit_data(
             ptr16,
             ref_frame_pic_list0->stride_cb,
             dst->buffer_cb + dst_chroma_index,
@@ -59,7 +59,7 @@ void unpack_uni_pred_ref10_bit(
 
         ptr16    =  (uint16_t *)ref_frame_pic_list0->buffer_cr  + in_posx + in_posy*ref_frame_pic_list0->stride_cr;
 
-        extract_8bit_data(
+        eb_vp9_extract_8bit_data(
             ptr16,
             ref_frame_pic_list0->stride_cr,
             dst->buffer_cr + dst_chroma_index,
@@ -99,7 +99,7 @@ void unpack_bi_pred_ref10_bit(
         (void) first_pass_if_temp_dst;
         (void) ref_list0_temp_dst;
         (void) ref_list1_temp_dst;
-       unpack_l0l1_avg_safe_sub(
+       eb_vp9_unpack_l0l1_avg_safe_sub(
             (uint16_t *)ref_frame_pic_list0->buffer_y  + (ref_list0_pos_x >> 2) + (ref_list0_pos_y >> 2)*ref_frame_pic_list0->stride_y,
             ref_frame_pic_list0->stride_y,
             (uint16_t *)ref_frame_pic_list1->buffer_y  + (ref_list1_pos_x >> 2) + (ref_list1_pos_y >> 2)*ref_frame_pic_list1->stride_y,
@@ -115,7 +115,7 @@ void unpack_bi_pred_ref10_bit(
     //uni-prediction List0 chroma
     if (component_mask & PICTURE_BUFFER_DESC_CHROMA_MASK) {
 
-         unpack_l0l1_avg(
+         eb_vp9_unpack_l0l1_avg(
             (uint16_t *)ref_frame_pic_list0->buffer_cb  + (ref_list0_pos_x >> 3) + (ref_list0_pos_y >> 3)*ref_frame_pic_list0->stride_cb,
             ref_frame_pic_list0->stride_cb,
             (uint16_t *)ref_frame_pic_list1->buffer_cb  + (ref_list1_pos_x >> 3) + (ref_list1_pos_y >> 3)*ref_frame_pic_list1->stride_cb,
@@ -126,7 +126,7 @@ void unpack_bi_pred_ref10_bit(
             chroma_pu_height
             );
 
-        unpack_l0l1_avg(
+        eb_vp9_unpack_l0l1_avg(
             (uint16_t *)ref_frame_pic_list0->buffer_cr  + (ref_list0_pos_x >> 3) + (ref_list0_pos_y >> 3)*ref_frame_pic_list0->stride_cr,
             ref_frame_pic_list0->stride_cr,
             (uint16_t *)ref_frame_pic_list1->buffer_cr  + (ref_list1_pos_x >> 3) + (ref_list1_pos_y >> 3)*ref_frame_pic_list1->stride_cr,

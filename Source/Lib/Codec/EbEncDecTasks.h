@@ -33,7 +33,7 @@ typedef struct EncDecTasksInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType enc_dec_tasks_ctor(
+extern EbErrorType eb_vp9_enc_dec_tasks_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

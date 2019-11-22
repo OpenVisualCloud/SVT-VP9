@@ -26,7 +26,7 @@ extern EbErrorType motion_estimate_sb(
     MeContext               *context_ptr,
     EbPictureBufferDesc     *input_ptr);
 
-extern void decimation_2d(
+extern void eb_vp9_decimation_2d(
     uint8_t  *input_samples,
     uint32_t  input_stride,
     uint32_t  input_area_width,

@@ -79,15 +79,15 @@ int coeff_rate_estimate( //cost_coeffs
 
     if (tx_size == TX_4X4) {
         tx_type = get_tx_type_4x4(get_plane_type(plane), xd, block);
-        scan_order = &vp9_scan_orders[TX_4X4][tx_type];
+        scan_order = &eb_vp9_scan_orders[TX_4X4][tx_type];
     }
     else {
         if (tx_size == TX_32X32) {
-            scan_order = &vp9_default_scan_orders[TX_32X32];
+            scan_order = &eb_vp9_default_scan_orders[TX_32X32];
         }
         else {
             tx_type = get_tx_type(get_plane_type(plane), xd);
-            scan_order = &vp9_scan_orders[tx_size][tx_type];
+            scan_order = &eb_vp9_scan_orders[tx_size][tx_type];
         }
     }
     scan = scan_order->scan;
@@ -121,7 +121,7 @@ int coeff_rate_estimate( //cost_coeffs
             cost = vp9_get_token_cost(v, &prev_t, cat6_high_cost);
             cost += (*token_costs)[0][pt][prev_t];
 
-            token_cache[0] = vp9_pt_energy_class[prev_t];
+            token_cache[0] = eb_vp9_pt_energy_class[prev_t];
             ++token_costs;
 
             // ac tokens
@@ -154,7 +154,7 @@ int coeff_rate_estimate( //cost_coeffs
             cost = vp9_get_token_cost(v, &tok, cat6_high_cost);
             cost += (*token_costs)[0][pt][tok];
 
-            token_cache[0] = vp9_pt_energy_class[tok];
+            token_cache[0] = eb_vp9_pt_energy_class[tok];
             ++token_costs;
 
             tok_cost_ptr = &((*token_costs)[!tok]);
@@ -167,7 +167,7 @@ int coeff_rate_estimate( //cost_coeffs
                 cost += vp9_get_token_cost(v, &tok, cat6_high_cost);
                 pt = get_coef_context(nb, token_cache, c);
                 cost += (*tok_cost_ptr)[pt][tok];
-                token_cache[rc] = vp9_pt_energy_class[tok];
+                token_cache[rc] = eb_vp9_pt_energy_class[tok];
                 if (!--band_left) {
                     band_left = *band_count++;
                     ++token_costs;
@@ -196,7 +196,7 @@ static INLINE int mv_cost(const MV *mv, const int *joint_cost,
         comp_cost[1][mv->col];
 }
 
-int vp9_mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost,
+int eb_vp9_mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost,
     int *mvcost[2], int weight) {
     const MV diff = { mv->row - ref->row, mv->col - ref->col };
     return ROUND_POWER_OF_TWO(mv_cost(&diff, mvjcost, mvcost) * weight, 7);
@@ -317,13 +317,13 @@ int64_t inter_fast_cost(
     if (this_mode == NEWMV) {
 
         if (comp_pred) {
-            rate_mv = vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
+            rate_mv = eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
                 &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
                 x->nmvjointcost,
                 x->mvcost,
                 MV_COST_WEIGHT);
 
-            rate_mv += vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[1].as_mv,
+            rate_mv += eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[1].as_mv,
                 &mbmi_ext->ref_mvs[refs[1]][0].as_mv,
                 x->nmvjointcost,
                 x->mvcost,
@@ -331,7 +331,7 @@ int64_t inter_fast_cost(
 
         }
         else {
-            rate_mv = vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
+            rate_mv = eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
                 &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
                 x->nmvjointcost,
                 x->mvcost,
@@ -431,8 +431,8 @@ int64_t intra_fast_cost(
         ModeInfo *const mic                 = e_mbd->mi[0];
         const ModeInfo *above_mi            = e_mbd->above_mi;
         const ModeInfo *left_mi             = e_mbd->left_mi;
-        const PREDICTION_MODE A             = vp9_above_block_mode(mic, above_mi, 0);
-        const PREDICTION_MODE L             = vp9_left_block_mode(mic, left_mi, 0);
+        const PREDICTION_MODE A             = eb_vp9_above_block_mode(mic, above_mi, 0);
+        const PREDICTION_MODE L             = eb_vp9_left_block_mode(mic, left_mi, 0);
         int * bmode_costs                   = cpi->y_mode_costs[A][L];
         rate_mode                           = bmode_costs[mode];
     }

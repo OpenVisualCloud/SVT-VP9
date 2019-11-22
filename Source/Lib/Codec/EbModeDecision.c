@@ -192,7 +192,7 @@ static const uint32_t ep_to_pa_cu_index[EP_BLOCK_MAX_COUNT] =
 /***************************************
 * Mode Decision Candidate Ctor
 ***************************************/
-EbErrorType mode_decision_candidate_buffer_ctor(
+EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(
     ModeDecisionCandidateBuffer **buffer_dbl_ptr,
     uint16_t                      sb_max_size,
     EbBitDepth                    max_bitdepth,
@@ -232,14 +232,14 @@ EbErrorType mode_decision_candidate_buffer_ctor(
     buffer_ptr->candidate_ptr = (ModeDecisionCandidate    *)EB_NULL;
 
     // Video Buffers
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->prediction_ptr),
         (EbPtr)&picture_buffer_desc_init_data);
 
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->residual_quant_coeff_ptr),
         (EbPtr)&double_width_picture_buffer_desc_init_data);
 
@@ -247,14 +247,14 @@ EbErrorType mode_decision_candidate_buffer_ctor(
         return EB_ErrorInsufficientResources;
     }
 
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->recon_coeff_ptr),
         (EbPtr)&double_width_picture_buffer_desc_init_data);
 
     if (return_error == EB_ErrorInsufficientResources){
         return EB_ErrorInsufficientResources;
     }
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *)&(buffer_ptr->recon_ptr),
         (EbPtr)&picture_buffer_desc_init_data);
 
@@ -868,7 +868,7 @@ EbErrorType prepare_fast_loop_candidates(
 
         // [LAST_FRAME] Gets an initial list of candidate vectors from neighbours and orders them
         candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[LAST_FRAME];
-        context_ptr->use_ref_mvs_flag[LAST_FRAME] = vp9_find_mv_refs(
+        context_ptr->use_ref_mvs_flag[LAST_FRAME] = eb_vp9_find_mv_refs(
             context_ptr,
             &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
             context_ptr->e_mbd,
@@ -882,7 +882,7 @@ EbErrorType prepare_fast_loop_candidates(
         // [ALTREF_FRAME] Gets an initial list of candidate vectors from neighbours and orders them for
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
             candidates = context_ptr->block_ptr->mbmi_ext->ref_mvs[ALTREF_FRAME];
-            context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = vp9_find_mv_refs(
+            context_ptr->use_ref_mvs_flag[ALTREF_FRAME] = eb_vp9_find_mv_refs(
                 context_ptr,
                 &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
                 context_ptr->e_mbd,

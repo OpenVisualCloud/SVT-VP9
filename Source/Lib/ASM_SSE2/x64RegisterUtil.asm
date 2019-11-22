@@ -18,16 +18,16 @@ section .text
 ;     threads in cooperative operating systems, unless it is certain that more MMX
 ;     instructions will be executed before any x87 FPU code.
 
-; So if RunEmms() is called according to the above cases,
+; So if eb_vp9_RunEmms() is called according to the above cases,
 ; then the "emms" instruction in all other assembly functions can be removed.
 
-cglobal RunEmms
+cglobal eb_vp9_RunEmms
     emms
     ret
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal SaveRegister
+cglobal eb_vp9_SaveRegister
 %ifdef WIN64
     movdqa          [r0],           xmm6
     movdqa          [r0+0x10],      xmm7
@@ -44,7 +44,7 @@ cglobal SaveRegister
 
 ; ----------------------------------------------------------------------------------------
 
-cglobal RestoreRegister
+cglobal eb_vp9_RestoreRegister
 %ifdef WIN64
     movdqa          xmm6,           [r0]
     movdqa          xmm7,           [r0+0x10]

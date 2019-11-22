@@ -111,7 +111,7 @@ static void convolve_avg_vert(const uint8_t *src, ptrdiff_t src_stride,
   }
 }
 
-void vpx_convolve8_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_convolve8_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
                            uint8_t *dst, ptrdiff_t dst_stride,
                            const InterpKernel *filter, int x0_q4, int x_step_q4,
                            int y0_q4, int y_step_q4, int w, int h) {
@@ -121,7 +121,7 @@ void vpx_convolve8_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
                  h);
 }
 
-void vpx_convolve8_avg_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_convolve8_avg_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
                                uint8_t *dst, ptrdiff_t dst_stride,
                                const InterpKernel *filter, int x0_q4,
                                int x_step_q4, int y0_q4, int y_step_q4, int w,
@@ -132,7 +132,7 @@ void vpx_convolve8_avg_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
                      w, h);
 }
 
-void vpx_convolve8_vert_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_convolve8_vert_c(const uint8_t *src, ptrdiff_t src_stride,
                           uint8_t *dst, ptrdiff_t dst_stride,
                           const InterpKernel *filter, int x0_q4, int x_step_q4,
                           int y0_q4, int y_step_q4, int w, int h) {
@@ -142,7 +142,7 @@ void vpx_convolve8_vert_c(const uint8_t *src, ptrdiff_t src_stride,
                 h);
 }
 
-void vpx_convolve8_avg_vert_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_convolve8_avg_vert_c(const uint8_t *src, ptrdiff_t src_stride,
                               uint8_t *dst, ptrdiff_t dst_stride,
                               const InterpKernel *filter, int x0_q4,
                               int x_step_q4, int y0_q4, int y_step_q4, int w,
@@ -153,7 +153,7 @@ void vpx_convolve8_avg_vert_c(const uint8_t *src, ptrdiff_t src_stride,
                     w, h);
 }
 
-void vpx_convolve8_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_convolve8_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                      ptrdiff_t dst_stride, const InterpKernel *filter,
                      int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w,
                      int h) {
@@ -187,7 +187,7 @@ void vpx_convolve8_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                 y0_q4, y_step_q4, w, h);
 }
 
-void vpx_convolve8_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_convolve8_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                          ptrdiff_t dst_stride, const InterpKernel *filter,
                          int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                          int w, int h) {
@@ -196,12 +196,12 @@ void vpx_convolve8_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
   assert(w <= 64);
   assert(h <= 64);
 
-  vpx_convolve8_c(src, src_stride, temp, 64, filter, x0_q4, x_step_q4, y0_q4,
+  eb_vp9_convolve8_c(src, src_stride, temp, 64, filter, x0_q4, x_step_q4, y0_q4,
                   y_step_q4, w, h);
-  vpx_convolve_avg_c(temp, 64, dst, dst_stride, NULL, 0, 0, 0, 0, w, h);
+  eb_vp9_convolve_avg_c(temp, 64, dst, dst_stride, NULL, 0, 0, 0, 0, w, h);
 }
 
-void vpx_convolve_copy_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_convolve_copy_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                          ptrdiff_t dst_stride, const InterpKernel *filter,
                          int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                          int w, int h) {
@@ -220,7 +220,7 @@ void vpx_convolve_copy_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
   }
 }
 
-void vpx_convolve_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_convolve_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                         ptrdiff_t dst_stride, const InterpKernel *filter,
                         int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                         int w, int h) {
@@ -239,52 +239,52 @@ void vpx_convolve_avg_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
   }
 }
 
-void vpx_scaled_horiz_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_scaled_horiz_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                         ptrdiff_t dst_stride, const InterpKernel *filter,
                         int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                         int w, int h) {
-  vpx_convolve8_horiz_c(src, src_stride, dst, dst_stride, filter, x0_q4,
+  eb_vp9_convolve8_horiz_c(src, src_stride, dst, dst_stride, filter, x0_q4,
                         x_step_q4, y0_q4, y_step_q4, w, h);
 }
 
-void vpx_scaled_vert_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_scaled_vert_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                        ptrdiff_t dst_stride, const InterpKernel *filter,
                        int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                        int w, int h) {
-  vpx_convolve8_vert_c(src, src_stride, dst, dst_stride, filter, x0_q4,
+  eb_vp9_convolve8_vert_c(src, src_stride, dst, dst_stride, filter, x0_q4,
                        x_step_q4, y0_q4, y_step_q4, w, h);
 }
 
-void vpx_scaled_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_scaled_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                      ptrdiff_t dst_stride, const InterpKernel *filter,
                      int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w,
                      int h) {
-  vpx_convolve8_c(src, src_stride, dst, dst_stride, filter, x0_q4, x_step_q4,
+  eb_vp9_convolve8_c(src, src_stride, dst, dst_stride, filter, x0_q4, x_step_q4,
                   y0_q4, y_step_q4, w, h);
 }
 
-void vpx_scaled_avg_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_scaled_avg_horiz_c(const uint8_t *src, ptrdiff_t src_stride,
                             uint8_t *dst, ptrdiff_t dst_stride,
                             const InterpKernel *filter, int x0_q4,
                             int x_step_q4, int y0_q4, int y_step_q4, int w,
                             int h) {
-  vpx_convolve8_avg_horiz_c(src, src_stride, dst, dst_stride, filter, x0_q4,
+  eb_vp9_convolve8_avg_horiz_c(src, src_stride, dst, dst_stride, filter, x0_q4,
                             x_step_q4, y0_q4, y_step_q4, w, h);
 }
 
-void vpx_scaled_avg_vert_c(const uint8_t *src, ptrdiff_t src_stride,
+void eb_vp9_scaled_avg_vert_c(const uint8_t *src, ptrdiff_t src_stride,
                            uint8_t *dst, ptrdiff_t dst_stride,
                            const InterpKernel *filter, int x0_q4, int x_step_q4,
                            int y0_q4, int y_step_q4, int w, int h) {
-  vpx_convolve8_avg_vert_c(src, src_stride, dst, dst_stride, filter, x0_q4,
+  eb_vp9_convolve8_avg_vert_c(src, src_stride, dst, dst_stride, filter, x0_q4,
                            x_step_q4, y0_q4, y_step_q4, w, h);
 }
 
-void vpx_scaled_avg_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vp9_scaled_avg_2d_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
                          ptrdiff_t dst_stride, const InterpKernel *filter,
                          int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
                          int w, int h) {
-  vpx_convolve8_avg_c(src, src_stride, dst, dst_stride, filter, x0_q4,
+  eb_vp9_convolve8_avg_c(src, src_stride, dst, dst_stride, filter, x0_q4,
                       x_step_q4, y0_q4, y_step_q4, w, h);
 }
 

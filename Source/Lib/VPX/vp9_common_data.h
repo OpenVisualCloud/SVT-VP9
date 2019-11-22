@@ -20,22 +20,22 @@
 extern "C" {
 #endif
 
-extern const uint8_t b_width_log2_lookup[BLOCK_SIZES];
-extern const uint8_t b_height_log2_lookup[BLOCK_SIZES];
-extern const uint8_t mi_width_log2_lookup[BLOCK_SIZES];
-extern const uint8_t num_8x8_blocks_wide_lookup[BLOCK_SIZES];
-extern const uint8_t num_8x8_blocks_high_lookup[BLOCK_SIZES];
-extern const uint8_t num_4x4_blocks_high_lookup[BLOCK_SIZES];
-extern const uint8_t num_4x4_blocks_wide_lookup[BLOCK_SIZES];
-extern const uint8_t size_group_lookup[BLOCK_SIZES];
-extern const uint8_t num_pels_log2_lookup[BLOCK_SIZES];
-extern const PARTITION_TYPE partition_lookup[][BLOCK_SIZES];
-extern const BLOCK_SIZE subsize_lookup[PARTITION_TYPES][BLOCK_SIZES];
-extern const TX_SIZE max_txsize_lookup[BLOCK_SIZES];
-extern const BLOCK_SIZE txsize_to_bsize[TX_SIZES];
-extern const TX_SIZE tx_mode_to_biggest_tx_size[TX_MODES];
-extern const BLOCK_SIZE ss_size_lookup[BLOCK_SIZES][2][2];
-extern const TX_SIZE uv_txsize_lookup[BLOCK_SIZES][TX_SIZES][2][2];
+extern const uint8_t eb_vp9_b_width_log2_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_b_height_log2_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_mi_width_log2_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_num_8x8_blocks_wide_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_num_8x8_blocks_high_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_num_4x4_blocks_high_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_num_4x4_blocks_wide_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_size_group_lookup[BLOCK_SIZES];
+extern const uint8_t eb_vp9_num_pels_log2_lookup[BLOCK_SIZES];
+extern const PARTITION_TYPE eb_vp9_partition_lookup[][BLOCK_SIZES];
+extern const BLOCK_SIZE eb_vp9_subsize_lookup[PARTITION_TYPES][BLOCK_SIZES];
+extern const TX_SIZE eb_vp9_max_txsize_lookup[BLOCK_SIZES];
+extern const BLOCK_SIZE eb_vp9_txsize_to_bsize[TX_SIZES];
+extern const TX_SIZE eb_vp9_tx_mode_to_biggest_tx_size[TX_MODES];
+extern const BLOCK_SIZE eb_vp9_ss_size_lookup[BLOCK_SIZES][2][2];
+extern const TX_SIZE eb_vp9_uv_txsize_lookup[BLOCK_SIZES][TX_SIZES][2][2];
 #if CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH
 extern const uint8_t need_top_left[INTRA_MODES];
 #endif  // CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH

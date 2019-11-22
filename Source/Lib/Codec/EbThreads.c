@@ -43,9 +43,9 @@ void printfTime(const char *fmt, ...)
 #endif
 #endif
 /****************************************
- * eb_create_thread
+ * eb_vp9_create_thread
  ****************************************/
-EbHandle eb_create_thread(
+EbHandle eb_vp9_create_thread(
     void *thread_function(void *),
     void *thread_context)
 {
@@ -152,9 +152,9 @@ EbErrorType eb_stop_thread(
 }
 
 /****************************************
- * eb_destroy_thread
+ * eb_vp9_destroy_thread
  ****************************************/
-EbErrorType eb_destroy_thread(
+EbErrorType eb_vp9_destroy_thread(
     EbHandle thread_handle)
 {
     EbErrorType error_return = EB_ErrorNone;
@@ -171,9 +171,9 @@ EbErrorType eb_destroy_thread(
 }
 
 /***************************************
- * eb_create_semaphore
+ * eb_vp9_create_semaphore
  ***************************************/
-EbHandle eb_create_semaphore(
+EbHandle eb_vp9_create_semaphore(
     uint32_t initial_count,
     uint32_t max_count)
 {
@@ -198,9 +198,9 @@ EbHandle eb_create_semaphore(
 }
 
 /***************************************
- * eb_post_semaphore
+ * eb_vp9_post_semaphore
  ***************************************/
-EbErrorType eb_post_semaphore(
+EbErrorType eb_vp9_post_semaphore(
     EbHandle semaphore_handle)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -219,9 +219,9 @@ EbErrorType eb_post_semaphore(
 }
 
 /***************************************
- * eb_block_on_semaphore
+ * eb_vp9_block_on_semaphore
  ***************************************/
-EbErrorType eb_block_on_semaphore(
+EbErrorType eb_vp9_block_on_semaphore(
     EbHandle semaphore_handle)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -236,9 +236,9 @@ EbErrorType eb_block_on_semaphore(
 }
 
 /***************************************
- * eb_destroy_semaphore
+ * eb_vp9_destroy_semaphore
  ***************************************/
-EbErrorType eb_destroy_semaphore(
+EbErrorType eb_vp9_destroy_semaphore(
     EbHandle semaphore_handle)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -253,9 +253,9 @@ EbErrorType eb_destroy_semaphore(
     return return_error;
 }
 /***************************************
- * eb_create_mutex
+ * eb_vp9_create_mutex
  ***************************************/
-EbHandle eb_create_mutex(
+EbHandle eb_vp9_create_mutex(
     void)
 {
     EbHandle mutex_handle = NULL;
@@ -282,7 +282,7 @@ EbHandle eb_create_mutex(
 /***************************************
  * EbPostMutex
  ***************************************/
-EbErrorType eb_release_mutex(
+EbErrorType eb_vp9_release_mutex(
     EbHandle mutex_handle)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -297,9 +297,9 @@ EbErrorType eb_release_mutex(
 }
 
 /***************************************
- * eb_block_on_mutex
+ * eb_vp9_block_on_mutex
  ***************************************/
-EbErrorType eb_block_on_mutex(
+EbErrorType eb_vp9_block_on_mutex(
     EbHandle mutex_handle)
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -314,9 +314,9 @@ EbErrorType eb_block_on_mutex(
 }
 
 /***************************************
- * eb_block_on_mutex_timeout
+ * eb_vp9_block_on_mutex_timeout
  ***************************************/
-EbErrorType eb_block_on_mutex_timeout(
+EbErrorType eb_vp9_block_on_mutex_timeout(
     EbHandle mutex_handle,
     uint32_t    timeout)
 {
@@ -333,9 +333,9 @@ EbErrorType eb_block_on_mutex_timeout(
 }
 
 /***************************************
- * eb_destroy_mutex
+ * eb_vp9_destroy_mutex
  ***************************************/
-EbErrorType eb_destroy_mutex(
+EbErrorType eb_vp9_destroy_mutex(
     EbHandle mutex_handle)
 {
     EbErrorType return_error = EB_ErrorNone;

@@ -13,7 +13,7 @@
 /*************************************************
  * Neighbor Array Unit Ctor
  *************************************************/
-EbErrorType neighbor_array_unit_ctor(
+EbErrorType eb_vp9_neighbor_array_unit_ctor(
     NeighborArrayUnit **na_unit_dbl_ptr,
     uint32_t            maxpicture_width,
     uint32_t            maxpicture_height,
@@ -62,7 +62,7 @@ EbErrorType neighbor_array_unit_ctor(
 /*************************************************
  * Neighbor Array Unit Reset
  *************************************************/
-void neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr)
+void eb_vp9_neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr)
 {
     if(na_unit_ptr->left_array) {
         EB_MEMSET(na_unit_ptr->left_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->left_array_size);
@@ -102,7 +102,7 @@ uint32_t get_neighbor_array_unit_top_index(
 /*************************************************
  * Neighbor Array Unit Get Top Index
  *************************************************/
-uint32_t get_neighbor_array_unit_top_left_index(
+uint32_t eb_vp9_get_neighbor_array_unit_top_left_index(
     NeighborArrayUnit *na_unit_ptr,
     int32_t            loc_x,
     int32_t            loc_y)
@@ -113,7 +113,7 @@ uint32_t get_neighbor_array_unit_top_left_index(
 /*************************************************
  * Neighbor Array Sample Update
  *************************************************/
-void neighbor_array_unit_sample_write(
+void eb_vp9_neighbor_array_unit_sample_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *src_ptr,
     uint32_t           stride,
@@ -242,7 +242,7 @@ void neighbor_array_unit_sample_write(
         // Copy bottom row
         dst_ptr =
             na_unit_ptr->top_left_array +
-            get_neighbor_array_unit_top_left_index(
+            eb_vp9_get_neighbor_array_unit_top_left_index(
                 na_unit_ptr,
                 picorigin_x,
                 picorigin_y + (block_width - 1)) * na_unit_ptr->unit_size;
@@ -255,7 +255,7 @@ void neighbor_array_unit_sample_write(
         // Copy right column
         dst_ptr =
             na_unit_ptr->top_left_array +
-            get_neighbor_array_unit_top_left_index(
+            eb_vp9_get_neighbor_array_unit_top_left_index(
                 na_unit_ptr,
                 picorigin_x + (block_width - 1),
                 picorigin_y) * na_unit_ptr->unit_size;
@@ -280,7 +280,7 @@ void neighbor_array_unit_sample_write(
 /*************************************************
  * Neighbor Array Sample Update for 16 bit case
  *************************************************/
-void neighbor_array_unit16bit_sample_write(
+void eb_vp9_neighbor_array_unit16bit_sample_write(
     NeighborArrayUnit *na_unit_ptr,
     uint16_t          *src_ptr,
     uint32_t           stride,
@@ -409,7 +409,7 @@ void neighbor_array_unit16bit_sample_write(
         // Copy bottom row
         dst_ptr =
             (uint16_t*)(na_unit_ptr->top_left_array) +
-            get_neighbor_array_unit_top_left_index(
+            eb_vp9_get_neighbor_array_unit_top_left_index(
                 na_unit_ptr,
                 picorigin_x,
                 picorigin_y + (block_width - 1)) ;//CHKN * na_unit_ptr->unit_size;
@@ -432,7 +432,7 @@ void neighbor_array_unit16bit_sample_write(
         // Copy right column
         dst_ptr =
             (uint16_t*)(na_unit_ptr->top_left_array) +
-            get_neighbor_array_unit_top_left_index(
+            eb_vp9_get_neighbor_array_unit_top_left_index(
                 na_unit_ptr,
                 picorigin_x + (block_width - 1),
                 picorigin_y);//CHKN  * na_unit_ptr->unit_size;
@@ -456,7 +456,7 @@ void neighbor_array_unit16bit_sample_write(
 /*************************************************
  * Neighbor Array Unit Mode Write
  *************************************************/
-void neighbor_array_unit_mode_write(
+void eb_vp9_neighbor_array_unit_mode_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *value,
     uint32_t           origin_x,
@@ -564,7 +564,7 @@ void neighbor_array_unit_mode_write(
         // Index = origin_x - origin_y
         */
 
-        na_offset = get_neighbor_array_unit_top_left_index(
+        na_offset = eb_vp9_get_neighbor_array_unit_top_left_index(
             na_unit_ptr,
             origin_x,
             origin_y + (block_height - 1));
@@ -730,7 +730,7 @@ void neighbor_array_unit_mode_type_write(
     // Index = origin_x - origin_y
     */
 
-    na_offset = get_neighbor_array_unit_top_left_index(
+    na_offset = eb_vp9_get_neighbor_array_unit_top_left_index(
         na_unit_ptr,
         origin_x,
         origin_y + (block_size - 1));
@@ -748,7 +748,7 @@ void neighbor_array_unit_mode_type_write(
 /*************************************************
  * Neighbor Array Unit Mode Write
  *************************************************/
-void neighbor_array_unit_mv_write(
+void eb_vp9_neighbor_array_unit_mv_write(
     NeighborArrayUnit *na_unit_ptr,
     uint8_t           *value,
     uint32_t           origin_x,
@@ -847,7 +847,7 @@ void neighbor_array_unit_mv_write(
     // Index = origin_x - origin_y
     */
 
-    na_offset = get_neighbor_array_unit_top_left_index(
+    na_offset = eb_vp9_get_neighbor_array_unit_top_left_index(
         na_unit_ptr,
         origin_x,
         origin_y + (block_size - 1));

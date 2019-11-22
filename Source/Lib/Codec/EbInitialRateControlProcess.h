@@ -23,12 +23,12 @@ typedef struct InitialRateControlContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType initial_rate_control_context_ctor(
+extern EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(
     InitialRateControlContext **context_dbl_ptr,
     EbFifo                     *motion_estimation_results_input_fifo_ptr,
     EbFifo                     *picture_demux_results_output_fifo_ptr);
 
-extern void* initial_rate_control_kernel(void *input_ptr);
+extern void* eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr);
 
 extern void me_based_global_motion_detection(
     SequenceControlSet      *sequence_control_set_ptr,

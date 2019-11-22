@@ -28,7 +28,7 @@ static void tree2tok(struct vp9_token *tokens, const vpx_tree_index *tree,
   } while (++v & 1);
 }
 
-void vp9_tokens_from_tree(struct vp9_token *tokens,
+void eb_vp9_tokens_from_tree(struct vp9_token *tokens,
                           const vpx_tree_index *tree) {
   tree2tok(tokens, tree, 0, 0, 0);
 }
@@ -53,7 +53,7 @@ static unsigned int convert_distribution(unsigned int i, vpx_tree tree,
   return left + right;
 }
 
-void vp9_tree_probs_from_distribution(vpx_tree tree,
+void eb_vp9_tree_probs_from_distribution(vpx_tree tree,
                                       unsigned int branch_ct[/* n-1 */][2],
                                       const unsigned int num_events[/* n */]) {
   convert_distribution(0, tree, branch_ct, num_events);

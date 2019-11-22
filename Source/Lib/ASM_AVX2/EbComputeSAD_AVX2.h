@@ -68,7 +68,7 @@ uint32_t compute64x_m_sad_avx2_intrin(
     uint32_t  height,                         // input parameter, block height (M)
     uint32_t  width);                         // input parameter, block width (N)
 
-void sad_loop_kernel_avx2_intrin(
+void eb_vp9_sad_loop_kernel_avx2_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                     // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -83,7 +83,7 @@ void sad_loop_kernel_avx2_intrin(
     int16_t   search_area_height);
 
 #ifdef DISABLE_AVX512
-void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     uint8_t   *src,
     uint32_t   src_stride,
     uint8_t   *ref,
@@ -95,7 +95,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     uint32_t   mv,
     uint16_t  *p_sad16x16);
 
-void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     uint16_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
     uint32_t  *p_best_sad64x64,

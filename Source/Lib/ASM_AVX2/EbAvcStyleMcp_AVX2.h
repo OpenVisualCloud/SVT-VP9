@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void avc_style_luma_interpolation_filter_horizontal_avx2_intrin(
+void eb_vp9_avc_style_luma_interpolation_filter_horizontal_avx2_intrin(
     EbByte   ref_pic,
     uint32_t src_stride,
     EbByte   dst,
@@ -22,7 +22,7 @@ void avc_style_luma_interpolation_filter_horizontal_avx2_intrin(
     EbByte   temp_buf,
     uint32_t frac_pos);
 
-void avc_style_luma_interpolation_filter_vertical_avx2_intrin(
+void eb_vp9_avc_style_luma_interpolation_filter_vertical_avx2_intrin(
     EbByte   ref_pic,
     uint32_t src_stride,
     EbByte   dst,

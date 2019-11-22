@@ -93,8 +93,8 @@ const  EpBlockStats *ep_get_block_stats(uint32_t bidx_mds);
 
 extern uint32_t Log2f(uint32_t x);
 extern uint64_t log2f64(uint64_t x);
-extern uint32_t endian_swap(uint32_t ui);
-extern uint64_t log2f_high_precision(uint64_t x, uint8_t precision);
+extern uint32_t eb_vp9_endian_swap(uint32_t ui);
+extern uint64_t eb_vp9_log2f_high_precision(uint64_t x, uint8_t precision);
 /****************************
  * MACROS
  ****************************/
@@ -217,7 +217,7 @@ typedef struct MiniGopStats
     uint32_t  lenght;
 
 } MiniGopStats;
-extern const MiniGopStats  * get_mini_gop_stats(const uint32_t mini_gop_index);
+extern const MiniGopStats  * eb_vp9_get_mini_gop_stats(const uint32_t mini_gop_index);
 typedef enum MiniGopIndex
 {
     L6_INDEX   = 0,

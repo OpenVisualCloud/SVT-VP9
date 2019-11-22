@@ -1132,46 +1132,46 @@ static void vpx_filter_block1d16_v8_avg_avx2(
                                  height, filter, 1);
 }
 
-filter8_1dfunction vpx_filter_block1d16_v2_ssse3;
-filter8_1dfunction vpx_filter_block1d16_h2_ssse3;
-filter8_1dfunction vpx_filter_block1d8_v2_ssse3;
-filter8_1dfunction vpx_filter_block1d8_h2_ssse3;
-filter8_1dfunction vpx_filter_block1d4_v2_ssse3;
-filter8_1dfunction vpx_filter_block1d4_h2_ssse3;
-#define vpx_filter_block1d16_v2_avx2 vpx_filter_block1d16_v2_ssse3
-#define vpx_filter_block1d16_h2_avx2 vpx_filter_block1d16_h2_ssse3
-#define vpx_filter_block1d8_v2_avx2 vpx_filter_block1d8_v2_ssse3
-#define vpx_filter_block1d8_h2_avx2 vpx_filter_block1d8_h2_ssse3
-#define vpx_filter_block1d4_v2_avx2 vpx_filter_block1d4_v2_ssse3
-#define vpx_filter_block1d4_h2_avx2 vpx_filter_block1d4_h2_ssse3
-filter8_1dfunction vpx_filter_block1d16_v2_avg_ssse3;
-filter8_1dfunction vpx_filter_block1d16_h2_avg_ssse3;
-filter8_1dfunction vpx_filter_block1d8_v2_avg_ssse3;
-filter8_1dfunction vpx_filter_block1d8_h2_avg_ssse3;
-filter8_1dfunction vpx_filter_block1d4_v2_avg_ssse3;
-filter8_1dfunction vpx_filter_block1d4_h2_avg_ssse3;
-#define vpx_filter_block1d16_v2_avg_avx2 vpx_filter_block1d16_v2_avg_ssse3
-#define vpx_filter_block1d16_h2_avg_avx2 vpx_filter_block1d16_h2_avg_ssse3
-#define vpx_filter_block1d8_v2_avg_avx2 vpx_filter_block1d8_v2_avg_ssse3
-#define vpx_filter_block1d8_h2_avg_avx2 vpx_filter_block1d8_h2_avg_ssse3
-#define vpx_filter_block1d4_v2_avg_avx2 vpx_filter_block1d4_v2_avg_ssse3
-#define vpx_filter_block1d4_h2_avg_avx2 vpx_filter_block1d4_h2_avg_ssse3
-// void vpx_convolve8_horiz_avx2(const uint8_t *src, ptrdiff_t src_stride,
+filter8_1dfunction eb_vp9_filter_block1d16_v2_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d16_h2_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d8_v2_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d8_h2_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d4_v2_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d4_h2_ssse3;
+#define vpx_filter_block1d16_v2_avx2 eb_vp9_filter_block1d16_v2_ssse3
+#define vpx_filter_block1d16_h2_avx2 eb_vp9_filter_block1d16_h2_ssse3
+#define vpx_filter_block1d8_v2_avx2 eb_vp9_filter_block1d8_v2_ssse3
+#define vpx_filter_block1d8_h2_avx2 eb_vp9_filter_block1d8_h2_ssse3
+#define vpx_filter_block1d4_v2_avx2 eb_vp9_filter_block1d4_v2_ssse3
+#define vpx_filter_block1d4_h2_avx2 eb_vp9_filter_block1d4_h2_ssse3
+filter8_1dfunction eb_vp9_filter_block1d16_v2_avg_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d16_h2_avg_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d8_v2_avg_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d8_h2_avg_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d4_v2_avg_ssse3;
+filter8_1dfunction eb_vp9_filter_block1d4_h2_avg_ssse3;
+#define vpx_filter_block1d16_v2_avg_avx2 eb_vp9_filter_block1d16_v2_avg_ssse3
+#define vpx_filter_block1d16_h2_avg_avx2 eb_vp9_filter_block1d16_h2_avg_ssse3
+#define vpx_filter_block1d8_v2_avg_avx2 eb_vp9_filter_block1d8_v2_avg_ssse3
+#define vpx_filter_block1d8_h2_avg_avx2 eb_vp9_filter_block1d8_h2_avg_ssse3
+#define vpx_filter_block1d4_v2_avg_avx2 eb_vp9_filter_block1d4_v2_avg_ssse3
+#define vpx_filter_block1d4_h2_avg_avx2 eb_vp9_filter_block1d4_h2_avg_ssse3
+// void eb_vp9_convolve8_horiz_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                                uint8_t *dst, ptrdiff_t dst_stride,
 //                                const InterpKernel *filter, int x0_q4,
 //                                int32_t x_step_q4, int y0_q4, int y_step_q4,
 //                                int w, int h);
-// void vpx_convolve8_vert_avx2(const uint8_t *src, ptrdiff_t src_stride,
+// void eb_vp9_convolve8_vert_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                               uint8_t *dst, ptrdiff_t dst_stride,
 //                               const InterpKernel *filter, int x0_q4,
 //                               int32_t x_step_q4, int y0_q4, int y_step_q4,
 //                               int w, int h);
-// void vpx_convolve8_avg_horiz_avx2(const uint8_t *src, ptrdiff_t src_stride,
+// void eb_vp9_convolve8_avg_horiz_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                                    uint8_t *dst, ptrdiff_t dst_stride,
 //                                    const InterpKernel *filter, int x0_q4,
 //                                    int32_t x_step_q4, int y0_q4,
 //                                    int y_step_q4, int w, int h);
-// void vpx_convolve8_avg_vert_avx2(const uint8_t *src, ptrdiff_t src_stride,
+// void eb_vp9_convolve8_avg_vert_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                                   uint8_t *dst, ptrdiff_t dst_stride,
 //                                   const InterpKernel *filter, int x0_q4,
 //                                   int32_t x_step_q4, int y0_q4,
@@ -1181,12 +1181,12 @@ FUN_CONV_1D(vert, y0_q4, y_step_q4, v, src - src_stride * 3, , avx2);
 FUN_CONV_1D(avg_horiz, x0_q4, x_step_q4, h, src, avg_, avx2);
 FUN_CONV_1D(avg_vert, y0_q4, y_step_q4, v, src - src_stride * 3, avg_, avx2);
 
-// void vpx_convolve8_avx2(const uint8_t *src, ptrdiff_t src_stride,
+// void eb_vp9_convolve8_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                          uint8_t *dst, ptrdiff_t dst_stride,
 //                          const InterpKernel *filter, int x0_q4,
 //                          int32_t x_step_q4, int y0_q4, int y_step_q4,
 //                          int w, int h);
-// void vpx_convolve8_avg_avx2(const uint8_t *src, ptrdiff_t src_stride,
+// void eb_vp9_convolve8_avg_avx2(const uint8_t *src, ptrdiff_t src_stride,
 //                              uint8_t *dst, ptrdiff_t dst_stride,
 //                              const InterpKernel *filter, int x0_q4,
 //                              int32_t x_step_q4, int y0_q4, int y_step_q4,

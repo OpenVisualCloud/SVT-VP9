@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include "vpx_dsp_rtcd.h"
 
-void vpx_subtract_block_c(int rows, int cols, int16_t *diff,
+void eb_vp9_subtract_block_c(int rows, int cols, int16_t *diff,
                           ptrdiff_t diff_stride, const uint8_t *src,
                           ptrdiff_t src_stride, const uint8_t *pred,
                           ptrdiff_t pred_stride) {

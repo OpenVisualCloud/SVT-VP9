@@ -133,12 +133,12 @@ void initialize_samples_neighboring_reference_picture(
 }
 
 /*****************************************
- * eb_picture_buffer_desc_ctor
+ * eb_vp9_picture_buffer_desc_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
  *****************************************/
-EbErrorType eb_reference_object_ctor(
+EbErrorType eb_vp9_reference_object_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {
@@ -154,7 +154,7 @@ EbErrorType eb_reference_object_ctor(
 
     if (picture_buffer_desc_init_data16_bit_ptr.bit_depth == EB_10BIT){
 
-        return_error = eb_picture_buffer_desc_ctor(
+        return_error = eb_vp9_picture_buffer_desc_ctor(
             (EbPtr *)&(reference_object->reference_picture16bit),
             (EbPtr)&picture_buffer_desc_init_data16_bit_ptr);
 
@@ -166,7 +166,7 @@ EbErrorType eb_reference_object_ctor(
     }
     else{
 
-        return_error = eb_picture_buffer_desc_ctor(
+        return_error = eb_vp9_picture_buffer_desc_ctor(
             (EbPtr *)&(reference_object->reference_picture),
             (EbPtr)picture_buffer_desc_init_data_ptr);
 
@@ -194,7 +194,7 @@ EbErrorType eb_reference_object_ctor(
         buf_desc.bot_padding   = picture_buffer_desc_init_data_ptr->bot_padding;
         buf_desc.split_mode    = 0;
 
-        return_error = eb_picture_buffer_desc_ctor((EbPtr *)&(reference_object->ref_den_src_picture),
+        return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(reference_object->ref_den_src_picture),
                                                 (EbPtr)&buf_desc);
         if (return_error == EB_ErrorInsufficientResources)
             return EB_ErrorInsufficientResources;
@@ -204,12 +204,12 @@ EbErrorType eb_reference_object_ctor(
 }
 
 /*****************************************
- * eb_pa_reference_object_ctor
+ * eb_vp9_pa_reference_object_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
  *****************************************/
-EbErrorType eb_pa_reference_object_ctor(
+EbErrorType eb_vp9_pa_reference_object_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {
@@ -221,7 +221,7 @@ EbErrorType eb_pa_reference_object_ctor(
     *object_dbl_ptr = (EbPtr) pa_reference_object;
 
     // Reference picture constructor
-    return_error = eb_picture_buffer_desc_ctor(
+    return_error = eb_vp9_picture_buffer_desc_ctor(
         (EbPtr *) &(pa_reference_object->input_padded_picture_ptr),
         (EbPtr  )   picture_buffer_desc_init_data_ptr);
     if (return_error == EB_ErrorInsufficientResources){
@@ -230,7 +230,7 @@ EbErrorType eb_pa_reference_object_ctor(
 
     // Quarter Decim reference picture constructor
     pa_reference_object->quarter_decimated_picture_ptr = (EbPictureBufferDesc  *)EB_NULL;
-        return_error = eb_picture_buffer_desc_ctor(
+        return_error = eb_vp9_picture_buffer_desc_ctor(
             (EbPtr *) &(pa_reference_object->quarter_decimated_picture_ptr),
             (EbPtr  )  (picture_buffer_desc_init_data_ptr + 1));
         if (return_error == EB_ErrorInsufficientResources){
@@ -239,7 +239,7 @@ EbErrorType eb_pa_reference_object_ctor(
 
     // Sixteenth Decim reference picture constructor
     pa_reference_object->sixteenth_decimated_picture_ptr = (EbPictureBufferDesc  *)EB_NULL;
-        return_error = eb_picture_buffer_desc_ctor(
+        return_error = eb_vp9_picture_buffer_desc_ctor(
             (EbPtr *) &(pa_reference_object->sixteenth_decimated_picture_ptr),
             (EbPtr  )  (picture_buffer_desc_init_data_ptr + 2));
         if (return_error == EB_ErrorInsufficientResources){

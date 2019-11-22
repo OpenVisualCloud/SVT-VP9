@@ -43,7 +43,7 @@
 /************************************************
  * Picture Analysis Context Constructor
  ************************************************/
-EbErrorType picture_decision_context_ctor(
+EbErrorType eb_vp9_picture_decision_context_ctor(
     PictureDecisionContext **context_dbl_ptr,
     EbFifo                  *picture_analysis_results_input_fifo_ptr,
     EbFifo                  *picture_decision_results_output_fifo_ptr)
@@ -86,7 +86,7 @@ EbErrorType picture_decision_context_ctor(
     return EB_ErrorNone;
 }
 
-EB_BOOL SceneTransitionDetector(
+EB_BOOL eb_vp9_SceneTransitionDetector(
     PictureDecisionContext   *context_ptr,
     SequenceControlSet       *sequence_control_set_ptr,
     PictureParentControlSet **parent_pcs_window,
@@ -305,7 +305,7 @@ EbErrorType release_prev_picture_from_reorder_queue(
 * Initializes mini GOP activity array
 *
 ***************************************************************************************************/
-EbErrorType initialize_mini_gop_activity_array(
+EbErrorType eb_vp9_initialize_mini_gop_activity_array(
     PictureDecisionContext        *context_ptr) {
 
     EbErrorType return_error = EB_ErrorNone;
@@ -315,7 +315,7 @@ EbErrorType initialize_mini_gop_activity_array(
     // Loop over all mini GOPs
     for (mini_gop_index = 0; mini_gop_index < MINI_GOP_MAX_COUNT; ++mini_gop_index) {
 
-        context_ptr->mini_gop_activity_array[mini_gop_index] = (get_mini_gop_stats(mini_gop_index)->hierarchical_levels == MIN_HIERARCHICAL_LEVEL) ?
+        context_ptr->mini_gop_activity_array[mini_gop_index] = (eb_vp9_get_mini_gop_stats(mini_gop_index)->hierarchical_levels == MIN_HIERARCHICAL_LEVEL) ?
             EB_FALSE :
             EB_TRUE;
 
@@ -329,7 +329,7 @@ EbErrorType initialize_mini_gop_activity_array(
 *
 *
 ***************************************************************************************************/
-EbErrorType generate_picture_window_split(
+EbErrorType eb_vp9_generate_picture_window_split(
     PictureDecisionContext        *context_ptr,
     EncodeContext                 *encode_context_ptr) {
 
@@ -344,12 +344,12 @@ EbErrorType generate_picture_window_split(
     while (mini_gop_index < MINI_GOP_MAX_COUNT) {
 
         // Only for a valid mini GOP
-        if (get_mini_gop_stats(mini_gop_index)->end_index < encode_context_ptr->pre_assignment_buffer_count && context_ptr->mini_gop_activity_array[mini_gop_index] == EB_FALSE) {
+        if (eb_vp9_get_mini_gop_stats(mini_gop_index)->end_index < encode_context_ptr->pre_assignment_buffer_count && context_ptr->mini_gop_activity_array[mini_gop_index] == EB_FALSE) {
 
-            context_ptr->mini_gop_start_index[context_ptr->total_number_of_mini_gops] = get_mini_gop_stats(mini_gop_index)->start_index;
-            context_ptr->mini_gop_end_index[context_ptr->total_number_of_mini_gops] = get_mini_gop_stats(mini_gop_index)->end_index;
-            context_ptr->mini_gop_length[context_ptr->total_number_of_mini_gops] = get_mini_gop_stats(mini_gop_index)->lenght;
-            context_ptr->mini_gop_hierarchical_levels[context_ptr->total_number_of_mini_gops] = get_mini_gop_stats(mini_gop_index)->hierarchical_levels;
+            context_ptr->mini_gop_start_index[context_ptr->total_number_of_mini_gops] = eb_vp9_get_mini_gop_stats(mini_gop_index)->start_index;
+            context_ptr->mini_gop_end_index[context_ptr->total_number_of_mini_gops] = eb_vp9_get_mini_gop_stats(mini_gop_index)->end_index;
+            context_ptr->mini_gop_length[context_ptr->total_number_of_mini_gops] = eb_vp9_get_mini_gop_stats(mini_gop_index)->lenght;
+            context_ptr->mini_gop_hierarchical_levels[context_ptr->total_number_of_mini_gops] = eb_vp9_get_mini_gop_stats(mini_gop_index)->hierarchical_levels;
             context_ptr->mini_gop_intra_count[context_ptr->total_number_of_mini_gops] = 0;
             context_ptr->mini_gop_idr_count[context_ptr->total_number_of_mini_gops] = 0;
 
@@ -358,7 +358,7 @@ EbErrorType generate_picture_window_split(
 
         mini_gop_index += context_ptr->mini_gop_activity_array[mini_gop_index] ?
             1 :
-            mini_gop_offset[get_mini_gop_stats(mini_gop_index)->hierarchical_levels - MIN_HIERARCHICAL_LEVEL];
+            mini_gop_offset[eb_vp9_get_mini_gop_stats(mini_gop_index)->hierarchical_levels - MIN_HIERARCHICAL_LEVEL];
 
     }
 
@@ -376,7 +376,7 @@ EbErrorType generate_picture_window_split(
 *
 *
 ***************************************************************************************************/
-EbErrorType handle_incomplete_picture_window_map(
+EbErrorType eb_vp9_handle_incomplete_picture_window_map(
     PictureDecisionContext        *context_ptr,
     EncodeContext                 *encode_context_ptr) {
 
@@ -479,7 +479,7 @@ static EbErrorType update_base_layer_reference_queue_dependent_count(
 
                 // 2nd step: inherit the positive dependant counts of the current mini GOP
                 // Get the RPS set of the current mini GOP
-                nextPredStructPtr = get_prediction_structure(
+                nextPredStructPtr = eb_vp9_get_prediction_structure(
                     encode_context_ptr->prediction_structure_group_ptr,
                     picture_control_set_ptr->pred_structure,
                     1,
@@ -602,7 +602,7 @@ EbErrorType generate_mini_gop_rps(
 
             picture_control_set_ptr->hierarchical_levels = (uint8_t)context_ptr->mini_gop_hierarchical_levels[mini_gop_index];
 
-            picture_control_set_ptr->pred_struct_ptr = get_prediction_structure(
+            picture_control_set_ptr->pred_struct_ptr = eb_vp9_get_prediction_structure(
                 encode_context_ptr->prediction_structure_group_ptr,
                 picture_control_set_ptr->pred_structure,
                 1,
@@ -713,7 +713,7 @@ uint8_t picture_level_sub_pel_settings_sq(
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType signal_derivation_multi_processes_sq(
+EbErrorType eb_vp9_signal_derivation_multi_processes_sq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -800,7 +800,7 @@ EbErrorType signal_derivation_multi_processes_sq(
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType signal_derivation_multi_processes_oq(
+EbErrorType eb_vp9_signal_derivation_multi_processes_oq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -857,7 +857,7 @@ EbErrorType signal_derivation_multi_processes_oq(
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType signal_derivation_multi_processes_vmaf(
+EbErrorType eb_vp9_signal_derivation_multi_processes_vmaf(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -1485,7 +1485,7 @@ void  generate_rps_info(
  *     Change flag can be coded.
  *
  ***************************************************************************************************/
-void* picture_decision_kernel(void *input_ptr)
+void* eb_vp9_picture_decision_kernel(void *input_ptr)
 {
     PictureDecisionContext      *context_ptr = (PictureDecisionContext*) input_ptr;
 
@@ -1538,7 +1538,7 @@ void* picture_decision_kernel(void *input_ptr)
     for(;;) {
 
         // Get Input Full Object
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->picture_analysis_results_input_fifo_ptr,
             &input_results_wrapper_ptr);
 
@@ -1712,7 +1712,7 @@ void* picture_decision_kernel(void *input_ptr)
                 {
                     if (encode_context_ptr->pre_assignment_buffer_count > 1)
                     {
-                        initialize_mini_gop_activity_array(
+                        eb_vp9_initialize_mini_gop_activity_array(
                             context_ptr);
 
                         if (encode_context_ptr->pre_assignment_buffer_count == 16)
@@ -1721,11 +1721,11 @@ void* picture_decision_kernel(void *input_ptr)
                             context_ptr->mini_gop_activity_array[L4_0_INDEX] = EB_FALSE;
                             context_ptr->mini_gop_activity_array[L4_1_INDEX] = EB_FALSE;
                         }
-                        generate_picture_window_split(
+                        eb_vp9_generate_picture_window_split(
                             context_ptr,
                             encode_context_ptr);
 
-                        handle_incomplete_picture_window_map(
+                        eb_vp9_handle_incomplete_picture_window_map(
                             context_ptr,
                             encode_context_ptr);
                     }
@@ -1772,7 +1772,7 @@ void* picture_decision_kernel(void *input_ptr)
                                 encode_context_ptr->pred_struct_position -= picture_control_set_ptr->pred_struct_ptr->init_pic_index;
                             }
 
-                            picture_control_set_ptr->pred_struct_ptr = get_prediction_structure(
+                            picture_control_set_ptr->pred_struct_ptr = eb_vp9_get_prediction_structure(
                                 encode_context_ptr->prediction_structure_group_ptr,
                                 EB_PRED_LOW_DELAY_P,
                                 1,
@@ -1983,7 +1983,7 @@ void* picture_decision_kernel(void *input_ptr)
                         }
 
                         if (picture_control_set_ptr->cpi->common.reference_mode != SINGLE_REFERENCE)
-                            vp9_setup_compound_reference_mode(&picture_control_set_ptr->cpi->common);
+                            eb_vp9_setup_compound_reference_mode(&picture_control_set_ptr->cpi->common);
 
 #if USE_SRC_REF
                         picture_control_set_ptr->use_src_ref = (picture_control_set_ptr->temporal_layer_index > 0) ?
@@ -2002,17 +2002,17 @@ void* picture_decision_kernel(void *input_ptr)
 
                         // ME Kernel Multi-Processes Signal(s) derivation
                         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-                            signal_derivation_multi_processes_sq(
+                            eb_vp9_signal_derivation_multi_processes_sq(
                                 sequence_control_set_ptr,
                                 picture_control_set_ptr);
                         }
                         else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-                            signal_derivation_multi_processes_vmaf(
+                            eb_vp9_signal_derivation_multi_processes_vmaf(
                                 sequence_control_set_ptr,
                                 picture_control_set_ptr);
                         }
                         else {
-                            signal_derivation_multi_processes_oq(
+                            eb_vp9_signal_derivation_multi_processes_oq(
                                 sequence_control_set_ptr,
                                 picture_control_set_ptr);
                         }
@@ -2215,13 +2215,13 @@ void* picture_decision_kernel(void *input_ptr)
                                 picture_control_set_ptr->ref_pa_pcs_array[REF_LIST_0] = pa_reference_entry_ptr->p_pcs_ptr;
 
                                 // Increment the PA Reference's live_count by the number of tiles in the input picture
-                                eb_object_inc_live_count(
+                                eb_vp9_object_inc_live_count(
                                     pa_reference_entry_ptr->input_object_ptr,
                                     1);
 
                                 ((EbPaReferenceObject  *)picture_control_set_ptr->ref_pa_pic_ptr_array[REF_LIST_0]->object_ptr)->p_pcs_ptr = pa_reference_entry_ptr->p_pcs_ptr;
 
-                                eb_object_inc_live_count(
+                                eb_vp9_object_inc_live_count(
                                     pa_reference_entry_ptr->p_pcs_ptr->p_pcs_wrapper_ptr,
                                     1);
 
@@ -2250,13 +2250,13 @@ void* picture_decision_kernel(void *input_ptr)
                                 picture_control_set_ptr->ref_pic_poc_array[REF_LIST_1] = ref_poc;
 
                                 // Increment the PA Reference's live_count by the number of tiles in the input picture
-                                eb_object_inc_live_count(
+                                eb_vp9_object_inc_live_count(
                                     pa_reference_entry_ptr->input_object_ptr,
                                     1);
 
                                 ((EbPaReferenceObject  *)picture_control_set_ptr->ref_pa_pic_ptr_array[REF_LIST_1]->object_ptr)->p_pcs_ptr = pa_reference_entry_ptr->p_pcs_ptr;
 
-                                eb_object_inc_live_count(
+                                eb_vp9_object_inc_live_count(
                                     pa_reference_entry_ptr->p_pcs_ptr->p_pcs_wrapper_ptr,
                                     1);
 
@@ -2277,7 +2277,7 @@ void* picture_decision_kernel(void *input_ptr)
                             for(segment_index=0; segment_index < picture_control_set_ptr->me_segments_total_count; ++segment_index)
                             {
                                 // Get Empty Results Object
-                                eb_get_empty_object(
+                                eb_vp9_get_empty_object(
                                     context_ptr->picture_decision_results_output_fifo_ptr,
                                     &output_results_wrapper_ptr);
 
@@ -2288,7 +2288,7 @@ void* picture_decision_kernel(void *input_ptr)
                                 output_results_ptr->segment_index = segment_index;
 
                                 // Post the Full Results Object
-                                eb_post_full_object(output_results_wrapper_ptr);
+                                eb_vp9_post_full_object(output_results_wrapper_ptr);
                             }
                         }
 
@@ -2323,9 +2323,9 @@ void* picture_decision_kernel(void *input_ptr)
                 // Remove the entry
                 if((input_entry_ptr->dependent_count == 0) &&
                    (input_entry_ptr->input_object_ptr)) {
-                    eb_release_object(input_entry_ptr->p_pcs_ptr->p_pcs_wrapper_ptr);
+                    eb_vp9_release_object(input_entry_ptr->p_pcs_ptr->p_pcs_wrapper_ptr);
                        // Release the nominal live_count value
-                       eb_release_object(input_entry_ptr->input_object_ptr);
+                       eb_vp9_release_object(input_entry_ptr->input_object_ptr);
                        input_entry_ptr->input_object_ptr = (EbObjectWrapper*) EB_NULL;
                 }
 
@@ -2356,7 +2356,7 @@ void* picture_decision_kernel(void *input_ptr)
         }
 
         // Release the Input Results
-        eb_release_object(input_results_wrapper_ptr);
+        eb_vp9_release_object(input_results_wrapper_ptr);
     }
 
     return EB_NULL;
@@ -2366,7 +2366,7 @@ void unused_variable_void_func_pic_decision()
     (void)n_x_m_sad_kernel_func_ptr_array;
     (void)nx_m_sad_loop_kernel_func_ptr_array;
     (void)nx_m_sad_averaging_kernel_func_ptr_array;
-    (void)sad_calculation_8x8_16x16_func_ptr_array;
-    (void)sad_calculation_32x32_64x64_func_ptr_array;
-    (void)initialize_buffer_32bits_func_ptr_array;
+    (void)eb_vp9_sad_calculation_8x8_16x16_func_ptr_array;
+    (void)eb_vp9_sad_calculation_32x32_64x64_func_ptr_array;
+    (void)eb_vp9_initialize_buffer_32bits_func_ptr_array;
 }

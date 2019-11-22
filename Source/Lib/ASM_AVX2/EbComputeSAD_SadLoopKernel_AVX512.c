@@ -19,7 +19,7 @@
 extern "C" {
 #endif
 
-    void sad_loop_kernel(
+    void eb_vp9_sad_loop_kernel(
         uint8_t  *src,                             // input parameter, source samples Ptr
         uint32_t  src_stride,                      // input parameter, source stride
         uint8_t  *ref,                             // input parameter, reference samples Ptr
@@ -42,12 +42,12 @@ extern "C" {
 * Requirement: height <= 64
 * Requirement: height % 2 = 0 when width = 4 or 8
 *******************************************************************************/
-#if (defined(__GNUC__) && (__GNUC__ < 7)) // 512-bit ver of sad_loop_kernel_avx512_hme_l0_intrin is crashing -O0 GCC builds before GCC 7.x so forcing opt level
+#if (defined(__GNUC__) && (__GNUC__ < 7)) // 512-bit ver of eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin is crashing -O0 GCC builds before GCC 7.x so forcing opt level
 __attribute__((optimize(2)))
 #endif
 #ifndef DISABLE_AVX512
 AVX512_FUNC_TARGET
-void sad_loop_kernel_avx512_hme_l0_intrin(
+void eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -916,7 +916,7 @@ void sad_loop_kernel_avx512_hme_l0_intrin(
     *y_search_center = y_best;
 }
 #else
-void sad_loop_kernel_avx2_hme_l0_intrin(
+void eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
     uint8_t  *src,                            // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                            // input parameter, reference samples Ptr
@@ -1956,7 +1956,7 @@ the best SAD+MV
 *******************************************/
 AVX512_FUNC_TARGET
 FORCE_INLINE static
-void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     uint16_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
     uint32_t  *p_best_sad64x64,
@@ -2327,7 +2327,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
 }
 
 AVX512_FUNC_TARGET
-void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
     MeContext               *context_ptr,
     uint32_t                   list_index,
     uint32_t                   search_region_index,
@@ -2401,6 +2401,6 @@ void get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin(
     }
 
     ////32x32 and 64x64
-    get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 }
 #endif

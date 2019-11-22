@@ -645,15 +645,15 @@ static INLINE void idct32_8x32_quarter_3_4_stage_4_to_7(
     butterfly(step2[24], step2[23], cospi_16_64, cospi_16_64, &out[23], &out[24]);
 }
 
-void idct4_sse2(__m128i *const in);
-void vpx_idct8_sse2(__m128i *const in);
-void idct16_sse2(__m128i *const in0, __m128i *const in1);
-void iadst4_sse2(__m128i *const in);
-void iadst8_sse2(__m128i *const in);
-void vpx_iadst16_8col_sse2(__m128i *const in);
-void iadst16_sse2(__m128i *const in0, __m128i *const in1);
-void idct32_1024_8x32(const __m128i *const in, __m128i *const out);
-void idct32_34_8x32_sse2(const __m128i *const in, __m128i *const out);
-void idct32_34_8x32_ssse3(const __m128i *const in, __m128i *const out);
+void eb_vp9_idct4_sse2(__m128i *const in);
+void eb_vp9_idct8_sse2(__m128i *const in);
+void eb_vp9_idct16_sse2(__m128i *const in0, __m128i *const in1);
+void eb_vp9_iadst4_sse2(__m128i *const in);
+void eb_vp9_iadst8_sse2(__m128i *const in);
+void eb_vp9_iadst16_8col_sse2(__m128i *const in);
+void eb_vp9_iadst16_sse2(__m128i *const in0, __m128i *const in1);
+void eb_vp9_idct32_1024_8x32(const __m128i *const in, __m128i *const out);
+void eb_vp9_idct32_34_8x32_sse2(const __m128i *const in, __m128i *const out);
+void eb_vp9_idct32_34_8x32_ssse3(const __m128i *const in, __m128i *const out);
 
 #endif  // VPX_VPX_DSP_X86_INV_TXFM_SSE2_H_

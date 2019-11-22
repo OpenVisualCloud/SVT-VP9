@@ -23,7 +23,7 @@
 /******************************************************
  * Enc Dec Context Constructor
  ******************************************************/
-EbErrorType entropy_coding_context_ctor(
+EbErrorType eb_vp9_entropy_coding_context_ctor(
     EntropyCodingContext **context_dbl_ptr,
     EbFifo                *enc_dec_input_fifo_ptr,
     EbFifo                *packetization_output_fifo_ptr,
@@ -95,7 +95,7 @@ EbErrorType EntropyCodingSb(
     // Reset above context @ the 1st SB
     if (sb_ptr->sb_index == 0) {
 
-        vpx_start_encode(residual_bc, data + total_size);
+        eb_vp9_start_encode(residual_bc, data + total_size);
 
         // Note: this memset assumes above_context[0], [1] and [2]
         // are allocated as part of the same buffer.
@@ -153,7 +153,7 @@ EbErrorType EntropyCodingSb(
         }
 
         if (partition != PARTITION_INVALID) {
-            const int  bsl = b_width_log2_lookup[context_ptr->ep_block_stats_ptr->bsize];
+            const int  bsl = eb_vp9_b_width_log2_lookup[context_ptr->ep_block_stats_ptr->bsize];
             const int  bs = (1 << bsl) / 4;
             BLOCK_SIZE subsize = get_subsize(context_ptr->ep_block_stats_ptr->bsize, partition);
 
@@ -174,9 +174,9 @@ EbErrorType EntropyCodingSb(
 
                 // Set WebM relevant fields
                 xd->mb_to_top_edge = -((context_ptr->mi_row * MI_SIZE) * 8);
-                xd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
+                xd->mb_to_bottom_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_rows - eb_vp9_num_8x8_blocks_high_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_row) * MI_SIZE) * 8;
                 xd->mb_to_left_edge = -((context_ptr->mi_col * MI_SIZE) * 8);
-                xd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
+                xd->mb_to_right_edge = ((picture_control_set_ptr->parent_pcs_ptr->cpi->common.mi_cols - eb_vp9_num_8x8_blocks_wide_lookup[context_ptr->ep_block_stats_ptr->bsize] - context_ptr->mi_col) * MI_SIZE) * 8;
 
                 xd->plane[0].subsampling_x = xd->plane[0].subsampling_y = 0;
                 xd->plane[1].subsampling_x = xd->plane[1].subsampling_y = 1;
@@ -339,7 +339,7 @@ EbErrorType EntropyCodingSb(
                 context_ptr->tok_start = context_ptr->tok;
 
                 // Tokonize the SB
-                vp9_tokenize_sb(cpi, xd, &cpi->td, &context_ptr->tok, 0, 0,  VPXMAX(context_ptr->ep_block_stats_ptr->bsize, BLOCK_8X8));
+                eb_vp9_tokenize_sb(cpi, xd, &cpi->td, &context_ptr->tok, 0, 0,  VPXMAX(context_ptr->ep_block_stats_ptr->bsize, BLOCK_8X8));
 
                 // Add EOSB_TOKEN
                 context_ptr->tok->token  = EOSB_TOKEN;
@@ -349,7 +349,7 @@ EbErrorType EntropyCodingSb(
                 context_ptr->tok         = context_ptr->tok_start;
 
                 // Write mode info
-                write_modes_b(context_ptr, cpi, xd, (TileInfo *)EB_NULL, residual_bc, &context_ptr->tok, context_ptr->tok_end, context_ptr->mi_row, context_ptr->mi_col, &cpi->max_mv_magnitude, cpi->interp_filter_selected);
+                eb_vp9_write_modes_b(context_ptr, cpi, xd, (TileInfo *)EB_NULL, residual_bc, &context_ptr->tok, context_ptr->tok_end, context_ptr->mi_row, context_ptr->mi_col, &cpi->max_mv_magnitude, cpi->interp_filter_selected);
 
                 // Reset the tok buffer
                 context_ptr->tok = context_ptr->tok_start;
@@ -382,7 +382,7 @@ EbErrorType EntropyCodingSb(
 
     // Stop writing
     if (sb_ptr->sb_index == (unsigned) picture_control_set_ptr->sb_total_count - 1) {
-        vpx_stop_encode(residual_bc);
+        eb_vp9_stop_encode(residual_bc);
     }
 
     return return_error;
@@ -435,7 +435,7 @@ static EB_BOOL update_entropy_coding_rows(
     EB_BOOL process_next_row = EB_FALSE;
 
     // Note, any writes & reads to status variables (e.g. in_progress) in MD-CTRL must be thread-safe
-    eb_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
+    eb_vp9_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
     // Update availability mask
     if (*initial_process_call == EB_TRUE) {
@@ -473,7 +473,7 @@ static EB_BOOL update_entropy_coding_rows(
 
     *initial_process_call = EB_FALSE;
 
-    eb_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
+    eb_vp9_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
     return process_next_row;
 }
@@ -481,7 +481,7 @@ static EB_BOOL update_entropy_coding_rows(
 /******************************************************
  * Entropy Coding Kernel
  ******************************************************/
-void* entropy_coding_kernel(void *input_ptr)
+void* eb_vp9_entropy_coding_kernel(void *input_ptr)
 {
     // Context & SCS & PCS
     EntropyCodingContext *context_ptr = (EntropyCodingContext*) input_ptr;
@@ -508,7 +508,7 @@ void* entropy_coding_kernel(void *input_ptr)
     for(;;) {
 
         // Get Mode Decision Results
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->enc_dec_input_fifo_ptr,
             &enc_dec_results_wrapper_ptr);
         enc_dec_results_ptr       = (EncDecResults*) enc_dec_results_wrapper_ptr->object_ptr;
@@ -578,7 +578,7 @@ void* entropy_coding_kernel(void *input_ptr)
                     RateControlTasks *rate_control_task_ptr;
 
                     // Get Empty EncDec Results
-                    eb_get_empty_object(
+                    eb_vp9_get_empty_object(
                         context_ptr->rate_control_output_fifo_ptr,
                         &rate_control_task_wrapper_ptr);
                     rate_control_task_ptr = (RateControlTasks*) rate_control_task_wrapper_ptr->object_ptr;
@@ -591,10 +591,10 @@ void* entropy_coding_kernel(void *input_ptr)
                     rate_control_task_ptr->segment_index = ~0u;
 
                     // Post EncDec Results
-                    eb_post_full_object(rate_control_task_wrapper_ptr);
+                    eb_vp9_post_full_object(rate_control_task_wrapper_ptr);
                 }
 
-                eb_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
+                eb_vp9_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
                 if (picture_control_set_ptr->entropy_coding_pic_done == EB_FALSE) {
 
                     // If the picture is complete, terminate the slice
@@ -608,7 +608,7 @@ void* entropy_coding_kernel(void *input_ptr)
                         for (ref_idx = 0; ref_idx < picture_control_set_ptr->parent_pcs_ptr->ref_list0_count; ++ref_idx) {
                             if (picture_control_set_ptr->ref_pic_ptr_array[0] != EB_NULL) {
 
-                                eb_release_object(picture_control_set_ptr->ref_pic_ptr_array[0]);
+                                eb_vp9_release_object(picture_control_set_ptr->ref_pic_ptr_array[0]);
                             }
                         }
 
@@ -616,28 +616,28 @@ void* entropy_coding_kernel(void *input_ptr)
                         for (ref_idx = 0; ref_idx < picture_control_set_ptr->parent_pcs_ptr->ref_list1_count; ++ref_idx) {
                             if (picture_control_set_ptr->ref_pic_ptr_array[1] != EB_NULL) {
 
-                                eb_release_object(picture_control_set_ptr->ref_pic_ptr_array[1]);
+                                eb_vp9_release_object(picture_control_set_ptr->ref_pic_ptr_array[1]);
                             }
                         }
 
                         // Get Empty Entropy Coding Results
-                        eb_get_empty_object(
+                        eb_vp9_get_empty_object(
                             context_ptr->entropy_coding_output_fifo_ptr,
                             &entropy_coding_results_wrapper_ptr);
                         entropy_coding_results_ptr = (EntropyCodingResults*)entropy_coding_results_wrapper_ptr->object_ptr;
                         entropy_coding_results_ptr->picture_control_set_wrapper_ptr = enc_dec_results_ptr->picture_control_set_wrapper_ptr;
 
                         // Post EntropyCoding Results
-                        eb_post_full_object(entropy_coding_results_wrapper_ptr);
+                        eb_vp9_post_full_object(entropy_coding_results_wrapper_ptr);
 
                     } // End if(PictureCompleteFlag)
                 }
-                eb_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
+                eb_vp9_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
             }
         }
         // Release Mode Decision Results
-        eb_release_object(enc_dec_results_wrapper_ptr);
+        eb_vp9_release_object(enc_dec_results_wrapper_ptr);
 
     }
 

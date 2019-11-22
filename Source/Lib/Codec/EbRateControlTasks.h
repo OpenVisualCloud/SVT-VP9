@@ -44,7 +44,7 @@ typedef struct RateControlTasksInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType rate_control_tasks_ctor(
+extern EbErrorType eb_vp9_rate_control_tasks_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

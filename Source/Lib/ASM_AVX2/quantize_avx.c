@@ -101,7 +101,7 @@ static INLINE void store_tran_low(__m128i a, tran_low_t *b) {
 #endif
 }
 
-void vpx_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
+void eb_vp9_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
     int skip_block, const int16_t *zbin_ptr,
     const int16_t *round_ptr, const int16_t *quant_ptr,
     const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr,
@@ -232,7 +232,7 @@ void vpx_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
     *eob_ptr = accumulate_eob(eob);
 }
 
-void vpx_quantize_b_32x32_avx(
+void eb_vp9_quantize_b_32x32_avx(
     const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block,
     const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr,
     const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr,

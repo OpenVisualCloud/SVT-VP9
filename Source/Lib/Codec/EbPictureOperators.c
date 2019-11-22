@@ -17,7 +17,7 @@
 /*********************************
  * x86 implememtation of Picture Addition
  *********************************/
-void picture_addition(
+void eb_vp9_picture_addition(
     uint8_t  *pred_ptr,
     uint32_t  pred_stride,
     int16_t  *residual_ptr,
@@ -28,7 +28,7 @@ void picture_addition(
     uint32_t  height)
 {
 
-    addition_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][width >> 3](
+    addition_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][width >> 3](
         pred_ptr,
         pred_stride,
         residual_ptr,
@@ -63,7 +63,7 @@ EbErrorType picture_copy8_bit(
     // Execute the Kernels
     if (component_mask & PICTURE_BUFFER_DESC_Y_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+        pic_copy_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
             &(src->buffer_y[src_luma_origin_index]),
             src->stride_y,
             &(dst->buffer_y[dst_luma_origin_index]),
@@ -74,7 +74,7 @@ EbErrorType picture_copy8_bit(
 
     if (component_mask & PICTURE_BUFFER_DESC_Cb_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
+        pic_copy_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
             &(src->buffer_cb[src_chroma_origin_index]),
             src->stride_cb,
             &(dst->buffer_cb[dst_chroma_origin_index]),
@@ -85,7 +85,7 @@ EbErrorType picture_copy8_bit(
 
     if (component_mask & PICTURE_BUFFER_DESC_Cr_FLAG) {
 
-        pic_copy_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
+        pic_copy_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][chroma_area_width >> 3](
             &(src->buffer_cr[src_chroma_origin_index]),
             src->stride_cr,
             &(dst->buffer_cr[dst_chroma_origin_index]),
@@ -113,7 +113,7 @@ void picture_sub_sampled_residual(
     uint8_t   last_line)    //the last line has correct prediction data, so no duplication to be done.
 {
 
-    residual_kernel_sub_sampled_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    eb_vp9_residual_kernel_sub_sampled_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -141,7 +141,7 @@ void picture_residual(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
+    eb_vp9_residual_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][area_width>>3](
         input,
         input_stride,
         pred,
@@ -169,7 +169,7 @@ void picture_residual16bit(
     uint32_t  area_height)
 {
 
-    residual_kernel_func_ptr_array16_bit[(ASM_TYPES & PREAVX2_MASK) && 1](
+    eb_vp9_residual_kernel_func_ptr_array16_bit[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](
         input,
         input_stride,
         pred,
@@ -202,7 +202,7 @@ EbErrorType picture_full_distortion(
     distortion[0]   = 0;
     distortion[1]   = 0;
     // Y
-    full_distortion_intrinsic_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][eob != 0][0][area_size >> 3](
+    full_distortion_intrinsic_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][eob != 0][0][area_size >> 3](
         &(((int16_t*) coeff->buffer_y)[coeff_origin_index]),
         coeff->stride_y,
         &(((int16_t*) recon_coeff->buffer_y)[recon_coeff_origin_index]),
@@ -214,7 +214,7 @@ EbErrorType picture_full_distortion(
     return return_error;
 }
 
-void extract_8bit_data(
+void eb_vp9_extract_8bit_data(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
@@ -224,7 +224,7 @@ void extract_8bit_data(
     )
 {
 
-    unpack_8bit_func_ptr_array_16bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & PREAVX2_MASK) && 1](
+    unpack_8bit_func_ptr_array_16bit[((width & 3) == 0) && ((height & 1)== 0)][(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
         out8_bit_buffer,
@@ -232,7 +232,7 @@ void extract_8bit_data(
         width,
         height);
 }
-void unpack_l0l1_avg(
+void eb_vp9_unpack_l0l1_avg(
         uint16_t *ref16_l0,
         uint32_t  ref_l0_stride,
         uint16_t *ref16_l1,
@@ -243,7 +243,7 @@ void unpack_l0l1_avg(
         uint32_t  height)
  {
 
-     unpack_avg_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+     eb_vp9_unpack_avg_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
         ref16_l0,
         ref_l0_stride,
         ref16_l1,
@@ -254,7 +254,7 @@ void unpack_l0l1_avg(
         height);
 
  }
-void extract8_bitdata_safe_sub(
+void eb_vp9_extract8_bitdata_safe_sub(
     uint16_t *in16_bit_buffer,
     uint32_t  in_stride,
     uint8_t  *out8_bit_buffer,
@@ -264,7 +264,7 @@ void extract8_bitdata_safe_sub(
     )
 {
 
-    unpack_8bit_safe_sub_func_ptr_array_16bit[(ASM_TYPES & AVX2_MASK) && 1](
+    unpack_8bit_safe_sub_func_ptr_array_16bit[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
         out8_bit_buffer,
@@ -273,7 +273,7 @@ void extract8_bitdata_safe_sub(
         height
         );
 }
-void unpack_l0l1_avg_safe_sub(
+void eb_vp9_unpack_l0l1_avg_safe_sub(
         uint16_t *ref16_l0,
         uint32_t  ref_l0_stride,
         uint16_t *ref16_l1,
@@ -285,7 +285,7 @@ void unpack_l0l1_avg_safe_sub(
  {
      //fix C
 
-     unpack_avg_safe_sub_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+     eb_vp9_unpack_avg_safe_sub_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
         ref16_l0,
         ref_l0_stride,
         ref16_l1,
@@ -308,7 +308,7 @@ void unpack_2d(
     )
 {
 
-    unpack2_d_func_ptr_array_16_bit[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
+    unpack2_d_func_ptr_array_16_bit[((width & 3) == 0) && ((height & 1)== 0)][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
         in16_bit_buffer,
         in_stride,
         out8_bit_buffer,
@@ -331,7 +331,7 @@ void pack_2d_src(
    )
 {
 
-    pack2_d_func_ptr_array_16_bit_src[((width & 3) == 0) && ((height & 1)== 0)][(ASM_TYPES & AVX2_MASK) && 1](
+    pack2_d_func_ptr_array_16_bit_src[((width & 3) == 0) && ((height & 1)== 0)][(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
         in8_bit_buffer,
         in8_stride,
         inn_bit_buffer,
@@ -354,7 +354,7 @@ void compressed_pack_sb(
 )
 {
 
-    compressed_pack_func_ptr_array[((width == 64 || width == 32) ? ((ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
+    compressed_pack_func_ptr_array[((width == 64 || width == 32) ? ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
         in8_bit_buffer,
         in8_stride,
         inn_bit_buffer,
@@ -377,7 +377,7 @@ void compressed_pack_blk(
     )
 {
 
-    compressed_pack_func_ptr_array[((width == 64 || width == 32 || width == 16 || width == 8) ? ((ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
+    compressed_pack_func_ptr_array[((width == 64 || width == 32 || width == 16 || width == 8) ? ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
         in8_bit_buffer,
         in8_stride,
         inn_bit_buffer,
@@ -399,7 +399,7 @@ void conv2b_to_c_pack_sb(
     uint32_t       height)
 {
 
-    convert_unpack_c_pack_func_ptr_array[((width == 64 || width == 32) ? ((ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
+    convert_unpack_c_pack_func_ptr_array[((width == 64 || width == 32) ? ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
         inn_bit_buffer,
         inn_stride,
         in_compn_bit_buffer,
@@ -411,9 +411,9 @@ void conv2b_to_c_pack_sb(
 }
 
 /*******************************************
- * memset16bit
+ * eb_vp9_memset16bit
  *******************************************/
-void memset16bit(
+void eb_vp9_memset16bit(
     uint16_t *in_ptr,
     uint16_t  value,
     uint64_t  num_of_elements )
@@ -425,9 +425,9 @@ void memset16bit(
     }
 }
 /*******************************************
- * memcpy16bit
+ * eb_vp9_memcpy16bit
  *******************************************/
-void memcpy16bit(
+void eb_vp9_memcpy16bit(
     uint16_t *out_ptr,
     uint16_t *in_ptr,
     uint64_t  num_of_elements )
@@ -465,6 +465,6 @@ void memset_16bit_block (
 
     uint32_t i;
     for (i = 0; i < size; i++)
-       memset16bit((uint16_t*)in_ptr + i*stride_in, value, size);
+       eb_vp9_memset16bit((uint16_t*)in_ptr + i*stride_in, value, size);
 
 }

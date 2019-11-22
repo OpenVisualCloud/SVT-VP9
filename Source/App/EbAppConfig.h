@@ -133,7 +133,7 @@ extern errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src);
 extern errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen);
 
 /* string length */
-extern rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
+extern rsize_t eb_vp9_strnlen_ss(const char *s, rsize_t smax);
 
 #define EB_STRNCPY(dst, src, count) \
     strncpy_ss(dst, sizeof(dst), src, count)
@@ -145,7 +145,7 @@ extern rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
     strcmp(target,token)
 
 #define EB_STRLEN(target, max_size) \
-    eb_strnlen_ss(target, max_size)
+    eb_vp9_strnlen_ss(target, max_size)
 
 #define EB_APP_MEMORY() \
     SVT_LOG("Total Number of Mallocs in App: %d\n", app_malloc_count); \

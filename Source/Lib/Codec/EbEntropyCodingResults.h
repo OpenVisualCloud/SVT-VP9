@@ -25,7 +25,7 @@ typedef struct EntropyCodingResultsInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType entropy_coding_results_ctor(
+extern EbErrorType eb_vp9_entropy_coding_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

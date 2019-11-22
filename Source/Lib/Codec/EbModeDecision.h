@@ -95,7 +95,7 @@ typedef struct ModeDecisionCandidateBuffer{
 /**************************************
 * Extern Function Declarations
 **************************************/
-EbErrorType mode_decision_candidate_buffer_ctor(
+EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(
     ModeDecisionCandidateBuffer **buffer_dbl_ptr,
     uint16_t                      sb_max_size,
     EbBitDepth                    max_bitdepth,

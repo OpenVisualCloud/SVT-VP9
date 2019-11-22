@@ -8,12 +8,12 @@
 #include "EbPictureBufferDesc.h"
 #include "EbDefinitions.h"
 /*****************************************
- * eb_picture_buffer_desc_ctor
+ * eb_vp9_picture_buffer_desc_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
  *****************************************/
-EbErrorType eb_picture_buffer_desc_ctor(
+EbErrorType eb_vp9_picture_buffer_desc_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {
@@ -101,12 +101,12 @@ EbErrorType eb_picture_buffer_desc_ctor(
 }
 
 /*****************************************
- * eb_recon_picture_buffer_desc_ctor
+ * eb_vp9_recon_picture_buffer_desc_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
  *****************************************/
-EbErrorType eb_recon_picture_buffer_desc_ctor(
+EbErrorType eb_vp9_recon_picture_buffer_desc_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {

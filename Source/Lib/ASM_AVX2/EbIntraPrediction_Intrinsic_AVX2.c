@@ -52,7 +52,7 @@ static INLINE void d117_avg3_last(
     *b = avg3_avx2(r0, r1, r2);
 }
 
-void vpx_d117_predictor_32x32_avx2(
+void eb_vp9_d117_predictor_32x32_avx2(
     uint8_t       *dst,
     ptrdiff_t      stride,
     const uint8_t *above,
@@ -140,7 +140,7 @@ static INLINE __m256i d135_avg3(const uint8_t *const ref) {
     return avg3_avx2(r0, r1, r2);
 }
 
-void vpx_d135_predictor_32x32_avx2(
+void eb_vp9_d135_predictor_32x32_avx2(
     uint8_t       *dst,
     ptrdiff_t      stride,
     const uint8_t *above,

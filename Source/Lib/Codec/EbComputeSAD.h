@@ -81,19 +81,19 @@ extern "C" {
     /***************************************
     * Function Tables
     ***************************************/
-    static EbSadkernelNxMType FUNC_TABLE n_x_m_sad_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [ASM_TYPES][SAD - block height]
+    static EbSadkernelNxMType FUNC_TABLE n_x_m_sad_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [eb_vp9_ASM_TYPES][SAD - block height]
     {
         // C_DEFAULT
         {
-            /*0 4xM  */ fast_loop_nx_m_sad_kernel,
-            /*1 8xM  */ fast_loop_nx_m_sad_kernel,
-            /*2 16xM */ fast_loop_nx_m_sad_kernel,
-            /*3 24xM */ fast_loop_nx_m_sad_kernel,
-            /*4 32xM */ fast_loop_nx_m_sad_kernel,
-            /*5      */ fast_loop_nx_m_sad_kernel,
-            /*6 48xM */ fast_loop_nx_m_sad_kernel,
-            /*7      */ fast_loop_nx_m_sad_kernel,
-            /*8 64xM */ fast_loop_nx_m_sad_kernel
+            /*0 4xM  */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*1 8xM  */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*2 16xM */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*3 24xM */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*4 32xM */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*5      */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*6 48xM */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*7      */ eb_vp9_fast_loop_nx_m_sad_kernel,
+            /*8 64xM */ eb_vp9_fast_loop_nx_m_sad_kernel
         },
         // AVX2
         {
@@ -109,57 +109,57 @@ extern "C" {
         },
     };
 
-    static EbSadavgkernelNxMType FUNC_TABLE nx_m_sad_averaging_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [ASM_TYPES][SAD - block height]
+    static EbSadavgkernelNxMType FUNC_TABLE nx_m_sad_averaging_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] =   // [eb_vp9_ASM_TYPES][SAD - block height]
     {
         // C_DEFAULT
         {
-            /*0 4xM  */ combined_averaging_sad,
-            /*1 8xM  */ combined_averaging_sad,
-            /*2 16xM */ combined_averaging_sad,
-            /*3 24xM */ combined_averaging_sad,
-            /*4 32xM */ combined_averaging_sad,
+            /*0 4xM  */ eb_vp9_combined_averaging_sad,
+            /*1 8xM  */ eb_vp9_combined_averaging_sad,
+            /*2 16xM */ eb_vp9_combined_averaging_sad,
+            /*3 24xM */ eb_vp9_combined_averaging_sad,
+            /*4 32xM */ eb_vp9_combined_averaging_sad,
             /*5      */ (EbSadavgkernelNxMType)nx_m_sad_kernel_void_func,
-            /*6 48xM */ combined_averaging_sad,
+            /*6 48xM */ eb_vp9_combined_averaging_sad,
             /*7      */ (EbSadavgkernelNxMType)nx_m_sad_kernel_void_func,
-            /*8 64xM */ combined_averaging_sad
+            /*8 64xM */ eb_vp9_combined_averaging_sad
         },
         // AVX2
         {
-            /*0 4xM  */ combined_averaging4x_msad_sse2_intrin,
-            /*1 8xM  */ combined_averaging8x_msad_avx2_intrin,
-            /*2 16xM */ combined_averaging16x_msad_avx2_intrin,
-            /*3 24xM */ combined_averaging24x_msad_avx2_intrin,
-            /*4 32xM */ combined_averaging32x_msad_avx2_intrin,
+            /*0 4xM  */ eb_vp9_combined_averaging4x_msad_sse2_intrin,
+            /*1 8xM  */ eb_vp9_combined_averaging8x_msad_avx2_intrin,
+            /*2 16xM */ eb_vp9_combined_averaging16x_msad_avx2_intrin,
+            /*3 24xM */ eb_vp9_combined_averaging24x_msad_avx2_intrin,
+            /*4 32xM */ eb_vp9_combined_averaging32x_msad_avx2_intrin,
             /*5      */ (EbSadavgkernelNxMType)nx_m_sad_kernel_void_func,
-            /*6 48xM */ combined_averaging48x_msad_avx2_intrin,
+            /*6 48xM */ eb_vp9_combined_averaging48x_msad_avx2_intrin,
             /*7      */ (EbSadavgkernelNxMType)nx_m_sad_kernel_void_func,
-            /*8 64xM */ combined_averaging64x_msad_avx2_intrin
+            /*8 64xM */ eb_vp9_combined_averaging64x_msad_avx2_intrin
         },
     };
 
     static EbSadloopkernelNxMType FUNC_TABLE nx_m_sad_loop_kernel_func_ptr_array[ASM_TYPE_TOTAL] =
     {
         // C_DEFAULT
-        sad_loop_kernel,
+        eb_vp9_sad_loop_kernel,
         // AVX2
-        sad_loop_kernel_avx2_intrin,
+        eb_vp9_sad_loop_kernel_avx2_intrin,
     };
 
 #ifdef DISABLE_AVX512
-    static EbGeteightsaD8x8 FUNC_TABLE get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[ASM_TYPE_TOTAL] =
+    static EbGeteightsaD8x8 FUNC_TABLE eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[ASM_TYPE_TOTAL] =
     {
         // C_DEFAULT
-        get_eight_horizontal_search_point_results_8x8_16x16_pu,
+        eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu,
         // AVX2
-        get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin,
+        eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin,
     };
 
-    static EbGeteightsaD32x32 FUNC_TABLE get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] =
+    static EbGeteightsaD32x32 FUNC_TABLE eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] =
     {
         // C_DEFAULT
-        get_eight_horizontal_search_point_results_32x32_64x64,
+        eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64,
         // AVX2
-        get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin,
+        eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin,
     };
 #endif
 

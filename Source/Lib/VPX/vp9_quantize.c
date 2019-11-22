@@ -16,7 +16,7 @@
 #include "vp9_encoder.h"
 #include "vp9_quantize.h"
 
-void vp9_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
+void eb_vp9_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
                        int skip_block, const int16_t *round_ptr,
                        const int16_t *quant_ptr, tran_low_t *qcoeff_ptr,
                        tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr,
@@ -85,7 +85,7 @@ void vp9_highbd_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
 
 // TODO(jingning) Refactor this file and combine functions with similar
 // operations.
-void vp9_quantize_fp_32x32_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
+void eb_vp9_quantize_fp_32x32_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
                              int skip_block, const int16_t *round_ptr,
                              const int16_t *quant_ptr, tran_low_t *qcoeff_ptr,
                              tran_low_t *dqcoeff_ptr,
@@ -178,7 +178,7 @@ void vp9_regular_quantize_b_4x4(MACROBLOCK *x, int plane, int block,
     return;
   }
 #endif
-  vpx_quantize_b(BLOCK_OFFSET(p->coeff, block), n_coeffs, x->skip_block,
+  eb_vp9_quantize_b(BLOCK_OFFSET(p->coeff, block), n_coeffs, x->skip_block,
                  p->zbin, p->round, p->quant, p->quant_shift, qcoeff, dqcoeff,
                  pd->dequant, &p->eobs[block], scan, iscan);
 }
@@ -194,7 +194,7 @@ static void invert_quant(int16_t *quant, int16_t *shift, int d) {
 }
 
 static int get_qzbin_factor(int q, vpx_bit_depth_t bit_depth) {
-  const int quant = vp9_dc_quant(q, 0, bit_depth);
+  const int quant = eb_vp9_dc_quant(q, 0, bit_depth);
 #if CONFIG_VP9_HIGHBITDEPTH
   switch (bit_depth) {
     case VPX_BITS_8: return q == 0 ? 64 : (quant < 148 ? 84 : 80);
@@ -209,7 +209,7 @@ static int get_qzbin_factor(int q, vpx_bit_depth_t bit_depth) {
 #endif
 }
 
-void vp9_init_quantizer(VP9_COMP *cpi) {
+void eb_vp9_init_quantizer(VP9_COMP *cpi) {
   VP9_COMMON *const cm = &cpi->common;
   QUANTS *const quants = &cpi->quants;
   int i, q, quant;
@@ -230,8 +230,8 @@ void vp9_init_quantizer(VP9_COMP *cpi) {
       if (sharpness > 0)
         qrounding_factor_fp = 64 - sharpness_adjustment;
       // y
-      quant = i == 0 ? vp9_dc_quant(q, cm->y_dc_delta_q, cm->bit_depth)
-                     : vp9_ac_quant(q, 0, cm->bit_depth);
+      quant = i == 0 ? eb_vp9_dc_quant(q, cm->y_dc_delta_q, cm->bit_depth)
+                     : eb_vp9_ac_quant(q, 0, cm->bit_depth);
       invert_quant(&quants->y_quant[q][i], &quants->y_quant_shift[q][i], quant);
       quants->y_quant_fp[q][i] = (int16_t)((1 << 16) / quant);
       quants->y_round_fp[q][i] = (int16_t)((qrounding_factor_fp * quant) >> 7);
@@ -240,8 +240,8 @@ void vp9_init_quantizer(VP9_COMP *cpi) {
       cpi->y_dequant[q][i] = (int16_t)quant;
 
       // uv
-      quant = i == 0 ? vp9_dc_quant(q, cm->uv_dc_delta_q, cm->bit_depth)
-                     : vp9_ac_quant(q, cm->uv_ac_delta_q, cm->bit_depth);
+      quant = i == 0 ? eb_vp9_dc_quant(q, cm->uv_dc_delta_q, cm->bit_depth)
+                     : eb_vp9_ac_quant(q, cm->uv_ac_delta_q, cm->bit_depth);
       invert_quant(&quants->uv_quant[q][i], &quants->uv_quant_shift[q][i],
                    quant);
       quants->uv_quant_fp[q][i] = (int16_t)((1 << 16) / quant);
@@ -276,8 +276,8 @@ void vp9_init_plane_quantizers(VP9_COMP *cpi, MACROBLOCK *x) {
   MACROBLOCKD *const xd = &x->e_mbd;
   QUANTS *const quants = &cpi->quants;
   const int segment_id = xd->mi[0]->segment_id;
-  const int qindex = vp9_get_qindex(&cm->seg, segment_id, cm->base_qindex);
-  const int rdmult = vp9_compute_rd_mult(cpi, qindex + cm->y_dc_delta_q);
+  const int qindex = eb_vp9_get_qindex(&cm->seg, segment_id, cm->base_qindex);
+  const int rdmult = eb_vp9_compute_rd_mult(cpi, qindex + cm->y_dc_delta_q);
   int i;
 
   // Y
@@ -311,7 +311,7 @@ void vp9_init_plane_quantizers(VP9_COMP *cpi, MACROBLOCK *x) {
 
   set_error_per_bit(x, rdmult);
 
-  vp9_initialize_me_consts(cpi, x, x->q_index);
+  eb_vp9_initialize_me_consts(cpi, x, x->q_index);
 }
 
 void vp9_frame_init_quantizer(VP9_COMP *cpi) {
@@ -319,7 +319,7 @@ void vp9_frame_init_quantizer(VP9_COMP *cpi) {
 }
 
 void vp9_set_quantizer(VP9_COMMON *cm, int q) {
-  // quantizer has to be reinitialized with vp9_init_quantizer() if any
+  // quantizer has to be reinitialized with eb_vp9_init_quantizer() if any
   // delta_q changes.
   cm->base_qindex = q;
   cm->y_dc_delta_q = 0;
@@ -337,11 +337,11 @@ static const int quantizer_to_qindex[] = {
   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
 };
 
-int vp9_quantizer_to_qindex(int quantizer) {
+int eb_vp9_quantizer_to_qindex(int quantizer) {
   return quantizer_to_qindex[quantizer];
 }
 
-int vp9_qindex_to_quantizer(int qindex) {
+int eb_vp9_qindex_to_quantizer(int qindex) {
   int quantizer;
 
   for (quantizer = 0; quantizer < 64; ++quantizer)

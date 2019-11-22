@@ -58,7 +58,7 @@ typedef struct ResourceCoordinationContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType resource_coordination_context_ctor(
+extern EbErrorType eb_vp9_resource_coordination_context_ctor(
     ResourceCoordinationContext  **context_dbl_ptr,
     EbFifo                        *input_buffer_fifo_ptr,
     EbFifo                        *resource_coordination_results_output_fifo_ptr,
@@ -69,7 +69,7 @@ extern EbErrorType resource_coordination_context_ctor(
     uint32_t                      *compute_segments_total_count_array,
     uint32_t                       encode_instances_total_count);
 
-extern void* resource_coordination_kernel(void *input_ptr);
+extern void* eb_vp9_resource_coordination_kernel(void *input_ptr);
 
 #ifdef __cplusplus
 }

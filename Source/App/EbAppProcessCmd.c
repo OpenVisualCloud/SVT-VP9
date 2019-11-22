@@ -45,7 +45,7 @@ static void log_error_output(
         break;
 
     case EB_ENC_PM_ERROR8:
-        fprintf(error_log_file, "Error: PictureManagerKernel: referenceEntryPtr should never be null!\n");
+        fprintf(error_log_file, "Error: eb_vp9_PictureManagerKernel: referenceEntryPtr should never be null!\n");
         break;
 
     case EB_ENC_PM_ERROR1:

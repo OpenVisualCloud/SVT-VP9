@@ -42,7 +42,7 @@ extern "C" {
 
 #define ENTROPY_NODES 11
 
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_pt_energy_class[ENTROPY_TOKENS]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_pt_energy_class[ENTROPY_TOKENS]);
 
 #define CAT1_MIN_VAL 5
 #define CAT2_MIN_VAL 7
@@ -52,26 +52,26 @@ DECLARE_ALIGNED(16, extern const uint8_t, vp9_pt_energy_class[ENTROPY_TOKENS]);
 #define CAT6_MIN_VAL 67
 
 // Extra bit probabilities.
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat1_prob[1]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat2_prob[2]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat3_prob[3]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat4_prob[4]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat5_prob[5]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat6_prob[14]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat1_prob[1]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat2_prob[2]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat3_prob[3]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob[4]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob[5]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob[14]);
 
 #if CONFIG_VP9_HIGHBITDEPTH
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat1_prob_high10[1]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat2_prob_high10[2]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat3_prob_high10[3]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat4_prob_high10[4]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat5_prob_high10[5]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat6_prob_high10[16]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat1_prob_high12[1]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat2_prob_high12[2]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat3_prob_high12[3]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat4_prob_high12[4]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat5_prob_high12[5]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_cat6_prob_high12[18]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat1_prob_high10[1]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat2_prob_high10[2]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat3_prob_high10[3]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob_high10[4]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob_high10[5]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob_high10[16]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat1_prob_high12[1]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat2_prob_high12[2]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat3_prob_high12[3]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob_high12[4]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob_high12[5]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob_high12[18]);
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 
 #define EOB_MODEL_TOKEN 3
@@ -119,20 +119,20 @@ typedef unsigned int vp9_coeff_stats[REF_TYPES][COEF_BANDS][COEFF_CONTEXTS]
 #define MODULUS_PARAM 13 /* Modulus parameter */
 
 struct VP9Common;
-void vp9_default_coef_probs(struct VP9Common *cm);
-void vp9_adapt_coef_probs(struct VP9Common *cm);
+void eb_vp9_default_coef_probs(struct VP9Common *cm);
+void eb_vp9_adapt_coef_probs(struct VP9Common *cm);
 
 // This is the index in the scan order beyond which all coefficients for
 // 8x8 transform and above are in the top band.
 // This macro is currently unused but may be used by certain implementations
 #define MAXBAND_INDEX 21
 
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_coefband_trans_8x8plus[1024]);
-DECLARE_ALIGNED(16, extern const uint8_t, vp9_coefband_trans_4x4[16]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_coefband_trans_8x8plus[1024]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_coefband_trans_4x4[16]);
 
 static INLINE const uint8_t *get_band_translate(TX_SIZE tx_size) {
-  return tx_size == TX_4X4 ? vp9_coefband_trans_4x4
-                           : vp9_coefband_trans_8x8plus;
+  return tx_size == TX_4X4 ? eb_vp9_coefband_trans_4x4
+                           : eb_vp9_coefband_trans_8x8plus;
 }
 
 // 128 lists of probabilities are stored for the following ONE node probs:
@@ -145,8 +145,8 @@ static INLINE const uint8_t *get_band_translate(TX_SIZE tx_size) {
 #define PIVOT_NODE 2  // which node is pivot
 
 #define MODEL_NODES (ENTROPY_NODES - UNCONSTRAINED_NODES)
-extern const vpx_tree_index vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)];
-extern const vpx_prob vp9_pareto8_full[COEFF_PROB_MODELS][MODEL_NODES];
+extern const vpx_tree_index eb_vp9_coef_con_tree[TREE_SIZE(ENTROPY_TOKENS)];
+extern const vpx_prob eb_vp9_pareto8_full[COEFF_PROB_MODELS][MODEL_NODES];
 
 typedef vpx_prob vp9_coeff_probs_model[REF_TYPES][COEF_BANDS][COEFF_CONTEXTS]
                                       [UNCONSTRAINED_NODES];
@@ -155,7 +155,7 @@ typedef unsigned int vp9_coeff_count_model[REF_TYPES][COEF_BANDS]
                                           [COEFF_CONTEXTS]
                                           [UNCONSTRAINED_NODES + 1];
 
-void vp9_model_to_full_probs(const vpx_prob *model, vpx_prob *full);
+void eb_vp9_model_to_full_probs(const vpx_prob *model, vpx_prob *full);
 
 typedef char ENTROPY_CONTEXT;
 

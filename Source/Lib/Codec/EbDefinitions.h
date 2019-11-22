@@ -143,7 +143,7 @@ extern "C" {
 #define RC_NO_EXTRA                 1
 #endif
 
-#define    Log2f                              Log2f_SSE2
+#define    Log2f                              eb_vp9_Log2f_SSE2
 
 #ifndef _RSIZE_T_DEFINED
     typedef size_t rsize_t;
@@ -232,7 +232,7 @@ typedef uint8_t EbModeType;
 #define INTER_MODE 1
 #define INTRA_MODE 2
 
-extern uint32_t ASM_TYPES;
+extern uint32_t eb_vp9_ASM_TYPES;
 
 /** Depth offsets
 */
@@ -498,10 +498,10 @@ FORCE_INLINE void eb_memcpy(void  *dst_ptr, void  *src_ptr, size_t size)
     strcmp(target,token)
 
 /* string length */
-EB_API rsize_t eb_strnlen_ss(const char *s, rsize_t smax);
+EB_API rsize_t eb_vp9_strnlen_ss(const char *s, rsize_t smax);
 
 #define EB_STRLEN(target, max_size) \
-    eb_strnlen_ss(target, max_size)
+    eb_vp9_strnlen_ss(target, max_size)
 
 #define MAX_NUM_PTR                (0x1312D00 << 2) //0x4C4B4000            // Maximum number of pointers to be allocated for the library
 
@@ -607,7 +607,7 @@ extern    uint32_t          lib_mutex_count;
     lib_malloc_count++;
 
 #define EB_CREATESEMAPHORE(type, pointer, n_elements, pointer_class, initial_count, max_count) \
-    pointer = eb_create_semaphore(initial_count, max_count); \
+    pointer = eb_vp9_create_semaphore(initial_count, max_count); \
     if (pointer == (type)EB_NULL) { \
         return EB_ErrorInsufficientResources; \
     } \
@@ -627,7 +627,7 @@ extern    uint32_t          lib_mutex_count;
     lib_semaphore_count++;
 
 #define EB_CREATEMUTEX(type, pointer, n_elements, pointer_class) \
-    pointer = eb_create_mutex(); \
+    pointer = eb_vp9_create_mutex(); \
     if (pointer == (type)EB_NULL){ \
         return EB_ErrorInsufficientResources; \
     } \

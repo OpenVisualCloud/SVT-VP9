@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "EbPictureDecisionQueue.h"
 
-EbErrorType pa_reference_queue_entry_ctor(
+EbErrorType eb_vp9_pa_eb_vp9_reference_queue_entry_ctor(
     PaReferenceQueueEntry **entry_dbl_ptr)
 {
     PaReferenceQueueEntry *entry_ptr;

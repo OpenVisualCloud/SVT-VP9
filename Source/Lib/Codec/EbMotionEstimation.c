@@ -48,8 +48,8 @@
 
 #define  MAX_SAD_VALUE 64*64*255
 
-uint32_t tab32x32[16] = { 0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15 };
-uint32_t tab8x8[64] = { 0, 1, 4, 5, 16, 17, 20, 21, 2, 3, 6, 7, 18, 19, 22, 23, 8, 9, 12, 13, 24, 25, 28, 29, 10, 11, 14, 15, 26, 27, 30, 31,
+uint32_t eb_vp9_tab32x32[16] = { 0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15 };
+uint32_t eb_vp9_tab8x8[64] = { 0, 1, 4, 5, 16, 17, 20, 21, 2, 3, 6, 7, 18, 19, 22, 23, 8, 9, 12, 13, 24, 25, 28, 29, 10, 11, 14, 15, 26, 27, 30, 31,
 32, 33, 36, 37, 48, 49, 52, 53, 34, 35, 38, 39, 50, 51, 54, 55, 40, 41, 44, 45, 56, 57, 60, 61, 42, 43, 46, 47, 58, 59, 62, 63
 };
 
@@ -96,7 +96,7 @@ static const uint8_t sub_position_type[16] = { 0, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 
 /*******************************************
 * GetEightHorizontalSearchPointResultsAll85CUs
 *******************************************/
-static void get_eight_horizontal_search_point_results_all85_p_us_c(
+static void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_c(
     MeContext *context_ptr,
     uint32_t   list_index,
     uint32_t   search_region_index,
@@ -151,73 +151,73 @@ static void get_eight_horizontal_search_point_results_all85_p_us_c(
     //---- 16x16_0
     block_index = 0;
     search_position_index = search_position_tl_index;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
     //---- 16x16_1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
     //---- 16x16_4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
     //---- 16x16_5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
 
     //---- 16x16_2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
     //---- 16x16_3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
     //---- 16x16_6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
     //---- 16x16_7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
 
     //---- 16x16_8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
     //---- 16x16_9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
     //---- 16x16_12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
     //---- 16x1_13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
 
     //---- 16x16_10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
     //---- 16x16_11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
     //---- 16x16_14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
     //---- 16x16_15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu(src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
 
     //32x32 and 64x64
-    get_eight_horizontal_search_point_results_32x32_64x64(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64(p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 
@@ -225,7 +225,7 @@ static void get_eight_horizontal_search_point_results_all85_p_us_c(
 /*******************************************
 * GetEightHorizontalSearchPointResultsAll85CUs
 *******************************************/
-static void get_eight_horizontal_search_point_results_all85_p_us(
+static void eb_vp9_get_eight_horizontal_search_point_results_all85_p_us(
     MeContext *context_ptr,
     uint32_t   list_index,
     uint32_t   search_region_index,
@@ -280,73 +280,73 @@ static void get_eight_horizontal_search_point_results_all85_p_us(
     //---- 16x16_0
     block_index = 0;
     search_position_index = search_position_tl_index;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_mv8x8[0], &p_best_sad16x16[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0 * 8]);
     //---- 16x16_1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_mv8x8[4], &p_best_sad16x16[1], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1 * 8]);
     //---- 16x16_4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_mv8x8[16], &p_best_sad16x16[4], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4 * 8]);
     //---- 16x16_5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_mv8x8[20], &p_best_sad16x16[5], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5 * 8]);
 
     //---- 16x16_2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_mv8x8[8], &p_best_sad16x16[2], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2 * 8]);
     //---- 16x16_3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_mv8x8[12], &p_best_sad16x16[3], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3 * 8]);
     //---- 16x16_6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_mv8x8[24], &p_best_sad16x16[6], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6 * 8]);
     //---- 16x16_7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_mv8x8[28], &p_best_sad16x16[7], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7 * 8]);
 
     //---- 16x16_8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_mv8x8[32], &p_best_sad16x16[8], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8 * 8]);
     //---- 16x16_9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_mv8x8[36], &p_best_sad16x16[9], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9 * 8]);
     //---- 16x16_12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_mv8x8[48], &p_best_sad16x16[12], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12 * 8]);
     //---- 16x1_13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_mv8x8[52], &p_best_sad16x16[13], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13 * 8]);
 
     //---- 16x16_10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_mv8x8[40], &p_best_sad16x16[10], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10 * 8]);
     //---- 16x16_11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_mv8x8[44], &p_best_sad16x16[11], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11 * 8]);
     //---- 16x16_14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_mv8x8[56], &p_best_sad16x16[14], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14 * 8]);
     //---- 16x16_15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
+    eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](src_ptr + block_index, context_ptr->sb_src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_mv8x8[60], &p_best_sad16x16[15], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15 * 8]);
 
     //32x32 and 64x64
-    get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 #endif
@@ -361,13 +361,13 @@ typedef void(*EbFpSearchFunc)(
 /*****************************
 * Function Tables
 *****************************/
-static EbFpSearchFunc FUNC_TABLE get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ASM_TYPE_TOTAL] =
+static EbFpSearchFunc FUNC_TABLE eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ASM_TYPE_TOTAL] =
 {
-    get_eight_horizontal_search_point_results_all85_p_us_c,
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_c,
 #ifndef DISABLE_AVX512
-    get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_avx512_intrin
 #else
-    get_eight_horizontal_search_point_results_all85_p_us
+    eb_vp9_get_eight_horizontal_search_point_results_all85_p_us
 #endif
 };
 
@@ -417,84 +417,84 @@ static void get_search_point_results(
     //---- 16x16 : 0
     block_index                     = 0;
     search_position_index = search_position_tl_index;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_sad16x16[0], &p_best_mv8x8[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[0], &p_best_sad16x16[0], &p_best_mv8x8[0], &p_best_mv16x16[0], curr_mv, &p_sad16x16[0]);
 
     //---- 16x16 : 1
     block_index = block_index + 16;
     search_position_index = search_position_tl_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_sad16x16[1], &p_best_mv8x8[4], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[4], &p_best_sad16x16[1], &p_best_mv8x8[4], &p_best_mv16x16[1], curr_mv, &p_sad16x16[1]);
 
     //---- 16x16 : 4
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_sad16x16[4], &p_best_mv8x8[16], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[16], &p_best_sad16x16[4], &p_best_mv8x8[16], &p_best_mv16x16[4], curr_mv, &p_sad16x16[4]);
 
     //---- 16x16 : 5
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_sad16x16[5], &p_best_mv8x8[20], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[20], &p_best_sad16x16[5], &p_best_mv8x8[20], &p_best_mv16x16[5], curr_mv, &p_sad16x16[5]);
 
     //---- 16x16 : 2
     block_index = src_next16x16_offset;
     search_position_index = search_position_tl_index + ref_next16x16_offset;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_sad16x16[2], &p_best_mv8x8[8], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[8], &p_best_sad16x16[2], &p_best_mv8x8[8], &p_best_mv16x16[2], curr_mv, &p_sad16x16[2]);
 
     //---- 16x16 : 3
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_sad16x16[3], &p_best_mv8x8[12], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[12], &p_best_sad16x16[3], &p_best_mv8x8[12], &p_best_mv16x16[3], curr_mv, &p_sad16x16[3]);
 
     //---- 16x16 : 6
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_sad16x16[6], &p_best_mv8x8[24], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[24], &p_best_sad16x16[6], &p_best_mv8x8[24], &p_best_mv16x16[6], curr_mv, &p_sad16x16[6]);
 
     //---- 16x16 : 7
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_sad16x16[7], &p_best_mv8x8[28], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[28], &p_best_sad16x16[7], &p_best_mv8x8[28], &p_best_mv16x16[7], curr_mv, &p_sad16x16[7]);
 
     //---- 16x16 : 8
     block_index = (src_next16x16_offset << 1);
     search_position_index = search_position_tl_index + (ref_next16x16_offset << 1);
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_sad16x16[8], &p_best_mv8x8[32], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[32], &p_best_sad16x16[8], &p_best_mv8x8[32], &p_best_mv16x16[8], curr_mv, &p_sad16x16[8]);
 
     //---- 16x16 : 9
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_sad16x16[9], &p_best_mv8x8[36], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[36], &p_best_sad16x16[9], &p_best_mv8x8[36], &p_best_mv16x16[9], curr_mv, &p_sad16x16[9]);
 
     //---- 16x16 : 12
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;    search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_sad16x16[12], &p_best_mv8x8[48], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[48], &p_best_sad16x16[12], &p_best_mv8x8[48], &p_best_mv16x16[12], curr_mv, &p_sad16x16[12]);
 
     //---- 16x16 : 13
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_sad16x16[13], &p_best_mv8x8[52], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[52], &p_best_sad16x16[13], &p_best_mv8x8[52], &p_best_mv16x16[13], curr_mv, &p_sad16x16[13]);
 
     //---- 16x16 : 10
     block_index = (src_next16x16_offset * 3);
     search_position_index = search_position_tl_index + (ref_next16x16_offset * 3);
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_sad16x16[10], &p_best_mv8x8[40], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[40], &p_best_sad16x16[10], &p_best_mv8x8[40], &p_best_mv16x16[10], curr_mv, &p_sad16x16[10]);
 
     //---- 16x16 : 11
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_sad16x16[11], &p_best_mv8x8[44], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[44], &p_best_sad16x16[11], &p_best_mv8x8[44], &p_best_mv16x16[11], curr_mv, &p_sad16x16[11]);
 
     //---- 16x16 : 14
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_sad16x16[14], &p_best_mv8x8[56], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[56], &p_best_sad16x16[14], &p_best_mv8x8[56], &p_best_mv16x16[14], curr_mv, &p_sad16x16[14]);
 
     //---- 16x16 : 15
     block_index = block_index + 16;
     search_position_index = search_position_index + 16;
-    sad_calculation_8x8_16x16_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_sad16x16[15], &p_best_mv8x8[60], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15]);
+    eb_vp9_sad_calculation_8x8_16x16_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](src_ptr + block_index, src_stride, ref_ptr + search_position_index, refluma_stride, &p_best_sad8x8[60], &p_best_sad16x16[15], &p_best_mv8x8[60], &p_best_mv16x16[15], curr_mv, &p_sad16x16[15]);
 
-    sad_calculation_32x32_64x64_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
+    eb_vp9_sad_calculation_32x32_64x64_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](p_sad16x16, p_best_sad32x32, p_best_sad64x64, p_best_mv32x32, p_best_mv64x64, curr_mv);
 
 }
 
@@ -522,7 +522,7 @@ static void full_pel_search_sb(
 
             //this function will do:  x_search_index, +1, +2, ..., +7
 
-            get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ (ASM_TYPES & AVX2_MASK) && 1 ](
+            eb_vp9_get_eight_horizontal_search_point_results_all85_p_us_func_ptr_array[ (eb_vp9_ASM_TYPES & AVX2_MASK) && 1 ](
                 context_ptr,
                 list_index,
                 x_search_index + y_search_index * context_ptr->interpolated_full_stride[list_index][0],
@@ -597,7 +597,7 @@ void interpolate_search_region_avc(
     // Half pel interpolation of the search region using f1 -> posb_buffer
     if (search_area_width_for_asm){
 
-        avc_style_uni_pred_luma_if_function_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][1](
+        avc_style_uni_pred_luma_if_function_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][1](
             search_region_buffer - (ME_FILTER_TAP >> 1) * luma_stride - (ME_FILTER_TAP >> 1) + 1,
             luma_stride,
             context_ptr->posb_buffer[list_index][0],
@@ -610,7 +610,7 @@ void interpolate_search_region_avc(
 
     // Half pel interpolation of the search region using f1 -> posh_buffer
     if (search_area_width_for_asm){
-        avc_style_uni_pred_luma_if_function_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][2](
+        avc_style_uni_pred_luma_if_function_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][2](
             search_region_buffer - (ME_FILTER_TAP >> 1) * luma_stride - 1 + luma_stride,
             luma_stride,
             context_ptr->posh_buffer[list_index][0],
@@ -623,7 +623,7 @@ void interpolate_search_region_avc(
 
     if (search_area_width_for_asm){
         // Half pel interpolation of the search region using f1 -> posj_buffer
-        avc_style_uni_pred_luma_if_function_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][2](
+        avc_style_uni_pred_luma_if_function_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][2](
             context_ptr->posb_buffer[list_index][0] + context_ptr->interpolated_stride,
             context_ptr->interpolated_stride,
             context_ptr->posj_buffer[list_index][0],
@@ -705,7 +705,7 @@ static void pu_half_pel_refinement(
 
     // Compute SSD for the best full search candidate
     if (context_ptr->fractional_search_method == SSD_SEARCH) {
-        *p_best_ssd = (uint32_t) spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](
+        *p_best_ssd = (uint32_t) spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](
             &(context_ptr->sb_src_ptr[pu_sb_buffer_index]),
             context_ptr->sb_src_stride,
             &(ref_buffer[y_search_index * ref_stride + x_search_index]),
@@ -719,14 +719,14 @@ static void pu_half_pel_refinement(
         search_region_index = x_search_index + (int16_t)context_ptr->interpolated_stride * y_search_index;
 
         distortion_left_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_left_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[0] << 16) | ((uint16_t)x_mv_half[0]);
                 *p_best_ssd = (uint32_t)distortion_left_position;
             }
@@ -742,14 +742,14 @@ static void pu_half_pel_refinement(
         search_region_index++;
 
         distortion_right_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                 n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                 n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_right_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posb_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[1] << 16) | ((uint16_t)x_mv_half[1]);
                 *p_best_ssd = (uint32_t)distortion_right_position;
             }
@@ -765,14 +765,14 @@ static void pu_half_pel_refinement(
         search_region_index = x_search_index + (int16_t)context_ptr->interpolated_stride * y_search_index;
 
         distortion_top_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                 n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                 n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_top_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[2] << 16) | ((uint16_t)x_mv_half[2]);
                 *p_best_ssd = (uint32_t)distortion_top_position;
             }
@@ -788,14 +788,14 @@ static void pu_half_pel_refinement(
         search_region_index += (int16_t)context_ptr->interpolated_stride;
 
         distortion_bottom_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_bottom_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posh_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[3] << 16) | ((uint16_t)x_mv_half[3]);
                 *p_best_ssd = (uint32_t)distortion_bottom_position;
             }
@@ -811,14 +811,14 @@ static void pu_half_pel_refinement(
         search_region_index = x_search_index + (int16_t)context_ptr->interpolated_stride * y_search_index;
 
         distortion_top_left_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_top_left_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[4] << 16) | ((uint16_t)x_mv_half[4]);
                 *p_best_ssd = (uint32_t)distortion_top_left_position;
             }
@@ -835,14 +835,14 @@ static void pu_half_pel_refinement(
         search_region_index++;
 
         distortion_top_right_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_top_right_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[5] << 16) | ((uint16_t)x_mv_half[5]);
                 *p_best_ssd = (uint32_t)distortion_top_right_position;
             }
@@ -858,14 +858,14 @@ static void pu_half_pel_refinement(
         search_region_index += (int16_t)context_ptr->interpolated_stride;
 
         distortion_bottom_right_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_bottom_right_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
+                *p_best_sad = (uint32_t)n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width);
                 *p_best_mv = ((uint16_t)y_mv_half[6] << 16) | ((uint16_t)x_mv_half[6]);
                 *p_best_ssd = (uint32_t)distortion_bottom_right_position;
             }
@@ -881,14 +881,14 @@ static void pu_half_pel_refinement(
         search_region_index--;
 
         distortion_bottom_left_position = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-            spatialfull_distortion_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
+            spatialfull_distortion_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][Log2f(pu_width) - 2](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width) :
             (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
-                (n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width));
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride << 1, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride << 1, pu_height >> 1, pu_width)) << 1 :
+                (n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width));
 
         if (context_ptr->fractional_search_method == SSD_SEARCH) {
             if (distortion_bottom_left_position < *p_best_ssd) {
-                *p_best_sad = (uint32_t)(n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width));
+                *p_best_sad = (uint32_t)(n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_src_ptr[pu_sb_buffer_index]), context_ptr->sb_src_stride, &(posj_buffer[search_region_index]), context_ptr->interpolated_stride, pu_height, pu_width));
                 *p_best_mv = ((uint16_t)y_mv_half[7] << 16) | ((uint16_t)x_mv_half[7]);
                 *p_best_ssd = (uint32_t)distortion_bottom_left_position;
             }
@@ -1016,7 +1016,7 @@ void half_pel_search_sb(
         // 16x16 [16 partitions]
         for (pu_index = 0; pu_index < 16; ++pu_index) {
 
-            idx = tab32x32[pu_index];   //TODO bitwise this
+            idx = eb_vp9_tab32x32[pu_index];   //TODO bitwise this
 
             pu_shift_x_index = (pu_index & 0x03) << 4;
             pu_shift_y_index = (pu_index >> 2) << 4;
@@ -1051,7 +1051,7 @@ void half_pel_search_sb(
         if (!disable8x8_cu_in_me_flag){
             for (pu_index = 0; pu_index < 64; ++pu_index) {
 
-                idx = tab8x8[pu_index];  //TODO bitwise this
+                idx = eb_vp9_tab8x8[pu_index];  //TODO bitwise this
 
                 pu_shift_x_index = (pu_index & 0x07) << 3;
                 pu_shift_y_index = (pu_index >> 3) << 3;
@@ -1088,10 +1088,10 @@ void half_pel_search_sb(
 }
 
 /*******************************************
-* combined_averaging_ssd
+* eb_vp9_combined_averaging_ssd
 *
 *******************************************/
-uint32_t combined_averaging_ssd(
+uint32_t eb_vp9_combined_averaging_ssd(
     uint8_t  *src,
     uint32_t  src_stride,
     uint8_t  *ref1,
@@ -1206,14 +1206,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[0] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[0] + search_region_index1, buf1_stride[0] << 1, buf2[0] + search_region_index2, buf2_stride[0] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[0] + search_region_index1, buf1_stride[0] << 1, buf2[0] + search_region_index2, buf2_stride[0] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[0] + search_region_index1, buf1_stride[0], buf2[0] + search_region_index2, buf2_stride[0], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[0] << 16) | ((uint16_t)x_mv_quarter[0]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1233,14 +1233,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[1] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[1] + search_region_index1, buf1_stride[1] << 1, buf2[1] + search_region_index2, buf2_stride[1] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[1] + search_region_index1, buf1_stride[1] << 1, buf2[1] + search_region_index2, buf2_stride[1] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[1] + search_region_index1, buf1_stride[1], buf2[1] + search_region_index2, buf2_stride[1], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[1] << 16) | ((uint16_t)x_mv_quarter[1]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1260,14 +1260,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[2] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[2] + search_region_index1, buf1_stride[2] << 1, buf2[2] + search_region_index2, buf2_stride[2] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[2] + search_region_index1, buf1_stride[2] << 1, buf2[2] + search_region_index2, buf2_stride[2] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[2] + search_region_index1, buf1_stride[2], buf2[2] + search_region_index2, buf2_stride[2], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[2] << 16) | ((uint16_t)x_mv_quarter[2]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1287,14 +1287,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[3] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[3] + search_region_index1, buf1_stride[3] << 1, buf2[3] + search_region_index2, buf2_stride[3] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[3] + search_region_index1, buf1_stride[3] << 1, buf2[3] + search_region_index2, buf2_stride[3] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[3] + search_region_index1, buf1_stride[3], buf2[3] + search_region_index2, buf2_stride[3], pu_height, pu_width);
                     *p_best_mv  = ((uint16_t)y_mv_quarter[3] << 16) | ((uint16_t)x_mv_quarter[3]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1314,14 +1314,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[4] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[4] + search_region_index1, buf1_stride[4] << 1, buf2[4] + search_region_index2, buf2_stride[4] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[4] + search_region_index1, buf1_stride[4] << 1, buf2[4] + search_region_index2, buf2_stride[4] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[4] + search_region_index1, buf1_stride[4], buf2[4] + search_region_index2, buf2_stride[4], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[4] << 16) | ((uint16_t)x_mv_quarter[4]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1342,14 +1342,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[5] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width) :\
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width) :\
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[5] + search_region_index1, buf1_stride[5] << 1, buf2[5] + search_region_index2, buf2_stride[5] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[5] + search_region_index1, buf1_stride[5] << 1, buf2[5] + search_region_index2, buf2_stride[5] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[5] + search_region_index1, buf1_stride[5], buf2[5] + search_region_index2, buf2_stride[5], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[5] << 16) | ((uint16_t)x_mv_quarter[5]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1369,14 +1369,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[6] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[6] + search_region_index1, buf1_stride[6] << 1, buf2[6] + search_region_index2, buf2_stride[6] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[6] + search_region_index1, buf1_stride[6] << 1, buf2[6] + search_region_index2, buf2_stride[6] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[6] + search_region_index1, buf1_stride[6], buf2[6] + search_region_index2, buf2_stride[6], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[6] << 16) | ((uint16_t)x_mv_quarter[6]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1396,14 +1396,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[7] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH) ?
-                combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width) :
+                eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width) :
                 (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-                    (nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[7] + search_region_index1, buf1_stride[7] << 1, buf2[7] + search_region_index2, buf2_stride[7] << 1, pu_height >> 1, pu_width)) << 1 :
-                    nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width);
+                    (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE << 1, buf1[7] + search_region_index1, buf1_stride[7] << 1, buf2[7] + search_region_index2, buf2_stride[7] << 1, pu_height >> 1, pu_width)) << 1 :
+                    nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width);
 
             if (context_ptr->fractional_search_method == SSD_SEARCH) {
                 if (dist < *p_best_ssd) {
-                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width);
+                    *p_best_sad = (uint32_t)nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](&(context_ptr->sb_buffer[pu_sb_buffer_index]), MAX_SB_SIZE, buf1[7] + search_region_index1, buf1_stride[7], buf2[7] + search_region_index2, buf2_stride[7], pu_height, pu_width);
                     *p_best_mv = ((uint16_t)y_mv_quarter[7] << 16) | ((uint16_t)x_mv_quarter[7]);
                     *p_best_ssd = (uint32_t)dist;
                 }
@@ -1633,7 +1633,7 @@ static void quarter_pel_search_sb(
         // 16x16 [16 partitions]
         for (pu_index = 0; pu_index < 16; ++pu_index) {
 
-            n_idx = tab32x32[pu_index];
+            n_idx = eb_vp9_tab32x32[pu_index];
 
             x_mv = _MVXT(context_ptr->p_best_mv16x16[n_idx]);
             y_mv = _MVYT(context_ptr->p_best_mv16x16[n_idx]);
@@ -1685,7 +1685,7 @@ static void quarter_pel_search_sb(
         if (!disable8x8_cu_in_me_flag) {
             for (pu_index = 0; pu_index < 64; ++pu_index) {
 
-                n_idx = tab8x8[pu_index];
+                n_idx = eb_vp9_tab8x8[pu_index];
 
                 x_mv = _MVXT(context_ptr->p_best_mv8x8[n_idx]);
                 y_mv = _MVYT(context_ptr->p_best_mv8x8[n_idx]);
@@ -1823,10 +1823,10 @@ void single_hme_quadrant_level0(
             search_area_width = (int16_t)(floor((double)((search_area_width >> 4) << 4)));
         }
 
-        if (((search_area_width & 15) == 0) && ((ASM_TYPES & AVX2_MASK) && 1))
+        if (((search_area_width & 15) == 0) && ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1))
         {
 #ifndef DISABLE_AVX512
-            sad_loop_kernel_avx512_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1842,7 +1842,7 @@ void single_hme_quadrant_level0(
                 search_area_height
                 );
 #else
-            sad_loop_kernel_avx2_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1865,7 +1865,7 @@ void single_hme_quadrant_level0(
                 // Only width equals 16 (LCU equals 64) is updated
                 // other width sizes work with the old code as the one in"SadLoopKernel_SSE4_1_INTRIN"
 
-                sad_loop_kernel(
+                eb_vp9_sad_loop_kernel(
                     &context_ptr->sixteenth_sb_buffer[0],
                     context_ptr->sixteenth_sb_buffer_stride,
                     &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -1986,10 +1986,10 @@ void hme_level0(
 
     if (((sb_width  & 7) == 0) || (sb_width == 4))
     {
-        if (((search_area_width & 15) == 0) && ((ASM_TYPES & AVX2_MASK) && 1))
+        if (((search_area_width & 15) == 0) && ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1))
         {
 #ifndef DISABLE_AVX512
-            sad_loop_kernel_avx512_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2005,7 +2005,7 @@ void hme_level0(
                 search_area_height
                 );
 #else
-            sad_loop_kernel_avx2_hme_l0_intrin(
+            eb_vp9_sad_loop_kernel_avx2_hme_l0_intrin(
                 &context_ptr->sixteenth_sb_buffer[0],
                 context_ptr->sixteenth_sb_buffer_stride,
                 &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2025,7 +2025,7 @@ void hme_level0(
         else
             {
                 // Put the first search location into level0 results
-                nx_m_sad_loop_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+                nx_m_sad_loop_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
                     &context_ptr->sixteenth_sb_buffer[0],
                     context_ptr->sixteenth_sb_buffer_stride,
                     &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2044,7 +2044,7 @@ void hme_level0(
     }
     else
     {
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             &context_ptr->sixteenth_sb_buffer[0],
             context_ptr->sixteenth_sb_buffer_stride,
             &sixteenth_ref_pic_ptr->buffer_y[search_region_index],
@@ -2146,7 +2146,7 @@ void hme_level1(
     if (((sb_width & 7) == 0) || (sb_width == 4))
     {
         // Put the first search location into level0 results
-        nx_m_sad_loop_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+        nx_m_sad_loop_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
             &context_ptr->quarter_sb_buffer[0],
             context_ptr->quarter_sb_buffer_stride * 2,
             &quarter_ref_pic_ptr->buffer_y[search_region_index],
@@ -2164,7 +2164,7 @@ void hme_level1(
     }
     else
     {
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             &context_ptr->quarter_sb_buffer[0],
             context_ptr->quarter_sb_buffer_stride * 2,
             &quarter_ref_pic_ptr->buffer_y[search_region_index],
@@ -2268,7 +2268,7 @@ void hme_level2(
     if ((((sb_width & 7) == 0) && (sb_width != 40) && (sb_width != 56)))
     {
         // Put the first search location into level0 results
-        nx_m_sad_loop_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1](
+        nx_m_sad_loop_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1](
             context_ptr->sb_src_ptr,
             context_ptr->sb_src_stride * 2,
             &ref_pic_ptr->buffer_y[search_region_index],
@@ -2287,7 +2287,7 @@ void hme_level2(
     else
     {
         // Put the first search location into level0 results
-        sad_loop_kernel(
+        eb_vp9_sad_loop_kernel(
             context_ptr->sb_src_ptr,
             context_ptr->sb_src_stride * 2,
             &ref_pic_ptr->buffer_y[search_region_index],
@@ -2459,7 +2459,7 @@ static void quarter_pel_compensation(
     buf1 = buf1 + pu_shift_x_index + pu_shift_y_index * ref_stride1;
     buf2 = buf2 + pu_shift_x_index + pu_shift_y_index * ref_stride2;
 
-    picture_average_array[(ASM_TYPES & PREAVX2_MASK) && 1](buf1, ref_stride1, buf2, ref_stride2, dst, dst_stride, pu_width, pu_height);
+    picture_average_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](buf1, ref_stride1, buf2, ref_stride2, dst, dst_stride, pu_width, pu_height);
 
     return;
 }
@@ -2582,7 +2582,7 @@ uint32_t bi_pred_averging(
 
     // bi-pred luma
     me_candidate->distortion = (context_ptr->fractional_search_method == SUB_SAD_SEARCH) ?
-        nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](source_pic,
+        nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](source_pic,
             luma_stride << 1,
             ptr_list0,
             ptr_list0_stride << 1,
@@ -2590,7 +2590,7 @@ uint32_t bi_pred_averging(
             ptr_list1_stride << 1,
             pu_height >> 1,
             pu_width) << 1 :
-        nx_m_sad_averaging_kernel_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](source_pic,
+        nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](source_pic,
             luma_stride,
             ptr_list0,
             ptr_list0_stride,
@@ -2698,8 +2698,8 @@ EbErrorType  bi_prediction_compensation(
     second_search_region_index_posh     = (int32_t)(xsecond_search_index + (ME_FILTER_TAP >> 1) - 1) + (int32_t)context_ptr->interpolated_stride * (int32_t)(ysecond_search_index + (ME_FILTER_TAP >> 1) - 1);
     second_search_region_index_posj     = (int32_t)(xsecond_search_index + (ME_FILTER_TAP >> 1) - 1) + (int32_t)context_ptr->interpolated_stride * (int32_t)(ysecond_search_index + (ME_FILTER_TAP >> 1) - 1);
 
-    uint32_t n_index =   pu_index >  20   ?   tab8x8[pu_index-21]  + 21   :
-        pu_index >   4   ?   tab32x32[pu_index-5] + 5    :  pu_index;
+    uint32_t n_index =   pu_index >  20   ?   eb_vp9_tab8x8[pu_index-21]  + 21   :
+        pu_index >   4   ?   eb_vp9_tab32x32[pu_index-5] + 5    :  pu_index;
     context_ptr->p_sb_bipred_sad[n_index] =
 
         bi_pred_averging(
@@ -2749,8 +2749,8 @@ EbErrorType  bi_prediction_search(
     uint32_t second_list_ref_pictdx;
 
     (void)picture_control_set_ptr;
-    uint32_t n_index =   pu_index >  20   ?   tab8x8[pu_index-21]  + 21   :
-        pu_index >   4   ?   tab32x32[pu_index-5] + 5    :  pu_index;
+    uint32_t n_index =   pu_index >  20   ?   eb_vp9_tab8x8[pu_index-21]  + 21   :
+        pu_index >   4   ?   eb_vp9_tab32x32[pu_index-5] + 5    :  pu_index;
     for (first_list_ref_pictdx = 0; first_list_ref_pictdx < active_ref_pic_first_lis_num; first_list_ref_pictdx++) {
         for (second_list_ref_pictdx = 0; second_list_ref_pictdx < active_ref_pic_second_lis_num; second_list_ref_pictdx++) {
 
@@ -2833,7 +2833,7 @@ EbErrorType check_zero_zero_center(
     search_region_index = (int16_t)ref_pic_ptr->origin_x + origin_x +
         ((int16_t)ref_pic_ptr->origin_y + origin_y) * ref_pic_ptr->stride_y;
 
-    zero_mv_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    zero_mv_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -2869,7 +2869,7 @@ EbErrorType check_zero_zero_center(
     search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + *x_search_center +
         ((int16_t)(ref_pic_ptr->origin_y + origin_y) + *y_search_center) * ref_pic_ptr->stride_y;
 
-    hme_mv_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    hme_mv_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3260,7 +3260,7 @@ static void test_search_area_bounds(
         ((int16_t)ref_pic_ptr->origin_y + origin_y) * ref_pic_ptr->stride_y;
 
     uint32_t subsample_sad = 1;
-    uint64_t zero_mv_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    uint64_t zero_mv_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3296,7 +3296,7 @@ static void test_search_area_bounds(
         y_search_center - ((origin_y + y_search_center) - ((int16_t)ref_pic_ptr->height - 1)) :
         y_search_center;
 
-    uint64_t mv_a_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    uint64_t mv_a_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3342,7 +3342,7 @@ static void test_search_area_bounds(
     search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + x_search_center +
         ((int16_t)(ref_pic_ptr->origin_y + origin_y) + y_search_center) * ref_pic_ptr->stride_y;
 
-    uint64_t mv_b_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    uint64_t mv_b_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3391,7 +3391,7 @@ static void test_search_area_bounds(
     search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + x_search_center +
         ((int16_t)(ref_pic_ptr->origin_y + origin_y) + y_search_center) * ref_pic_ptr->stride_y;
 
-    uint64_t mv_c_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    uint64_t mv_c_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3434,7 +3434,7 @@ static void test_search_area_bounds(
         y_search_center;
     search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + x_search_center +
         ((int16_t)(ref_pic_ptr->origin_y + origin_y) + y_search_center) * ref_pic_ptr->stride_y;
-    uint64_t mv_d_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+    uint64_t mv_d_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
         context_ptr->sb_src_ptr,
         context_ptr->sb_src_stride << subsample_sad,
         &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -3479,7 +3479,7 @@ static void test_search_area_bounds(
         search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + x_search_center +
             ((int16_t)(ref_pic_ptr->origin_y + origin_y) + y_search_center) * ref_pic_ptr->stride_y;
 
-        uint64_t direct_mv_sad = n_x_m_sad_kernel_func_ptr_array[(ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
+        uint64_t direct_mv_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
             context_ptr->sb_src_ptr,
             context_ptr->sb_src_stride << subsample_sad,
             &(ref_pic_ptr->buffer_y[search_region_index]),
@@ -4012,7 +4012,7 @@ EbErrorType motion_estimate_sb(
             {
                 {
 
-                    initialize_buffer_32bits_func_ptr_array[(ASM_TYPES & PREAVX2_MASK) && 1](context_ptr->p_sb_best_sad[list_index][0], 21, 1, MAX_SAD_VALUE);
+                    eb_vp9_initialize_buffer_32bits_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1](context_ptr->p_sb_best_sad[list_index][0], 21, 1, MAX_SAD_VALUE);
                     context_ptr->p_best_sad64x64 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_64x64]);
                     context_ptr->p_best_sad32x32 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_32x32_0]);
                     context_ptr->p_best_sad16x16 = &(context_ptr->p_sb_best_sad[list_index][0][ME_TIER_ZERO_PU_16x16_0]);
@@ -4122,8 +4122,8 @@ EbErrorType motion_estimate_sb(
     for (pu_index = 0; pu_index < max_number_of_pus_per_sb; ++pu_index) {
 
         candidate_index = 0;
-        uint32_t n_idx = pu_index > 20 ? tab8x8[pu_index - 21] + 21 :
-            pu_index > 4 ? tab32x32[pu_index - 5] + 5 : pu_index;
+        uint32_t n_idx = pu_index > 20 ? eb_vp9_tab8x8[pu_index - 21] + 21 :
+            pu_index > 4 ? eb_vp9_tab32x32[pu_index - 5] + 5 : pu_index;
 
         for (list_index = REF_LIST_0; list_index <= num_of_list_to_search; ++list_index) {
             candidate_index++;

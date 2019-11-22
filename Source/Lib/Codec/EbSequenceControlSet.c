@@ -33,7 +33,7 @@
         take great care not to have pipeline mismanagement.  Once an object enters use in the
         pipeline, it cannot be changed on the fly or you will have pipeline coherency problems.
  ***************************************************************************************************/
-EbErrorType eb_sequence_control_set_ctor(
+EbErrorType eb_vp9_sequence_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr)
 {
@@ -143,7 +143,7 @@ EbErrorType eb_sequence_control_set_ctor(
 /************************************************
  * Sequence Control Set Copy
  ************************************************/
-EbErrorType copy_sequence_control_set(
+EbErrorType eb_vp9_copy_sequence_control_set(
     SequenceControlSet *dst,
     SequenceControlSet *src)
 {
@@ -226,14 +226,14 @@ EbErrorType copy_sequence_control_set(
     return EB_ErrorNone;
 }
 
-EbErrorType eb_sequence_control_set_instance_ctor(
+EbErrorType eb_vp9_sequence_control_set_instance_ctor(
     EbSequenceControlSetInstance **object_dbl_ptr)
 {
     EbSequenceControlSetInitData scs_init_data;
     EbErrorType return_error = EB_ErrorNone;
     EB_MALLOC(EbSequenceControlSetInstance*, *object_dbl_ptr, sizeof(EbSequenceControlSetInstance), EB_N_PTR);
 
-    return_error = encode_context_ctor(
+    return_error = eb_vp9_encode_context_ctor(
         (void **) &(*object_dbl_ptr)->encode_context_ptr,
         EB_NULL);
     if (return_error == EB_ErrorInsufficientResources){
@@ -241,7 +241,7 @@ EbErrorType eb_sequence_control_set_instance_ctor(
     }
     scs_init_data.encode_context_ptr = (*object_dbl_ptr)->encode_context_ptr;
 
-    return_error = eb_sequence_control_set_ctor(
+    return_error = eb_vp9_sequence_control_set_ctor(
         (void **) &(*object_dbl_ptr)->sequence_control_set_ptr,
         (void *) &scs_init_data);
     if (return_error == EB_ErrorInsufficientResources){
@@ -262,7 +262,7 @@ extern EbErrorType sb_params_ctor(
     return return_error;
 }
 
-extern EbErrorType sb_params_init(
+extern EbErrorType eb_vp9_sb_params_init(
     SequenceControlSet *sequence_control_set_ptr) {
 
     EbErrorType return_error = EB_ErrorNone;
@@ -377,7 +377,7 @@ extern EbErrorType sb_params_init(
     return return_error;
 }
 
-extern EbErrorType derive_input_resolution(
+extern EbErrorType eb_vp9_derive_input_resolution(
     SequenceControlSet *sequence_control_set_ptr,
     uint32_t            input_size)
 {

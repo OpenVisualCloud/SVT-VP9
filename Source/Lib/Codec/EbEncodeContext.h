@@ -161,7 +161,7 @@ typedef struct EncodeContextInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType encode_context_ctor(
+extern EbErrorType eb_vp9_encode_context_ctor(
     EbPtr  *object_dbl_ptr,
     EbPtr   object_init_data_ptr);
 

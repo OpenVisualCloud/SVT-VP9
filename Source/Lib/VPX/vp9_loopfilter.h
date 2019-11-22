@@ -98,15 +98,15 @@ struct VP9LfSyncData;
 
 // This function sets up the bit masks for the entire 64x64 region represented
 // by mi_row, mi_col.
-void vp9_setup_mask(struct VP9Common *const cm, const int mi_row,
+void eb_vp9_setup_mask(struct VP9Common *const cm, const int mi_row,
                     const int mi_col, ModeInfo **mi_8x8,
                     const int mode_info_stride, LOOP_FILTER_MASK *lfm);
 
-void vp9_filter_block_plane_ss00(struct VP9Common *const cm,
+void eb_vp9_filter_block_plane_ss00(struct VP9Common *const cm,
                                  struct macroblockd_plane *const plane,
                                  int mi_row, LOOP_FILTER_MASK *lfm);
 
-void vp9_filter_block_plane_ss11(struct VP9Common *const cm,
+void eb_vp9_filter_block_plane_ss11(struct VP9Common *const cm,
                                  struct macroblockd_plane *const plane,
                                  int mi_row, LOOP_FILTER_MASK *lfm);
 #if 0
@@ -114,14 +114,14 @@ void vp9_filter_block_plane_non420(struct VP9Common *cm,
                                    struct macroblockd_plane *plane,
                                    ModeInfo **mi_8x8, int mi_row, int mi_col);
 #endif
-void vp9_loop_filter_init(struct VP9Common *cm);
+void eb_vp9_loop_filter_init(struct VP9Common *cm);
 
 // Update the loop filter for the current frame.
-// This should be called before vp9_loop_filter_frame(), vp9_build_mask_frame()
+// This should be called before eb_vp9_loop_filter_frame(), eb_vp9_build_mask_frame()
 // calls this function directly.
-void vp9_loop_filter_frame_init(struct VP9Common *cm, int default_filt_lvl);
+void eb_vp9_loop_filter_frame_init(struct VP9Common *cm, int default_filt_lvl);
 
-void vp9_loop_filter_frame(
+void eb_vp9_loop_filter_frame(
 #if 0
     YV12_BUFFER_CONFIG *frame,
 #endif
@@ -133,13 +133,13 @@ static INLINE LOOP_FILTER_MASK *get_lfm(const struct loop_filter *lf,
   return &lf->lfm[(mi_col >> 3) + ((mi_row >> 3) * lf->lfm_stride)];
 }
 
-void vp9_build_mask(struct VP9Common *cm, const ModeInfo *mi, int mi_row,
+void eb_vp9_build_mask(struct VP9Common *cm, const ModeInfo *mi, int mi_row,
                     int mi_col, int bw, int bh);
-void vp9_adjust_mask(struct VP9Common *const cm, const int mi_row,
+void eb_vp9_adjust_mask(struct VP9Common *const cm, const int mi_row,
                      const int mi_col, LOOP_FILTER_MASK *lfm);
-void vp9_build_mask_frame(struct VP9Common *cm, int frame_filter_level,
+void eb_vp9_build_mask_frame(struct VP9Common *cm, int frame_filter_level,
                           int partial_frame);
-void vp9_reset_lfm(struct VP9Common *const cm);
+void eb_vp9_reset_lfm(struct VP9Common *const cm);
 
 typedef struct LoopFilterWorkerData {
   YV12_BUFFER_CONFIG *frame_buffer;
@@ -151,12 +151,12 @@ typedef struct LoopFilterWorkerData {
   int y_only;
 } LFWorkerData;
 
-void vp9_loop_filter_data_reset(
+void eb_vp9_loop_filter_data_reset(
     LFWorkerData *lf_data, YV12_BUFFER_CONFIG *frame_buffer,
     struct VP9Common *cm, const struct macroblockd_plane planes[MAX_MB_PLANE]);
 
 // Operates on the rows described by 'arg1' (cast to LFWorkerData *).
-int vp9_loop_filter_worker(void *arg1, void *unused);
+int eb_vp9_loop_filter_worker(void *arg1, void *unused);
 
 #ifdef __cplusplus
 }  // extern "C"

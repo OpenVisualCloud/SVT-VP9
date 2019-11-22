@@ -162,24 +162,24 @@ typedef struct EbSequenceControlSetInstance
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_sequence_control_set_ctor(
+extern EbErrorType eb_vp9_sequence_control_set_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 
-extern EbErrorType copy_sequence_control_set(
+extern EbErrorType eb_vp9_copy_sequence_control_set(
     SequenceControlSet *dst,
     SequenceControlSet *src);
 
-extern EbErrorType eb_sequence_control_set_instance_ctor(
+extern EbErrorType eb_vp9_sequence_control_set_instance_ctor(
     EbSequenceControlSetInstance **object_dbl_ptr);
 
 extern EbErrorType sb_params_ctor(
     SequenceControlSet *sequence_control_set_ptr);
 
-extern EbErrorType sb_params_init(
+extern EbErrorType eb_vp9_sb_params_init(
     SequenceControlSet *sequence_control_set_ptr);
 
-extern EbErrorType derive_input_resolution(
+extern EbErrorType eb_vp9_derive_input_resolution(
     SequenceControlSet *sequence_control_set_ptr,
     uint32_t            input_size);
 

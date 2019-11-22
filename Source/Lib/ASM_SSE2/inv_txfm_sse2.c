@@ -23,7 +23,7 @@ static INLINE void transpose_16bit_4(__m128i *res) {
     res[1] = _mm_unpackhi_epi16(tr0_0, tr0_1);
 }
 
-void vpx_idct4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     const __m128i eight = _mm_set1_epi16(8);
     __m128i in[2];
@@ -31,10 +31,10 @@ void vpx_idct4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest,
     // Rows
     in[0] = load_input_data8(input);
     in[1] = load_input_data8(input + 8);
-    idct4_sse2(in);
+    eb_vp9_idct4_sse2(in);
 
     // Columns
-    idct4_sse2(in);
+    eb_vp9_idct4_sse2(in);
 
     // Final round and shift
     in[0] = _mm_add_epi16(in[0], eight);
@@ -45,7 +45,7 @@ void vpx_idct4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest,
     recon_and_store4x4_sse2(in, dest, stride);
 }
 
-void vpx_idct4x4_1_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct4x4_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     const __m128i zero = _mm_setzero_si128();
     int a;
@@ -79,7 +79,7 @@ void vpx_idct4x4_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     *(int *)(dest + stride * 3) = _mm_cvtsi128_si32(d[0]);
 }
 
-void idct4_sse2(__m128i *const in) {
+void eb_vp9_idct4_sse2(__m128i *const in) {
     const __m128i k__cospi_p16_p16 = pair_set_epi16(cospi_16_64, cospi_16_64);
     const __m128i k__cospi_p16_m16 = pair_set_epi16(cospi_16_64, -cospi_16_64);
     const __m128i k__cospi_p24_m08 = pair_set_epi16(cospi_24_64, -cospi_8_64);
@@ -99,7 +99,7 @@ void idct4_sse2(__m128i *const in) {
     in[1] = _mm_shuffle_epi32(in[1], 0x4E);
 }
 
-void iadst4_sse2(__m128i *const in) {
+void eb_vp9_iadst4_sse2(__m128i *const in) {
     const __m128i k__sinpi_1_3 = pair_set_epi16(sinpi_1_9, sinpi_3_9);
     const __m128i k__sinpi_4_2 = pair_set_epi16(sinpi_4_9, sinpi_2_9);
     const __m128i k__sinpi_2_3 = pair_set_epi16(sinpi_2_9, sinpi_3_9);
@@ -143,7 +143,7 @@ void iadst4_sse2(__m128i *const in) {
     in[1] = _mm_packs_epi32(u[2], u[3]);
 }
 
-void vpx_idct8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i in[8];
     int i;
@@ -153,13 +153,13 @@ void vpx_idct8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest,
 
     // 2-D
     for (i = 0; i < 2; i++) {
-        vpx_idct8_sse2(in);
+        eb_vp9_idct8_sse2(in);
     }
 
     write_buffer_8x8(in, dest, stride);
 }
 
-void vpx_idct8x8_12_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct8x8_12_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i io[8];
 
@@ -189,7 +189,7 @@ static INLINE void recon_and_store_8_dual(const __m128i in,
     _mm_storeh_pi((__m64 *)(dest + 1 * stride), _mm_castsi128_ps(d0));
 }
 
-void vpx_idct8x8_1_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct8x8_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i dc_value;
     tran_high_t a1;
@@ -209,7 +209,7 @@ void vpx_idct8x8_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     recon_and_store_8_dual(dc_value, dest, stride);
 }
 
-void vpx_idct8_sse2(__m128i *const in) {
+void eb_vp9_idct8_sse2(__m128i *const in) {
     transpose_16bit_8x8(in, in);
 
     // 4-stage 1D idct8x8
@@ -266,7 +266,7 @@ static INLINE void iadst8_kernel_sse2(const __m128i in0, const __m128i in1,
     *out3 = _mm_packs_epi32(u[6], u[7]);
 }
 
-void iadst8_sse2(__m128i *const in) {
+void eb_vp9_iadst8_sse2(__m128i *const in) {
     const __m128i k__cospi_p02_p30 = pair_set_epi16(cospi_2_64, cospi_30_64);
     const __m128i k__cospi_p30_m02 = pair_set_epi16(cospi_30_64, -cospi_2_64);
     const __m128i k__cospi_p10_p22 = pair_set_epi16(cospi_10_64, cospi_22_64);
@@ -425,7 +425,7 @@ void iadst8_sse2(__m128i *const in) {
     in[7] = _mm_sub_epi16(kZero, s[1]);
 }
 
-void vpx_idct16x16_256_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct16x16_256_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i l[16], r[16], out[16], *in;
     int i;
@@ -453,7 +453,7 @@ void vpx_idct16x16_256_add_sse2(const tran_low_t *input, uint8_t *dest,
     }
 }
 
-void vpx_idct16x16_38_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct16x16_38_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i in[16], temp[16], out[16];
     int i;
@@ -478,7 +478,7 @@ void vpx_idct16x16_38_add_sse2(const tran_low_t *input, uint8_t *dest,
     }
 }
 
-void vpx_idct16x16_10_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct16x16_10_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i in[16], l[16];
     int i;
@@ -505,7 +505,7 @@ void vpx_idct16x16_10_add_sse2(const tran_low_t *input, uint8_t *dest,
     }
 }
 
-void vpx_idct16x16_1_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct16x16_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i dc_value;
     int i;
@@ -523,7 +523,7 @@ void vpx_idct16x16_1_add_sse2(const tran_low_t *input, uint8_t *dest,
     }
 }
 
-void vpx_iadst16_8col_sse2(__m128i *const in) {
+void eb_vp9_iadst16_8col_sse2(__m128i *const in) {
     // perform 16x16 1-D ADST for 8 columns
     const __m128i kZero = _mm_set1_epi16(0);
     __m128i s[16], x[16];
@@ -573,16 +573,16 @@ void vpx_iadst16_8col_sse2(__m128i *const in) {
     in[15] = _mm_sub_epi16(kZero, s[1]);
 }
 
-void idct16_sse2(__m128i *const in0, __m128i *const in1) {
+void eb_vp9_idct16_sse2(__m128i *const in0, __m128i *const in1) {
     transpose_16bit_16x16(in0, in1);
     idct16_8col(in0, in0);
     idct16_8col(in1, in1);
 }
 
-void iadst16_sse2(__m128i *const in0, __m128i *const in1) {
+void eb_vp9_iadst16_sse2(__m128i *const in0, __m128i *const in1) {
     transpose_16bit_16x16(in0, in1);
-    vpx_iadst16_8col_sse2(in0);
-    vpx_iadst16_8col_sse2(in1);
+    eb_vp9_iadst16_8col_sse2(in0);
+    eb_vp9_iadst16_8col_sse2(in1);
 }
 
 // Group the coefficient calculation into smaller functions to prevent stack
@@ -690,7 +690,7 @@ static INLINE void idct32_34_8x32_quarter_3_4(
     idct32_8x32_quarter_3_4_stage_4_to_7(step1, out);
 }
 
-void idct32_34_8x32_sse2(const __m128i *const in /*in[32]*/,
+void eb_vp9_idct32_34_8x32_sse2(const __m128i *const in /*in[32]*/,
     __m128i *const out /*out[32]*/) {
     __m128i temp[32];
 
@@ -701,19 +701,19 @@ void idct32_34_8x32_sse2(const __m128i *const in /*in[32]*/,
 }
 
 // Only upper-left 8x8 has non-zero coeff
-void vpx_idct32x32_34_add_sse2(const tran_low_t *input, uint8_t *dest,
+void eb_vp9_idct32x32_34_add_sse2(const tran_low_t *input, uint8_t *dest,
     int stride) {
     __m128i io[32], col[32];
     int i;
 
     // Load input data. Only need to load the top left 8x8 block.
     load_transpose_16bit_8x8(input, 32, io);
-    idct32_34_8x32_sse2(io, col);
+    eb_vp9_idct32_34_8x32_sse2(io, col);
 
     for (i = 0; i < 32; i += 8) {
         int j;
         transpose_16bit_8x8(col + i, io);
-        idct32_34_8x32_sse2(io, io);
+        eb_vp9_idct32_34_8x32_sse2(io, io);
 
         for (j = 0; j < 32; ++j) {
             write_buffer_8x1(dest + j * stride, io[j]);
@@ -726,7 +726,7 @@ void vpx_idct32x32_34_add_sse2(const tran_low_t *input, uint8_t *dest,
 // For each 8x32 block __m128i in[32],
 // Input with index, 0, 4, 8, 12, 16, 20, 24, 28
 // output pixels: 0-7 in __m128i out[32]
-static INLINE void idct32_1024_8x32_quarter_1(
+static INLINE void eb_vp9_idct32_1024_8x32_quarter_1(
     const __m128i *const in /*in[32]*/, __m128i *const out /*out[8]*/) {
     __m128i step1[8], step2[8];
 
@@ -765,7 +765,7 @@ static INLINE void idct32_1024_8x32_quarter_1(
 // For each 8x32 block __m128i in[32],
 // Input with index, 2, 6, 10, 14, 18, 22, 26, 30
 // output pixels: 8-15 in __m128i out[32]
-static INLINE void idct32_1024_8x32_quarter_2(
+static INLINE void eb_vp9_idct32_1024_8x32_quarter_2(
     const __m128i *const in /*in[32]*/, __m128i *const out /*out[16]*/) {
     __m128i step1[16], step2[16];
 
@@ -788,11 +788,11 @@ static INLINE void idct32_1024_8x32_quarter_2(
     idct32_8x32_quarter_2_stage_4_to_6(step1, out);
 }
 
-static INLINE void idct32_1024_8x32_quarter_1_2(
+static INLINE void eb_vp9_idct32_1024_8x32_quarter_1_2(
     const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i temp[16];
-    idct32_1024_8x32_quarter_1(in, temp);
-    idct32_1024_8x32_quarter_2(in, temp);
+    eb_vp9_idct32_1024_8x32_quarter_1(in, temp);
+    eb_vp9_idct32_1024_8x32_quarter_2(in, temp);
     // stage 7
     add_sub_butterfly(temp, out, 16);
 }
@@ -801,7 +801,7 @@ static INLINE void idct32_1024_8x32_quarter_1_2(
 // Input with odd index,
 // 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31
 // output pixels: 16-23, 24-31 in __m128i out[32]
-static INLINE void idct32_1024_8x32_quarter_3_4(
+static INLINE void eb_vp9_idct32_1024_8x32_quarter_3_4(
     const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i step1[32], step2[32];
 
@@ -857,12 +857,12 @@ static INLINE void idct32_1024_8x32_quarter_3_4(
     idct32_8x32_quarter_3_4_stage_4_to_7(step1, out);
 }
 
-void idct32_1024_8x32(const __m128i *const in /*in[32]*/,
+void eb_vp9_idct32_1024_8x32(const __m128i *const in /*in[32]*/,
     __m128i *const out /*out[32]*/) {
     __m128i temp[32];
 
-    idct32_1024_8x32_quarter_1_2(in, temp);
-    idct32_1024_8x32_quarter_3_4(in, temp);
+    eb_vp9_idct32_1024_8x32_quarter_1_2(in, temp);
+    eb_vp9_idct32_1024_8x32_quarter_3_4(in, temp);
     // final stage
     add_sub_butterfly(temp, out, 32);
 }

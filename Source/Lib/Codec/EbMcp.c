@@ -11,10 +11,10 @@
 
 // Hassene: to rename the file as no MCP here
 
-/** generate_padding()
+/** eb_vp9_generate_padding()
         is used to pad the target picture. The horizontal padding happens first and then the vertical padding.
  */
-void generate_padding(
+void eb_vp9_generate_padding(
     EbByte   src_pic,                    //output paramter, pointer to the source picture to be padded.
     uint32_t src_stride,                 //input paramter, the stride of the source picture to be padded.
     uint32_t original_src_width,         //input paramter, the width of the source picture which excludes the padding.
@@ -58,10 +58,10 @@ void generate_padding(
 
     return;
 }
-/** generate_padding_16bit()
+/** eb_vp9_generate_padding_16bit()
 is used to pad the target picture. The horizontal padding happens first and then the vertical padding.
 */
-void generate_padding_16bit(
+void eb_vp9_generate_padding_16bit(
     EbByte   src_pic,                    //output paramter, pointer to the source picture to be padded.
     uint32_t src_stride,                 //input paramter, the stride of the source picture to be padded.
     uint32_t original_src_width,         //input paramter, the width of the source picture which excludes the padding.
@@ -80,8 +80,8 @@ void generate_padding_16bit(
     {
         // horizontal padding
         //EB_MEMSET(temp_src_pic0 - padding_width, temp_src_pic0, padding_width);
-        memset16bit((uint16_t*)(temp_src_pic0 - padding_width), ((uint16_t*)(temp_src_pic0))[0], padding_width >> 1);
-        memset16bit((uint16_t*)(temp_src_pic0 + original_src_width), ((uint16_t*)(temp_src_pic0 + original_src_width - 2/*1*/))[0], padding_width >> 1);
+        eb_vp9_memset16bit((uint16_t*)(temp_src_pic0 - padding_width), ((uint16_t*)(temp_src_pic0))[0], padding_width >> 1);
+        eb_vp9_memset16bit((uint16_t*)(temp_src_pic0 + original_src_width), ((uint16_t*)(temp_src_pic0 + original_src_width - 2/*1*/))[0], padding_width >> 1);
 
         temp_src_pic0 += src_stride;
         --vertical_idx;
@@ -107,10 +107,10 @@ void generate_padding_16bit(
     return;
 }
 
-/** pad_input_picture()
+/** eb_vp9_pad_input_picture()
 is used to pad the input picture in order to get . The horizontal padding happens first and then the vertical padding.
 */
-void pad_input_picture(
+void eb_vp9_pad_input_picture(
     EbByte   src_pic,                //output paramter, pointer to the source picture to be padded.
     uint32_t src_stride,             //input paramter, the stride of the source picture to be padded.
     uint32_t original_src_width,     //input paramter, the width of the source picture which excludes the padding.

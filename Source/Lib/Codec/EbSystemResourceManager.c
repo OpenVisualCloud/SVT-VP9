@@ -262,7 +262,7 @@ static EbErrorType eb_muxing_queue_assignation(
             (void **) &wrapper_ptr);
 
         // Block on the Process Fifo's Mutex
-        eb_block_on_mutex(process_fifo_ptr->lockout_mutex);
+        eb_vp9_block_on_mutex(process_fifo_ptr->lockout_mutex);
 
         // Put the object on the fifo
         eb_fifo_push_back(
@@ -270,10 +270,10 @@ static EbErrorType eb_muxing_queue_assignation(
             wrapper_ptr);
 
         // Release the Process Fifo's Mutex
-        eb_release_mutex(process_fifo_ptr->lockout_mutex);
+        eb_vp9_release_mutex(process_fifo_ptr->lockout_mutex);
 
         // Post the semaphore
-        eb_post_semaphore(process_fifo_ptr->counting_semaphore);
+        eb_vp9_post_semaphore(process_fifo_ptr->counting_semaphore);
     }
 
     return return_error;
@@ -316,7 +316,7 @@ static EbErrorType eb_muxing_queue_object_push_front(
 }
 
 /*********************************************************************
- * eb_object_release_enable
+ * eb_vp9_object_release_enable
  *   Enables the release_enable member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to control whether
  *   EbObjectWrappers are allowed to be released or not.
@@ -329,22 +329,22 @@ static EbErrorType eb_muxing_queue_object_push_front(
  *   wrapper_ptr
  *      pointer to the EbObjectWrapper to be modified.
  *********************************************************************/
-EbErrorType eb_object_release_enable(
+EbErrorType eb_vp9_object_release_enable(
     EbObjectWrapper *wrapper_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     wrapper_ptr->release_enable = EB_TRUE;
 
-    eb_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     return return_error;
 }
 
 /*********************************************************************
- * eb_object_release_disable
+ * eb_vp9_object_release_disable
  *   Disables the release_enable member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to control whether
  *   EbObjectWrappers are allowed to be released or not.
@@ -357,22 +357,22 @@ EbErrorType eb_object_release_enable(
  *   wrapper_ptr
  *      pointer to the EbObjectWrapper to be modified.
  *********************************************************************/
-EbErrorType eb_object_release_disable(
+EbErrorType eb_vp9_object_release_disable(
     EbObjectWrapper *wrapper_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     wrapper_ptr->release_enable = EB_FALSE;
 
-    eb_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     return return_error;
 }
 
 /*********************************************************************
- * eb_object_inc_live_count
+ * eb_vp9_object_inc_live_count
  *   Increments the live_count member of EbObjectWrapper.  Used by
  *   certain objects (e.g. SequenceControlSet) to count the number of active
  *   pointers of a EbObjectWrapper in pipeline at any point in time.
@@ -385,23 +385,23 @@ EbErrorType eb_object_release_disable(
  *   wrapper_ptr
  *      pointer to the EbObjectWrapper to be modified.
  *********************************************************************/
-EbErrorType eb_object_inc_live_count(
+EbErrorType eb_vp9_object_inc_live_count(
     EbObjectWrapper *wrapper_ptr,
     uint32_t         increment_number)
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     wrapper_ptr->live_count += increment_number;
 
-    eb_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     return return_error;
 }
 
 /*********************************************************************
- * eb_system_resource_ctor
+ * eb_vp9_system_resource_ctor
  *   Constructor for EbSystemResource.  Fully constructs all members
  *   of EbSystemResource including the object with the passed
  *   object_ctor function.
@@ -428,7 +428,7 @@ EbErrorType eb_object_inc_live_count(
  *     the object. object_init_data_ptr is passed to object_ctor when
  *     object_ctor is called.
  *********************************************************************/
-EbErrorType eb_system_resource_ctor(
+EbErrorType eb_vp9_system_resource_ctor(
     EbSystemResource **resource_dbl_ptr,
     uint32_t           object_total_count,
     uint32_t           producer_process_total_count,
@@ -512,7 +512,7 @@ static EbErrorType eb_release_process(
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(process_fifo_ptr->queue_ptr->lockout_mutex);
+    eb_vp9_block_on_mutex(process_fifo_ptr->queue_ptr->lockout_mutex);
 
     eb_circular_buffer_push_front(
         process_fifo_ptr->queue_ptr->process_queue,
@@ -520,7 +520,7 @@ static EbErrorType eb_release_process(
 
     eb_muxing_queue_assignation(process_fifo_ptr->queue_ptr);
 
-    eb_release_mutex(process_fifo_ptr->queue_ptr->lockout_mutex);
+    eb_vp9_release_mutex(process_fifo_ptr->queue_ptr->lockout_mutex);
 
     return return_error;
 }
@@ -539,18 +539,18 @@ static EbErrorType eb_release_process(
  *   wrapper_ptr
  *      pointer to EbObjectWrapper to be posted.
  *********************************************************************/
-EbErrorType eb_post_full_object(
+EbErrorType eb_vp9_post_full_object(
     EbObjectWrapper *object_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(object_ptr->system_resource_ptr->full_queue->lockout_mutex);
+    eb_vp9_block_on_mutex(object_ptr->system_resource_ptr->full_queue->lockout_mutex);
 
     eb_muxing_queue_object_push_back(
         object_ptr->system_resource_ptr->full_queue,
         object_ptr);
 
-    eb_release_mutex(object_ptr->system_resource_ptr->full_queue->lockout_mutex);
+    eb_vp9_release_mutex(object_ptr->system_resource_ptr->full_queue->lockout_mutex);
 
     return return_error;
 }
@@ -565,12 +565,12 @@ EbErrorType eb_post_full_object(
  *   object_ptr
  *      pointer to EbObjectWrapper to be released.
  *********************************************************************/
-EbErrorType eb_release_object(
+EbErrorType eb_vp9_release_object(
     EbObjectWrapper *object_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
 
-    eb_block_on_mutex(object_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_block_on_mutex(object_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     // Decrement live_count
     object_ptr->live_count = (object_ptr->live_count == 0) ? object_ptr->live_count : object_ptr->live_count - 1;
@@ -586,7 +586,7 @@ EbErrorType eb_release_object(
 
     }
 
-    eb_release_mutex(object_ptr->system_resource_ptr->empty_queue->lockout_mutex);
+    eb_vp9_release_mutex(object_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
     return return_error;
 }
@@ -606,7 +606,7 @@ EbErrorType eb_release_object(
  *      Double pointer used to pass the pointer to the empty
  *      EbObjectWrapper pointer.
  *********************************************************************/
-EbErrorType eb_get_empty_object(
+EbErrorType eb_vp9_get_empty_object(
     EbFifo           *empty_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr)
 {
@@ -616,10 +616,10 @@ EbErrorType eb_get_empty_object(
     eb_release_process(empty_fifo_ptr);
 
     // Block on the counting Semaphore until an empty buffer is available
-    eb_block_on_semaphore(empty_fifo_ptr->counting_semaphore);
+    eb_vp9_block_on_semaphore(empty_fifo_ptr->counting_semaphore);
 
     // Acquire lockout Mutex
-    eb_block_on_mutex(empty_fifo_ptr->lockout_mutex);
+    eb_vp9_block_on_mutex(empty_fifo_ptr->lockout_mutex);
 
     // Get the empty object
     eb_fifo_pop_front(
@@ -633,7 +633,7 @@ EbErrorType eb_get_empty_object(
     (*wrapper_dbl_ptr)->release_enable = EB_TRUE;
 
     // Release Mutex
-    eb_release_mutex(empty_fifo_ptr->lockout_mutex);
+    eb_vp9_release_mutex(empty_fifo_ptr->lockout_mutex);
 
     return return_error;
 }
@@ -653,7 +653,7 @@ EbErrorType eb_get_empty_object(
  *      Double pointer used to pass the pointer to the full
  *      EbObjectWrapper pointer.
  *********************************************************************/
-EbErrorType eb_get_full_object(
+EbErrorType eb_vp9_get_full_object(
     EbFifo           *full_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr)
 {
@@ -663,17 +663,17 @@ EbErrorType eb_get_full_object(
     eb_release_process(full_fifo_ptr);
 
     // Block on the counting Semaphore until an empty buffer is available
-    eb_block_on_semaphore(full_fifo_ptr->counting_semaphore);
+    eb_vp9_block_on_semaphore(full_fifo_ptr->counting_semaphore);
 
     // Acquire lockout Mutex
-    eb_block_on_mutex(full_fifo_ptr->lockout_mutex);
+    eb_vp9_block_on_mutex(full_fifo_ptr->lockout_mutex);
 
     eb_fifo_pop_front(
         full_fifo_ptr,
         wrapper_dbl_ptr);
 
     // Release Mutex
-    eb_release_mutex(full_fifo_ptr->lockout_mutex);
+    eb_vp9_release_mutex(full_fifo_ptr->lockout_mutex);
 
     return return_error;
 }
@@ -690,7 +690,7 @@ static EB_BOOL eb_fifo_peak_front(
         return EB_FALSE;
 }
 
-EbErrorType eb_get_full_object_non_blocking(
+EbErrorType eb_vp9_get_full_object_non_blocking(
     EbFifo          *full_fifo_ptr,
     EbObjectWrapper **wrapper_dbl_ptr){
 
@@ -700,16 +700,16 @@ EbErrorType eb_get_full_object_non_blocking(
     eb_release_process(full_fifo_ptr);
 
     // Acquire lockout Mutex
-    eb_block_on_mutex(full_fifo_ptr->lockout_mutex);
+    eb_vp9_block_on_mutex(full_fifo_ptr->lockout_mutex);
 
     fifo_empty = eb_fifo_peak_front(
         full_fifo_ptr);
 
     // Release Mutex
-    eb_release_mutex(full_fifo_ptr->lockout_mutex);
+    eb_vp9_release_mutex(full_fifo_ptr->lockout_mutex);
 
     if (fifo_empty == EB_FALSE)
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             full_fifo_ptr,
             wrapper_dbl_ptr);
     else

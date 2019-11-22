@@ -14,7 +14,7 @@
 #include "assert.h"
 #include "vp9_pred_common.h"
 
-int vp9_compound_reference_allowed(const VP9_COMMON *cm) {
+int eb_vp9_compound_reference_allowed(const VP9_COMMON *cm) {
   int i;
   for (i = 1; i < REFS_PER_FRAME; ++i)
     if (cm->ref_frame_sign_bias[i + 1] != cm->ref_frame_sign_bias[1]) return 1;
@@ -22,7 +22,7 @@ int vp9_compound_reference_allowed(const VP9_COMMON *cm) {
   return 0;
 }
 
-void vp9_setup_compound_reference_mode(VP9_COMMON *cm) {
+void eb_vp9_setup_compound_reference_mode(VP9_COMMON *cm) {
   if (cm->ref_frame_sign_bias[LAST_FRAME] ==
       cm->ref_frame_sign_bias[GOLDEN_FRAME]) {
     cm->comp_fixed_ref = ALTREF_FRAME;
@@ -40,7 +40,7 @@ void vp9_setup_compound_reference_mode(VP9_COMMON *cm) {
   }
 }
 
-int vp9_get_reference_mode_context(const VP9_COMMON *cm,
+int eb_vp9_get_reference_mode_context(const VP9_COMMON *cm,
                                    const MACROBLOCKD *xd) {
   int ctx;
   const ModeInfo *const above_mi = xd->above_mi;
@@ -83,7 +83,7 @@ int vp9_get_reference_mode_context(const VP9_COMMON *cm,
 }
 
 // Returns a context number for the given MB prediction signal
-int vp9_get_pred_context_comp_ref_p(const VP9_COMMON *cm,
+int eb_vp9_get_pred_context_comp_ref_p(const VP9_COMMON *cm,
                                     const MACROBLOCKD *xd) {
   int pred_context;
   const ModeInfo *const above_mi = xd->above_mi;
@@ -165,7 +165,7 @@ int vp9_get_pred_context_comp_ref_p(const VP9_COMMON *cm,
   return pred_context;
 }
 
-int vp9_get_pred_context_single_ref_p1(const MACROBLOCKD *xd) {
+int eb_vp9_get_pred_context_single_ref_p1(const MACROBLOCKD *xd) {
   int pred_context;
   const ModeInfo *const above_mi = xd->above_mi;
   const ModeInfo *const left_mi = xd->left_mi;
@@ -231,7 +231,7 @@ int vp9_get_pred_context_single_ref_p1(const MACROBLOCKD *xd) {
   return pred_context;
 }
 
-int vp9_get_pred_context_single_ref_p2(const MACROBLOCKD *xd) {
+int eb_vp9_get_pred_context_single_ref_p2(const MACROBLOCKD *xd) {
   int pred_context;
   const ModeInfo *const above_mi = xd->above_mi;
   const ModeInfo *const left_mi = xd->left_mi;

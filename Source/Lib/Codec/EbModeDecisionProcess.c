@@ -11,7 +11,7 @@
 /**************************************************
  * Reset Mode Decision Neighbor Arrays
  *************************************************/
-void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_ptr)
+void eb_vp9_reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_ptr)
 {
     VP9_COMP    *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     VP9_COMMON  *const cm = &cpi->common;
@@ -19,9 +19,9 @@ void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_
 
     for (neighbor_array_count = 0; neighbor_array_count < NEIGHBOR_ARRAY_TOTAL_COUNT; neighbor_array_count++) {
 
-        neighbor_array_unit_reset(picture_control_set_ptr->md_luma_recon_neighbor_array[neighbor_array_count]);
-        neighbor_array_unit_reset(picture_control_set_ptr->md_cb_recon_neighbor_array[neighbor_array_count]);
-        neighbor_array_unit_reset(picture_control_set_ptr->md_cr_recon_neighbor_array[neighbor_array_count]);
+        eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->md_luma_recon_neighbor_array[neighbor_array_count]);
+        eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->md_cb_recon_neighbor_array[neighbor_array_count]);
+        eb_vp9_neighbor_array_unit_reset(picture_control_set_ptr->md_cr_recon_neighbor_array[neighbor_array_count]);
 
         // Note: this memset assumes above_context[0], [1] and [2]
         // are allocated as part of the same buffer.
@@ -36,7 +36,7 @@ void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_
     return;
 }
 
-void reset_mode_decision(
+void eb_vp9_reset_mode_decision(
     EncDecContext     *context_ptr,
     PictureControlSet *picture_control_set_ptr,
     uint32_t           segment_index)
@@ -66,7 +66,7 @@ void reset_mode_decision(
     // Reset Neighbor Arrays at start of new Segment / Picture
     if (segment_index == 0) {
 
-        reset_mode_decision_neighbor_arrays(picture_control_set_ptr);
+        eb_vp9_reset_mode_decision_neighbor_arrays(picture_control_set_ptr);
     }
 
     return;

@@ -89,13 +89,13 @@ static INLINE tran_high_t highbd_check_range(tran_high_t input, int bd) {
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 #endif  // CONFIG_EMULATE_HARDWARE
 
-void idct4_c(const tran_low_t *input, tran_low_t *output);
-void idct8_c(const tran_low_t *input, tran_low_t *output);
-void idct16_c(const tran_low_t *input, tran_low_t *output);
-void idct32_c(const tran_low_t *input, tran_low_t *output);
-void iadst4_c(const tran_low_t *input, tran_low_t *output);
-void iadst8_c(const tran_low_t *input, tran_low_t *output);
-void iadst16_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_idct4_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_idct8_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_idct16_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_idct32_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_iadst4_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_iadst8_c(const tran_low_t *input, tran_low_t *output);
+void eb_vp9_iadst16_c(const tran_low_t *input, tran_low_t *output);
 
 #if CONFIG_VP9_HIGHBITDEPTH
 void vpx_highbd_idct4_c(const tran_low_t *input, tran_low_t *output, int bd);

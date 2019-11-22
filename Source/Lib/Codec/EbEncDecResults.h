@@ -29,7 +29,7 @@ typedef struct EncDecResultsInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType enc_dec_results_ctor(
+extern EbErrorType eb_vp9_enc_dec_results_ctor(
     EbPtr *object_dbl_ptr,
     EbPtr  object_init_data_ptr);
 

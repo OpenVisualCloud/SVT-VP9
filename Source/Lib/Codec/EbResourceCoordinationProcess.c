@@ -30,7 +30,7 @@
 /************************************************
  * Resource Coordination Context Constructor
  ************************************************/
-EbErrorType resource_coordination_context_ctor(
+EbErrorType eb_vp9_resource_coordination_context_ctor(
     ResourceCoordinationContext  **context_dbl_ptr,
     EbFifo                        *input_buffer_fifo_ptr,
     EbFifo                        *resource_coordination_results_output_fifo_ptr,
@@ -97,7 +97,7 @@ EbErrorType resource_coordination_context_ctor(
 // Inputs: TargetSpeed, Status of the sc_buffer
 // Output: EncMod
 //******************************************************************************//
-void SpeedBufferControl(
+void eb_vp9_SpeedBufferControl(
     ResourceCoordinationContext *context_ptr,
     PictureParentControlSet     *picture_control_set_ptr,
     SequenceControlSet          *sequence_control_set_ptr)
@@ -116,7 +116,7 @@ void SpeedBufferControl(
     int64_t buffer_trshold2 = SC_FRAMES_INTERVAL_T2;
     int64_t buffer_trshold3 = SC_FRAMES_INTERVAL_T3;
     int64_t buffer_trshold4 = MAX(SC_FRAMES_INTERVAL_T1, target_fps);
-    eb_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->sc_buffer_mutex);
+    eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->sc_buffer_mutex);
 
     if (sequence_control_set_ptr->encode_context_ptr->sc_frame_in == 0) {
         eb_start_time(&context_ptr->first_in_pic_arrived_time_seconds, &context_ptr->first_in_pic_arrived_timeu_seconds);
@@ -255,7 +255,7 @@ void SpeedBufferControl(
     // Set the encoder level
     picture_control_set_ptr->enc_mode = sequence_control_set_ptr->encode_context_ptr->enc_mode;
 
-    eb_release_mutex(sequence_control_set_ptr->encode_context_ptr->sc_buffer_mutex);
+    eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->sc_buffer_mutex);
 
     context_ptr->prev_enc_mod = sequence_control_set_ptr->encode_context_ptr->enc_mode;
 }
@@ -265,7 +265,7 @@ void SpeedBufferControl(
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType signal_derivation_pre_analysis_sq(
+EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -338,7 +338,7 @@ EbErrorType signal_derivation_pre_analysis_sq(
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType signal_derivation_pre_analysis_oq(
+EbErrorType eb_vp9_signal_derivation_pre_analysis_oq(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr) {
 
@@ -415,7 +415,7 @@ EbErrorType signal_derivation_pre_analysis_oq(
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType signal_derivation_pre_analysis_vmaf(
+EbErrorType eb_vp9_signal_derivation_pre_analysis_vmaf(
     SequenceControlSet       *sequence_control_set_ptr,
     PictureParentControlSet  *picture_control_set_ptr) {
 
@@ -459,7 +459,7 @@ EbErrorType signal_derivation_pre_analysis_vmaf(
 /***************************************
  * ResourceCoordination Kernel
  ***************************************/
-void* resource_coordination_kernel(void *input_ptr)
+void* eb_vp9_resource_coordination_kernel(void *input_ptr)
 {
     ResourceCoordinationContext   *context_ptr = (ResourceCoordinationContext*) input_ptr;
 
@@ -489,7 +489,7 @@ void* resource_coordination_kernel(void *input_ptr)
         instance_index = 0;
 
         // Get the Next Input Buffer [BLOCKING]
-        eb_get_full_object(
+        eb_vp9_get_full_object(
             context_ptr->input_buffer_fifo_ptr,
             &ebInputWrapperPtr);
         eb_input_ptr = (EbBufferHeaderType*) ebInputWrapperPtr->object_ptr;
@@ -499,7 +499,7 @@ void* resource_coordination_kernel(void *input_ptr)
         // If config changes occured since the last picture began encoding, then
         //   prepare a new sequence_control_set_ptr containing the new changes and update the state
         //   of the previous Active SequenceControlSet
-        eb_block_on_mutex(context_ptr->sequence_control_set_instance_array[instance_index]->config_mutex);
+        eb_vp9_block_on_mutex(context_ptr->sequence_control_set_instance_array[instance_index]->config_mutex);
         if(context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) {
 
             // Update picture width, picture height, cropping right offset, cropping bottom offset, and conformance windows
@@ -523,37 +523,37 @@ void* resource_coordination_kernel(void *input_ptr)
             previoussequence_control_set_wrapper_ptr = context_ptr->sequence_control_set_active_array[instance_index];
 
             // Get empty SequenceControlSet [BLOCKING]
-            eb_get_empty_object(
+            eb_vp9_get_empty_object(
                 context_ptr->sequence_control_set_empty_fifo_ptr,
                 &context_ptr->sequence_control_set_active_array[instance_index]);
 
             // Copy the contents of the active SequenceControlSet into the new empty SequenceControlSet
-            copy_sequence_control_set(
+            eb_vp9_copy_sequence_control_set(
                 (SequenceControlSet *) context_ptr->sequence_control_set_active_array[instance_index]->object_ptr,
                 context_ptr->sequence_control_set_instance_array[instance_index]->sequence_control_set_ptr);
 
             // Disable releaseFlag of new SequenceControlSet
-            eb_object_release_disable(
+            eb_vp9_object_release_disable(
                 context_ptr->sequence_control_set_active_array[instance_index]);
 
             if(previoussequence_control_set_wrapper_ptr != EB_NULL) {
 
                 // Enable releaseFlag of old SequenceControlSet
-                eb_object_release_enable(
+                eb_vp9_object_release_enable(
                     previoussequence_control_set_wrapper_ptr);
 
                 // Check to see if previous SequenceControlSet is already inactive, if TRUE then release the SequenceControlSet
                 if(previoussequence_control_set_wrapper_ptr->live_count == 0) {
-                    eb_release_object(
+                    eb_vp9_release_object(
                         previoussequence_control_set_wrapper_ptr);
                 }
             }
         }
-        eb_release_mutex(context_ptr->sequence_control_set_instance_array[instance_index]->config_mutex);
+        eb_vp9_release_mutex(context_ptr->sequence_control_set_instance_array[instance_index]->config_mutex);
 
         // Sequence Control Set is released by Rate Control after passing through MDC->MD->ENCDEC->Packetization->RateControl
         //   and in the PictureManager
-        eb_object_inc_live_count(
+        eb_vp9_object_inc_live_count(
             context_ptr->sequence_control_set_active_array[instance_index],
             2);
 
@@ -562,20 +562,20 @@ void* resource_coordination_kernel(void *input_ptr)
 
         // Init LCU Params
         if (context_ptr->sequence_control_set_instance_array[instance_index]->encode_context_ptr->initial_picture) {
-            derive_input_resolution(
+            eb_vp9_derive_input_resolution(
                 sequence_control_set_ptr,
                 input_size);
 
-            sb_params_init(sequence_control_set_ptr);
+            eb_vp9_sb_params_init(sequence_control_set_ptr);
         }
 
         //Get a New ParentPCS where we will hold the new inputPicture
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             context_ptr->picture_control_set_fifo_ptr_array[instance_index],
             &picture_control_set_wrapper_ptr);
 
         // Parent PCS is released by the Rate Control after passing through MDC->MD->ENCDEC->Packetization
-        eb_object_inc_live_count(
+        eb_vp9_object_inc_live_count(
             picture_control_set_wrapper_ptr,
             1);
 
@@ -597,7 +597,7 @@ void* resource_coordination_kernel(void *input_ptr)
         memset(picture_control_set_ptr->cpi->interp_filter_selected, 0, sizeof(picture_control_set_ptr->cpi->interp_filter_selected[0][0]) * SWITCHABLE);
         picture_control_set_ptr->cpi->sf.mv.auto_mv_step_size = 0;
 
-        vp9_entropy_mv_init();
+        eb_vp9_entropy_mv_init();
 
         // variable
         picture_control_set_ptr->cpi->common.bit_depth = VPX_BITS_8;
@@ -606,7 +606,7 @@ void* resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->cpi->common.render_width = picture_control_set_ptr->cpi->common.width;
         picture_control_set_ptr->cpi->common.render_height = picture_control_set_ptr->cpi->common.height;
 
-        vp9_set_mb_mi(
+        eb_vp9_set_mb_mi(
             &picture_control_set_ptr->cpi->common,
             picture_control_set_ptr->cpi->common.width,
             picture_control_set_ptr->cpi->common.height);
@@ -641,25 +641,25 @@ void* resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->cpi->common.tx_mode = ALLOW_32X32;
 
         // Hsan: is it the right spot ?
-        vp9_default_coef_probs(&picture_control_set_ptr->cpi->common);
-        vp9_init_mv_probs(&picture_control_set_ptr->cpi->common);
+        eb_vp9_default_coef_probs(&picture_control_set_ptr->cpi->common);
+        eb_vp9_init_mv_probs(&picture_control_set_ptr->cpi->common);
 
-        init_mode_probs(picture_control_set_ptr->cpi->common.fc);
+        eb_vp9_init_mode_probs(picture_control_set_ptr->cpi->common.fc);
         vp9_zero(*picture_control_set_ptr->cpi->td.counts);        // Hsan  could be completely removed
         vp9_zero(picture_control_set_ptr->cpi->td.rd_counts);      // Hsan  could be completely removed
 
-        vp9_init_intra_predictors();
+        eb_vp9_init_intra_predictors();
 
-        /* vp9_init_quantizer() `is first called here. Add check in
-         * vp9_frame_init_quantizer() so that vp9_init_quantizer is only
+        /* eb_vp9_init_quantizer() `is first called here. Add check in
+         * vp9_frame_init_quantizer() so that eb_vp9_init_quantizer is only
          * called later when needed. This will avoid unnecessary calls of
-         * vp9_init_quantizer() for every frame.
+         * eb_vp9_init_quantizer() for every frame.
          */
-        vp9_init_quantizer(picture_control_set_ptr->cpi);
+        eb_vp9_init_quantizer(picture_control_set_ptr->cpi);
 
-        vp9_rc_init_minq_luts();
+        eb_vp9_rc_init_minq_luts();
 #if SEG_SUPPORT
-        vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
+        eb_vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
 #endif
         // Set the Encoder mode
         picture_control_set_ptr->enc_mode = sequence_control_set_ptr->static_config.enc_mode;
@@ -694,7 +694,7 @@ void* resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->sb_total_count                      = sequence_control_set_ptr->sb_total_count;
 
         if (sequence_control_set_ptr->static_config.speed_control_flag) {
-            SpeedBufferControl(
+            eb_vp9_SpeedBufferControl(
                 context_ptr,
                 picture_control_set_ptr,
                 sequence_control_set_ptr);
@@ -708,17 +708,17 @@ void* resource_coordination_kernel(void *input_ptr)
 
         // Pre-Analysis Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            signal_derivation_pre_analysis_sq(
+            eb_vp9_signal_derivation_pre_analysis_sq(
                 sequence_control_set_ptr,
                 picture_control_set_ptr);
         }
         else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-            signal_derivation_pre_analysis_vmaf(
+            eb_vp9_signal_derivation_pre_analysis_vmaf(
                 sequence_control_set_ptr,
                 picture_control_set_ptr);
         }
         else {
-            signal_derivation_pre_analysis_oq(
+            eb_vp9_signal_derivation_pre_analysis_oq(
                 sequence_control_set_ptr,
                 picture_control_set_ptr);
         }
@@ -754,18 +754,18 @@ void* resource_coordination_kernel(void *input_ptr)
         sequence_control_set_ptr->encode_context_ptr->initial_picture = EB_FALSE;
 
         // Get Empty Reference Picture Object
-        eb_get_empty_object(
+        eb_vp9_get_empty_object(
             sequence_control_set_ptr->encode_context_ptr->pa_reference_picture_pool_fifo_ptr,
             &reference_picture_wrapper_ptr);
 
         picture_control_set_ptr->pareference_picture_wrapper_ptr = reference_picture_wrapper_ptr;
 
         // Give the new Reference a nominal live_count of 1
-        eb_object_inc_live_count(
+        eb_vp9_object_inc_live_count(
             picture_control_set_ptr->pareference_picture_wrapper_ptr,
             2);
 
-        eb_object_inc_live_count(
+        eb_vp9_object_inc_live_count(
             picture_control_set_wrapper_ptr,
             2);
 
@@ -774,14 +774,14 @@ void* resource_coordination_kernel(void *input_ptr)
         if (picture_control_set_ptr->picture_number > 0 && prev_picture_control_set_wrapper_ptr != NULL)
         {
             ((PictureParentControlSet*)prev_picture_control_set_wrapper_ptr->object_ptr)->end_of_sequence_flag = end_of_sequence_flag;
-            eb_get_empty_object(
+            eb_vp9_get_empty_object(
                 context_ptr->resource_coordination_results_output_fifo_ptr,
                 &output_wrapper_ptr);
             output_results_ptr = (ResourceCoordinationResults*)output_wrapper_ptr->object_ptr;
             output_results_ptr->picture_control_set_wrapper_ptr = prev_picture_control_set_wrapper_ptr;
 
             // Post the finished Results Object
-            eb_post_full_object(output_wrapper_ptr);
+            eb_vp9_post_full_object(output_wrapper_ptr);
         }
         prev_picture_control_set_wrapper_ptr = picture_control_set_wrapper_ptr;
 

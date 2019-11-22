@@ -21,7 +21,7 @@
  * Requirement: height <= 64
  * Requirement: height % 2 = 0 when width = 4 or 8
 *******************************************************************************/
-void sad_loop_kernel_avx2_intrin(
+void eb_vp9_sad_loop_kernel_avx2_intrin(
     uint8_t  *src,                             // input parameter, source samples Ptr
     uint32_t  src_stride,                      // input parameter, source stride
     uint8_t  *ref,                             // input parameter, reference samples Ptr
@@ -1820,7 +1820,7 @@ uint32_t compute64x_m_sad_avx2_intrin(
 
 #ifdef DISABLE_AVX512
 
-void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     uint8_t   *src,
     uint32_t   src_stride,
     uint8_t   *ref,
@@ -1955,7 +1955,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin(
     _mm_storeu_si128((__m128i*)p_best_mv8x8, sad_2);
 
 }
-void get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
+void eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin(
     uint16_t  *p_sad16x16,
     uint32_t  *p_best_sad32x32,
     uint32_t  *p_best_sad64x64,

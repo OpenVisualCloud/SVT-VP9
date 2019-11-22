@@ -96,10 +96,10 @@ static INLINE vpx_prob mode_mv_merge_probs(vpx_prob pre_prob,
   }
 }
 
-void vpx_tree_merge_probs(const vpx_tree_index *tree, const vpx_prob *pre_probs,
+void eb_vp9_tree_merge_probs(const vpx_tree_index *tree, const vpx_prob *pre_probs,
                           const unsigned int *counts, vpx_prob *probs);
 
-DECLARE_ALIGNED(16, extern const uint8_t, vpx_norm[256]);
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_norm[256]);
 
 #ifdef __cplusplus
 }  // extern "C"
