@@ -1642,6 +1642,9 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            release_prev_picture_from_reorder_queue(
                encode_context_ptr);
 
+           picture_control_set_ptr->cra_flag = EB_FALSE;
+           picture_control_set_ptr->idr_flag = EB_FALSE;
+
            // If the Intra period length is 0, then introduce an intra for every picture
            if (sequence_control_set_ptr->intra_period == 0 || picture_control_set_ptr->picture_number == 0 ) {
                if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
@@ -1651,7 +1654,13 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            }
            // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
            else if (sequence_control_set_ptr->intra_period != -1) {
-
+               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
+                   (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
+                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
+                       picture_control_set_ptr->cra_flag = EB_TRUE;
+                   else
+                       picture_control_set_ptr->idr_flag = EB_TRUE;
+               }
                if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
                    (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
                    if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
@@ -2353,6 +2362,9 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
             if(window_avail == EB_FALSE  && frame_passe_thru == EB_FALSE)
                 break;
         }
+
+        // just for debugging
+        //picture_control_set_ptr = (PictureParentControlSet  *)input_results_ptr->picture_control_set_wrapper_ptr->object_ptr;
 
         // Release the Input Results
         eb_vp9_release_object(input_results_wrapper_ptr);
