@@ -2363,9 +2363,6 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                 break;
         }
 
-        // just for debugging
-        //picture_control_set_ptr = (PictureParentControlSet  *)input_results_ptr->picture_control_set_wrapper_ptr->object_ptr;
-
         // Release the Input Results
         eb_vp9_release_object(input_results_wrapper_ptr);
     }
