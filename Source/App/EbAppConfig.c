@@ -311,7 +311,7 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     config_ptr->enc_mode                                         = 9;
     config_ptr->intra_period                                     = -2;
-    config_ptr->intra_refresh_type                               = 1;
+    config_ptr->intra_refresh_type                               = 2;
 
     config_ptr->pred_structure                                   = 2;
 
