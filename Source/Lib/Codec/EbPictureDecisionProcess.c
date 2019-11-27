@@ -929,7 +929,8 @@ predStruct=LDP, and the last frame=I with pred struct=RA.
 void  generate_rps_info(
     PictureParentControlSet *picture_control_set_ptr,
     PictureDecisionContext  *context_ptr,
-    uint32_t                 picture_index
+    uint32_t                 picture_index,
+    uint32_t                 mini_gop_index
 )
 {
     RpsNode *rps = &picture_control_set_ptr->ref_signal;
@@ -1065,7 +1066,7 @@ void  generate_rps_info(
             if (picture_control_set_ptr->slice_type == I_SLICE)
             {
                 //3 cases for I slice:  1:Key Frame treated above.  2: broken MiniGop due to sc or intra refresh  3: complete miniGop due to sc or intra refresh
-                if (context_ptr->mini_gop_length[0] < picture_control_set_ptr->pred_struct_ptr->pred_struct_period)
+                if (context_ptr->mini_gop_length[mini_gop_index] < picture_control_set_ptr->pred_struct_ptr->pred_struct_period)
                 {
                     //Scene Change that breaks the mini gop and switch to LDP (if I scene change happens to be aligned with a complete miniGop, then we do not break the pred structure)
                     picture_control_set_ptr->cpi->common.show_frame = EB_TRUE;
@@ -1129,7 +1130,7 @@ void  generate_rps_info(
         //last pic in MiniGop: mGop Toggling
         //mini GOP toggling since last Key Frame.
         //a regular I keeps the toggling process and does not reset the toggle.  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
-        if (picture_index == context_ptr->mini_gop_end_index[0])
+        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index] % 8)
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
 
     }
@@ -1380,7 +1381,7 @@ void  generate_rps_info(
         //last pic in MiniGop: mGop Toggling
         //mini GOP toggling since last Key Frame.
         //a regular I keeps the toggling process and does not reset the toggle.  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
-        if (picture_index == context_ptr->mini_gop_end_index[0])
+        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index] % 8)
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
     }
 
@@ -1641,27 +1642,26 @@ void* picture_decision_kernel(void *input_ptr)
            release_prev_picture_from_reorder_queue(
                encode_context_ptr);
 
-            // If the Intra period length is 0, then introduce an intra for every picture
-            if(sequence_control_set_ptr->intra_period == 0) {
-                picture_control_set_ptr->cra_flag = EB_TRUE;
-            }
-            // If an #intra_period has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
-            else if(sequence_control_set_ptr->intra_period != -1) {
-                picture_control_set_ptr->cra_flag =
-                    (sequence_control_set_ptr->intra_refresh_type != CRA_REFRESH) ?
-                        picture_control_set_ptr->cra_flag :
-                        (encode_context_ptr->intra_period_position == (uint32_t) sequence_control_set_ptr->intra_period) ?
-                            EB_TRUE :
-                            picture_control_set_ptr->cra_flag;
+           picture_control_set_ptr->cra_flag = EB_FALSE;
+           picture_control_set_ptr->idr_flag = EB_FALSE;
 
-                picture_control_set_ptr->idr_flag =
-                    (sequence_control_set_ptr->intra_refresh_type != IDR_REFRESH) ?
-                        picture_control_set_ptr->idr_flag :
-                        (encode_context_ptr->intra_period_position == (uint32_t) sequence_control_set_ptr->intra_period) ?
-                            EB_TRUE :
-                            picture_control_set_ptr->idr_flag;
-
-            }
+           // If the Intra period length is 0, then introduce an intra for every picture
+           if (sequence_control_set_ptr->intra_period == 0 || picture_control_set_ptr->picture_number == 0 ) {
+               if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
+                   picture_control_set_ptr->cra_flag = EB_TRUE;
+               else
+                   picture_control_set_ptr->idr_flag = EB_TRUE;
+           }
+           // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
+           else if (sequence_control_set_ptr->intra_period != -1) {
+               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
+                   (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
+                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
+                       picture_control_set_ptr->cra_flag = EB_TRUE;
+                   else
+                       picture_control_set_ptr->idr_flag = EB_TRUE;
+               }
+           }
 
             encode_context_ptr->pre_assignment_buffer_eos_flag             = (picture_control_set_ptr->end_of_sequence_flag) ? (uint32_t)EB_TRUE : encode_context_ptr->pre_assignment_buffer_eos_flag;
 
@@ -1958,10 +1958,11 @@ void* picture_decision_kernel(void *input_ptr)
                             picture_control_set_ptr,
                             context_ptr,
 #if NEW_PRED_STRUCT
-                            picture_index - context_ptr->mini_gop_start_index[mini_gop_index]);
+                            picture_index - context_ptr->mini_gop_start_index[mini_gop_index],
 #else
-                            picture_index);
+                            picture_index,
 #endif
+                            mini_gop_index);
 
                         picture_control_set_ptr->cpi->allow_comp_inter_inter = 0;
                         picture_control_set_ptr->cpi->common.reference_mode = (REFERENCE_MODE)0xFF;
@@ -2354,6 +2355,9 @@ void* picture_decision_kernel(void *input_ptr)
             if(window_avail == EB_FALSE  && frame_passe_thru == EB_FALSE)
                 break;
         }
+
+        // just for debugging
+        //picture_control_set_ptr = (PictureParentControlSet  *)input_results_ptr->picture_control_set_wrapper_ptr->object_ptr;
 
         // Release the Input Results
         eb_release_object(input_results_wrapper_ptr);
