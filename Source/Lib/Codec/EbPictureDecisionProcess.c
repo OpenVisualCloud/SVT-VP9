@@ -1130,7 +1130,7 @@ void  generate_rps_info(
         //last pic in MiniGop: mGop Toggling
         //mini GOP toggling since last Key Frame.
         //a regular I keeps the toggling process and does not reset the toggle.  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
-        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index] % 8)
+        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index])
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
 
     }
@@ -1381,7 +1381,7 @@ void  generate_rps_info(
         //last pic in MiniGop: mGop Toggling
         //mini GOP toggling since last Key Frame.
         //a regular I keeps the toggling process and does not reset the toggle.  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
-        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index] % 8)
+        if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index])
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
     }
 
@@ -1654,13 +1654,6 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            }
            // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
            else if (sequence_control_set_ptr->intra_period != -1) {
-               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
-                   (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
-                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
-                       picture_control_set_ptr->cra_flag = EB_TRUE;
-                   else
-                       picture_control_set_ptr->idr_flag = EB_TRUE;
-               }
                if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
                    (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
                    if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
@@ -1966,10 +1959,10 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                             context_ptr,
 #if NEW_PRED_STRUCT
                             picture_index - context_ptr->mini_gop_start_index[mini_gop_index],
-#else
-                            picture_index,
-#endif
                             mini_gop_index);
+#else
+                            picture_index);
+#endif
 
                         picture_control_set_ptr->cpi->allow_comp_inter_inter = 0;
                         picture_control_set_ptr->cpi->common.reference_mode = (REFERENCE_MODE)0xFF;
