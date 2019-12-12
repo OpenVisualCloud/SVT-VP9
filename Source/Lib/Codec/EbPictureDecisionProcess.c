@@ -1661,6 +1661,13 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                    else
                        picture_control_set_ptr->idr_flag = EB_TRUE;
                }
+               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
+                   (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
+                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
+                       picture_control_set_ptr->cra_flag = EB_TRUE;
+                   else
+                       picture_control_set_ptr->idr_flag = EB_TRUE;
+               }
            }
 
             encode_context_ptr->pre_assignment_buffer_eos_flag             = (picture_control_set_ptr->end_of_sequence_flag) ? (uint32_t)EB_TRUE : encode_context_ptr->pre_assignment_buffer_eos_flag;
@@ -1961,8 +1968,9 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                             picture_index - context_ptr->mini_gop_start_index[mini_gop_index],
                             mini_gop_index);
 #else
-                            picture_index);
+                            picture_index,
 #endif
+                            mini_gop_index);
 
                         picture_control_set_ptr->cpi->allow_comp_inter_inter = 0;
                         picture_control_set_ptr->cpi->common.reference_mode = (REFERENCE_MODE)0xFF;
