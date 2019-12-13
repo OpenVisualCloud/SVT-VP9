@@ -1654,14 +1654,14 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            }
            // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
            else if (sequence_control_set_ptr->intra_period != -1) {
-               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
+               if ((encode_context_ptr->intra_period_position == (uint32_t)sequence_control_set_ptr->intra_period) ||
                    (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
                    if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
                        picture_control_set_ptr->cra_flag = EB_TRUE;
                    else
                        picture_control_set_ptr->idr_flag = EB_TRUE;
                }
-               if ((encode_context_ptr->intra_period_position == sequence_control_set_ptr->intra_period) ||
+               if ((encode_context_ptr->intra_period_position == (uint32_t)sequence_control_set_ptr->intra_period) ||
                    (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
                    if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
                        picture_control_set_ptr->cra_flag = EB_TRUE;
@@ -1969,9 +1969,8 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                             mini_gop_index);
 #else
                             picture_index,
-#endif
                             mini_gop_index);
-
+#endif
                         picture_control_set_ptr->cpi->allow_comp_inter_inter = 0;
                         picture_control_set_ptr->cpi->common.reference_mode = (REFERENCE_MODE)0xFF;
                         if (picture_control_set_ptr->slice_type != I_SLICE) {
