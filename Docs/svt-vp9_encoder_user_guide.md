@@ -102,7 +102,7 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **BaseLayerSwitchMode** | -base-layer-switch-mode | [0 - 1] | 0 | 0 = Use B-frames in the base layer pointing to the same past picture. <br>1 = Use P-frames in the base layer|
 | **PredStructure** | -pred-struct | [2] | 2 | 2 = Random Access.|
 | **IntraPeriod** | -intra-period | [-2 - 255] | -2 | Distance Between Intra Frame inserted. -1 denotes no intra update. -2 denotes auto. |
-| **IntraRefreshType** | -irefresh-type | [1 - 2] | 1 | 1 = CRA (Open GOP) <br>2 = IDR (Closed GOP) |
+| **IntraRefreshType** | -irefresh-type | [1 - 2] | 2 | 1 = CRA (Open GOP) <br>2 = IDR (Closed GOP) |
 | **QP** | -q | [0 - 63] | 50 | Initial quantization parameter for the Intra pictures used when RateControlMode 0 (CQP) |
 | **LoopFilter** | -loop-filter | [0 - 1] | 1 | Enables or disables the loop filter, <br>0 = OFF, 1 = ON |
 | **UseDefaultMeHme** | -use-default-me-hme | [0 - 1] | 1 | 0 = Overwrite Default ME HME parameters. <br>1 = Use default ME HME parameters, dependent on width and height |
