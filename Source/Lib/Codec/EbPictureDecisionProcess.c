@@ -1642,9 +1642,6 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            release_prev_picture_from_reorder_queue(
                encode_context_ptr);
 
-           picture_control_set_ptr->cra_flag = EB_FALSE;
-           picture_control_set_ptr->idr_flag = EB_FALSE;
-
            // If the Intra period length is 0, then introduce an intra for every picture
            if (sequence_control_set_ptr->intra_period == 0 || picture_control_set_ptr->picture_number == 0 ) {
                if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
