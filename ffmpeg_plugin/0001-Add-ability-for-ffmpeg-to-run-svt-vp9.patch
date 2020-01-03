@@ -1,25 +1,26 @@
-From 45fa3c9a4060dec19999853f9bbdc8db85082a0c Mon Sep 17 00:00:00 2001
+From 0bf1b28a1177d76de6cdfd5d270dda9cf8f1d3b1 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
-Subject: [PATCH 1/1] Add ability for ffmpeg to run svt vp9
+Subject: [PATCH] Add ability for ffmpeg to run svt vp9
 
 Signed-off-by: hassene <hassene.tmar@intel.com>
 Signed-off-by: Jing Sun <jing.a.sun@intel.com>
+Signed-off-by: Austin Hu <austin.hu@intel.com>
 ---
  configure               |   4 +
  libavcodec/Makefile     |   1 +
  libavcodec/allcodecs.c  |   1 +
  libavcodec/avcodec.h    |   2 +
- libavcodec/libsvt_vp9.c | 474 ++++++++++++++++++++++++++++++++++++++++++++++++
- libavformat/ivfenc.c    |  34 +++-
- 6 files changed, 513 insertions(+), 3 deletions(-)
+ libavcodec/libsvt_vp9.c | 485 ++++++++++++++++++++++++++++++++++++++++
+ libavformat/ivfenc.c    |  34 ++-
+ 6 files changed, 524 insertions(+), 3 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 3b11ffe..7acce73 100755
+index 965b4c71b8..de3a53fa00 100755
 --- a/configure
 +++ b/configure
-@@ -264,6 +264,7 @@ External library support:
+@@ -265,6 +265,7 @@ External library support:
    --enable-libspeex        enable Speex de/encoding via libspeex [no]
    --enable-libsrt          enable Haivision SRT protocol via libsrt [no]
    --enable-libssh          enable SFTP protocol via libssh [no]
@@ -27,7 +28,7 @@ index 3b11ffe..7acce73 100755
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1782,6 +1783,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1796,6 +1797,7 @@ EXTERNAL_LIBRARY_LIST="
      libspeex
      libsrt
      libssh
@@ -35,7 +36,7 @@ index 3b11ffe..7acce73 100755
      libtensorflow
      libtesseract
      libtheora
-@@ -3174,6 +3176,7 @@ libshine_encoder_select="audio_frame_queue"
+@@ -3219,6 +3221,7 @@ libshine_encoder_select="audio_frame_queue"
  libspeex_decoder_deps="libspeex"
  libspeex_encoder_deps="libspeex"
  libspeex_encoder_select="audio_frame_queue"
@@ -43,7 +44,7 @@ index 3b11ffe..7acce73 100755
  libtheora_encoder_deps="libtheora"
  libtwolame_encoder_deps="libtwolame"
  libvo_amrwbenc_encoder_deps="libvo_amrwbenc"
-@@ -6199,6 +6202,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
+@@ -6315,6 +6318,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
  enabled libssh            && require_pkg_config libssh libssh libssh/sftp.h sftp_init
  enabled libspeex          && require_pkg_config libspeex speex speex/speex.h speex_decoder_init
  enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
@@ -52,10 +53,10 @@ index 3b11ffe..7acce73 100755
  enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
  enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index f37135f..05f7d7a 100644
+index c1f35b40d8..e3c8889664 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -991,6 +991,7 @@ OBJS-$(CONFIG_LIBOPUS_ENCODER)            += libopusenc.o libopus.o     \
+@@ -999,6 +999,7 @@ OBJS-$(CONFIG_LIBRAV1E_ENCODER)           += librav1e.o
  OBJS-$(CONFIG_LIBSHINE_ENCODER)           += libshine.o
  OBJS-$(CONFIG_LIBSPEEX_DECODER)           += libspeexdec.o
  OBJS-$(CONFIG_LIBSPEEX_ENCODER)           += libspeexenc.o
@@ -64,10 +65,10 @@ index f37135f..05f7d7a 100644
  OBJS-$(CONFIG_LIBTWOLAME_ENCODER)         += libtwolame.o
  OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index 6178d31..8432678 100644
+index ec7366144f..009e403e0b 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -706,6 +706,7 @@ extern AVCodec ff_librsvg_decoder;
+@@ -711,6 +711,7 @@ extern AVCodec ff_librsvg_decoder;
  extern AVCodec ff_libshine_encoder;
  extern AVCodec ff_libspeex_encoder;
  extern AVCodec ff_libspeex_decoder;
@@ -76,24 +77,24 @@ index 6178d31..8432678 100644
  extern AVCodec ff_libtwolame_encoder;
  extern AVCodec ff_libvo_amrwbenc_encoder;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index b749946..1f504af 100644
+index 119b32dc1f..ae3261c9cb 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -1526,6 +1526,8 @@ typedef struct AVPacket {
+@@ -1533,6 +1533,8 @@ typedef struct AVPacket {
   */
  #define AV_PKT_FLAG_DISPOSABLE 0x0010
-
+ 
 +#define AV_PKT_FLAG_SVT_VP9_EXT_ON  0x10000 // Indicating SVT VP9 frame header ext on
 +#define AV_PKT_FLAG_SVT_VP9_EXT_OFF 0x20000 // Indicating SVT VP9 frame header ext off
-
+ 
  enum AVSideDataParamChangeFlags {
      AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000..f7e3bc3
+index 0000000000..d51e2985c8
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,474 @@
+@@ -0,0 +1,485 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -142,6 +143,8 @@ index 0000000..f7e3bc3
 +
 +    EbBufferHeaderType         *in_buf;
 +    int                         raw_size;
++
++    AVBufferPool* pool;
 +
 +    EOS_STATUS eos_flag;
 +
@@ -203,6 +206,7 @@ index 0000000..f7e3bc3
 +        av_freep(&in_data);
 +        av_freep(&svt_enc->in_buf);
 +    }
++    av_buffer_pool_uninit(&svt_enc->pool);
 +}
 +
 +static int alloc_buffer(EbSvtVp9EncConfiguration *config, SvtContext *svt_enc)
@@ -221,13 +225,17 @@ index 0000000..f7e3bc3
 +    if (!svt_enc->in_buf)
 +        goto failed;
 +
-+    in_data  = av_mallocz(sizeof(*in_data));
-+    if (!in_data)
++
++    svt_enc->in_buf->p_buffer = (unsigned char *)av_mallocz(sizeof(*in_data));
++    if (!svt_enc->in_buf->p_buffer)
 +        goto failed;
-+    svt_enc->in_buf->p_buffer  = (unsigned char *)in_data;
 +
 +    svt_enc->in_buf->size        = sizeof(*svt_enc->in_buf);
 +    svt_enc->in_buf->p_app_private  = NULL;
++
++    svt_enc->pool = av_buffer_pool_init(svt_enc->raw_size, NULL);
++    if (!svt_enc->pool)
++        goto failed;
 +
 +    return 0;
 +
@@ -436,7 +444,7 @@ index 0000000..f7e3bc3
 +    SvtContext  *svt_enc = avctx->priv_data;
 +    EbBufferHeaderType   *headerPtr;
 +    EbErrorType          svt_ret;
-+    int ret;
++    AVBufferRef *ref;
 +
 +    if (EOS_TOTRIGGER == svt_enc->eos_flag) {
 +        pkt = NULL;
@@ -447,10 +455,14 @@ index 0000000..f7e3bc3
 +    if (svt_ret == EB_NoErrorEmptyQueue)
 +        return AVERROR(EAGAIN);
 +
-+    if ((ret = ff_alloc_packet2(avctx, pkt, headerPtr->n_filled_len, 0)) < 0) {
++    ref = av_buffer_pool_get(svt_enc->pool);
++    if (!ref) {
 +        av_log(avctx, AV_LOG_ERROR, "Failed to allocate output packet.\n");
-+        return ret;
++        eb_vp9_svt_release_out_buffer(&headerPtr);
++        return AVERROR(ENOMEM);
 +    }
++    pkt->buf = ref;
++    pkt->data = ref->data;
 +
 +    memcpy(pkt->data, headerPtr->p_buffer, headerPtr->n_filled_len);
 +    pkt->size = headerPtr->n_filled_len;
@@ -569,13 +581,13 @@ index 0000000..f7e3bc3
 +    .wrapper_name   = "libsvt_vp9",
 +};
 diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
-index adf7211..05f0813 100644
+index eb70421c44..0a7f85e0e9 100644
 --- a/libavformat/ivfenc.c
 +++ b/libavformat/ivfenc.c
 @@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
      AVIOContext *pb = s->pb;
      IVFEncContext *ctx = s->priv_data;
-
+ 
 -    avio_wl32(pb, pkt->size);
 -    avio_wl64(pb, pkt->pts);
 -    avio_write(pb, pkt->data, pkt->size);
@@ -609,10 +621,10 @@ index adf7211..05f0813 100644
      if (ctx->frame_cnt)
          ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
      ctx->frame_cnt++;
-@@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -97,6 +121,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
-
+ 
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
@@ -620,5 +632,6 @@ index adf7211..05f0813 100644
      if (st->codecpar->codec_id == AV_CODEC_ID_VP9)
          ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
      else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
---
-1.8.3.1
+-- 
+2.17.1
+
