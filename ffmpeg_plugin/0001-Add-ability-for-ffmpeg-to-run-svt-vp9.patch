@@ -1,4 +1,4 @@
-From 0bf1b28a1177d76de6cdfd5d270dda9cf8f1d3b1 Mon Sep 17 00:00:00 2001
+From ac42f8178514f8b913ee79a623e95fdd6976ef13 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -10,17 +10,15 @@ Signed-off-by: Austin Hu <austin.hu@intel.com>
  configure               |   4 +
  libavcodec/Makefile     |   1 +
  libavcodec/allcodecs.c  |   1 +
- libavcodec/avcodec.h    |   2 +
- libavcodec/libsvt_vp9.c | 485 ++++++++++++++++++++++++++++++++++++++++
- libavformat/ivfenc.c    |  34 ++-
- 6 files changed, 524 insertions(+), 3 deletions(-)
+ libavcodec/libsvt_vp9.c | 470 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 476 insertions(+)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 965b4c71b8..de3a53fa00 100755
+index 4005987409..17545df730 100755
 --- a/configure
 +++ b/configure
-@@ -265,6 +265,7 @@ External library support:
+@@ -264,6 +264,7 @@ External library support:
    --enable-libspeex        enable Speex de/encoding via libspeex [no]
    --enable-libsrt          enable Haivision SRT protocol via libsrt [no]
    --enable-libssh          enable SFTP protocol via libssh [no]
@@ -28,7 +26,7 @@ index 965b4c71b8..de3a53fa00 100755
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1796,6 +1797,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1787,6 +1788,7 @@ EXTERNAL_LIBRARY_LIST="
      libspeex
      libsrt
      libssh
@@ -36,7 +34,7 @@ index 965b4c71b8..de3a53fa00 100755
      libtensorflow
      libtesseract
      libtheora
-@@ -3219,6 +3221,7 @@ libshine_encoder_select="audio_frame_queue"
+@@ -3180,6 +3182,7 @@ libshine_encoder_select="audio_frame_queue"
  libspeex_decoder_deps="libspeex"
  libspeex_encoder_deps="libspeex"
  libspeex_encoder_select="audio_frame_queue"
@@ -44,7 +42,7 @@ index 965b4c71b8..de3a53fa00 100755
  libtheora_encoder_deps="libtheora"
  libtwolame_encoder_deps="libtwolame"
  libvo_amrwbenc_encoder_deps="libvo_amrwbenc"
-@@ -6315,6 +6318,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
+@@ -6226,6 +6229,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
  enabled libssh            && require_pkg_config libssh libssh libssh/sftp.h sftp_init
  enabled libspeex          && require_pkg_config libspeex speex speex/speex.h speex_decoder_init
  enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
@@ -53,10 +51,10 @@ index 965b4c71b8..de3a53fa00 100755
  enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
  enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index c1f35b40d8..e3c8889664 100644
+index 3cd73fbcc6..eb138776b7 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -999,6 +999,7 @@ OBJS-$(CONFIG_LIBRAV1E_ENCODER)           += librav1e.o
+@@ -991,6 +991,7 @@ OBJS-$(CONFIG_LIBOPUS_ENCODER)            += libopusenc.o libopus.o     \
  OBJS-$(CONFIG_LIBSHINE_ENCODER)           += libshine.o
  OBJS-$(CONFIG_LIBSPEEX_DECODER)           += libspeexdec.o
  OBJS-$(CONFIG_LIBSPEEX_ENCODER)           += libspeexenc.o
@@ -65,10 +63,10 @@ index c1f35b40d8..e3c8889664 100644
  OBJS-$(CONFIG_LIBTWOLAME_ENCODER)         += libtwolame.o
  OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index ec7366144f..009e403e0b 100644
+index d2f9a39ce5..9849fc1875 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -711,6 +711,7 @@ extern AVCodec ff_librsvg_decoder;
+@@ -707,6 +707,7 @@ extern AVCodec ff_librsvg_decoder;
  extern AVCodec ff_libshine_encoder;
  extern AVCodec ff_libspeex_encoder;
  extern AVCodec ff_libspeex_decoder;
@@ -76,25 +74,12 @@ index ec7366144f..009e403e0b 100644
  extern AVCodec ff_libtheora_encoder;
  extern AVCodec ff_libtwolame_encoder;
  extern AVCodec ff_libvo_amrwbenc_encoder;
-diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index 119b32dc1f..ae3261c9cb 100644
---- a/libavcodec/avcodec.h
-+++ b/libavcodec/avcodec.h
-@@ -1533,6 +1533,8 @@ typedef struct AVPacket {
-  */
- #define AV_PKT_FLAG_DISPOSABLE 0x0010
- 
-+#define AV_PKT_FLAG_SVT_VP9_EXT_ON  0x10000 // Indicating SVT VP9 frame header ext on
-+#define AV_PKT_FLAG_SVT_VP9_EXT_OFF 0x20000 // Indicating SVT VP9 frame header ext off
- 
- enum AVSideDataParamChangeFlags {
-     AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..d51e2985c8
+index 0000000000..291a635da1
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,470 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -129,12 +114,6 @@ index 0000000000..d51e2985c8
 +#include "internal.h"
 +#include "avcodec.h"
 +
-+typedef enum eos_status {
-+    EOS_NOT_REACHED = 0,
-+    EOS_REACHED,
-+    EOS_TOTRIGGER
-+}EOS_STATUS;
-+
 +typedef struct SvtContext {
 +    AVClass     *class;
 +
@@ -146,7 +125,7 @@ index 0000000000..d51e2985c8
 +
 +    AVBufferPool* pool;
 +
-+    EOS_STATUS eos_flag;
++    int eos_flag;
 +
 +    // User options.
 +    int enc_mode;
@@ -324,7 +303,7 @@ index 0000000000..d51e2985c8
 +    SvtContext   *svt_enc = avctx->priv_data;
 +    EbErrorType svt_ret;
 +
-+    svt_enc->eos_flag = EOS_NOT_REACHED;
++    svt_enc->eos_flag = 0;
 +
 +    svt_ret = eb_vp9_svt_init_handle(&svt_enc->svt_handle, svt_enc, &svt_enc->enc_params);
 +    if (svt_ret != EB_ErrorNone) {
@@ -410,7 +389,7 @@ index 0000000000..d51e2985c8
 +        headerPtrLast.flags      = EB_BUFFERFLAG_EOS;
 +
 +        eb_vp9_svt_enc_send_picture(svt_enc->svt_handle, &headerPtrLast);
-+        svt_enc->eos_flag = EOS_REACHED;
++        svt_enc->eos_flag = 1;
 +        av_log(avctx, AV_LOG_DEBUG, "Finish sending frames!!!\n");
 +        return 0;
 +    }
@@ -445,11 +424,7 @@ index 0000000000..d51e2985c8
 +    EbBufferHeaderType   *headerPtr;
 +    EbErrorType          svt_ret;
 +    AVBufferRef *ref;
-+
-+    if (EOS_TOTRIGGER == svt_enc->eos_flag) {
-+        pkt = NULL;
-+        return AVERROR_EOF;
-+    }
++    int ret;
 +
 +    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
 +    if (svt_ret == EB_NoErrorEmptyQueue)
@@ -473,16 +448,11 @@ index 0000000000..d51e2985c8
 +    if (headerPtr->pic_type == EB_NON_REF_PICTURE)
 +        pkt->flags |= AV_PKT_FLAG_DISPOSABLE;
 +
-+    if (headerPtr->flags & EB_BUFFERFLAG_SHOW_EXT)
-+        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_ON;
-+    else
-+        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_OFF;
-+
-+    if (EB_BUFFERFLAG_EOS == headerPtr->flags)
-+        svt_enc->eos_flag = EOS_TOTRIGGER;
++    ret = (headerPtr->flags & EB_BUFFERFLAG_EOS) ? AVERROR_EOF : 0;
 +
 +    eb_vp9_svt_release_out_buffer(&headerPtr);
-+    return 0;
++
++    return ret;
 +}
 +
 +static av_cold int eb_enc_close(AVCodecContext *avctx)
@@ -580,58 +550,6 @@ index 0000000000..d51e2985c8
 +    .caps_internal  = FF_CODEC_CAP_INIT_CLEANUP,
 +    .wrapper_name   = "libsvt_vp9",
 +};
-diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
-index eb70421c44..0a7f85e0e9 100644
---- a/libavformat/ivfenc.c
-+++ b/libavformat/ivfenc.c
-@@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
-     AVIOContext *pb = s->pb;
-     IVFEncContext *ctx = s->priv_data;
- 
--    avio_wl32(pb, pkt->size);
--    avio_wl64(pb, pkt->pts);
--    avio_write(pb, pkt->data, pkt->size);
-+    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+        avio_wl32(pb, pkt->size - 4);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data, pkt->size - 4);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts - 2);
-+        avio_write(pb, pkt->data + pkt->size - 4, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts - 1);
-+        avio_write(pb, pkt->data + pkt->size - 3, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data + pkt->size - 2, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts + 1);
-+        avio_write(pb, pkt->data + pkt->size - 1, 1);
-+    }
-+    else {
-+        avio_wl32(pb, pkt->size);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data, pkt->size);
-+    }
-+
-     if (ctx->frame_cnt)
-         ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
-     ctx->frame_cnt++;
-@@ -97,6 +121,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
-     int ret = 1;
-     AVStream *st = s->streams[pkt->stream_index];
- 
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        return 0;
-+
-     if (st->codecpar->codec_id == AV_CODEC_ID_VP9)
-         ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
-     else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
 -- 
 2.17.1
 
