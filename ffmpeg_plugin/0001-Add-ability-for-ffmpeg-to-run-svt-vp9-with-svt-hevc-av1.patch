@@ -1,4 +1,4 @@
-From a411fb6fe22bec9b6710d138a5ca4a5e08bdd60d Mon Sep 17 00:00:00 2001
+From 116d3c027934645f8f62d621b0b17372fde12b29 Mon Sep 17 00:00:00 2001
 From: Jing Sun <jing.a.sun@intel.com>
 Date: Mon, 1 Apr 2019 17:17:00 +0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9 with hevc & av1
@@ -7,11 +7,12 @@ Signed-off-by: hassene <hassene.tmar@intel.com>
 Signed-off-by: Jing Sun <jing.a.sun@intel.com>
 Signed-off-by: Austin Hu <austin.hu@intel.com>
 ---
- configure               |   4 +
- libavcodec/Makefile     |   1 +
- libavcodec/allcodecs.c  |   1 +
- libavcodec/libsvt_vp9.c | 470 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 476 insertions(+)
+ configure                             |   4 +
+ libavcodec/Makefile                   |   1 +
+ libavcodec/allcodecs.c                |   1 +
+ libavcodec/libsvt_vp9.c               | 577 ++++++++++++++++++++++++++
+ libavcodec/vp9_superframe_split_bsf.c |  10 +-
+ 5 files changed, 591 insertions(+), 2 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -76,10 +77,10 @@ index db1b1b2188..75248670db 100644
  extern AVCodec ff_libvo_amrwbenc_encoder;
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..291a635da1
+index 0000000000..deb651fea0
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,470 @@
+@@ -0,0 +1,577 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -110,6 +111,8 @@ index 0000000000..291a635da1
 +#include "libavutil/common.h"
 +#include "libavutil/frame.h"
 +#include "libavutil/opt.h"
++#include "libavutil/intreadwrite.h"
++#include "libavutil/avassert.h"
 +
 +#include "internal.h"
 +#include "avcodec.h"
@@ -418,13 +421,88 @@ index 0000000000..291a635da1
 +    return 0;
 +}
 +
++// Copied from vp9_superframe_bsf.c
++static void stats(AVPacket * const *in, int n_in,
++                  unsigned *_max, unsigned *_sum)
++{
++    int n;
++    unsigned max = 0, sum = 0;
++
++    for (n = 0; n < n_in; n++) {
++        unsigned sz = in[n]->size;
++
++        if (sz > max)
++            max = sz;
++        sum += sz;
++    }
++
++    *_max = max;
++    *_sum = sum;
++}
++
++static int merge_superframe(AVPacket * const *in, int n_in, AVPacket *out)
++{
++    unsigned max, sum, mag, marker, n, sz;
++    uint8_t *ptr;
++    int res;
++
++    stats(in, n_in, &max, &sum);
++    mag = av_log2(max) >> 3;
++    marker = 0xC0 + (mag << 3) + (n_in - 1);
++    sz = sum + 2 + (mag + 1) * n_in;
++    res = av_new_packet(out, sz);
++    if (res < 0)
++        return res;
++    ptr = out->data;
++    for (n = 0; n < n_in; n++) {
++        memcpy(ptr, in[n]->data, in[n]->size);
++        ptr += in[n]->size;
++    }
++
++#define wloop(mag, wr) \
++    do { \
++        for (n = 0; n < n_in; n++) { \
++            wr; \
++            ptr += mag + 1; \
++        } \
++    } while (0)
++
++    // write superframe with marker 110[mag:2][nframes:3]
++    *ptr++ = marker;
++    switch (mag) {
++    case 0:
++        wloop(mag, *ptr = in[n]->size);
++        break;
++    case 1:
++        wloop(mag, AV_WL16(ptr, in[n]->size));
++        break;
++    case 2:
++        wloop(mag, AV_WL24(ptr, in[n]->size));
++        break;
++    case 3:
++        wloop(mag, AV_WL32(ptr, in[n]->size));
++        break;
++    }
++    *ptr++ = marker;
++    av_assert0(ptr == &out->data[out->size]);
++
++    return 0;
++}
++
++static int eos_flag = 0;
 +static int eb_receive_packet(AVCodecContext *avctx, AVPacket *pkt)
 +{
 +    SvtContext  *svt_enc = avctx->priv_data;
 +    EbBufferHeaderType   *headerPtr;
 +    EbErrorType          svt_ret;
 +    AVBufferRef *ref;
-+    int ret;
++    AVPacket *tmp_pkt[5];
++    int tmp_pkt_idx = 0;
++
++    if (eos_flag) {
++        pkt = NULL;
++        return AVERROR_EOF;
++    }
 +
 +    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
 +    if (svt_ret == EB_NoErrorEmptyQueue)
@@ -441,18 +519,48 @@ index 0000000000..291a635da1
 +
 +    memcpy(pkt->data, headerPtr->p_buffer, headerPtr->n_filled_len);
 +    pkt->size = headerPtr->n_filled_len;
-+    pkt->pts  = headerPtr->pts;
-+    pkt->dts  = headerPtr->dts;
++
++    // Assemble the AVPacket containing 1 frame or multiple frames into super frame.
++    if (!(headerPtr->flags & EB_BUFFERFLAG_SHOW_EXT)) {
++        tmp_pkt[0] = av_packet_alloc();
++        av_packet_move_ref(tmp_pkt[0], pkt);
++        merge_superframe(tmp_pkt, 1, pkt);
++
++        av_packet_free(&tmp_pkt[0]);
++    } else {
++        // The 1st "main" frame.
++        tmp_pkt[0] = av_packet_alloc();
++        av_new_packet(tmp_pkt[0], pkt->size - 4);
++        memcpy(tmp_pkt[0]->data, pkt->data, pkt->size - 4);
++
++        // The latter 4 frames with show_existing_frame set.
++        for (tmp_pkt_idx = 1; tmp_pkt_idx < 5; tmp_pkt_idx++) {
++            tmp_pkt[tmp_pkt_idx] = av_packet_alloc();
++            av_new_packet(tmp_pkt[tmp_pkt_idx], 1);
++            *(tmp_pkt[tmp_pkt_idx]->data) = *(pkt->data + pkt->size - 4 + (tmp_pkt_idx - 1));
++        }
++
++        // Merge the 5 frames into a super frame.
++        merge_superframe(tmp_pkt, 5, pkt);
++
++        for (tmp_pkt_idx = 0; tmp_pkt_idx < 5; tmp_pkt_idx++) {
++            av_packet_free(&tmp_pkt[tmp_pkt_idx]);
++        }
++    }
++
++    pkt->pts = headerPtr->pts;
++    pkt->dts = headerPtr->dts;
 +    if (headerPtr->pic_type == EB_IDR_PICTURE)
 +        pkt->flags |= AV_PKT_FLAG_KEY;
 +    if (headerPtr->pic_type == EB_NON_REF_PICTURE)
 +        pkt->flags |= AV_PKT_FLAG_DISPOSABLE;
 +
-+    ret = (headerPtr->flags & EB_BUFFERFLAG_EOS) ? AVERROR_EOF : 0;
++    if (headerPtr->flags == EB_BUFFERFLAG_EOS)
++        eos_flag = 1;
 +
 +    eb_vp9_svt_release_out_buffer(&headerPtr);
 +
-+    return ret;
++    return 0;
 +}
 +
 +static av_cold int eb_enc_close(AVCodecContext *avctx)
@@ -550,6 +658,35 @@ index 0000000000..291a635da1
 +    .caps_internal  = FF_CODEC_CAP_INIT_CLEANUP,
 +    .wrapper_name   = "libsvt_vp9",
 +};
+diff --git a/libavcodec/vp9_superframe_split_bsf.c b/libavcodec/vp9_superframe_split_bsf.c
+index 13e85c3ca4..bda5d28b05 100644
+--- a/libavcodec/vp9_superframe_split_bsf.c
++++ b/libavcodec/vp9_superframe_split_bsf.c
+@@ -38,6 +38,7 @@ typedef struct VP9SFSplitContext {
+     int sizes[8];
+ } VP9SFSplitContext;
+ 
++static int64_t recorded_head_frame_pts = 0;
+ static int vp9_superframe_split_filter(AVBSFContext *ctx, AVPacket *out)
+ {
+     VP9SFSplitContext *s = ctx->priv_data;
+@@ -117,9 +118,14 @@ static int vp9_superframe_split_filter(AVBSFContext *ctx, AVPacket *out)
+             invisible = !get_bits1(&gb);
+         }
+ 
+-        if (invisible)
++        if (invisible) {
++            recorded_head_frame_pts = out->pts - 2;
+             out->pts = AV_NOPTS_VALUE;
+-
++            out->dts = AV_NOPTS_VALUE;
++        } else {
++            out->pts = ++recorded_head_frame_pts;
++            out->dts = recorded_head_frame_pts;
++        }
+     } else {
+         av_packet_move_ref(out, s->buffer_pkt);
+     }
 -- 
 2.17.1
 
