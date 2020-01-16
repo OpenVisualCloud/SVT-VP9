@@ -1,4 +1,4 @@
-From 2bddb0e4bdef1c3e7c567acbac016004d4c516cd Mon Sep 17 00:00:00 2001
+From 636a49c2809d28500e41f1805c0124a4c9f78382 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -13,8 +13,8 @@ Signed-off-by: Austin Hu <austin.hu@intel.com>
  libavcodec/avcodec.h      |   2 +
  libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
  libavformat/ivfenc.c      |  34 ++-
- libavformat/matroskaenc.c |  83 ++++++-
- 7 files changed, 604 insertions(+), 6 deletions(-)
+ libavformat/matroskaenc.c |  86 ++++++-
+ 7 files changed, 606 insertions(+), 7 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -634,7 +634,7 @@ index adf72117e9..05f08131a6 100644
          ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
      else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
 diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index cef504fa05..f95eed2e3d 100644
+index cef504fa05..3da82e2bf2 100644
 --- a/libavformat/matroskaenc.c
 +++ b/libavformat/matroskaenc.c
 @@ -161,6 +161,9 @@ typedef struct MatroskaMuxContext {
@@ -666,16 +666,31 @@ index cef504fa05..f95eed2e3d 100644
  
      if (ts == AV_NOPTS_VALUE) {
          av_log(s, AV_LOG_ERROR, "Can't write packet with unknown timestamp\n");
-@@ -2414,7 +2420,70 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
+@@ -2401,12 +2407,18 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
+         }
+     }
+ 
++    if (par->codec_type == AVMEDIA_TYPE_VIDEO) {
++        fps = av_q2d(s->streams[pkt->stream_index]->avg_frame_rate);
++        pts_interval = 1000 / fps;
++    }
++
+     if (mkv->cluster_pos == -1) {
+         mkv->cluster_pos = avio_tell(s->pb);
+         ret = start_ebml_master_crc32(s->pb, &mkv->cluster_bc, mkv, MATROSKA_ID_CLUSTER);
+         if (ret < 0)
+             return ret;
+-        put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, FFMAX(0, ts));
++        //put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, FFMAX(0, ts));
++        put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, mkv->accumulated_cluster_timecode + pts_interval);
+         mkv->cluster_pts = FFMAX(0, ts);
+     }
+     pb = mkv->cluster_bc;
+@@ -2414,7 +2426,65 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
      relative_packet_pos = avio_tell(pb);
  
      if (par->codec_type != AVMEDIA_TYPE_SUBTITLE) {
 -        mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+        if (par->codec_type == AVMEDIA_TYPE_VIDEO) {
-+            fps = av_q2d(s->streams[pkt->stream_index]->avg_frame_rate);
-+            pts_interval = 1000 / fps;
-+        }
-+
 +        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
 +            uint8_t *saved_data = pkt->data;
 +            int saved_size = pkt->size;
@@ -738,7 +753,7 @@ index cef504fa05..f95eed2e3d 100644
          if ((s->pb->seekable & AVIO_SEEKABLE_NORMAL) && (par->codec_type == AVMEDIA_TYPE_VIDEO && keyframe || add_cue)) {
              ret = mkv_add_cuepoint(mkv->cues, pkt->stream_index, dash_tracknum, ts, mkv->cluster_pos, relative_packet_pos, -1);
              if (ret < 0) return ret;
-@@ -2474,7 +2543,8 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -2474,7 +2544,8 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
      if (mkv->tracks[pkt->stream_index].write_dts)
          cluster_time = pkt->dts - mkv->cluster_pts;
      else
@@ -748,7 +763,7 @@ index cef504fa05..f95eed2e3d 100644
      cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
  
      // start a new cluster every 5 MB or 5 sec, or 32k / 1 sec for streaming or
-@@ -2502,6 +2572,9 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -2502,6 +2573,9 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
      }
  
      if (mkv->cluster_pos != -1 && start_new_cluster) {
@@ -758,7 +773,7 @@ index cef504fa05..f95eed2e3d 100644
          mkv_start_new_cluster(s, pkt);
      }
  
-@@ -2736,6 +2809,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -2736,6 +2810,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  
