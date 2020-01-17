@@ -342,29 +342,6 @@ void pack_2d_src(
         height);
 }
 
-void compressed_pack_sb(
-    uint8_t  *in8_bit_buffer,
-    uint32_t  in8_stride,
-    uint8_t  *inn_bit_buffer,
-    uint32_t  inn_stride,
-    uint16_t *out16_bit_buffer,
-    uint32_t  out_stride,
-    uint32_t  width,
-    uint32_t  height
-)
-{
-
-    compressed_pack_func_ptr_array[((width == 64 || width == 32) ? ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
-        in8_bit_buffer,
-        in8_stride,
-        inn_bit_buffer,
-        out16_bit_buffer,
-        inn_stride,
-        out_stride,
-        width,
-        height);
-}
-
 void compressed_pack_blk(
     uint8_t  *in8_bit_buffer,
     uint32_t  in8_stride,
@@ -384,27 +361,6 @@ void compressed_pack_blk(
         out16_bit_buffer,
         inn_stride,
         out_stride,
-        width,
-        height);
-
-}
-
-void conv2b_to_c_pack_sb(
-    const uint8_t *inn_bit_buffer,
-    uint32_t       inn_stride,
-    uint8_t       *in_compn_bit_buffer,
-    uint32_t       out_stride,
-    uint8_t       *local_cache,
-    uint32_t       width,
-    uint32_t       height)
-{
-
-    convert_unpack_c_pack_func_ptr_array[((width == 64 || width == 32) ? ((eb_vp9_ASM_TYPES & AVX2_MASK) && 1) : ASM_NON_AVX2)](
-        inn_bit_buffer,
-        inn_stride,
-        in_compn_bit_buffer,
-        out_stride,
-        local_cache,
         width,
         height);
 

@@ -91,24 +91,6 @@ void compressed_pack_blk(
     uint32_t  width,
     uint32_t  height
     );
-void conv2b_to_c_pack_sb(
-    const uint8_t *inn_bit_buffer,
-    uint32_t       inn_stride,
-    uint8_t       *in_compn_bit_buffer,
-    uint32_t       out_stride,
-    uint8_t       *local_cache,
-    uint32_t       width,
-    uint32_t       height);
-
-void compressed_pack_sb(
-    uint8_t  *in8_bit_buffer,
-    uint32_t  in8_stride,
-    uint8_t  *inn_bit_buffer,
-    uint32_t  inn_stride,
-    uint16_t *out16_bit_buffer,
-    uint32_t  out_stride,
-    uint32_t  width,
-    uint32_t  height);
 
 void pack_2d_src(
    uint8_t  *in8_bit_buffer,

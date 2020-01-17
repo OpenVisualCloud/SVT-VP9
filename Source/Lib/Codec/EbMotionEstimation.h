@@ -35,16 +35,11 @@ extern void eb_vp9_decimation_2d(
     uint32_t  decim_stride,
     uint32_t  decim_step);
 
-extern void get_mv(
+extern void eb_vp9_get_mv(
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                 sb_index,
     int32_t                 *x_current_mv,
     int32_t                 *y_current_mv);
-
-extern void get_me_dist(
-    PictureParentControlSet *picture_control_set_ptr,
-    uint32_t                 sb_index,
-    uint32_t                *distortion);
 
 int8_t sort3_elements(uint32_t a, uint32_t b, uint32_t c);
 #define a_b_c  0

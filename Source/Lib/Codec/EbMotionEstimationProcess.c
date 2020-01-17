@@ -719,11 +719,11 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(
 }
 
 /******************************************************
-* get_mv
+* eb_vp9_get_mv
   Input   : LCU Index
   Output  : List0 MV
 ******************************************************/
-void get_mv(
+void eb_vp9_get_mv(
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                 sb_index,
     int32_t                 *x_current_mv,
@@ -740,7 +740,7 @@ void get_mv(
  Input   : LCU Index
  Output  : Best ME Distortion
 ******************************************************/
-void get_me_dist(
+static void get_me_dist(
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                 sb_index,
     uint32_t                *distortion) {
@@ -791,7 +791,7 @@ void eb_vp9_derive_similar_collocated_flag(
     return;
 }
 
-void stationary_edge_over_update_over_time_sb_part1(
+static void stationary_edge_over_update_over_time_sb_part1(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                 sb_index)
@@ -806,7 +806,7 @@ void stationary_edge_over_update_over_time_sb_part1(
 
         // Current MV
         if (picture_control_set_ptr->temporal_layer_index > 0)
-            get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
+            eb_vp9_get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
 
         EB_BOOL lowMotion = picture_control_set_ptr->temporal_layer_index == 0 ? EB_TRUE : (ABS(x_current_mv) < 16) && (ABS(y_current_mv) < 16) ? EB_TRUE : EB_FALSE;
         uint16_t *yVariancePtr = picture_control_set_ptr->variance[sb_index];
@@ -843,7 +843,7 @@ void stationary_edge_over_update_over_time_sb_part1(
     }
 }
 
-void stationary_edge_over_update_over_time_sb_part2(
+static void stationary_edge_over_update_over_time_sb_part2(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     uint32_t                sb_index)

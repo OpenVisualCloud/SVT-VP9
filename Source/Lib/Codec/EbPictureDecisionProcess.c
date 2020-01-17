@@ -275,7 +275,7 @@ EB_BOOL eb_vp9_SceneTransitionDetector(
 /***************************************************************************************************
 * release_prev_picture_from_reorder_queue
 ***************************************************************************************************/
-EbErrorType release_prev_picture_from_reorder_queue(
+static EbErrorType release_prev_picture_from_reorder_queue(
     EncodeContext *encode_context_ptr) {
 
     EbErrorType return_error = EB_ErrorNone;
@@ -578,7 +578,7 @@ static EbErrorType update_base_layer_reference_queue_dependent_count(
 *
 *
 ***************************************************************************************************/
-EbErrorType generate_mini_gop_rps(
+static EbErrorType generate_mini_gop_rps(
     PictureDecisionContext *context_ptr,
     EncodeContext          *encode_context_ptr) {
 

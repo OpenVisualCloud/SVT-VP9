@@ -8,16 +8,16 @@
 #include "immintrin.h"
 #include "EbUtility.h"
 
-EB_EXTERN EB_ALIGN(16) const uint8_t filter_type[] = {
+static EB_ALIGN(16) const uint8_t filter_type[] = {
     1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4
 };
 
-EB_EXTERN EB_ALIGN(16) const uint8_t weak_chroma_filter[2][32] = {
+static EB_ALIGN(16) const uint8_t weak_chroma_filter[2][32] = {
         { 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4, 2, 4 },
         { 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 },
 };
 
-inline void eb_vp9_luma_weak_filter_avx2_intrin(
+static void eb_vp9_luma_weak_filter_avx2_intrin(
     __m256i                        top,
     __m256i                        curr,
     __m256i                        bottom,
@@ -76,7 +76,7 @@ inline void eb_vp9_luma_weak_filter_avx2_intrin(
     _mm256_storeu_si256((__m256i *)(ptr_noise), _mm256_subs_epu8(curr, filter_first_half));
 
 }
-inline void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
+static void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
     __m256i                        top,
     __m256i                        curr,
     __m256i                        bottom,
@@ -177,7 +177,7 @@ inline void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
 
 }
 
-inline void eb_vp9_chroma_strong_avx2_intrin(
+static void eb_vp9_chroma_strong_avx2_intrin(
     __m256i                        top,
     __m256i                        curr,
     __m256i                        bottom,

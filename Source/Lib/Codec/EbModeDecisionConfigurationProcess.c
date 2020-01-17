@@ -1687,7 +1687,7 @@ EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(
 #define DEPTH_16 2   // Depth corresponding to the CU size
 #define DEPTH_8  3   // Depth corresponding to the CU size
 
-const uint8_t incremental_count[PA_BLOCK_MAX_COUNT] = {
+static const uint8_t incremental_count[PA_BLOCK_MAX_COUNT] = {
 
     //64x64
     0,
@@ -1949,7 +1949,7 @@ void eb_vp9_MdcInterDepthDecision(
     context_ptr->group_of16x16_blocks_count = group_of16x16_blocks_count;
 }
 
-void prediction_partition_loop(
+static void prediction_partition_loop(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr,
@@ -2096,7 +2096,7 @@ static const uint8_t parentblock_index[PA_BLOCK_MAX_COUNT] =
     36, 0, 0, 1, 2, 3, 5, 0, 1, 2, 3, 10, 0, 1, 2, 3, 15, 0, 1, 2, 3,
 };
 
-EbErrorType mdc_refinement(
+static EbErrorType mdc_refinement(
     MdcpLocalCodingUnit *local_cu_array,
     uint32_t              block_index,
     uint32_t              depth,
@@ -2255,7 +2255,7 @@ EbErrorType mdc_refinement(
     return return_error;
 }
 
-void refinement_prediction_loop(
+static void refinement_prediction_loop(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     SbUnit                           *sb_ptr,
@@ -2449,7 +2449,7 @@ void forward_cu_to_mode_decision(
     }
 }
 
-EbErrorType early_mode_decision_sb(
+static EbErrorType early_mode_decision_sb(
     SequenceControlSet               *sequence_control_set_ptr,
     PictureControlSet                *picture_control_set_ptr,
     ModeDecisionConfigurationContext *context_ptr,

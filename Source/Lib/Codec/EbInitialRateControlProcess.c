@@ -24,7 +24,7 @@
 #define PAN_SB_PERCENTAGE   75
 #define LOW_AMPLITUDE_TH    64
 
-EB_BOOL check_mv_for_pan_high_amp(
+static EB_BOOL check_mv_for_pan_high_amp(
     uint32_t hierarchical_levels,
     uint32_t temporal_layer_index,
     int32_t  *x_current_mv,
@@ -44,7 +44,7 @@ EB_BOOL check_mv_for_pan_high_amp(
 
 }
 
-EB_BOOL check_mv_for_tilt_high_amp(
+static EB_BOOL check_mv_for_tilt_high_amp(
     uint32_t hierarchical_levels,
     uint32_t temporal_layer_index,
     int32_t  *y_current_mv,
@@ -64,7 +64,7 @@ EB_BOOL check_mv_for_tilt_high_amp(
 
 }
 
-EB_BOOL check_mv_for_pan(
+static EB_BOOL check_mv_for_pan(
     uint32_t hierarchical_levels,
     uint32_t temporal_layer_index,
     int32_t *x_current_mv,
@@ -88,7 +88,7 @@ EB_BOOL check_mv_for_pan(
 
 }
 
-EB_BOOL check_mv_for_tilt(
+static EB_BOOL check_mv_for_tilt(
     uint32_t hierarchical_levels,
     uint32_t temporal_layer_index,
     int32_t *x_current_mv,
@@ -112,24 +112,7 @@ EB_BOOL check_mv_for_tilt(
 
 }
 
-EB_BOOL check_mv_for_non_uniform_motion(
-    int32_t *x_current_mv,
-    int32_t *y_current_mv,
-    int32_t *x_candidate_mv,
-    int32_t *y_candidate_mv)
-{
-    int32_t mv_threshold = 40;//LOW_AMPLITUDE_TH + 18;
-    // Either the x or the y direction is greater than threshold
-    if ((ABS(*x_current_mv - *x_candidate_mv) > mv_threshold) || (ABS(*y_current_mv - *y_candidate_mv) > mv_threshold)) {
-        return(EB_TRUE);
-    }
-    else {
-        return(EB_FALSE);
-    }
-
-}
-
-void eb_vp9_DetectGlobalMotion(
+static void eb_vp9_DetectGlobalMotion(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -169,7 +152,7 @@ void eb_vp9_DetectGlobalMotion(
         if (sb_params->is_complete_sb) {
 
             // Current MV
-            get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
+            eb_vp9_get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
 
             // Left MV
             if (sb_origin_x == 0) {
@@ -177,7 +160,7 @@ void eb_vp9_DetectGlobalMotion(
                 y_left_mv = 0;
             }
             else {
-                get_mv(picture_control_set_ptr, sb_index - 1, &x_left_mv, &y_left_mv);
+                eb_vp9_get_mv(picture_control_set_ptr, sb_index - 1, &x_left_mv, &y_left_mv);
             }
 
             // Top MV
@@ -186,7 +169,7 @@ void eb_vp9_DetectGlobalMotion(
                 y_top_mv = 0;
             }
             else {
-                get_mv(picture_control_set_ptr, sb_index - picture_width_in_sb, &x_top_mv, &y_top_mv);
+                eb_vp9_get_mv(picture_control_set_ptr, sb_index - picture_width_in_sb, &x_top_mv, &y_top_mv);
             }
 
             // Right MV
@@ -195,7 +178,7 @@ void eb_vp9_DetectGlobalMotion(
                 y_right_mv = 0;
             }
             else {
-                get_mv(picture_control_set_ptr, sb_index + 1, &x_right_mv, &y_right_mv);
+                eb_vp9_get_mv(picture_control_set_ptr, sb_index + 1, &x_right_mv, &y_right_mv);
             }
 
             // Bottom MV
@@ -204,7 +187,7 @@ void eb_vp9_DetectGlobalMotion(
                 y_bottom_mv = 0;
             }
             else {
-                get_mv(picture_control_set_ptr, sb_index + picture_width_in_sb, &x_bottom_mv, &y_bottom_mv);
+                eb_vp9_get_mv(picture_control_set_ptr, sb_index + picture_width_in_sb, &x_bottom_mv, &y_bottom_mv);
             }
 
             total_checked_sbs++;
@@ -284,9 +267,8 @@ EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(
 ** Check if reference pictures are needed
 ** release them when appropriate
 ************************************************/
-void eb_vp9_ReleasePaReferenceObjects(
-    PictureParentControlSet *picture_control_set_ptr)
-{
+static void eb_vp9_ReleasePaReferenceObjects(
+    PictureParentControlSet *picture_control_set_ptr) {
     // PA Reference Pictures
     uint32_t num_of_list_to_search;
     uint32_t list_index;
@@ -321,7 +303,7 @@ void eb_vp9_ReleasePaReferenceObjects(
 ** Mark pictures for tilt
 ** No lookahead information used in this function
 ************************************************/
-void me_based_global_motion_detection(
+static void me_based_global_motion_detection(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
 {
@@ -338,7 +320,7 @@ void me_based_global_motion_detection(
     return;
 }
 
-void stationary_edge_count_sb(
+static void stationary_edge_count_sb(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     PictureParentControlSet *temporalPictureControlSetPtr,
@@ -385,7 +367,7 @@ void stationary_edge_count_sb(
 ** Mark pictures for tilt
 ** LAD Window: min (8 or sliding window size)
 ************************************************/
-void update_global_motion_detection_over_time(
+static void update_global_motion_detection_over_time(
     EncodeContext           *encode_context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
@@ -451,10 +433,9 @@ void update_global_motion_detection_over_time(
 ** LAD Window: min (2xmgpos+1 or sliding window size)
 ************************************************/
 
-void eb_vp9_UpdateBeaInfoOverTime(
-    EncodeContext           *encode_context_ptr,
-    PictureParentControlSet *picture_control_set_ptr)
-{
+static void eb_vp9_UpdateBeaInfoOverTime(
+    EncodeContext *encode_context_ptr,
+    PictureParentControlSet *picture_control_set_ptr) {
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
     int32_t                         update_non_moving_index_array_frames_to_check;
@@ -497,7 +478,7 @@ void eb_vp9_UpdateBeaInfoOverTime(
 * Init ZZ Cost array to default values
 ** Used when no Lookahead is available
 ****************************************/
-void init_zz_cost_info(
+static void init_zz_cost_info(
     PictureParentControlSet *picture_control_set_ptr)
 {
     uint16_t sb_index;
@@ -515,7 +496,7 @@ void init_zz_cost_info(
 ** collocated LCUs infor in lookahead pictures
 ** LAD Window: min (2xmgpos+1 or sliding window size)
 ************************************************/
-void update_motion_field_uniformity_over_time(
+static void update_motion_field_uniformity_over_time(
     EncodeContext           *encode_context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr)
@@ -561,10 +542,9 @@ void update_motion_field_uniformity_over_time(
 ** collocated LCUs infor in lookahead pictures
 ** LAD Window: min (2xmgpos+1 or sliding window size)
 ************************************************/
-void update_homogeneity_over_time(
-    EncodeContext           *encode_context_ptr,
-    PictureParentControlSet *picture_control_set_ptr)
-{
+static void update_homogeneity_over_time(
+    EncodeContext *encode_context_ptr,
+    PictureParentControlSet *picture_control_set_ptr) {
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
     int32_t                         no_frames_to_check;
@@ -635,9 +615,8 @@ void update_homogeneity_over_time(
     return;
 }
 
-void reset_homogeneity_structures(
-    PictureParentControlSet *picture_control_set_ptr)
-{
+static void reset_homogeneity_structures(
+    PictureParentControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
 
     picture_control_set_ptr->pic_homogenous_over_time_sb_percentage = 0;
@@ -651,7 +630,7 @@ void reset_homogeneity_structures(
     return;
 }
 
-InitialRateControlReorderEntry* determine_picture_offset_in_queue(
+static InitialRateControlReorderEntry* determine_picture_offset_in_queue(
     EncodeContext           *encode_context_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     MotionEstimationResults *input_results_ptr)
@@ -670,7 +649,7 @@ InitialRateControlReorderEntry* determine_picture_offset_in_queue(
     return queue_entry_ptr;
 }
 
-void get_histogram_queue_data(
+static void get_histogram_queue_data(
     SequenceControlSet      *sequence_control_set_ptr,
     EncodeContext           *encode_context_ptr,
     PictureParentControlSet *picture_control_set_ptr)
@@ -715,7 +694,7 @@ void get_histogram_queue_data(
 
 }
 
-void update_histogram_queue_entry(
+static void update_histogram_queue_entry(
     SequenceControlSet      *sequence_control_set_ptr,
     EncodeContext           *encode_context_ptr,
     PictureParentControlSet *picture_control_set_ptr,
