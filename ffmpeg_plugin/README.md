@@ -7,8 +7,7 @@
 
 2. Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
 - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
-- cd ffmpeg
-- git checkout -b release/4.2 remotes/origin/release/4.2
+- cd ffmpeg (master branch as default)
 - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
 - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
 - SVT-VP9 alone:

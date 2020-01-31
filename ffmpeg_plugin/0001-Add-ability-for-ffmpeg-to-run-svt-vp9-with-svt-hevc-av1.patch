@@ -1,4 +1,4 @@
-From f7c9a1531e6bdcff05758b38d82e3b33f028dd89 Mon Sep 17 00:00:00 2001
+From 7a584b27f406e65e1c37f16451fda20d47139f18 Mon Sep 17 00:00:00 2001
 From: Jing Sun <jing.a.sun@intel.com>
 Date: Mon, 1 Apr 2019 17:17:00 +0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9 with hevc & av1
@@ -13,15 +13,15 @@ Signed-off-by: Austin Hu <austin.hu@intel.com>
  libavcodec/avcodec.h      |   2 +
  libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
  libavformat/ivfenc.c      |  34 ++-
- libavformat/matroskaenc.c | 108 ++++++++-
- 7 files changed, 627 insertions(+), 8 deletions(-)
+ libavformat/matroskaenc.c | 122 +++++++++-
+ 7 files changed, 639 insertions(+), 10 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 3e980464b7..bb12445111 100755
+index fb1b58412f..fb986a3ce0 100755
 --- a/configure
 +++ b/configure
-@@ -266,6 +266,7 @@ External library support:
+@@ -267,6 +267,7 @@ External library support:
    --enable-libssh          enable SFTP protocol via libssh [no]
    --enable-libsvthevc      enable HEVC encoding via svt [no]
    --enable-libsvtav1       enable AV1 encoding via svt [no]
@@ -29,7 +29,7 @@ index 3e980464b7..bb12445111 100755
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1797,6 +1798,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1800,6 +1801,7 @@ EXTERNAL_LIBRARY_LIST="
      libssh
      libsvthevc
      libsvtav1
@@ -37,7 +37,7 @@ index 3e980464b7..bb12445111 100755
      libtensorflow
      libtesseract
      libtheora
-@@ -3197,6 +3199,7 @@ libspeex_encoder_deps="libspeex"
+@@ -3226,6 +3228,7 @@ libspeex_encoder_deps="libspeex"
  libspeex_encoder_select="audio_frame_queue"
  libsvt_hevc_encoder_deps="libsvthevc"
  libsvt_av1_encoder_deps="libsvtav1"
@@ -45,7 +45,7 @@ index 3e980464b7..bb12445111 100755
  libtheora_encoder_deps="libtheora"
  libtwolame_encoder_deps="libtwolame"
  libvo_amrwbenc_encoder_deps="libvo_amrwbenc"
-@@ -6271,6 +6274,7 @@ enabled libspeex          && require_pkg_config libspeex speex speex/speex.h spe
+@@ -6325,6 +6328,7 @@ enabled libspeex          && require_pkg_config libspeex speex speex/speex.h spe
  enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
  enabled libsvthevc        && require_pkg_config libsvthevc SvtHevcEnc EbApi.h EbInitHandle
  enabled libsvtav1         && require_pkg_config libsvtav1 SvtAv1Enc EbSvtAv1Enc.h eb_init_handle
@@ -54,10 +54,10 @@ index 3e980464b7..bb12445111 100755
  enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
  enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index c500f3d274..2e8636496f 100644
+index 845f56072c..c111e1354c 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -993,6 +993,7 @@ OBJS-$(CONFIG_LIBSPEEX_DECODER)           += libspeexdec.o
+@@ -1002,6 +1002,7 @@ OBJS-$(CONFIG_LIBSPEEX_DECODER)           += libspeexdec.o
  OBJS-$(CONFIG_LIBSPEEX_ENCODER)           += libspeexenc.o
  OBJS-$(CONFIG_LIBSVT_HEVC_ENCODER)        += libsvt_hevc.o
  OBJS-$(CONFIG_LIBSVT_AV1_ENCODER)         += libsvt_av1.o
@@ -66,10 +66,10 @@ index c500f3d274..2e8636496f 100644
  OBJS-$(CONFIG_LIBTWOLAME_ENCODER)         += libtwolame.o
  OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index db1b1b2188..75248670db 100644
+index 3171f0e340..d2cb4d1ee5 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -709,6 +709,7 @@ extern AVCodec ff_libspeex_encoder;
+@@ -714,6 +714,7 @@ extern AVCodec ff_libspeex_encoder;
  extern AVCodec ff_libspeex_decoder;
  extern AVCodec ff_libsvt_hevc_encoder;
  extern AVCodec ff_libsvt_av1_encoder;
@@ -78,10 +78,10 @@ index db1b1b2188..75248670db 100644
  extern AVCodec ff_libtwolame_encoder;
  extern AVCodec ff_libvo_amrwbenc_encoder;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index d234271c5b..0d903571b3 100644
+index 0e7ca1db4d..25037fe546 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -1527,6 +1527,8 @@ typedef struct AVPacket {
+@@ -1544,6 +1544,8 @@ typedef struct AVPacket {
   */
  #define AV_PKT_FLAG_DISPOSABLE 0x0010
  
@@ -582,7 +582,7 @@ index 0000000000..d51e2985c8
 +    .wrapper_name   = "libsvt_vp9",
 +};
 diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
-index adf72117e9..05f08131a6 100644
+index eb70421c44..0a7f85e0e9 100644
 --- a/libavformat/ivfenc.c
 +++ b/libavformat/ivfenc.c
 @@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
@@ -622,7 +622,7 @@ index adf72117e9..05f08131a6 100644
      if (ctx->frame_cnt)
          ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
      ctx->frame_cnt++;
-@@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -97,6 +121,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  
@@ -634,11 +634,11 @@ index adf72117e9..05f08131a6 100644
          ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
      else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
 diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index cef504fa05..de8e3872c1 100644
+index eec07d1ffd..1f88db045d 100644
 --- a/libavformat/matroskaenc.c
 +++ b/libavformat/matroskaenc.c
-@@ -161,6 +161,9 @@ typedef struct MatroskaMuxContext {
-     int64_t *stream_duration_offsets;
+@@ -159,6 +159,9 @@ typedef struct MatroskaMuxContext {
+     int wrote_chapters;
  
      int allow_raw_vfw;
 +
@@ -647,7 +647,7 @@ index cef504fa05..de8e3872c1 100644
  } MatroskaMuxContext;
  
  /** 2 bytes * 7 for EBML IDs, 7 1-byte EBML lengths, 6 1-byte uint,
-@@ -2180,7 +2183,13 @@ static void mkv_write_block(AVFormatContext *s, AVIOContext *pb,
+@@ -2151,7 +2154,13 @@ static int mkv_write_block(AVFormatContext *s, AVIOContext *pb,
      put_ebml_num(pb, size + 4, 0);
      // this assumes stream_index is less than 126
      avio_w8(pb, 0x80 | track_number);
@@ -662,16 +662,16 @@ index cef504fa05..de8e3872c1 100644
      avio_w8(pb, (blockid == MATROSKA_ID_SIMPLEBLOCK && keyframe) ? (1 << 7) : 0);
      avio_write(pb, data + offset, size);
      if (data != pkt->data)
-@@ -2386,6 +2395,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
-     int64_t ts = mkv->tracks[pkt->stream_index].write_dts ? pkt->dts : pkt->pts;
+@@ -2354,6 +2363,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
+     int64_t ts = track->write_dts ? pkt->dts : pkt->pts;
      int64_t relative_packet_pos;
-     int dash_tracknum = mkv->is_dash ? mkv->dash_track_number : pkt->stream_index + 1;
+     int tracknum = mkv->is_dash ? mkv->dash_track_number : pkt->stream_index + 1;
 +    double fps = 0;
 +    int pts_interval = 0;
  
      if (ts == AV_NOPTS_VALUE) {
          av_log(s, AV_LOG_ERROR, "Can't write packet with unknown timestamp\n");
-@@ -2401,12 +2412,23 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
+@@ -2369,12 +2380,23 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
          }
      }
  
@@ -694,13 +694,15 @@ index cef504fa05..de8e3872c1 100644
 +            put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, FFMAX(0, ts));
 +
          mkv->cluster_pts = FFMAX(0, ts);
-     }
-     pb = mkv->cluster_bc;
-@@ -2414,7 +2436,67 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
+         av_log(s, AV_LOG_DEBUG,
+                "Starting new cluster with timestamp "
+@@ -2386,9 +2408,79 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
      relative_packet_pos = avio_tell(pb);
  
      if (par->codec_type != AVMEDIA_TYPE_SUBTITLE) {
--        mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
+-        ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
+-        if (ret < 0)
+-            return ret;
 +        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
 +            uint8_t *saved_data = pkt->data;
 +            int saved_size = pkt->size;
@@ -709,34 +711,46 @@ index cef504fa05..de8e3872c1 100644
 +            pkt->data = saved_data;
 +            pkt->size = saved_size - 4;
 +            pkt->pts = saved_pts;
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +
 +            // Latter 4 one-byte repeated frames
 +            pkt->data = saved_data + saved_size - 4;
 +            pkt->size = 1;
 +            pkt->pts = saved_pts - 2;
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +            mkv->simple_block_timecode += pts_interval;
 +
 +            pkt->data = saved_data + saved_size - 3;
 +            pkt->size = 1;
 +            pkt->pts = saved_pts - 1;
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +            mkv->simple_block_timecode += pts_interval;
 +
 +            pkt->data = saved_data + saved_size - 2;
 +            pkt->size = 1;
 +            pkt->pts = saved_pts;
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +            mkv->simple_block_timecode += pts_interval;
 +
 +            pkt->data = saved_data + saved_size - 1;
 +            pkt->size = 1;
 +            pkt->pts = saved_pts + 1;
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +            mkv->simple_block_timecode += pts_interval;
 +        } else {
-+            mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
++            if (ret < 0)
++                return ret;
 +
 +            if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF) {
 +                GetBitContext gb;
@@ -763,9 +777,9 @@ index cef504fa05..de8e3872c1 100644
 +        }
 +
          if ((s->pb->seekable & AVIO_SEEKABLE_NORMAL) && (par->codec_type == AVMEDIA_TYPE_VIDEO && keyframe || add_cue)) {
-             ret = mkv_add_cuepoint(mkv->cues, pkt->stream_index, dash_tracknum, ts, mkv->cluster_pos, relative_packet_pos, -1);
+             ret = mkv_add_cuepoint(mkv->cues, pkt->stream_index, tracknum, ts, mkv->cluster_pos, relative_packet_pos, -1);
              if (ret < 0) return ret;
-@@ -2473,8 +2555,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -2444,8 +2536,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
  
      if (mkv->tracks[pkt->stream_index].write_dts)
          cluster_time = pkt->dts - mkv->cluster_pts;
@@ -780,8 +794,8 @@ index cef504fa05..de8e3872c1 100644
 +    }
      cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
  
-     // start a new cluster every 5 MB or 5 sec, or 32k / 1 sec for streaming or
-@@ -2502,6 +2589,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
+     cluster_size = avio_tell(mkv->cluster_bc);
+@@ -2471,6 +2568,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
      }
  
      if (mkv->cluster_pos != -1 && start_new_cluster) {
@@ -792,10 +806,10 @@ index cef504fa05..de8e3872c1 100644
 +            mkv->simple_block_timecode = 0;
 +        }
 +
-         mkv_start_new_cluster(s, pkt);
+         mkv_end_cluster(s);
      }
  
-@@ -2736,6 +2830,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -2702,6 +2806,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  

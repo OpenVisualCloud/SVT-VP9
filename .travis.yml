@@ -109,7 +109,7 @@ matrix:
         # Build and install SVT-VP9
         - *base_script
         # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
-        - git clone https://github.com/FFmpeg/FFmpeg --branch release/4.2 --depth=1 ffmpeg && cd ffmpeg
+        - git clone https://github.com/FFmpeg/FFmpeg --branch master --depth=1 ffmpeg && cd ffmpeg
         - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
         - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
         - "sudo chown -R travis: $HOME/.ccache"
@@ -157,7 +157,7 @@ matrix:
         - *base_script
         - &coveralls_script |
           SvtVp9EncApp -enc-mode 9 -i akiyo_cif.y4m -w 352 -h 288 -fps-num 30000 -fps-denom 1001 -b test1.ivf
-          git clone https://github.com/FFmpeg/FFmpeg ffmpeg --depth=1 --branch release/4.2
+          git clone https://github.com/FFmpeg/FFmpeg ffmpeg --depth=1 --branch master
           cd ffmpeg
           git am $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
           sudo chown -R travis: $HOME/.ccache
