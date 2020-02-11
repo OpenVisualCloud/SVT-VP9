@@ -1,4 +1,4 @@
-From dfd8d7bd364a2a335bb16a0f9941f9e69a6c92a2 Mon Sep 17 00:00:00 2001
+From 28cf72c509d652a992f63eae9a4cda3a03964906 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -6,6 +6,7 @@ Subject: [PATCH] Add ability for ffmpeg to run svt vp9
 Signed-off-by: hassene <hassene.tmar@intel.com>
 Signed-off-by: Jing Sun <jing.a.sun@intel.com>
 Signed-off-by: Austin Hu <austin.hu@intel.com>
+Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
 ---
  configure                 |   4 +
  libavcodec/Makefile       |   1 +
@@ -14,7 +15,8 @@ Signed-off-by: Austin Hu <austin.hu@intel.com>
  libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
  libavformat/ivfenc.c      |  34 ++-
  libavformat/matroskaenc.c | 108 ++++++++-
- 7 files changed, 627 insertions(+), 8 deletions(-)
+ libavformat/movenc.c      |  42 +++-
+ 8 files changed, 668 insertions(+), 9 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -801,6 +803,66 @@ index cef504fa05..de8e3872c1 100644
  
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
++        return 0;
++
+     if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
+         if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
+             ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
+diff --git a/libavformat/movenc.c b/libavformat/movenc.c
+index a96139077b..e73cbb24c4 100644
+--- a/libavformat/movenc.c
++++ b/libavformat/movenc.c
+@@ -5622,7 +5622,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
+             }
+         }
+ 
+-        return ff_mov_write_packet(s, pkt);
++        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
++            uint8_t *saved_data = pkt->data;
++            int      saved_size = pkt->size;
++            int64_t  saved_pts  = pkt->pts;
++
++            // Main frame
++            pkt->data = saved_data;
++            pkt->size = saved_size - 4;
++            pkt->pts = saved_pts;
++            ret = ff_mov_write_packet(s, pkt);
++
++            // Latter 4 one-byte repeated frames
++            pkt->data = saved_data + saved_size - 4;
++            pkt->size = 1;
++            pkt->pts = saved_pts - 2;
++            ret = ff_mov_write_packet(s, pkt);
++
++            pkt->data = saved_data + saved_size - 3;
++            pkt->size = 1;
++            pkt->pts = saved_pts - 1;
++            ret = ff_mov_write_packet(s, pkt);
++
++            pkt->data = saved_data + saved_size - 2;
++            pkt->size = 1;
++            pkt->pts = saved_pts;
++            ret = ff_mov_write_packet(s, pkt);
++
++            pkt->data = saved_data + saved_size - 1;
++            pkt->size = 1;
++            pkt->pts = saved_pts + 1;
++            ret = ff_mov_write_packet(s, pkt);
++        }
++        else{
++            ret = ff_mov_write_packet(s, pkt);
++        }
++
++        return ret;
+ }
+ 
+ static int mov_write_subtitle_end_packet(AVFormatContext *s,
+@@ -6758,6 +6794,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+     int ret = 1;
+     AVStream *st = s->streams[pkt->stream_index];
+ 
++    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
++        (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
 +
      if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
