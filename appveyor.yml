@@ -39,7 +39,7 @@ for:
     build_script:
       - make -C Build -j install
       - pkg-config --debug --exists --print-errors SvtVp9Enc
-      - git clone https://github.com/FFmpeg/FFmpeg.git --depth=1 --branch=master ffmpeg
+      - git clone https://github.com/FFmpeg/FFmpeg.git --depth=1 --branch=release/4.2 ffmpeg
       - cd ffmpeg
       - git apply --ignore-space-change --ignore-whitespace %APPVEYOR_BUILD_FOLDER%/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
       - ps: |
