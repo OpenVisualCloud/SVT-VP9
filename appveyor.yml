@@ -43,7 +43,7 @@ for:
       - 7z x -aoa -offmpeg ffmpeg.zip
       - ps: Get-ChildItem ffmpeg/FFmpeg-*/* | ForEach-Object {Move-Item $_.FullName ffmpeg}
       - cd ffmpeg
-      - git apply --ignore-space-change --ignore-whitespace %APPVEYOR_BUILD_FOLDER%/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+      - patch --binary -s -N -p1 -i "%APPVEYOR_BUILD_FOLDER%/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch"
       - ps: |
           $path = ([System.Environment]::GetEnvironmentVariable('PATH', 'Machine').Split(';') | Where-Object { $_ -notmatch 'Git' }) -join ';'
           [System.Environment]::SetEnvironmentVariable('PATH', $path, 'Machine')
