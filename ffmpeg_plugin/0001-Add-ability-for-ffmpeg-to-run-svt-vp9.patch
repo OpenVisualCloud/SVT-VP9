@@ -1,4 +1,4 @@
-From 28cf72c509d652a992f63eae9a4cda3a03964906 Mon Sep 17 00:00:00 2001
+From 8690dd16b653a54b797dc0dafea751ccec45ce3b Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -13,10 +13,11 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   2 +
  libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
+ libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  34 ++-
  libavformat/matroskaenc.c | 108 ++++++++-
  libavformat/movenc.c      |  42 +++-
- 8 files changed, 668 insertions(+), 9 deletions(-)
+ 9 files changed, 716 insertions(+), 10 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -583,6 +584,80 @@ index 0000000000..d51e2985c8
 +    .caps_internal  = FF_CODEC_CAP_INIT_CLEANUP,
 +    .wrapper_name   = "libsvt_vp9",
 +};
+diff --git a/libavformat/dashenc.c b/libavformat/dashenc.c
+index 24d43c34ea..f5f578c72b 100644
+--- a/libavformat/dashenc.c
++++ b/libavformat/dashenc.c
+@@ -1823,6 +1823,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
+     return ret;
+ }
+ 
++static int dash_write_packet_vp9(AVFormatContext *s, AVPacket *pkt)
++{
++    int ret;
++    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
++        uint8_t *saved_data = pkt->data;
++        int      saved_size = pkt->size;
++        int64_t  saved_pts  = pkt->pts;
++
++        // Main frame
++        pkt->data = saved_data;
++        pkt->size = saved_size - 4;
++        pkt->pts = saved_pts;
++        ret = dash_write_packet(s, pkt);
++
++        // Latter 4 one-byte repeated frames
++        pkt->data = saved_data + saved_size - 4;
++        pkt->size = 1;
++        pkt->pts = saved_pts - 2;
++        ret = dash_write_packet(s, pkt);
++
++        pkt->data = saved_data + saved_size - 3;
++        pkt->size = 1;
++        pkt->pts = saved_pts - 1;
++        ret = dash_write_packet(s, pkt);
++
++        pkt->data = saved_data + saved_size - 2;
++        pkt->size = 1;
++        pkt->pts = saved_pts;
++        ret = dash_write_packet(s, pkt);
++
++        pkt->data = saved_data + saved_size - 1;
++        pkt->size = 1;
++        pkt->pts = saved_pts + 1;
++        ret = dash_write_packet(s, pkt);
++    }
++    else{
++        ret = dash_write_packet(s, pkt);
++    }
++
++    return ret;
++}
++
+ static int dash_write_trailer(AVFormatContext *s)
+ {
+     DASHContext *c = s->priv_data;
+@@ -1870,6 +1912,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
+     DASHContext *c = s->priv_data;
+     OutputStream *os = &c->streams[avpkt->stream_index];
+     AVFormatContext *oc = os->ctx;
++
++    if ((avpkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
++        (avpkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
++        return 0;
++
+     if (oc->oformat->check_bitstream) {
+         int ret;
+         AVPacket pkt = *avpkt;
+@@ -1942,7 +1989,7 @@ AVOutputFormat ff_dash_muxer = {
+     .flags          = AVFMT_GLOBALHEADER | AVFMT_NOFILE | AVFMT_TS_NEGATIVE,
+     .init           = dash_init,
+     .write_header   = dash_write_header,
+-    .write_packet   = dash_write_packet,
++    .write_packet   = dash_write_packet_vp9,
+     .write_trailer  = dash_write_trailer,
+     .deinit         = dash_free,
+     .check_bitstream = dash_check_bitstream,
 diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
 index adf72117e9..05f08131a6 100644
 --- a/libavformat/ivfenc.c
