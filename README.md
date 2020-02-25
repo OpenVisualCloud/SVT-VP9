@@ -116,6 +116,10 @@ For the binaries to operate properly on your system, the following conditions ha
     -    Sample application supports reading from pipe. E.g:
         >ffmpeg -i [input.mp4] -nostdin -f rawvideo -pix_fmt yuv420p - | ./SvtVp9EncApp -i stdin -n [number_of_frames_to_encode] -w [width] -h [height].
 
+## How to evaluate by ready-to-run executables with docker
+
+Refer to the guide [here](https://github.com/OpenVisualCloud/Dockerfiles/blob/master/doc/svt.md#Evaluate-SVT).
+
 ## Demo features and limitations
 
 -  **Multi-instance support:** The multi-instance functionality is a demo feature implemented in the SVT-VP9 Encoder sample application as an example of one sample application using multiple encoding libraries. Encoding using the multi-instance support is limited to only 6 simultaneous streams. For example two channels encoding on Windows: SvtVp9EncApp.exe -nch 2 -c firstchannel.cfg secondchannel.cfg
