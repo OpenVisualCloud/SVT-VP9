@@ -17,5 +17,5 @@
 Bin
 Build
 !Build/linux/build.sh
-!Build/windows/generate_vs17.bat
+!Build/windows/build.bat
 Source/API/EbApiVersion.h
