@@ -8,7 +8,7 @@
 2. Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
 - git clone https://github.com/FFmpeg/FFmpeg ffmpeg
 - cd ffmpeg
-- git checkout -b release/4.2 remotes/origin/release/4.2
+- git checkout -b tag4.2.2 n4.2.2
 - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
 - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
 - SVT-VP9 alone:
@@ -19,7 +19,7 @@
    - git apply SVT-AV1/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-av1-with-svt-hevc.patch
    - git apply SVT-VP9/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9-with-svt-hevc-av1.patch
    - ./configure --enable-libsvthevc --enable-libsvtav1 --enable-libsvtvp9
-- make -j `nproc`
+- make -j $(nproc)
 
 3. Verify
 - ./ffmpeg  -i input.mp4 -c:v libsvt_vp9 -rc 1 -b:v 10M -preset 1  -y test.ivf
