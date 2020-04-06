@@ -1653,17 +1653,7 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
            else if (sequence_control_set_ptr->intra_period != -1) {
                if ((encode_context_ptr->intra_period_position == (uint32_t)sequence_control_set_ptr->intra_period) ||
                    (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
-                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
-                       picture_control_set_ptr->cra_flag = EB_TRUE;
-                   else
-                       picture_control_set_ptr->idr_flag = EB_TRUE;
-               }
-               if ((encode_context_ptr->intra_period_position == (uint32_t)sequence_control_set_ptr->intra_period) ||
-                   (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
-                   if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
-                       picture_control_set_ptr->cra_flag = EB_TRUE;
-                   else
-                       picture_control_set_ptr->idr_flag = EB_TRUE;
+                   picture_control_set_ptr->idr_flag = EB_TRUE;
                }
            }
 
