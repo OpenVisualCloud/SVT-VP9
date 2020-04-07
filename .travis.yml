@@ -109,11 +109,13 @@ matrix:
         # Build and install SVT-VP9
         - *base_script
         # Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
-        - git clone https://github.com/FFmpeg/FFmpeg --branch release/4.2 --depth=1 ffmpeg && cd ffmpeg
+        - wget "https://github.com/FFmpeg/FFmpeg/archive/n4.2.2.tar.gz"
+        - tar xf n4.2.2.tar.gz
+        - cd FFmpeg-n4.2.2/
         - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
         - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
         - "sudo chown -R travis: $HOME/.ccache"
-        - git am $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+        - patch --binary -s -N -p1 -i $TRAVIS_BUILD_DIR/ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
         - ./configure --enable-libsvtvp9 || cat ffbuild/config.log
         - sudo make -j$(nproc) install
     # GStreamer interation build
