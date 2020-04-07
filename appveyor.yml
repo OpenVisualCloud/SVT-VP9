@@ -40,7 +40,7 @@ for:
     build_script:
       - make -C Build -j install
       - pkg-config --debug --exists --print-errors SvtVp9Enc
-      - ps: Invoke-WebRequest -UseBasicParsing -OutFile ffmpeg.zip -Uri "https://github.com/FFmpeg/FFmpeg/archive/release/4.2.zip"
+      - ps: Invoke-WebRequest -UseBasicParsing -OutFile ffmpeg.zip -Uri "https://github.com/FFmpeg/FFmpeg/archive/n4.2.2.zip"
       - 7z x -aoa -offmpeg ffmpeg.zip
       - ps: Get-ChildItem ffmpeg/FFmpeg-*/* | ForEach-Object {Move-Item $_.FullName ffmpeg}
       - cd ffmpeg
