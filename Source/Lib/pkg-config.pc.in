@@ -1,6 +1,6 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/svt-vp9
-libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@/svt-vp9
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 
 Name: SvtVp9Enc
 Description: SVT (Scalable Video Technology) for VP9 encoder library
