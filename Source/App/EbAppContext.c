@@ -158,7 +158,6 @@ EbErrorType  copy_configuration_parameters(
     callback_data->eb_enc_parameters.source_width = config->source_width;
     callback_data->eb_enc_parameters.source_height = config->source_height;
     callback_data->eb_enc_parameters.intra_period = config->intra_period;
-    callback_data->eb_enc_parameters.intra_refresh_type = config->intra_refresh_type;
     callback_data->eb_enc_parameters.base_layer_switch_mode = config->base_layer_switch_mode;
     callback_data->eb_enc_parameters.enc_mode = (uint8_t)config->enc_mode;
     callback_data->eb_enc_parameters.frame_rate = config->frame_rate;

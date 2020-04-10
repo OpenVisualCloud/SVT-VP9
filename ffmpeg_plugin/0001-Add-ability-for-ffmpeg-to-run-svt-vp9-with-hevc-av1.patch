@@ -1,4 +1,4 @@
-From 4d22c67abdf15694a276ffb971ff286ff9e040bb Mon Sep 17 00:00:00 2001
+From 73bdbc623bbb1863a2ae8df3066c1fc684652a5f Mon Sep 17 00:00:00 2001
 From: Jing Sun <jing.a.sun@intel.com>
 Date: Mon, 1 Apr 2019 17:17:00 +0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9 with hevc & av1
@@ -12,12 +12,12 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   2 +
- libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
+ libavcodec/libsvt_vp9.c   | 482 ++++++++++++++++++++++++++++++++++++++
  libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  34 ++-
  libavformat/matroskaenc.c | 108 ++++++++-
  libavformat/movenc.c      |  42 +++-
- 9 files changed, 716 insertions(+), 10 deletions(-)
+ 9 files changed, 713 insertions(+), 10 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -95,10 +95,10 @@ index d234271c5b..0d903571b3 100644
      AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..d51e2985c8
+index 0000000000..d2c4740e5c
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,482 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -288,9 +288,6 @@ index 0000000000..d51e2985c8
 +        param->max_qp_allowed       = avctx->qmax;
 +        param->min_qp_allowed       = avctx->qmin;
 +    }
-+
-+    param->intra_refresh_type       =
-+        !!(avctx->flags & AV_CODEC_FLAG_CLOSED_GOP) + 1;
 +
 +    if (ten_bits) {
 +        param->encoder_bit_depth        = 10;
@@ -884,10 +881,10 @@ index cef504fa05..de8e3872c1 100644
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
 diff --git a/libavformat/movenc.c b/libavformat/movenc.c
-index a96139077b..e73cbb24c4 100644
+index 4d4d0cd024..eeebf10147 100644
 --- a/libavformat/movenc.c
 +++ b/libavformat/movenc.c
-@@ -5622,7 +5622,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -5624,7 +5624,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
              }
          }
  
@@ -932,7 +929,7 @@ index a96139077b..e73cbb24c4 100644
  }
  
  static int mov_write_subtitle_end_packet(AVFormatContext *s,
-@@ -6758,6 +6794,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -6763,6 +6799,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  
@@ -944,5 +941,5 @@ index a96139077b..e73cbb24c4 100644
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
 -- 
-2.17.1
+2.23.0.windows.1
 

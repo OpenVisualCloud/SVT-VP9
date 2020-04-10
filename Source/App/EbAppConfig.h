@@ -220,7 +220,6 @@ typedef struct EbConfig
     uint32_t        base_layer_switch_mode;
     uint8_t         enc_mode;
     int32_t         intra_period;
-    uint32_t        intra_refresh_type;
     uint32_t        pred_structure;
 
     /****************************************

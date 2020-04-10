@@ -1669,7 +1669,6 @@ EbErrorType eb_vp9_svt_enc_init_parameter(
     config_ptr->base_layer_switch_mode = 0;
     config_ptr->enc_mode = 3;
     config_ptr->intra_period = 31;
-    config_ptr->intra_refresh_type = 1;
     config_ptr->pred_structure = EB_PRED_RANDOM_ACCESS;
     config_ptr->loop_filter = EB_TRUE;
     config_ptr->use_default_me_hme = EB_TRUE;
@@ -1915,9 +1914,6 @@ static int32_t compute_default_intra_period(
 
     intra_period = (ABS((fps - max_ip)) > ABS((fps - min_ip))) ? min_ip : max_ip;
 
-    if (config->intra_refresh_type == 1)
-        intra_period -= 1;
-
     return intra_period;
 }
 
@@ -1965,14 +1961,12 @@ void copy_api_from_app(
 
     // Coding Structure
     sequence_control_set_ptr->static_config.intra_period = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->intra_period;
-    sequence_control_set_ptr->static_config.intra_refresh_type = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->intra_refresh_type;
     sequence_control_set_ptr->static_config.pred_structure = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->pred_structure;
     sequence_control_set_ptr->static_config.base_layer_switch_mode = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->base_layer_switch_mode;
     sequence_control_set_ptr->static_config.tune = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->tune;
     sequence_control_set_ptr->static_config.enc_mode = ((EbSvtVp9EncConfiguration*)p_component_parameter_structure)->enc_mode;
 
     sequence_control_set_ptr->intra_period = sequence_control_set_ptr->static_config.intra_period;
-    sequence_control_set_ptr->intra_refresh_type = sequence_control_set_ptr->static_config.intra_refresh_type;
     sequence_control_set_ptr->max_ref_count = 1;
 
     // Quantization
@@ -2279,10 +2273,6 @@ static EbErrorType  verify_settings(
         return_error = EB_ErrorBadParameter;
     }
 
-    if (config->intra_refresh_type > 2 || config->intra_refresh_type < 1) {
-        SVT_LOG("Error Instance %u: Invalid intra Refresh Type [1-2]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
     if (config->base_layer_switch_mode > 1) {
         SVT_LOG("Error Instance %u: Invalid Base Layer Switch Mode [0-1] \n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
@@ -2475,10 +2465,9 @@ static void print_lib_params(
     SVT_LOG("\nSVT [config]: EncoderBitDepth \t\t\t\t\t\t\t: %d ", config->encoder_bit_depth);
     SVT_LOG("\nSVT [config]: SourceWidth / SourceHeight\t\t\t\t\t: %d / %d ", config->source_width, config->source_height);
     if (config->frame_rate_denominator != 0 && config->frame_rate_numerator != 0)
-        SVT_LOG("\nSVT [config]: Fps_Numerator / Fps_Denominator / Gop Size / IntraRefreshType \t: %d / %d / %d / %d", config->frame_rate_numerator > (1 << 16) ? config->frame_rate_numerator >> 16 : config->frame_rate_numerator,
+        SVT_LOG("\nSVT [config]: Fps_Numerator / Fps_Denominator / Gop Size\t\t: %d / %d / %d", config->frame_rate_numerator > (1 << 16) ? config->frame_rate_numerator >> 16 : config->frame_rate_numerator,
             config->frame_rate_denominator > (1 << 16) ? config->frame_rate_denominator >> 16 : config->frame_rate_denominator,
-            config->intra_period + 1,
-            config->intra_refresh_type);
+            config->intra_period + 1);
     else
         SVT_LOG("\nSVT [config]: FrameRate / Gop Size\t\t\t\t\t\t: %d / %d ", config->frame_rate > 1000 ? config->frame_rate >> 16 : config->frame_rate, config->intra_period + 1);
     SVT_LOG("\nSVT [config]: HierarchicalLevels / BaseLayerSwitchMode / PredStructure\t\t: %d / %d / %d ", scs->hierarchical_levels, config->base_layer_switch_mode, config->pred_structure);
