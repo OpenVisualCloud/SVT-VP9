@@ -1644,10 +1644,7 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
 
            // If the Intra period length is 0, then introduce an intra for every picture
            if (sequence_control_set_ptr->intra_period == 0 || picture_control_set_ptr->picture_number == 0 ) {
-               if (sequence_control_set_ptr->intra_refresh_type == CRA_REFRESH)
-                   picture_control_set_ptr->cra_flag = EB_TRUE;
-               else
-                   picture_control_set_ptr->idr_flag = EB_TRUE;
+               picture_control_set_ptr->idr_flag = EB_TRUE;
            }
            // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
            else if (sequence_control_set_ptr->intra_period != -1) {

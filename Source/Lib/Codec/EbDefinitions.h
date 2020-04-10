@@ -320,15 +320,6 @@ typedef struct EbH265DynEncConfiguration {
     uint32_t available_target_bitrate;
 } EbH265DynEncConfiguration;
 
-/** The EbIntraRefreshType is used to describe the intra refresh type.
-*/
-typedef enum EbIntraRefreshType
-{
-    NO_REFRESH = 0,
-    CRA_REFRESH = 1,
-    IDR_REFRESH = 2
-} EbIntraRefreshType;
-
 #ifdef __GNUC__
 #define EB_ALIGN(n) __attribute__((__aligned__(n)))
 #elif defined(_MSC_VER)

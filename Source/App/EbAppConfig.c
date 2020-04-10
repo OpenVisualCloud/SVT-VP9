@@ -47,7 +47,6 @@
 #define LEVEL_TOKEN                     "-level"
 #define INTERLACED_VIDEO_TOKEN          "-interlaced-video"
 #define SEPERATE_FILDS_TOKEN            "-separate-fields"
-#define INTRA_REFRESH_TYPE_TOKEN        "-irefresh-type" // no Eval
 #define LOOP_FILTER_TOKEN               "-loop-filter"
 #define USE_DEFAULT_ME_HME_TOKEN        "-use-default-me-hme"
 #define HME_ENABLE_TOKEN                "-hme"      // no Eval
@@ -145,7 +144,6 @@ static void set_encoder_bit_depth                      (const char *value, EbCon
 static void set_base_layer_switch_mode                 (const char *value, EbConfig *cfg) {cfg->base_layer_switch_mode              = (uint8_t) strtoul(value, NULL, 0);};
 static void set_enc_mode                               (const char *value, EbConfig *cfg) {cfg->enc_mode                            = (uint8_t)strtoul(value, NULL, 0);};
 static void set_cfg_intra_period                       (const char *value, EbConfig *cfg) {cfg->intra_period                        = strtol(value,  NULL, 0);};
-static void set_cfg_intra_refresh_type                 (const char *value, EbConfig *cfg) {cfg->intra_refresh_type                  = strtol(value,  NULL, 0);};
 static void set_cfg_pred_structure                     (const char *value, EbConfig *cfg) { cfg->pred_structure                     = strtol(value, NULL, 0); };
 static void set_cfg_qp                                 (const char *value, EbConfig *cfg) {cfg->qp                                  = strtoul(value, NULL, 0);};
 static void set_cfg_use_qp_file                        (const char *value, EbConfig *cfg) {cfg->use_qp_file                         = (uint8_t)strtol(value, NULL, 0); };
@@ -222,7 +220,6 @@ ConfigEntry config_entry[] = {
     { SINGLE_INPUT, BASE_LAYER_SWITCH_MODE_TOKEN, "BaseLayerSwitchMode", set_base_layer_switch_mode },
     { SINGLE_INPUT, ENCMODE_TOKEN, "EncoderMode", set_enc_mode},
     { SINGLE_INPUT, INTRA_PERIOD_TOKEN, "IntraPeriod", set_cfg_intra_period },
-    { SINGLE_INPUT, INTRA_REFRESH_TYPE_TOKEN, "IntraRefreshType", set_cfg_intra_refresh_type },
     { SINGLE_INPUT, FRAME_RATE_TOKEN, "FrameRate", set_frame_rate },
     { SINGLE_INPUT, FRAME_RATE_NUMERATOR_TOKEN, "FrameRateNumerator", set_frame_rate_numerator },
     { SINGLE_INPUT, FRAME_RATE_DENOMINATOR_TOKEN, "FrameRateDenominator", set_frame_rate_denominator },
@@ -311,7 +308,6 @@ void eb_config_ctor(EbConfig *config_ptr)
 
     config_ptr->enc_mode                                         = 9;
     config_ptr->intra_period                                     = -2;
-    config_ptr->intra_refresh_type                               = 2;
 
     config_ptr->pred_structure                                   = 2;
 

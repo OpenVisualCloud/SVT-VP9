@@ -61,7 +61,6 @@ typedef struct SequenceControlSet
                                                        //   entry can be less.
     PredictionStructure       *pred_struct_ptr;
     int32_t                    intra_period;      // The frequency of intra pictures
-    uint32_t                   intra_refresh_type;       // 1: CRA, 2: IDR
     uint32_t                   look_ahead_distance;
 
     // Rate Control

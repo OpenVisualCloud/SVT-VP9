@@ -82,7 +82,6 @@ EbErrorType eb_vp9_sequence_control_set_ctor(
     // GOP Structure
     sequence_control_set_ptr->max_ref_count                                      = 1;
     sequence_control_set_ptr->intra_period                                       = 0;
-    sequence_control_set_ptr->intra_refresh_type                                 = 0;
 
     // Rate Control
     sequence_control_set_ptr->rate_control_mode                                  = 0;
@@ -175,7 +174,6 @@ EbErrorType eb_vp9_copy_sequence_control_set(
     dst->output_bitdepth             = src->output_bitdepth;                          write_count += sizeof(EbBitDepth);
     dst->pred_struct_ptr             = src->pred_struct_ptr;                          write_count += sizeof(PredictionStructure*);
     dst->intra_period                = src->intra_period;                             write_count += sizeof(int32_t);
-    dst->intra_refresh_type          = src->intra_refresh_type;                       write_count += sizeof(uint32_t);
     dst->max_ref_count               = src->max_ref_count;                            write_count += sizeof(uint32_t);
     dst->target_bit_rate             = src->target_bit_rate;                          write_count += sizeof(uint32_t);
     dst->available_bandwidth         = src->available_bandwidth;                      write_count += sizeof(uint32_t);
