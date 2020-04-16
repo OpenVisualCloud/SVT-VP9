@@ -117,6 +117,7 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **AsmType** | -asm | [0 - 1] | 1 | Assembly instruction set (0 = C Only, 1 = Automatically select highest assembly instruction set supported) |
 | **LogicalProcessorNumber** | -lp | [0, total number of logical processor] | 0 | The number of logical processor which encoder threads run on.Refer to Appendix A.1 |
 | **TargetSocket** | -ss | [-1,1] | -1 | For dual socket systems, this can specify which socket the encoder runs on.Refer to Appendix A.1 |
+| **SwitchThreadsToRtPriority** | -rt | [0 - 1] | 1 | Enables or disables threads to real time priority, 0 = OFF, 1 = ON (only works on Linux) |
 | **Profile** | -profile | [0] | 0 | 0 = 8-bit 4:2:0 |
 | **Level** | -level | [1, 2, 2.1,3, 3.1, 4, 4.1, 5, 5.1, 5.2, 6, 6.1, 6.2] | 0 | 0 to 6.2 [0 for auto determine Level] |
 
@@ -145,8 +146,7 @@ Visual Studio* 2017 offers Profile Guided Optimization (PGO) to improve compiler
 
 Some Linux\* Operating systems and kernels assign CPU utilization limits to applications running on servers. Therefore, to allow the application to utilize up to ~100% of the CPUs assigned to it, it is best to run the following commands before and when running the encoder:
   > sudo  sysctl  -w  kernel.sched\_rt\_runtime\_us=1000000
-  >
-  >   - this command should be executed every time the server is rebooted
+    - this command should be executed every time the server is rebooted
 
 The above section is not needed for Windows\* as it does not perform the CPU utilization limitation on the application.
 
