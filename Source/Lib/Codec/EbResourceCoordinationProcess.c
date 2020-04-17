@@ -686,7 +686,6 @@ void* eb_vp9_resource_coordination_kernel(void *input_ptr)
 
         // Set Picture Control Flags
         picture_control_set_ptr->idr_flag = sequence_control_set_ptr->encode_context_ptr->initial_picture || (picture_control_set_ptr->eb_input_ptr->pic_type == EB_IDR_PICTURE);
-        picture_control_set_ptr->cra_flag = (picture_control_set_ptr->eb_input_ptr->pic_type == EB_I_PICTURE) ? EB_TRUE : EB_FALSE;
         picture_control_set_ptr->scene_change_flag                 = EB_FALSE;
 
         picture_control_set_ptr->qp_on_the_fly                      = EB_FALSE;

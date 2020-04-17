@@ -940,7 +940,7 @@ void  generate_rps_info(
 
     // Set Frame Type
     if (picture_control_set_ptr->slice_type == I_SLICE) {
-        picture_control_set_ptr->cpi->common.frame_type = (picture_control_set_ptr->idr_flag || picture_control_set_ptr->cra_flag) ? KEY_FRAME : INTER_FRAME;
+        picture_control_set_ptr->cpi->common.frame_type = (picture_control_set_ptr->idr_flag) ? KEY_FRAME : INTER_FRAME;
         picture_control_set_ptr->cpi->common.intra_only = 1;
     }
     else {
@@ -1610,12 +1610,6 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
 
             if(window_avail == EB_TRUE){
                 picture_control_set_ptr->scene_change_flag           = EB_FALSE;
-
-#if 0 // Hsan: to fix CRA insertion @ non-BASE
-                picture_control_set_ptr->cra_flag = (picture_control_set_ptr->scene_change_flag == EB_TRUE) ?
-                    EB_TRUE :
-                    picture_control_set_ptr->cra_flag;
-#endif
             }
 
             if(window_avail == EB_TRUE ||frame_passe_thru == EB_TRUE)
@@ -1657,7 +1651,7 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
             encode_context_ptr->pre_assignment_buffer_eos_flag             = (picture_control_set_ptr->end_of_sequence_flag) ? (uint32_t)EB_TRUE : encode_context_ptr->pre_assignment_buffer_eos_flag;
 
             // Increment the Pre-Assignment Buffer Intra Count
-            encode_context_ptr->pre_assignment_buffer_intra_count         += (picture_control_set_ptr->idr_flag || picture_control_set_ptr->cra_flag);
+            encode_context_ptr->pre_assignment_buffer_intra_count         += picture_control_set_ptr->idr_flag;
             encode_context_ptr->pre_assignment_buffer_idr_count           += picture_control_set_ptr->idr_flag;
             encode_context_ptr->pre_assignment_buffer_count              += 1;
 
@@ -1755,8 +1749,7 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                         if ((context_ptr->mini_gop_length[mini_gop_index] < picture_control_set_ptr->pred_struct_ptr->pred_struct_period || context_ptr->mini_gop_idr_count[mini_gop_index] > 0) &&
 
                             picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_RANDOM_ACCESS &&
-                            picture_control_set_ptr->idr_flag == EB_FALSE &&
-                            picture_control_set_ptr->cra_flag == EB_FALSE)
+                            picture_control_set_ptr->idr_flag == EB_FALSE)
                         {
                             // Correct the Pred Index before switching structures
                             if (pre_assignment_buffer_first_pass_flag == EB_TRUE) {
@@ -1771,32 +1764,17 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
 
                             // Set the RPS Override Flag - this current only will convert a Random Access structure to a Low Delay structure
                             picture_control_set_ptr->use_rps_in_sps = EB_FALSE;
-                            picture_control_set_ptr->open_gop_cra_flag = EB_FALSE;
 
                             picture_type = P_SLICE;
 
                         }
-                        // Open GOP CRA - adjust the RPS
-                        else if ((context_ptr->mini_gop_length[mini_gop_index] == picture_control_set_ptr->pred_struct_ptr->pred_struct_period) &&
-
-                            (picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_RANDOM_ACCESS || picture_control_set_ptr->pred_struct_ptr->temporal_layer_count == 1) &&
-                            picture_control_set_ptr->idr_flag == EB_FALSE &&
-                            picture_control_set_ptr->cra_flag == EB_TRUE)
-                        {
-                            picture_control_set_ptr->use_rps_in_sps = EB_FALSE;
-                            picture_control_set_ptr->open_gop_cra_flag = EB_TRUE;
-
-                            picture_type = I_SLICE;
-                        }
                         else {
 
                             picture_control_set_ptr->use_rps_in_sps = EB_FALSE;
-                            picture_control_set_ptr->open_gop_cra_flag = EB_FALSE;
 
                             // Set the Picture Type
                             picture_type =
                                 (picture_control_set_ptr->idr_flag) ? I_SLICE :
-                                (picture_control_set_ptr->cra_flag) ? I_SLICE :
                                 (picture_control_set_ptr->pred_structure == EB_PRED_LOW_DELAY_P) ? P_SLICE :
                                 (picture_control_set_ptr->pred_structure == EB_PRED_LOW_DELAY_B) ? B_SLICE :
                                 (picture_control_set_ptr->pre_assignment_buffer_count == picture_control_set_ptr->pred_struct_ptr->pred_struct_period) ? ((picture_index == context_ptr->mini_gop_end_index[mini_gop_index] && sequence_control_set_ptr->static_config.base_layer_switch_mode) ? P_SLICE : B_SLICE) :
@@ -1814,13 +1792,8 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                         if (picture_control_set_ptr->idr_flag == EB_TRUE) {
                             encode_context_ptr->pred_struct_position = picture_control_set_ptr->pred_struct_ptr->init_pic_index;
                         }
-
-                        else if (picture_control_set_ptr->cra_flag == EB_TRUE && context_ptr->mini_gop_length[mini_gop_index] < picture_control_set_ptr->pred_struct_ptr->pred_struct_period) {
-
-                            encode_context_ptr->pred_struct_position = picture_control_set_ptr->pred_struct_ptr->init_pic_index;
-                        }
-                        else if (encode_context_ptr->elapsed_non_cra_count == 0) {
-                            // If we are the picture directly after a CRA, we have to not use references that violate the CRA
+                        else if (encode_context_ptr->elapsed_non_idr_count == 0) {
+                            // If we are the picture directly after a IDR, we have to not use references that violate the IDR
                             encode_context_ptr->pred_struct_position = picture_control_set_ptr->pred_struct_ptr->init_pic_index + 1;
                         }
                         // Elif Scene Change, determine leading and trailing pictures
@@ -1868,42 +1841,27 @@ void* eb_vp9_picture_decision_kernel(void *input_ptr)
                             if (picture_control_set_ptr->picture_number == 0){
                                 encode_context_ptr->intra_period_position = 0;
                             }
-                            encode_context_ptr->elapsed_non_cra_count = 0;
 
                             //-------------------------------
                             // IDR
                             //-------------------------------
                             if (picture_control_set_ptr->idr_flag == EB_TRUE) {
 
-                                // Set CRA flag
-                                picture_control_set_ptr->cra_flag = EB_FALSE;
-
                                 // Reset the pictures since last IDR counter
                                 encode_context_ptr->elapsed_non_idr_count = 0;
 
                             }
-                            //-------------------------------
-                            // CRA
-                            //-------------------------------
-                            else {
-
-                                // Set a Random Access Point if not an IDR
-                                picture_control_set_ptr->cra_flag = EB_TRUE;
-                            }
-
                             break;
 
                         case P_SLICE:
                         case B_SLICE:
 
-                            // Reset CRA and IDR Flag
-                            picture_control_set_ptr->cra_flag = EB_FALSE;
+                            // Reset IDR Flag
                             picture_control_set_ptr->idr_flag = EB_FALSE;
 
                             // Increment & Clip the elapsed Non-IDR Counter. This is clipped rather than allowed to free-run
                             // inorder to avoid rollover issues.  This assumes that any the GOP period is less than MAX_ELAPSED_IDR_COUNT
                             encode_context_ptr->elapsed_non_idr_count = MIN(encode_context_ptr->elapsed_non_idr_count + 1, MAX_ELAPSED_IDR_COUNT);
-                            encode_context_ptr->elapsed_non_cra_count = MIN(encode_context_ptr->elapsed_non_cra_count + 1, MAX_ELAPSED_IDR_COUNT);
 
                             CHECK_REPORT_ERROR(
                                 (picture_control_set_ptr->pred_struct_ptr->pred_struct_entry_count < MAX_ELAPSED_IDR_COUNT),
