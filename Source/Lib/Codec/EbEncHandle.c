@@ -2877,6 +2877,7 @@ static EbErrorType init_svt_vp9_encoder_handle(
     EbErrorType       return_error = EB_ErrorNone;
     EbComponentType  *svt_enc_component = (EbComponentType*)h_component;
 
+    SVT_LOG("-------------------------------------------\n");
     SVT_LOG("SVT [version]\t: SVT-VP9 Encoder Lib v%d.%d.%d\n", SVT_VERSION_MAJOR, SVT_VERSION_MINOR, SVT_VERSION_PATCHLEVEL);
 #if ( defined( _MSC_VER ) && (_MSC_VER < 1910) )
     SVT_LOG("SVT [build]\t: Visual Studio 2013");
