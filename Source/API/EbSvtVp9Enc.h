@@ -153,12 +153,6 @@ typedef struct EbSvtVp9EncConfiguration
     * Deault is -2. */
     int32_t                  intra_period;
 
-    /* Random access.
-    * 1 = CRA, open GOP.
-    * 2 = IDR, closed GOP.
-    * Default is 1. */
-    uint32_t                 intra_refresh_type;
-
     /* Prediction structure used to construct GOP. There are two main structures
     * supported, which are: Low Delay (P or B) and Random Access.
     *

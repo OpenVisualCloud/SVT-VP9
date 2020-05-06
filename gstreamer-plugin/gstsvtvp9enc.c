@@ -83,7 +83,6 @@ enum
   PROP_P_FRAMES,
   PROP_PRED_STRUCTURE,
   PROP_GOP_SIZE,
-  PROP_INTRA_REFRESH,
   PROP_QP,
   PROP_DEBLOCKING,
   PROP_CONSTRAINED_INTRA,
@@ -107,7 +106,6 @@ enum
 #define PROP_P_FRAMES_DEFAULT               FALSE
 #define PROP_PRED_STRUCTURE_DEFAULT         2
 #define PROP_GOP_SIZE_DEFAULT               -1
-#define PROP_INTRA_REFRESH_DEFAULT          1
 #define PROP_QP_DEFAULT                     45
 #define PROP_DEBLOCKING_DEFAULT             TRUE
 #define PROP_CONSTRAINED_INTRA_DEFAULT      FALSE
@@ -238,13 +236,6 @@ gst_svtvp9enc_class_init (GstSvtVp9EncClass * klass)
           -1, 251, PROP_GOP_SIZE_DEFAULT,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-  g_object_class_install_property (gobject_class, PROP_INTRA_REFRESH,
-      g_param_spec_int ("intra-refresh", "Intra refresh type",
-          "CRA (open GOP)"
-          "or IDR (closed GOP)",
-          1, 2, PROP_INTRA_REFRESH_DEFAULT,
-          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-
   g_object_class_install_property (gobject_class, PROP_QP,
       g_param_spec_uint ("qp", "Quantization parameter",
           "Quantization parameter used in CQP mode",
@@ -364,9 +355,6 @@ gst_svtvp9enc_set_property (GObject * object, guint property_id,
     case PROP_GOP_SIZE:
         svtvp9enc->svt_config->intra_period = g_value_get_int(value) - 1;
         break;
-    case PROP_INTRA_REFRESH:
-        svtvp9enc->svt_config->intra_refresh_type = g_value_get_int(value);
-        break;
     case PROP_SPEEDCONTROL:
       if (g_value_get_uint (value) > 0) {
         svtvp9enc->svt_config->injector_frame_rate = g_value_get_uint (value);
@@ -460,9 +448,6 @@ gst_svtvp9enc_get_property (GObject * object, guint property_id,
       break;
     case PROP_GOP_SIZE:
       g_value_set_int (value, svtvp9enc->svt_config->intra_period + 1);
-      break;
-    case PROP_INTRA_REFRESH:
-        g_value_set_int(value, svtvp9enc->svt_config->intra_refresh_type);
       break;
     case PROP_QP:
       g_value_set_uint (value, svtvp9enc->svt_config->qp);
@@ -639,7 +624,6 @@ set_default_svt_configuration (EbSvtVp9EncConfiguration * svt_config)
   svt_config->source_width = 0;
   svt_config->source_height = 0;
   svt_config->intra_period = PROP_GOP_SIZE_DEFAULT - 1;
-  svt_config->intra_refresh_type = PROP_INTRA_REFRESH_DEFAULT;
   svt_config->enc_mode = PROP_ENCMODE_DEFAULT;
   svt_config->tune = PROP_TUNE_DEFAULT;
   svt_config->frame_rate = 25;

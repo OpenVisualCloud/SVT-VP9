@@ -60,7 +60,7 @@ The number of frames of the sequence to encode.  e.g. 100. If the input frame co
 
 >-intra-period integer **[Optional]**
 
-The intra period defines the interval of frames after which you insert an Intra refresh. It is strongly recommended to use (multiple of 8) -1 the closest to 1 second (e.g. 55, 47, 31, 23 should be used for 60, 50, 30, (24 or 25) respectively). When using closed gop (-irefresh-type 2) add 1 to the value above (e.g. 56 instead of 55).
+The intra period defines the interval of frames after which you insert an Intra refresh. It is strongly recommended to use (multiple of 8) -1 the closest to 1 second (e.g. 55, 47, 31, 23 should be used for 60, 50, 30, (24 or 25) respectively). Because all intra refreshes are closed gop add 1 to the value above (e.g. 56 instead of 55).
 
 >-rc integer **[Optional]**
 
@@ -102,7 +102,6 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **BaseLayerSwitchMode** | -base-layer-switch-mode | [0 - 1] | 0 | 0 = Use B-frames in the base layer pointing to the same past picture. <br>1 = Use P-frames in the base layer|
 | **PredStructure** | -pred-struct | [2] | 2 | 2 = Random Access.|
 | **IntraPeriod** | -intra-period | [-2 - 255] | -2 | Distance Between Intra Frame inserted. -1 denotes no intra update. -2 denotes auto. |
-| **IntraRefreshType** | -irefresh-type | [1 - 2] | 2 | 1 = CRA (Open GOP) <br>2 = IDR (Closed GOP) |
 | **QP** | -q | [0 - 63] | 50 | Initial quantization parameter for the Intra pictures used when RateControlMode 0 (CQP) |
 | **LoopFilter** | -loop-filter | [0 - 1] | 1 | Enables or disables the loop filter, <br>0 = OFF, 1 = ON |
 | **UseDefaultMeHme** | -use-default-me-hme | [0 - 1] | 1 | 0 = Overwrite Default ME HME parameters. <br>1 = Use default ME HME parameters, dependent on width and height |
@@ -117,7 +116,8 @@ The encoder parameters present in the Sample.cfg file are listed in this table b
 | **MinQpAllowed** | -min-qp | [0 - 63] | 10 | Minimum QP value allowed for rate control use. Only used when RateControlMode is set to 1. Has to be < MaxQpAllowed |
 | **AsmType** | -asm | [0 - 1] | 1 | Assembly instruction set (0 = C Only, 1 = Automatically select highest assembly instruction set supported) |
 | **LogicalProcessorNumber** | -lp | [0, total number of logical processor] | 0 | The number of logical processor which encoder threads run on.Refer to Appendix A.1 |
-| **TargetSocket** | -ss | [-1,1] | -1 | For dual socket systems, this can specify which socket the encoder runs on.Refer to Appendix A.1 || **SwitchThreadsToRtPriority** | -rt | [0 - 1] | 1 | Enables or disables threads to real time priority, 0 = OFF, 1 = ON (only works on Linux) |
+| **TargetSocket** | -ss | [-1,1] | -1 | For dual socket systems, this can specify which socket the encoder runs on.Refer to Appendix A.1 |
+| **SwitchThreadsToRtPriority** | -rt | [0 - 1] | 1 | Enables or disables threads to real time priority, 0 = OFF, 1 = ON (only works on Linux) |
 | **Profile** | -profile | [0] | 0 | 0 = 8-bit 4:2:0 |
 | **Level** | -level | [1, 2, 2.1,3, 3.1, 4, 4.1, 5, 5.1, 5.2, 6, 6.1, 6.2] | 0 | 0 to 6.2 [0 for auto determine Level] |
 

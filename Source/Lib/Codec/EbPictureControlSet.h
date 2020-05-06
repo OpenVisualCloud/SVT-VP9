@@ -239,8 +239,6 @@ typedef struct PictureParentControlSet
     EbObjectWrapper                                   *pareference_picture_wrapper_ptr;
 
     EB_BOOL                                            idr_flag;
-    EB_BOOL                                            cra_flag; // Hsan - to remove
-    EB_BOOL                                            open_gop_cra_flag;
     EB_BOOL                                            scene_change_flag;
     EB_BOOL                                            end_of_sequence_flag;
 

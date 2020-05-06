@@ -168,7 +168,6 @@ EbErrorType eb_vp9_encode_context_ctor(
     encode_context_ptr->pred_struct_position                                = 0;
     encode_context_ptr->current_input_poc                                   = -1;
     encode_context_ptr->elapsed_non_idr_count                                = 0;
-    encode_context_ptr->elapsed_non_cra_count                                = 0;
     encode_context_ptr->initial_picture                                    = EB_TRUE;
 
     encode_context_ptr->last_idr_picture                                    = 0;
