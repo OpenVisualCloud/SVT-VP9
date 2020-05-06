@@ -40,7 +40,7 @@ for:
     build_script:
       - make -C Build -j install
       - pkg-config --debug --exists --print-errors SvtVp9Enc
-      - ps: Invoke-WebRequest -UseBasicParsing -OutFile ffmpeg.zip -Uri "https://github.com/FFmpeg/FFmpeg/archive/release/4.2.zip"
+      - ps: Invoke-WebRequest -UseBasicParsing -OutFile ffmpeg.zip -Uri "https://github.com/FFmpeg/FFmpeg/archive/n4.2.2.zip"
       - 7z x -aoa -offmpeg ffmpeg.zip
       - ps: Get-ChildItem ffmpeg/FFmpeg-*/* | ForEach-Object {Move-Item $_.FullName ffmpeg}
       - cd ffmpeg
@@ -54,34 +54,34 @@ for:
       - tar xf video.tar.gz
       - ffmpeg -i ./akiyo_cif.y4m -c:v libsvt_vp9 akiyo.ivf
       - cd ..
-      - ps: if ($env:APPVEYOR_REPO_BRANCH -eq "master" -and $null -eq $env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT) { Push-AppveyorArtifact -FileName ffmpeg.exe $(Get-ChildItem "ffmpeg\ffmpeg.exe").FullName }
+      #- ps: if ($env:APPVEYOR_REPO_BRANCH -eq "master" -and $null -eq $env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT) { Push-AppveyorArtifact -FileName ffmpeg.exe $(Get-ChildItem "ffmpeg\ffmpeg.exe").FullName }
 
-  - branches:
-      only:
-        - master
-    matrix:
-      only:
-        - generator: Visual Studio 2019
-          configuration: Release
-    artifacts:
-      - path: bin\Release\SvtVp9EncApp.exe
-        name: $(APPVEYOR_PROJECT_NAME)
-      - path: bin\Release\SvtVp9Enc.dll
-        name: $(APPVEYOR_PROJECT_NAME)
-      - path: bin\Release\SvtVp9DecApp.exe
-        name: $(APPVEYOR_PROJECT_NAME)
-      - path: bin\Release\SvtVp9Dec.dll
-        name: $(APPVEYOR_PROJECT_NAME)
-    deploy:
-      - provider: GitHub
-        artifact: $(APPVEYOR_PROJECT_NAME)
-        auth_token:
-          secure: "sf0pQXlPI+X6LoAR8QUJB74jjzNxcLGOXI3H0nbxJq8llvGPG/TAUd87hq5iHZXo"
-        prerelease: true
-        on:
-          appveyor_repo_tag: true
-          generator: Visual Studio 2019
-          configuration: Release
+  #- branches:
+  #    only:
+  #      - master
+  #  matrix:
+  #    only:
+  #      - generator: Visual Studio 2019
+  #        configuration: Release
+  #  artifacts:
+  #    - path: bin\Release\SvtVp9EncApp.exe
+  #      name: $(APPVEYOR_PROJECT_NAME)
+  #    - path: bin\Release\SvtVp9Enc.dll
+  #      name: $(APPVEYOR_PROJECT_NAME)
+  #    - path: bin\Release\SvtVp9DecApp.exe
+  #      name: $(APPVEYOR_PROJECT_NAME)
+  #    - path: bin\Release\SvtVp9Dec.dll
+  #      name: $(APPVEYOR_PROJECT_NAME)
+  #  deploy:
+  #    - provider: GitHub
+  #      artifact: $(APPVEYOR_PROJECT_NAME)
+  #      auth_token:
+  #        secure: "sf0pQXlPI+X6LoAR8QUJB74jjzNxcLGOXI3H0nbxJq8llvGPG/TAUd87hq5iHZXo"
+  #      prerelease: true
+  #      on:
+  #        appveyor_repo_tag: true
+  #        generator: Visual Studio 2019
+  #        configuration: Release
 
 build:
   project: Build\svt-vp9.sln

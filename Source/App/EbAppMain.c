@@ -104,9 +104,6 @@ int32_t main(int32_t argc, char* argv[])
     uint32_t                instance_count=0;
     EbAppContext         *app_callbacks[MAX_CHANNEL_NUMBER];   // Instances App callback data
     signal(SIGINT, EventHandler);
-    printf("-------------------------------------\n");
-    printf("SVT-VP9 Encoder v0.1.0\n");
-    fflush(stdout);
 
     // Get num_channels
     num_channels = get_number_of_channels(argc, argv);
