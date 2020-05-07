@@ -10,7 +10,7 @@
 #include "EbDefinitions.h"
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #ifdef __cplusplus
