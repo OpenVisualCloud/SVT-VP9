@@ -21,12 +21,12 @@
    - ./configure --enable-libsvthevc --enable-libsvtav1 --enable-libsvtvp9
 - make -j $(nproc)
 
-P.S. The patches for FFmpeg n4.2.3 are alse provided:
-       n4.2.3-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
-       n4.2.3-0001-Add-ability-for-ffmpeg-to-run-svt-vp9-with-hevc-av1.patch
-     And if you work on the master branch of FFmpeg, try the patches:
-       master-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch 
-       master-0001-Add-ability-for-ffmpeg-to-run-svt-vp9-with-hevc-av1.patch
+- Note: patches for FFmpeg n4.2.3/master are alse provided:
+   - n4.2.3-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+   - n4.2.3-0001-Add-ability-for-ffmpeg-to-run-svt-vp9-with-hevc-av1.patch
+   - master-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+   - master-0001-Add-ability-for-ffmpeg-to-run-svt-vp9-with-hevc-av1.patch
+   
 3. Verify
 - ./ffmpeg  -i input.mp4 -c:v libsvt_vp9 -rc 1 -b:v 10M -preset 1  -y test.ivf
 - ./ffmpeg  -i input.mp4 -vframes 1000 -c:v libsvt_vp9 -y test.mp4
