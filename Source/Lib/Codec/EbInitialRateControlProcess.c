@@ -457,9 +457,9 @@ void eb_vp9_UpdateBeaInfoOverTime(
 {
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
-    uint32_t                        update_non_moving_index_array_frames_to_check;
+    int32_t                         update_non_moving_index_array_frames_to_check;
     uint16_t                        sb_index;
-    uint16_t                        frames_to_check_index;
+    int16_t                         frames_to_check_index;
     uint32_t                        input_queue_index;
 
     SequenceControlSet *sequence_control_set_ptr = (SequenceControlSet*)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
@@ -523,8 +523,7 @@ void update_motion_field_uniformity_over_time(
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
     uint32_t                        input_queue_index;
-    uint32_t                        no_frames_to_check;
-    uint32_t                        frames_to_check_index;
+    int32_t                         no_frames_to_check;
     //SVT_LOG("To update POC %d\tframesInSw = %d\n", picture_control_set_ptr->picture_number, picture_control_set_ptr->frames_in_sw);
 
     // Determine number of frames to check N
@@ -532,7 +531,7 @@ void update_motion_field_uniformity_over_time(
 
     // Walk the first N entries in the sliding window starting picture + 1
     input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1) ? 0 : encode_context_ptr->initial_rate_control_reorder_queue_head_index;
-    for (frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
+    for (int32_t frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
 
         temporary_queue_entry_ptr = encode_context_ptr->initial_rate_control_reorder_queue[input_queue_index];
         temporary_picture_control_set_ptr = ((PictureParentControlSet  *)(temporary_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
@@ -568,14 +567,13 @@ void update_homogeneity_over_time(
 {
     InitialRateControlReorderEntry *temporary_queue_entry_ptr;
     PictureParentControlSet        *temporary_picture_control_set_ptr;
-    uint32_t                        no_frames_to_check;
+    int32_t                         no_frames_to_check;
 
     uint16_t                       *variance_ptr;
 
     uint64_t                        mean_sqr_variance64x64_based = 0, mean_variance64x64_based = 0;
     uint16_t                        count_of_homogeneous_over_time = 0;
     uint32_t                        input_queue_index;
-    uint32_t                        frames_to_check_index;
     uint32_t                        sb_index;
 
     SequenceControlSet *sequence_control_set_ptr = (SequenceControlSet *)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
@@ -599,7 +597,7 @@ void update_homogeneity_over_time(
 
         // Walk the first N entries in the sliding window starting picture + 1
         input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1) ? 0 : encode_context_ptr->initial_rate_control_reorder_queue_head_index;
-        for (frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
+        for (int32_t frames_to_check_index = 0; frames_to_check_index < no_frames_to_check - 1; frames_to_check_index++) {
 
             temporary_queue_entry_ptr = encode_context_ptr->initial_rate_control_reorder_queue[input_queue_index];
             temporary_picture_control_set_ptr = ((PictureParentControlSet  *)(temporary_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
