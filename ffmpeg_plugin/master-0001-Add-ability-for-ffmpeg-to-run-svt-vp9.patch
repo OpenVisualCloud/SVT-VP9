@@ -484,7 +484,7 @@ index 0000000000..d51e2985c8
 +    else
 +        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_OFF;
 +
-+    if (EB_BUFFERFLAG_EOS == headerPtr->flags)
++    if (EB_BUFFERFLAG_EOS & headerPtr->flags)
 +        svt_enc->eos_flag = EOS_TOTRIGGER;
 +
 +    eb_vp9_svt_release_out_buffer(&headerPtr);
