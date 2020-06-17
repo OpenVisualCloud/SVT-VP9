@@ -1,7 +1,7 @@
-From 4727f36b03cae42975bc56ea4c5d3f2b73d869f5 Mon Sep 17 00:00:00 2001
+From 59d0c978dadbc67d347fcb075176d571d648d75f Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
-Subject: [PATCH] Add ability for ffmpeg to run svt vp9
+Subject: [PATCH 1/1] Add ability for ffmpeg to run svt vp9
 
 Signed-off-by: hassene <hassene.tmar@intel.com>
 Signed-off-by: Jing Sun <jing.a.sun@intel.com>
@@ -12,16 +12,16 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   4 +
- libavcodec/libsvt_vp9.c   | 485 ++++++++++++++++++++++++++++++++++++++
+ libavcodec/libsvt_vp9.c   | 482 ++++++++++++++++++++++++++++++++++++++
  libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  30 ++-
  libavformat/matroskaenc.c | 103 +++++++-
  libavformat/movenc.c      |  42 +++-
- 9 files changed, 708 insertions(+), 11 deletions(-)
+ 9 files changed, 705 insertions(+), 11 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index f97cad0298..cb4212a3de 100755
+index 7495f35faa..e4894ef9e8 100755
 --- a/configure
 +++ b/configure
 @@ -267,6 +267,7 @@ External library support:
@@ -40,7 +40,7 @@ index f97cad0298..cb4212a3de 100755
      libtensorflow
      libtesseract
      libtheora
-@@ -3239,6 +3241,7 @@ libshine_encoder_select="audio_frame_queue"
+@@ -3240,6 +3242,7 @@ libshine_encoder_select="audio_frame_queue"
  libspeex_decoder_deps="libspeex"
  libspeex_encoder_deps="libspeex"
  libspeex_encoder_select="audio_frame_queue"
@@ -48,7 +48,7 @@ index f97cad0298..cb4212a3de 100755
  libtheora_encoder_deps="libtheora"
  libtwolame_encoder_deps="libtwolame"
  libvo_amrwbenc_encoder_deps="libvo_amrwbenc"
-@@ -6368,6 +6371,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
+@@ -6372,6 +6375,7 @@ enabled libsoxr           && require libsoxr soxr.h soxr_create -lsoxr
  enabled libssh            && require_pkg_config libssh libssh libssh/sftp.h sftp_init
  enabled libspeex          && require_pkg_config libspeex speex speex/speex.h speex_decoder_init
  enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
@@ -57,10 +57,10 @@ index f97cad0298..cb4212a3de 100755
  enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
  enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 3d38b4a05d..4e2b0365da 100644
+index 5a6ea59715..8146ed696a 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1021,6 +1021,7 @@ OBJS-$(CONFIG_LIBRAV1E_ENCODER)           += librav1e.o
+@@ -1024,6 +1024,7 @@ OBJS-$(CONFIG_LIBRAV1E_ENCODER)           += librav1e.o
  OBJS-$(CONFIG_LIBSHINE_ENCODER)           += libshine.o
  OBJS-$(CONFIG_LIBSPEEX_DECODER)           += libspeexdec.o
  OBJS-$(CONFIG_LIBSPEEX_ENCODER)           += libspeexenc.o
@@ -69,10 +69,10 @@ index 3d38b4a05d..4e2b0365da 100644
  OBJS-$(CONFIG_LIBTWOLAME_ENCODER)         += libtwolame.o
  OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index eb5044f80e..4029a1f90f 100644
+index 80f128cade..4af230682d 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -726,6 +726,7 @@ extern AVCodec ff_librsvg_decoder;
+@@ -728,6 +728,7 @@ extern AVCodec ff_librsvg_decoder;
  extern AVCodec ff_libshine_encoder;
  extern AVCodec ff_libspeex_encoder;
  extern AVCodec ff_libspeex_decoder;
@@ -81,10 +81,10 @@ index eb5044f80e..4029a1f90f 100644
  extern AVCodec ff_libtwolame_encoder;
  extern AVCodec ff_libvo_amrwbenc_encoder;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index f10b7a06ec..3a70be9f97 100644
+index c91b2fd169..10cdb7b0d9 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -536,6 +536,10 @@ typedef struct RcOverride{
+@@ -405,6 +405,10 @@ typedef struct RcOverride{
   * Export encoder Producer Reference Time through packet side data
   */
  #define AV_CODEC_EXPORT_DATA_PRFT        (1 << 1)
@@ -97,10 +97,10 @@ index f10b7a06ec..3a70be9f97 100644
   * Export the AVVideoEncParams structure through frame side data.
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..d51e2985c8
+index 0000000000..edddc01b8d
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,482 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -290,9 +290,6 @@ index 0000000000..d51e2985c8
 +        param->max_qp_allowed       = avctx->qmax;
 +        param->min_qp_allowed       = avctx->qmin;
 +    }
-+
-+    param->intra_refresh_type       =
-+        !!(avctx->flags & AV_CODEC_FLAG_CLOSED_GOP) + 1;
 +
 +    if (ten_bits) {
 +        param->encoder_bit_depth        = 10;
@@ -587,10 +584,10 @@ index 0000000000..d51e2985c8
 +    .wrapper_name   = "libsvt_vp9",
 +};
 diff --git a/libavformat/dashenc.c b/libavformat/dashenc.c
-index 0cf0df50ef..026235cd0b 100644
+index 3e587acdff..d1c6e65bdd 100644
 --- a/libavformat/dashenc.c
 +++ b/libavformat/dashenc.c
-@@ -2258,6 +2258,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -2259,6 +2259,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
      return ret;
  }
  
@@ -639,7 +636,7 @@ index 0cf0df50ef..026235cd0b 100644
  static int dash_write_trailer(AVFormatContext *s)
  {
      DASHContext *c = s->priv_data;
-@@ -2305,6 +2347,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
+@@ -2306,6 +2348,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
      DASHContext *c = s->priv_data;
      OutputStream *os = &c->streams[avpkt->stream_index];
      AVFormatContext *oc = os->ctx;
@@ -651,7 +648,7 @@ index 0cf0df50ef..026235cd0b 100644
      if (oc->oformat->check_bitstream) {
          int ret;
          AVPacket pkt = *avpkt;
-@@ -2390,7 +2437,7 @@ AVOutputFormat ff_dash_muxer = {
+@@ -2392,7 +2439,7 @@ AVOutputFormat ff_dash_muxer = {
      .flags          = AVFMT_GLOBALHEADER | AVFMT_NOFILE | AVFMT_TS_NEGATIVE,
      .init           = dash_init,
      .write_header   = dash_write_header,
@@ -702,7 +699,7 @@ index 0951f56c92..3a49097e9a 100644
          ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
      ctx->frame_cnt++;
 diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index 1c1ea71f59..b2e96f958e 100644
+index eaed02bc92..71bf8da663 100644
 --- a/libavformat/matroskaenc.c
 +++ b/libavformat/matroskaenc.c
 @@ -154,6 +154,8 @@ typedef struct MatroskaMuxContext {
@@ -729,7 +726,7 @@ index 1c1ea71f59..b2e96f958e 100644
      avio_w8(pb, (blockid == MATROSKA_ID_SIMPLEBLOCK && keyframe) ? (1 << 7) : 0);
      avio_write(pb, data + offset, size);
      if (data != pkt->data)
-@@ -2266,7 +2274,7 @@ static int mkv_check_new_extra_data(AVFormatContext *s, const AVPacket *pkt)
+@@ -2268,7 +2276,7 @@ static int mkv_check_new_extra_data(AVFormatContext *s, const AVPacket *pkt)
      return 0;
  }
  
@@ -738,7 +735,7 @@ index 1c1ea71f59..b2e96f958e 100644
  {
      MatroskaMuxContext *mkv = s->priv_data;
      AVIOContext *pb;
-@@ -2277,6 +2285,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2279,6 +2287,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
      int ret;
      int64_t ts = track->write_dts ? pkt->dts : pkt->pts;
      int64_t relative_packet_pos;
@@ -747,7 +744,7 @@ index 1c1ea71f59..b2e96f958e 100644
  
      if (ts == AV_NOPTS_VALUE) {
          av_log(s, AV_LOG_ERROR, "Can't write packet with unknown timestamp\n");
-@@ -2294,6 +2304,11 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2296,6 +2306,11 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
          }
      }
  
@@ -759,7 +756,7 @@ index 1c1ea71f59..b2e96f958e 100644
      if (mkv->cluster_pos == -1) {
          ret = start_ebml_master_crc32(&mkv->cluster_bc, mkv);
          if (ret < 0)
-@@ -2311,7 +2326,67 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2313,7 +2328,67 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
      relative_packet_pos = avio_tell(pb);
  
      if (par->codec_type != AVMEDIA_TYPE_SUBTITLE) {
@@ -828,7 +825,7 @@ index 1c1ea71f59..b2e96f958e 100644
          if (ret < 0)
              return ret;
          if (keyframe && IS_SEEKABLE(s->pb, mkv) &&
-@@ -2375,8 +2450,14 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
+@@ -2377,8 +2452,14 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
      if (mkv->cluster_pos != -1) {
          if (mkv->tracks[pkt->stream_index].write_dts)
              cluster_time = pkt->dts - mkv->cluster_pts;
@@ -845,7 +842,7 @@ index 1c1ea71f59..b2e96f958e 100644
          cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
  
          cluster_size  = avio_tell(mkv->cluster_bc);
-@@ -2400,7 +2481,13 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
+@@ -2402,7 +2483,13 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
              start_new_cluster = 0;
  
          if (start_new_cluster) {
@@ -860,7 +857,7 @@ index 1c1ea71f59..b2e96f958e 100644
              if (ret < 0)
                  return ret;
          }
-@@ -2737,6 +2824,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -2739,6 +2826,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  
@@ -872,10 +869,10 @@ index 1c1ea71f59..b2e96f958e 100644
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
 diff --git a/libavformat/movenc.c b/libavformat/movenc.c
-index 5d8dc4fd5d..332d25d098 100644
+index 520aaafb74..de73def6f1 100644
 --- a/libavformat/movenc.c
 +++ b/libavformat/movenc.c
-@@ -5821,7 +5821,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -5837,7 +5837,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
          }
      }
  
@@ -920,7 +917,7 @@ index 5d8dc4fd5d..332d25d098 100644
  }
  
  static int mov_write_subtitle_end_packet(AVFormatContext *s,
-@@ -6979,6 +7015,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -6995,6 +7031,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
  
