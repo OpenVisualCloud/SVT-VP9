@@ -25,7 +25,7 @@
 
 #include "EbEntropyCoding.h"
 #include "EbRateControlTasks.h"
-#include "EbSvtVp9Time.h"
+#include "EbTime.h"
 #include "stdint.h"
 
 //struct vpx_write_bit_buffer *wb; // needs to be here
@@ -611,20 +611,18 @@ void* eb_vp9_packetization_kernel(void *input_ptr)
             double latency = 0.0;
             uint64_t finish_time_seconds = 0;
             uint64_t finish_timeu_seconds = 0;
-            eb_finish_time(&finish_time_seconds, &finish_timeu_seconds);
+            svt_vp9_get_time(&finish_time_seconds, &finish_timeu_seconds);
 
-            eb_compute_overall_elapsed_time_ms(
+            latency = svt_vp9_compute_overall_elapsed_time_ms(
                 queue_entry_ptr->start_time_seconds,
-                queue_entry_ptr->start_timeu_seconds,
-                finish_time_seconds,
-                finish_timeu_seconds,
-                &latency);
+                queue_entry_ptr->start_timeu_seconds, finish_time_seconds,
+                finish_timeu_seconds);
 
             output_stream_ptr->n_tick_count = (uint32_t)latency;
 
             /* update VBV plan */
-            if (encode_context_ptr->vbv_max_rate && encode_context_ptr->vbv_buf_size)
-            {
+            if (encode_context_ptr->vbv_max_rate &&
+                encode_context_ptr->vbv_buf_size) {
                 int64_t buffer_fill_temp = (int64_t)(encode_context_ptr->buffer_fill);
 
                 buffer_fill_temp -= queue_entry_ptr->actual_bits;

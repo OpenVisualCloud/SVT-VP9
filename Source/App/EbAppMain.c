@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include "EbAppConfig.h"
 #include "EbAppContext.h"
-#include "EbSvtVp9Time.h"
+#include "EbAppTime.h"
 #ifdef _WIN32
 #include <windows.h>
 #include <fcntl.h> /* _O_BINARY */
@@ -30,7 +30,6 @@
 #else
 #include <pthread.h>
 #include <semaphore.h>
-#include <time.h>
 #include <errno.h>
 #endif
 
@@ -151,7 +150,10 @@ int32_t main(int32_t argc, char* argv[])
 
                 configs[instance_count]->active_channel_count = num_channels;
                 configs[instance_count]->channel_id = instance_count;
-                eb_start_time((uint64_t*)&configs[instance_count]->performance_context.lib_start_time[0], (uint64_t*)&configs[instance_count]->performance_context.lib_start_time[1]);
+                svt_vp9_get_time(&configs[instance_count]
+                                      ->performance_context.lib_start_time[0],
+                                 &configs[instance_count]
+                                      ->performance_context.lib_start_time[1]);
                 return_errors[instance_count] = init_encoder(configs[instance_count], app_callbacks[instance_count], instance_count);
                 return_error = (EbErrorType)(return_error | return_errors[instance_count]);
             }
@@ -170,7 +172,11 @@ int32_t main(int32_t argc, char* argv[])
                     exit_conditions_recon[instance_count]  = configs[instance_count]->recon_file ? APP_ExitConditionNone : APP_ExitConditionError;
                     exit_conditions_input[instance_count]  = APP_ExitConditionNone;
                     channel_active[instance_count]        = EB_TRUE;
-                    eb_start_time((uint64_t*)&configs[instance_count]->performance_context.encode_start_time[0], (uint64_t*)&configs[instance_count]->performance_context.encode_start_time[1]);
+                    svt_vp9_get_time(
+                        &configs[instance_count]
+                             ->performance_context.encode_start_time[0],
+                        &configs[instance_count]
+                             ->performance_context.encode_start_time[1]);
 
                 }
                 else {
