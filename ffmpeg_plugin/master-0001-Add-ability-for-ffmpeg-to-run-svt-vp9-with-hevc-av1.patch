@@ -1,4 +1,4 @@
-From cbc80321d678f779bba9a23b89d421c3619ac8e4 Mon Sep 17 00:00:00 2001
+From 1b3939631a36826439a5ae759107ef40716473c0 Mon Sep 17 00:00:00 2001
 From: Jing Sun <jing.a.sun@intel.com>
 Date: Mon, 1 Apr 2019 17:17:00 +0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9 with hevc & av1
@@ -12,12 +12,12 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   3 +
- libavcodec/libsvt_vp9.c   | 511 ++++++++++++++++++++++++++++++++++++++
+ libavcodec/libsvt_vp9.c   | 504 ++++++++++++++++++++++++++++++++++++++
  libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  30 ++-
  libavformat/matroskaenc.c | 112 ++++++++-
- libavformat/movenc.c      |  41 ++-
- 9 files changed, 739 insertions(+), 13 deletions(-)
+ libavformat/movenc.c      |  41 +++-
+ 9 files changed, 732 insertions(+), 13 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -96,10 +96,10 @@ index c91b2fd169..ae4a8de889 100644
   * Export the AVVideoEncParams structure through frame side data.
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..35498f3a77
+index 0000000000..6bd6243de0
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,504 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -132,9 +132,7 @@ index 0000000000..35498f3a77
 +#include "libavutil/opt.h"
 +
 +#include "internal.h"
-+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
 +#include "encode.h"
-+#endif
 +#include "avcodec.h"
 +
 +typedef enum eos_status {
@@ -467,7 +465,6 @@ index 0000000000..35498f3a77
 +        return AVERROR_EOF;
 +    }
 +
-+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
 +    ret = ff_encode_get_frame(avctx, frame);
 +    if (ret < 0 && ret != AVERROR_EOF)
 +        return ret;
@@ -476,7 +473,6 @@ index 0000000000..35498f3a77
 +
 +    eb_send_frame(avctx, frame);
 +    av_frame_unref(svt_enc->frame);
-+#endif
 +
 +    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
 +    if (svt_ret == EB_NoErrorEmptyQueue)
@@ -598,9 +594,6 @@ index 0000000000..35498f3a77
 +    .type           = AVMEDIA_TYPE_VIDEO,
 +    .id             = AV_CODEC_ID_VP9,
 +    .init           = eb_enc_init,
-+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 93, 100)
-+    .send_frame     = eb_send_frame,
-+#endif
 +    .receive_packet = eb_receive_packet,
 +    .close          = eb_enc_close,
 +    .capabilities   = AV_CODEC_CAP_DELAY | AV_CODEC_CAP_AUTO_THREADS,
