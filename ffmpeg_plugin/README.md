@@ -28,8 +28,6 @@ cd ..
 
 ## Enable SVT-VP9 plugin
 
-beginning commands:
-
 ```bash
 # Adjust /usr/local to your chosen prefix
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
@@ -59,8 +57,6 @@ n4.2.2 tag:
 git checkout n4.2.2
 git apply ../ffmpeg_plugin/0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
 ```
-
-ending commands:
 
 ```bash
 ./configure --enable-libsvtvp9
