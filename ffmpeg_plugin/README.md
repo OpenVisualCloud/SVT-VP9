@@ -1,4 +1,4 @@
-# svt-vp9 ffmpeg plugin installation
+# SVT-VP9 ffmpeg plugin installation
 
 Assumes you have a bash (or similar) shell along with commands such as
 
@@ -23,15 +23,14 @@ cd SVT-VP9/Build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j $(nproc)
 sudo make install
+cd ..
 ```
 
-## Apply SVT-VP9 plugin and enable libsvtvp9 to FFmpeg
+## Enable SVT-VP9 plugin
 
 beginning commands:
 
 ```bash
-# Go back to the repo root dir
-cd ..
 # Adjust /usr/local to your chosen prefix
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
 export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
@@ -76,3 +75,7 @@ Run basic tests to check if `libsvt_vp9` works
 ./ffmpeg -f lavfi -i testsrc=duration=1:size=1280x720:rate=30 -c:v libsvt_vp9 -rc 1 -b:v 10M -preset 1 -y test.ivf
 ./ffmpeg -f lavfi -i testsrc=duration=1:size=1280x720:rate=30 -vframes 1000 -c:v libsvt_vp9 -y test.mp4
 ```
+
+## Note
+
+These patches can be applied in any ordering permutation along with the other SVT encoders, there is no strict ordering
