@@ -1,4 +1,4 @@
-From 8f40b8b8417403e2d1d99d3c885a6c9e0c196f1d Mon Sep 17 00:00:00 2001
+From 213cabc3d23724beae998e473660702fe30aaad1 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -12,19 +12,19 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   4 +
- libavcodec/libsvt_vp9.c   | 503 ++++++++++++++++++++++++++++++++++++++
+ libavcodec/libsvt_vp9.c   | 509 ++++++++++++++++++++++++++++++++++++++
  libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  30 ++-
- libavformat/matroskaenc.c | 103 +++++++-
+ libavformat/matroskaenc.c | 104 +++++++-
  libavformat/movenc.c      |  42 +++-
- 9 files changed, 726 insertions(+), 11 deletions(-)
+ 9 files changed, 733 insertions(+), 11 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 7495f35faa..5fa3685e97 100755
+index bdfd731602..fbe6f838df 100755
 --- a/configure
 +++ b/configure
-@@ -281,6 +281,7 @@ External library support:
+@@ -283,6 +283,7 @@ External library support:
    --enable-libvorbis       enable Vorbis en/decoding via libvorbis,
                             native implementation exists [no]
    --enable-libvpx          enable VP8 and VP9 de/encoding via libvpx [no]
@@ -32,15 +32,15 @@ index 7495f35faa..5fa3685e97 100755
    --enable-libwavpack      enable wavpack encoding via libwavpack [no]
    --enable-libwebp         enable WebP encoding via libwebp [no]
    --enable-libx264         enable H.264 encoding via x264 [no]
-@@ -1810,6 +1811,7 @@ EXTERNAL_LIBRARY_LIST="
-     libv4l2
-     libvorbis
-     libvpx
+@@ -1800,6 +1801,7 @@ EXTERNAL_LIBRARY_LIST="
+     librtmp
+     libshine
+     libsmbclient
 +    libsvtvp9
-     libwavpack
-     libwebp
-     libxml2
-@@ -3250,6 +3252,7 @@ libvpx_vp8_decoder_deps="libvpx"
+     libsnappy
+     libsoxr
+     libspeex
+@@ -3253,6 +3255,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
@@ -48,19 +48,19 @@ index 7495f35faa..5fa3685e97 100755
  libwavpack_encoder_deps="libwavpack"
  libwavpack_encoder_select="audio_frame_queue"
  libwebp_encoder_deps="libwebp"
-@@ -6408,6 +6411,7 @@ enabled libvpx            && {
+@@ -6412,6 +6415,7 @@ enabled libvpx            && {
      fi
  }
-
+ 
 +enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h eb_vp9_svt_init_handle
  enabled libwavpack        && require libwavpack wavpack/wavpack.h WavpackOpenFileOutput  -lwavpack
  enabled libwebp           && {
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 5a6ea59715..7a31fbcb6a 100644
+index 18353da549..230660ea27 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1034,6 +1034,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
+@@ -1035,6 +1035,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o libvpx.o
  OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o libvpx.o
@@ -69,10 +69,10 @@ index 5a6ea59715..7a31fbcb6a 100644
  OBJS-$(CONFIG_LIBWEBP_ENCODER)            += libwebpenc_common.o libwebpenc.o
  OBJS-$(CONFIG_LIBWEBP_ANIM_ENCODER)       += libwebpenc_common.o libwebpenc_animencoder.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index fa0c08d42e..7e9aca5082 100644
+index a5048290f7..c34ef96fb9 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -734,6 +734,7 @@ extern AVCodec ff_libvpx_vp8_encoder;
+@@ -735,6 +735,7 @@ extern AVCodec ff_libvpx_vp8_encoder;
  extern AVCodec ff_libvpx_vp8_decoder;
  extern AVCodec ff_libvpx_vp9_encoder;
  extern AVCodec ff_libvpx_vp9_decoder;
@@ -97,10 +97,10 @@ index c91b2fd169..10cdb7b0d9 100644
   * Export the AVVideoEncParams structure through frame side data.
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..dfe765e665
+index 0000000000..a557019c9b
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,503 @@
+@@ -0,0 +1,509 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -132,7 +132,9 @@ index 0000000000..dfe765e665
 +#include "libavutil/opt.h"
 +
 +#include "internal.h"
++#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
 +#include "encode.h"
++#endif
 +#include "avcodec.h"
 +
 +typedef enum eos_status {
@@ -418,8 +420,8 @@ index 0000000000..dfe765e665
 +        headerPtrLast.n_filled_len  = 0;
 +        headerPtrLast.n_tick_count  = 0;
 +        headerPtrLast.p_app_private = NULL;
-+        headerPtrLast.p_buffer     = NULL;
-+        headerPtrLast.flags      = EB_BUFFERFLAG_EOS;
++        headerPtrLast.p_buffer      = NULL;
++        headerPtrLast.flags         = EB_BUFFERFLAG_EOS;
 +
 +        eb_vp9_svt_enc_send_picture(svt_enc->svt_handle, &headerPtrLast);
 +        svt_enc->eos_flag = EOS_REACHED;
@@ -456,16 +458,16 @@ index 0000000000..dfe765e665
 +    SvtContext  *svt_enc = avctx->priv_data;
 +    EbBufferHeaderType   *headerPtr;
 +    EbErrorType          svt_ret;
-+    AVFrame *frame = svt_enc->frame;
 +    AVBufferRef *ref;
-+    int ret;
 +
 +    if (EOS_TOTRIGGER == svt_enc->eos_flag) {
 +        pkt = NULL;
 +        return AVERROR_EOF;
 +    }
 +
-+    ret = ff_encode_get_frame(avctx, frame);
++#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
++    AVFrame *frame = svt_enc->frame;
++    int ret = ff_encode_get_frame(avctx, frame);
 +    if (ret < 0 && ret != AVERROR_EOF)
 +        return ret;
 +    if (ret == AVERROR_EOF)
@@ -473,6 +475,7 @@ index 0000000000..dfe765e665
 +
 +    eb_send_frame(avctx, frame);
 +    av_frame_unref(svt_enc->frame);
++#endif
 +
 +    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
 +    if (svt_ret == EB_NoErrorEmptyQueue)
@@ -594,6 +597,9 @@ index 0000000000..dfe765e665
 +    .type           = AVMEDIA_TYPE_VIDEO,
 +    .id             = AV_CODEC_ID_VP9,
 +    .init           = eb_enc_init,
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 93, 100)
++     .send_frame     = eb_send_frame,
++#endif
 +    .receive_packet = eb_receive_packet,
 +    .close          = eb_enc_close,
 +    .capabilities   = AV_CODEC_CAP_DELAY | AV_CODEC_CAP_AUTO_THREADS,
@@ -605,13 +611,13 @@ index 0000000000..dfe765e665
 +    .wrapper_name   = "libsvt_vp9",
 +};
 diff --git a/libavformat/dashenc.c b/libavformat/dashenc.c
-index 62193058d7..36c8e29250 100644
+index dc3306a56a..13c8a92268 100644
 --- a/libavformat/dashenc.c
 +++ b/libavformat/dashenc.c
-@@ -2267,6 +2267,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
+@@ -2270,6 +2270,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
      return ret;
  }
-
+ 
 +static int dash_write_packet_vp9(AVFormatContext *s, AVPacket *pkt)
 +{
 +    int ret;
@@ -657,7 +663,7 @@ index 62193058d7..36c8e29250 100644
  static int dash_write_trailer(AVFormatContext *s)
  {
      DASHContext *c = s->priv_data;
-@@ -2314,6 +2356,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
+@@ -2317,6 +2359,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
      DASHContext *c = s->priv_data;
      OutputStream *os = &c->streams[avpkt->stream_index];
      AVFormatContext *oc = os->ctx;
@@ -669,7 +675,7 @@ index 62193058d7..36c8e29250 100644
      if (oc->oformat->check_bitstream) {
          int ret;
          AVPacket pkt = *avpkt;
-@@ -2400,7 +2447,7 @@ AVOutputFormat ff_dash_muxer = {
+@@ -2404,7 +2451,7 @@ AVOutputFormat ff_dash_muxer = {
      .flags          = AVFMT_GLOBALHEADER | AVFMT_NOFILE | AVFMT_TS_NEGATIVE,
      .init           = dash_init,
      .write_header   = dash_write_header,
@@ -685,7 +691,7 @@ index 0951f56c92..3a49097e9a 100644
 @@ -81,9 +81,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
      AVIOContext *pb = s->pb;
      IVFEncContext *ctx = s->priv_data;
-
+ 
 -    avio_wl32(pb, pkt->size);
 -    avio_wl64(pb, pkt->pts);
 -    avio_write(pb, pkt->data, pkt->size);
@@ -720,19 +726,20 @@ index 0951f56c92..3a49097e9a 100644
          ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
      ctx->frame_cnt++;
 diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index 105ed5197e..b625d405a6 100644
+index 233c472b8f..00e6ccc8b5 100644
 --- a/libavformat/matroskaenc.c
 +++ b/libavformat/matroskaenc.c
-@@ -154,6 +154,8 @@ typedef struct MatroskaMuxContext {
-     int                 is_dash;
-     int                 dash_track_number;
-     int                 allow_raw_vfw;
+@@ -142,6 +142,9 @@ typedef struct MatroskaMuxContext {
+     unsigned            nb_attachments;
+     int                 have_video;
+ 
 +    int                 simple_block_timecode;
 +    int                 accumulated_cluster_timecode;
-     int                 default_mode;
-
-     uint32_t            segment_uid[4];
-@@ -2082,7 +2084,13 @@ static int mkv_write_block(AVFormatContext *s, AVIOContext *pb,
++
+     int                 wrote_chapters;
+     int                 wrote_tags;
+ 
+@@ -2084,7 +2087,13 @@ static int mkv_write_block(AVFormatContext *s, AVIOContext *pb,
      put_ebml_id(pb, blockid);
      put_ebml_length(pb, size + track->track_num_size + 3, 0);
      put_ebml_num(pb, track_number, track->track_num_size);
@@ -747,28 +754,28 @@ index 105ed5197e..b625d405a6 100644
      avio_w8(pb, (blockid == MATROSKA_ID_SIMPLEBLOCK && keyframe) ? (1 << 7) : 0);
      avio_write(pb, data + offset, size);
      if (data != pkt->data)
-@@ -2266,7 +2274,7 @@ static int mkv_check_new_extra_data(AVFormatContext *s, const AVPacket *pkt)
+@@ -2268,7 +2277,7 @@ static int mkv_check_new_extra_data(AVFormatContext *s, const AVPacket *pkt)
      return 0;
  }
-
+ 
 -static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
 +static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt)
  {
      MatroskaMuxContext *mkv = s->priv_data;
      AVIOContext *pb;
-@@ -2277,6 +2285,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2279,6 +2288,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
      int ret;
      int64_t ts = track->write_dts ? pkt->dts : pkt->pts;
      int64_t relative_packet_pos;
 +    double fps = 0;
 +    int pts_interval = 0;
-
+ 
      if (ts == AV_NOPTS_VALUE) {
          av_log(s, AV_LOG_ERROR, "Can't write packet with unknown timestamp\n");
-@@ -2294,6 +2304,11 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2296,6 +2307,11 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
          }
      }
-
+ 
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) || (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF)) {
 +        fps = av_q2d(s->streams[pkt->stream_index]->avg_frame_rate);
 +        pts_interval = 1000 / fps;
@@ -777,9 +784,9 @@ index 105ed5197e..b625d405a6 100644
      if (mkv->cluster_pos == -1) {
          ret = start_ebml_master_crc32(&mkv->cluster_bc, mkv);
          if (ret < 0)
-@@ -2311,7 +2326,67 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
+@@ -2313,7 +2329,67 @@ static int mkv_write_packet_internal(AVFormatContext *s, const AVPacket *pkt)
      relative_packet_pos = avio_tell(pb);
-
+ 
      if (par->codec_type != AVMEDIA_TYPE_SUBTITLE) {
 -        ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
 +        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
@@ -846,7 +853,7 @@ index 105ed5197e..b625d405a6 100644
          if (ret < 0)
              return ret;
          if (keyframe && IS_SEEKABLE(s->pb, mkv) &&
-@@ -2375,8 +2450,14 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
+@@ -2377,8 +2453,14 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
      if (mkv->cluster_pos != -1) {
          if (mkv->tracks[pkt->stream_index].write_dts)
              cluster_time = pkt->dts - mkv->cluster_pts;
@@ -861,11 +868,11 @@ index 105ed5197e..b625d405a6 100644
 +        }
 +
          cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
-
+ 
          cluster_size  = avio_tell(mkv->cluster_bc);
-@@ -2400,7 +2481,13 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
+@@ -2402,7 +2484,13 @@ static int mkv_write_packet(AVFormatContext *s, const AVPacket *pkt)
              start_new_cluster = 0;
-
+ 
          if (start_new_cluster) {
 -            ret = mkv_end_cluster(s);
 +            if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
@@ -878,10 +885,10 @@ index 105ed5197e..b625d405a6 100644
              if (ret < 0)
                  return ret;
          }
-@@ -2737,6 +2824,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
+@@ -2739,6 +2827,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
-
+ 
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
@@ -896,7 +903,7 @@ index 7db2e28840..a1f0b3a943 100644
 @@ -5853,7 +5853,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
          }
      }
-
+ 
 -    return ff_mov_write_packet(s, pkt);
 +    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
 +            uint8_t *saved_data = pkt->data;
@@ -936,12 +943,12 @@ index 7db2e28840..a1f0b3a943 100644
 +
 +        return ret;
  }
-
+ 
  static int mov_write_subtitle_end_packet(AVFormatContext *s,
 @@ -7013,6 +7049,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
-
+ 
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +        (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
@@ -949,5 +956,6 @@ index 7db2e28840..a1f0b3a943 100644
      if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
---
-2.25.1
+-- 
+2.17.1
+
