@@ -444,31 +444,32 @@ void send_qp_on_the_fly(
     return;
 }
 
-static inline void svt_vp9_injector(uint64_t processed_frame_count,
-                                    uint32_t injector_frame_rate) {
+static void app_svt_vp9_injector(uint64_t processed_frame_count,
+                             uint32_t injector_frame_rate) {
     static uint64_t start_times_seconds;
     static uint64_t start_timesu_seconds;
     static int first_time = 0;
 
     if (first_time == 0) {
         first_time = 1;
-        svt_vp9_get_time(&start_times_seconds, &start_timesu_seconds);
+        app_svt_vp9_get_time(&start_times_seconds, &start_timesu_seconds);
     } else {
         uint64_t current_times_seconds, current_timesu_seconds;
-        double elapsed_time;
-        svt_vp9_get_time(&current_times_seconds, &current_timesu_seconds);
-        elapsed_time = svt_vp9_compute_overall_elapsed_time(
+        app_svt_vp9_get_time(&current_times_seconds, &current_timesu_seconds);
+        const double elapsed_time = app_svt_vp9_compute_overall_elapsed_time(
             start_times_seconds, start_timesu_seconds, current_times_seconds,
             current_timesu_seconds);
-        const int buffer_frames = 1;  // How far ahead of time should we let it get
+        const int buffer_frames =
+            1;  // How far ahead of time should we let it get
         const double injector_interval =
             (double)(1 << 16) /
             injector_frame_rate;  // 1.0 / injector frame rate (in this
                                   // case, 1.0/encodRate)
         const double predicted_time =
             (processed_frame_count - buffer_frames) * injector_interval;
-        const int milli_sec_ahead = (int)(1000 * (predicted_time - elapsed_time));
-        if (milli_sec_ahead > 0) svt_vp9_sleep(milli_sec_ahead);
+        const int milli_sec_ahead =
+            (int)(1000 * (predicted_time - elapsed_time));
+        if (milli_sec_ahead > 0) app_svt_vp9_sleep(milli_sec_ahead);
     }
 }
 
@@ -494,7 +495,7 @@ AppExitConditionType process_input_buffer(
     int64_t                 remaining_byte_count;
 
     if (config->injector && config->processed_frame_count)
-        svt_vp9_injector(config->processed_frame_count, config->injector_frame_rate);
+        app_svt_vp9_injector(config->processed_frame_count, config->injector_frame_rate);
 
     total_bytes_to_process_count = (frames_to_be_encoded < 0) ? -1 :
         frames_to_be_encoded * SIZE_OF_ONE_FRAME_IN_BYTES(input_padded_width, input_padded_height, is16bit);
@@ -655,21 +656,21 @@ AppExitConditionType process_output_stream_buffer(
         *total_latency += header_ptr->n_tick_count;
         *max_latency = (header_ptr->n_tick_count > *max_latency) ? header_ptr->n_tick_count : *max_latency;
 
-        svt_vp9_get_time(&finishs_time, &finishu_time);
+        app_svt_vp9_get_time(&finishs_time, &finishu_time);
 
         // total execution time, inc init time
         config->performance_context.total_execution_time =
-            svt_vp9_compute_overall_elapsed_time(
+            app_svt_vp9_compute_overall_elapsed_time(
                 config->performance_context.lib_start_time[0],
                 config->performance_context.lib_start_time[1], finishs_time,
                 finishu_time);
 
         // total encode time
-        config->performance_context.total_encode_time = svt_vp9_compute_overall_elapsed_time(
-            config->performance_context.encode_start_time[0],
-            config->performance_context.encode_start_time[1],
-            finishs_time,
-            finishu_time);
+        config->performance_context.total_encode_time =
+            app_svt_vp9_compute_overall_elapsed_time(
+                config->performance_context.encode_start_time[0],
+                config->performance_context.encode_start_time[1], finishs_time,
+                finishu_time);
 
         // Write Stream Data to file
         if (stream_file) {
