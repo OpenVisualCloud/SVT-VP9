@@ -19,15 +19,14 @@
 #include "EbAppTime.h"
 
 void app_svt_vp9_sleep(const unsigned milliseconds) {
-    if (milliseconds) {
+    if (!milliseconds) return;
 #ifdef _WIN32
-        Sleep(milliseconds);
+    Sleep(milliseconds);
 #else
-        nanosleep(&(struct timespec){milliseconds / 1000,
-                                     (milliseconds % 1000) * 1000000},
-                  NULL);
+    nanosleep(&(struct timespec){milliseconds / 1000,
+                                 (milliseconds % 1000) * 1000000},
+              NULL);
 #endif
-    }
 }
 
 double app_svt_vp9_compute_overall_elapsed_time(

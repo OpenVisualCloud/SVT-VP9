@@ -10,7 +10,6 @@
 #define __USE_POSIX199309
 #endif
 
-#include <stdint.h>
 #include <time.h>
 
 #if !defined(CLOCK_MONOTONIC) && !defined(_WIN32)
@@ -20,15 +19,14 @@
 #include "EbTime.h"
 
 void svt_vp9_sleep(const int milliseconds) {
-    if (milliseconds) {
+    if (!milliseconds) return;
 #ifdef _WIN32
-        Sleep(milliseconds);
+    Sleep(milliseconds);
 #else
-        nanosleep(&(struct timespec){milliseconds / 1000,
-                                     (milliseconds % 1000) * 1000000},
-                  NULL);
+    nanosleep(&(struct timespec){milliseconds / 1000,
+                                 (milliseconds % 1000) * 1000000},
+              NULL);
 #endif
-    }
 }
 
 double svt_vp9_compute_overall_elapsed_time_ms(const uint64_t start_seconds,
