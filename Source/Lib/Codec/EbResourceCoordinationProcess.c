@@ -17,7 +17,7 @@
 
 #include "EbResourceCoordinationResults.h"
 #include "EbReferenceObject.h"
-#include "EbSvtVp9Time.h"
+#include "EbTime.h"
 
 #include "vp9_alloccommon.h"
 #include "vp9_common.h"
@@ -105,8 +105,8 @@ void eb_vp9_SpeedBufferControl(
 
     uint64_t curs_time_seconds  = 0;
     uint64_t curs_timeu_seconds = 0;
-    double   overall_duration   = 0.0;
-    double   inst_duration      = 0.0;
+    double overall_duration = 0.0;
+    double inst_duration = 0.0;
     int8_t   encoder_mode_delta = 0;
     int64_t  input_frames_count = 0;
     int8_t   change_cond        = 0;
@@ -119,28 +119,24 @@ void eb_vp9_SpeedBufferControl(
     eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->sc_buffer_mutex);
 
     if (sequence_control_set_ptr->encode_context_ptr->sc_frame_in == 0) {
-        eb_start_time(&context_ptr->first_in_pic_arrived_time_seconds, &context_ptr->first_in_pic_arrived_timeu_seconds);
+        svt_vp9_get_time(&context_ptr->first_in_pic_arrived_time_seconds,
+                        &context_ptr->first_in_pic_arrived_timeu_seconds);
     }
     else if (sequence_control_set_ptr->encode_context_ptr->sc_frame_in == SC_FRAMES_TO_IGNORE) {
         context_ptr->start_flag = EB_TRUE;
     }
 
     // Compute duration since the start of the encode and since the previous checkpoint
-    eb_finish_time(&curs_time_seconds, &curs_timeu_seconds);
+    svt_vp9_get_time(&curs_time_seconds, &curs_timeu_seconds);
 
-    eb_compute_overall_elapsed_time_ms(
+    overall_duration = svt_vp9_compute_overall_elapsed_time_ms(
         context_ptr->first_in_pic_arrived_time_seconds,
-        context_ptr->first_in_pic_arrived_timeu_seconds,
-        curs_time_seconds,
-        curs_timeu_seconds,
-        &overall_duration);
+        context_ptr->first_in_pic_arrived_timeu_seconds, curs_time_seconds,
+        curs_timeu_seconds);
 
-    eb_compute_overall_elapsed_time_ms(
-        context_ptr->prevs_time_seconds,
-        context_ptr->prevs_timeu_seconds,
-        curs_time_seconds,
-        curs_timeu_seconds,
-        &inst_duration);
+    inst_duration = svt_vp9_compute_overall_elapsed_time_ms(
+        context_ptr->prevs_time_seconds, context_ptr->prevs_timeu_seconds,
+        curs_time_seconds, curs_timeu_seconds);
 
     input_frames_count = (int64_t)overall_duration *(sequence_control_set_ptr->static_config.injector_frame_rate >> 16) / 1000;
     sequence_control_set_ptr->encode_context_ptr->sc_buffer = input_frames_count - sequence_control_set_ptr->encode_context_ptr->sc_frame_in;
@@ -678,7 +674,8 @@ void* eb_vp9_resource_coordination_kernel(void *input_ptr)
         picture_control_set_ptr->enhanced_picture_ptr = (EbPictureBufferDesc*)eb_input_ptr->p_buffer;
         picture_control_set_ptr->eb_input_ptr = eb_input_ptr;
         end_of_sequence_flag = (picture_control_set_ptr->eb_input_ptr->flags & EB_BUFFERFLAG_EOS) ? EB_TRUE : EB_FALSE;
-        eb_start_time(&picture_control_set_ptr->start_time_seconds, &picture_control_set_ptr->start_timeu_seconds);
+        svt_vp9_get_time(&picture_control_set_ptr->start_time_seconds,
+                        &picture_control_set_ptr->start_timeu_seconds);
 
         picture_control_set_ptr->sequence_control_set_wrapper_ptr    = context_ptr->sequence_control_set_active_array[instance_index];
         picture_control_set_ptr->input_picture_wrapper_ptr          = input_picture_wrapper_ptr;
