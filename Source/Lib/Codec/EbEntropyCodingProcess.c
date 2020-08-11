@@ -57,6 +57,7 @@ EbErrorType eb_vp9_entropy_coding_context_ctor(
 
     return EB_ErrorNone;
 }
+int g_block_index = 0;
 
 /**********************************************
 * Entropy Coding SB
@@ -80,7 +81,6 @@ EbErrorType EntropyCodingSb(
     uint32_t                  block_index = 0;
     uint32_t                  rasterScanIndex;
     uint32_t                  valid_block_index;
-    uint32_t                  search_valid_index;
 
     // Set mi_grid_visible
     cm->mi_grid_visible = picture_control_set_ptr->mode_info_array;
@@ -126,18 +126,12 @@ EbErrorType EntropyCodingSb(
         context_ptr->mi_row = context_ptr->block_origin_y >> MI_SIZE_LOG2;
 
         // Derive partition using block validity and split_flag
-        PARTITION_TYPE partition;
-        valid_block_index = (uint32_t) ~0;
-        for (search_valid_index = block_index; search_valid_index < (block_index + ep_inter_depth_offset); search_valid_index++) {
-            if (search_valid_index < EP_BLOCK_MAX_COUNT && (EB_BOOL)lcuParam->ep_scan_block_validity[search_valid_index] == EB_TRUE) {
-                valid_block_index = search_valid_index;
-                break;
-            }
-        }
+		// ep_scan_block_valid_block holds the block index for the first valid block/subblock
+		// covered by the block (at any depth).  A block is valid if it is within the frame boundary.
+		valid_block_index = lcuParam->ep_scan_block_valid_block[block_index];
 
-        if (valid_block_index == (uint32_t)~0 && ((EB_BOOL)lcuParam->ep_scan_block_validity[search_valid_index + 1] == EB_TRUE)) {
-            partition = PARTITION_SPLIT;
-        } else if (valid_block_index == (uint32_t)~0) {
+		PARTITION_TYPE partition;
+		if (valid_block_index == (uint32_t)~0) {
             partition = PARTITION_INVALID;
         }
         else {

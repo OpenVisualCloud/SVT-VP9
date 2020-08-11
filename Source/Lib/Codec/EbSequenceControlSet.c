@@ -365,7 +365,38 @@ extern EbErrorType eb_vp9_sb_params_init(
             sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_validity[md_scan_block_index] = (((sequence_control_set_ptr->sb_params_array[sb_index].origin_x + ep_block_stats_ptr->origin_x + ep_block_stats_ptr->bwidth) > sequence_control_set_ptr->luma_width) || ((sequence_control_set_ptr->sb_params_array[sb_index].origin_y + ep_block_stats_ptr->origin_y + ep_block_stats_ptr->bheight) > sequence_control_set_ptr->luma_height)) ?
                 EB_FALSE :
                 EB_TRUE;
+
+			sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[md_scan_block_index] = (uint32_t)~0;
         }
+
+		// Find the valid block for each block (highest depth block which is valid and covered by this block). 
+		// A valid block is a block that is within the boundaries of the frame.
+		// Note: The unsigned int loop index logic will go from EP_BLOCK_MAX_COUNT-1 to and including 0.
+		for (md_scan_block_index = EP_BLOCK_MAX_COUNT - 1; md_scan_block_index-- != 0; )
+		{
+			// Initialize the valid block
+			sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[md_scan_block_index] = (uint32_t)~0;
+
+			// If this block is valid, set it as the valid block.
+			if (sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_validity[md_scan_block_index] == EB_TRUE)
+				sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[md_scan_block_index] = md_scan_block_index;
+			else{
+				// search the next lowest depth for valid blocks, but don't go lower than 8x8
+				const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(md_scan_block_index);
+
+				// Only search when block size is greater than 8x8
+				if (ep_block_stats_ptr->bsize > 3)
+				{
+					// Check all of the blocks at the lower depth and find the first one that is valid.
+					for (int search_valid_index = md_scan_block_index; search_valid_index < (md_scan_block_index + ep_inter_depth_offset); search_valid_index++) {
+						if (search_valid_index < EP_BLOCK_MAX_COUNT && sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[search_valid_index] != (uint32_t)~0) {
+							sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[md_scan_block_index] = sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_valid_block[search_valid_index];
+							break;
+						}
+					}
+				}
+			}
+		}
     }
 
     sequence_control_set_ptr->picture_width_in_sb = picturesb_width;
