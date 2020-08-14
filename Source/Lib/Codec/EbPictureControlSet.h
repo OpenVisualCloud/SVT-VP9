@@ -193,7 +193,7 @@ typedef struct SbParameters
     uint8_t   is_complete_sb;
     EB_BOOL   pa_raster_scan_block_validity[PA_BLOCK_MAX_COUNT];
     EB_BOOL   ep_scan_block_validity[EP_BLOCK_MAX_COUNT];
-    uint32_t  ep_scan_block_valid_block[EP_BLOCK_MAX_COUNT];
+    uint16_t  ep_scan_block_valid_block[EP_BLOCK_MAX_COUNT];
     uint8_t   potential_logo_sb;
     uint8_t   is_edge_sb;
 } SbParams;

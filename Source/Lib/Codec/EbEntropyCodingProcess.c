@@ -79,7 +79,7 @@ EbErrorType EntropyCodingSb(
 
     uint32_t                  block_index = 0;
     uint32_t                  rasterScanIndex;
-    uint32_t                  valid_block_index;
+    uint16_t                  valid_block_index;
 
     // Set mi_grid_visible
     cm->mi_grid_visible = picture_control_set_ptr->mode_info_array;
@@ -130,7 +130,7 @@ EbErrorType EntropyCodingSb(
         valid_block_index = lcuParam->ep_scan_block_valid_block[block_index];
 
         PARTITION_TYPE partition;
-        if (valid_block_index == (uint32_t)~0) {
+        if (valid_block_index == (uint16_t)~0) {
             partition = PARTITION_INVALID;
         }
         else {
