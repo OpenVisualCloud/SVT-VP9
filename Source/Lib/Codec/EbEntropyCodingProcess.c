@@ -125,9 +125,9 @@ EbErrorType EntropyCodingSb(
         context_ptr->mi_row = context_ptr->block_origin_y >> MI_SIZE_LOG2;
 
         // Derive partition using block validity and split_flag
-        // ep_scan_block_valid_block holds the block index for the first valid block/subblock
+        // ec_scan_block_valid_block holds the block index for the first valid block/subblock
         // covered by the block (at any depth).  A block is valid if it is within the frame boundary.
-        valid_block_index = lcuParam->ep_scan_block_valid_block[block_index];
+        valid_block_index = lcuParam->ec_scan_block_valid_block[block_index];
 
         PARTITION_TYPE partition;
         if (valid_block_index == (uint16_t)~0) {
