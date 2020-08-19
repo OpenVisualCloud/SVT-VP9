@@ -30,8 +30,4 @@ extern EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(
 
 extern void* eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr);
 
-extern void me_based_global_motion_detection(
-    SequenceControlSet      *sequence_control_set_ptr,
-    PictureParentControlSet *picture_control_set_ptr);
-
 #endif // EbInitialRateControl_h

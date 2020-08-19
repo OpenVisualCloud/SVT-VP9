@@ -670,7 +670,7 @@ void eb_vp9_derive_min_max_me_distortion(
     }
 }
 
-void stationary_edge_over_update_over_time_sb(
+static void stationary_edge_over_update_over_time_sb(
     SequenceControlSet      *sequence_control_set_ptr,
     uint32_t                 total_checked_pictures,
     PictureParentControlSet *picture_control_set_ptr,

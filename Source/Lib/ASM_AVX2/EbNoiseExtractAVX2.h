@@ -51,39 +51,6 @@ void eb_vp9_noise_extract_luma_strong_avx2_intrin(
     uint32_t             sb_origin_y,
     uint32_t             sb_origin_x);
 
-void eb_vp9_chroma_strong_avx2_intrin(
-    __m256i   top,
-    __m256i   curr,
-    __m256i   bottom,
-    __m256i   curr_prev,
-    __m256i   curr_next,
-    __m256i   top_prev,
-    __m256i   top_next,
-    __m256i   bottom_prev,
-    __m256i   bottom_next,
-    uint8_t  *ptr_denoised);
-
-void eb_vp9_luma_weak_filter_avx2_intrin(
-    __m256i   top,
-    __m256i   curr,
-    __m256i   bottom,
-    __m256i   curr_prev,
-    __m256i   curr_next,
-    uint8_t  *ptr_denoised,
-    uint8_t  *ptr_noise);
-
-void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
-    __m256i   top,
-    __m256i   curr,
-    __m256i   bottom,
-    __m256i   curr_prev,
-    __m256i   curr_next,
-    __m256i   top_prev,
-    __m256i   top_next,
-    __m256i   bottom_prev,
-    __m256i   bottom_next,
-    uint8_t  *ptr_denoised);
-
 #ifdef __cplusplus
 }
 #endif

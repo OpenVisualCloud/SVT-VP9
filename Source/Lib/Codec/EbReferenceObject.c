@@ -9,7 +9,7 @@
 #include "EbPictureBufferDesc.h"
 #include "EbReferenceObject.h"
 
-void initialize_samples_neighboring_reference_picture16_bit(
+static void initialize_samples_neighboring_reference_picture16_bit(
     EbByte   recon_samples_buffer_ptr,
     uint16_t stride,
     uint16_t recon_width,
@@ -41,7 +41,7 @@ void initialize_samples_neighboring_reference_picture16_bit(
     }
 }
 
-void initialize_samples_neighboring_reference_picture8_bit(
+static void initialize_samples_neighboring_reference_picture8_bit(
     EbByte   recon_samples_buffer_ptr,
     uint16_t stride,
     uint16_t recon_width,
@@ -73,7 +73,7 @@ void initialize_samples_neighboring_reference_picture8_bit(
     }
 }
 
-void initialize_samples_neighboring_reference_picture(
+static void initialize_samples_neighboring_reference_picture(
     EbReferenceObject           *reference_object,
     EbPictureBufferDescInitData *picture_buffer_desc_init_data_ptr,
     EbBitDepth                   bit_depth) {

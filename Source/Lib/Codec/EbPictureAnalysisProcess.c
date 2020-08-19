@@ -134,7 +134,7 @@ void eb_vp9_decimation_2d(
 * calculate_histogram
 *      creates n-bins histogram for the input
 ********************************************/
-void calculate_histogram(
+static void calculate_histogram(
     uint8_t  *input_samples,      // input parameter, input samples Ptr
     uint32_t  input_area_width,    // input parameter, input area width
     uint32_t  input_area_height,   // input parameter, input area height
@@ -160,7 +160,7 @@ void calculate_histogram(
     return;
 }
 
-uint64_t compute_variance32x32(
+static uint64_t compute_variance32x32(
     EbPictureBufferDesc *input_padded_picture_ptr,         // input parameter, Input Padded Picture
     uint32_t             input_luma_origin_index,          // input parameter, LCU index, used to point to source/reference samples
     uint64_t            *variance8x8)
@@ -296,7 +296,7 @@ uint64_t compute_variance32x32(
     return (mean_of32x32_squared_values_blocks - (mean_of32x32_blocks * mean_of32x32_blocks));
 }
 
-uint64_t compute_variance16x16(
+static uint64_t compute_variance16x16(
     EbPictureBufferDesc *input_padded_picture_ptr,         // input parameter, Input Padded Picture
     uint32_t             input_luma_origin_index,          // input parameter, LCU index, used to point to source/reference samples
     uint64_t             *variance8x8)
@@ -350,7 +350,7 @@ PictureAnalysisComputeVarianceLcu excpet it
 does not store data for every block,
 just returns the 64x64 data point
 *******************************************/
-uint64_t compute_variance64x64(
+static uint64_t compute_variance64x64(
     EbPictureBufferDesc *input_padded_picture_ptr,         // input parameter, Input Padded Picture
     uint32_t             input_luma_origin_index,          // input parameter, LCU index, used to point to source/reference samples
     uint64_t            *variance32x32)
@@ -1038,7 +1038,7 @@ void check_input_for_borders_and_preprocess(
 }
 #endif
 
-uint8_t get_filtered_types(
+static uint8_t get_filtered_types(
     uint8_t  *ptr,
     uint32_t  stride,
     uint8_t   filter_type)
@@ -1454,7 +1454,7 @@ void eb_vp9_noise_extract_luma_weak_sb(
 
 }
 
-EbErrorType zero_out_chroma_block_mean(
+static EbErrorType zero_out_chroma_block_mean(
     PictureParentControlSet     *picture_control_set_ptr,          // input parameter, Picture Control Set Ptr
     uint32_t                       sb_index                // input parameter, LCU address
     )
@@ -1518,7 +1518,7 @@ EbErrorType zero_out_chroma_block_mean(
 * compute_chroma_block_mean
 *   computes the chroma block mean for 64x64, 32x32 and 16x16 CUs inside the tree block
 *******************************************/
-EbErrorType compute_chroma_block_mean(
+static EbErrorType compute_chroma_block_mean(
     PictureParentControlSet *picture_control_set_ptr,          // input parameter, Picture Control Set Ptr
     EbPictureBufferDesc     *input_padded_picture_ptr,         // input parameter, Input Padded Picture
     uint32_t                 sb_index,                      // input parameter, LCU address
@@ -1712,7 +1712,7 @@ EbErrorType compute_chroma_block_mean(
 * compute_block_mean_compute_variance
 *   computes the variance and the block mean of all CUs inside the tree block
 *******************************************/
-EbErrorType compute_block_mean_compute_variance(
+static EbErrorType compute_block_mean_compute_variance(
     PictureParentControlSet *picture_control_set_ptr,          // input parameter, Picture Control Set Ptr
     EbPictureBufferDesc     *input_padded_picture_ptr,         // input parameter, Input Padded Picture
     uint32_t                 sb_index,                      // input parameter, LCU address
@@ -2406,7 +2406,7 @@ EbErrorType compute_block_mean_compute_variance(
     return return_error;
 }
 
-EbErrorType denoise_input_picture(
+static EbErrorType denoise_input_picture(
     PictureAnalysisContext  *context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
@@ -2583,7 +2583,7 @@ EbErrorType denoise_input_picture(
     return return_error;
 }
 
-EbErrorType detect_input_picture_noise(
+static EbErrorType detect_input_picture_noise(
     PictureAnalysisContext  *context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
@@ -2712,7 +2712,7 @@ EbErrorType detect_input_picture_noise(
 
 }
 
-EbErrorType full_sample_denoise(
+static EbErrorType full_sample_denoise(
     PictureAnalysisContext  *context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
@@ -2756,7 +2756,7 @@ EbErrorType full_sample_denoise(
 
 }
 
-EbErrorType sub_sample_filter_noise(
+static EbErrorType sub_sample_filter_noise(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     EbPictureBufferDesc     *input_picture_ptr,
@@ -2945,7 +2945,7 @@ EbErrorType sub_sample_filter_noise(
     return return_error;
 }
 
-EbErrorType quarter_sample_detect_noise(
+static EbErrorType quarter_sample_detect_noise(
     PictureAnalysisContext  *context_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     EbPictureBufferDesc     *quarter_decimated_picture_ptr,
@@ -3079,7 +3079,7 @@ EbErrorType quarter_sample_detect_noise(
 
 }
 
-EbErrorType sub_sample_detect_noise(
+static EbErrorType sub_sample_detect_noise(
     PictureAnalysisContext  *context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
@@ -3214,7 +3214,7 @@ EbErrorType sub_sample_detect_noise(
 
 }
 
-EbErrorType quarter_sample_denoise(
+static EbErrorType quarter_sample_denoise(
     PictureAnalysisContext  *context_ptr,
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
@@ -3338,7 +3338,7 @@ EbErrorType half_sample_denoise(
  ** Setting Number of regions per resolution
  ** Setting width and height for subpicture and when picture scan type is 1
  ************************************************/
-void set_picture_parameters_for_statistics_gathering(
+static void set_picture_parameters_for_statistics_gathering(
     SequenceControlSet *sequence_control_set_ptr
     )
 {
@@ -3355,7 +3355,7 @@ void set_picture_parameters_for_statistics_gathering(
  ***** Borders preprocessing
  ***** Denoising
  ************************************************/
-void picture_pre_processing_operations(
+static void picture_pre_processing_operations(
     PictureParentControlSet  *picture_control_set_ptr,
 #if !TURN_OFF_PRE_PROCESSING
     EbPictureBufferDesc      *input_picture_ptr,
@@ -3411,7 +3411,7 @@ void picture_pre_processing_operations(
 * Generate picture histogram bins for YUV pixel intensity *
 * Calculation is done on a region based (Set previously, resolution dependent)
 **************************************************************/
-void sub_sample_luma_generate_pixel_intensity_histogram_bins(
+static void sub_sample_luma_generate_pixel_intensity_histogram_bins(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     EbPictureBufferDesc     *input_picture_ptr,
@@ -3466,7 +3466,7 @@ void sub_sample_luma_generate_pixel_intensity_histogram_bins(
     return;
 }
 
-void sub_sample_chroma_generate_pixel_intensity_histogram_bins(
+static void sub_sample_chroma_generate_pixel_intensity_histogram_bins(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     EbPictureBufferDesc     *input_picture_ptr,
@@ -3888,7 +3888,7 @@ static void determine_homogeneous_region_in_picture(
  ** Compute Picture Variance
  ** Compute Block Mean for all blocks in the picture
  ************************************************/
-void compute_picture_spatial_statistics(
+static void compute_picture_spatial_statistics(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     PictureAnalysisContext  *context_ptr,
@@ -3961,7 +3961,7 @@ void compute_picture_spatial_statistics(
     return;
 }
 
-void calculate_input_average_intensity(
+static void calculate_input_average_intensity(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     EbPictureBufferDesc     *input_picture_ptr,
@@ -4003,7 +4003,7 @@ void calculate_input_average_intensity(
  ** Calculating the pixel intensity histogram bins per picture needed for SCD
  ** Computing Picture Variance
  ************************************************/
-void gathering_picture_statistics(
+static void gathering_picture_statistics(
     SequenceControlSet      *sequence_control_set_ptr,
     PictureParentControlSet *picture_control_set_ptr,
     PictureAnalysisContext  *context_ptr,
@@ -4124,7 +4124,7 @@ void pad_picture_to_multiple_of_min_cu_size_dimensions(
  * Pad Picture at the right and bottom sides
  ** To complete border LCU smaller than LCU size
  ************************************************/
-void pad_picture_to_multiple_of_sb_dimensions(
+static void pad_picture_to_multiple_of_sb_dimensions(
     EbPictureBufferDesc *input_padded_picture_ptr)
 {
 

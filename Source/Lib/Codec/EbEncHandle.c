@@ -127,7 +127,7 @@ uint32_t           lib_mutex_count = 0;
 uint8_t                          eb_vp9_num_groups = 0;
 #ifdef _WIN32
 GROUP_AFFINITY                   eb_vp9_group_affinity;
-EbBool                           alternate_groups = 0;
+EbBool                           eb_vp9_alternate_groups = 0;
 #elif defined(__linux__)
 cpu_set_t                        eb_vp9_group_affinity;
 typedef struct logicalProcessorGroup {
@@ -589,7 +589,7 @@ static EbErrorType  eb_enc_handle_ctor(
 }
 
 #ifdef _WIN32
-uint64_t get_affinity_mask(uint32_t lpnum) {
+static uint64_t get_affinity_mask(uint32_t lpnum) {
     uint64_t mask = 0x1;
     for (uint32_t i = lpnum - 1; i > 0; i--)
         mask += (uint64_t)1 << i;
@@ -597,7 +597,7 @@ uint64_t get_affinity_mask(uint32_t lpnum) {
 }
 #endif
 
-void eb_set_thread_management_parameters( EbSvtVp9EncConfiguration *config_ptr){
+static void eb_set_thread_management_parameters( EbSvtVp9EncConfiguration *config_ptr){
 
     uint32_t num_logical_processors = get_num_cores();
 #ifdef _WIN32
@@ -617,7 +617,7 @@ void eb_set_thread_management_parameters( EbSvtVp9EncConfiguration *config_ptr){
             uint32_t num_lp_per_group = num_logical_processors / eb_vp9_num_groups;
             if (config_ptr->target_socket == -1) {
                 if (config_ptr->logical_processors > num_lp_per_group) {
-                    alternate_groups = EB_TRUE;
+                    eb_vp9_alternate_groups = EB_TRUE;
                     SVT_LOG("SVT [WARNING]: -lp(logical processors) setting is ignored. Run on both sockets. \n");
                 }
                 else
@@ -1917,7 +1917,7 @@ static int32_t compute_default_intra_period(
     return intra_period;
 }
 
-void set_default_configuration_parameters(
+static void set_default_configuration_parameters(
     SequenceControlSet         *sequence_control_set_ptr) {
 
     // No Cropping Window
@@ -1946,7 +1946,7 @@ static uint32_t compute_default_look_ahead(
     return lad;
 }
 
-void copy_api_from_app(
+static void copy_api_from_app(
     SequenceControlSet         *sequence_control_set_ptr,
     EbSvtVp9EncConfiguration     *p_component_parameter_structure) {
 
@@ -2405,7 +2405,7 @@ static EbErrorType  verify_settings(
 /**********************************
 * Set Parameter
 **********************************/
-void set_param_based_on_input(
+static void set_param_based_on_input(
     SequenceControlSet       *sequence_control_set_ptr) {
 
     // Update picture width, and picture height

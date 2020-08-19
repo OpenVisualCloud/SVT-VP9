@@ -4693,7 +4693,7 @@ static void perform_dist_rate_calc(
          *   of the segment-row (B) as this would block other
          *   threads from performing an update (A).
          ******************************************************/
-        EB_BOOL assign_enc_dec_segments(
+        static EB_BOOL assign_enc_dec_segments(
             EncDecSegments *segment_ptr,
             uint16_t       *segment_in_out_index,
             EncDecTasks    *task_ptr,
@@ -4952,7 +4952,7 @@ static void perform_dist_rate_calc(
             eb_vp9_release_mutex(encode_context_ptr->total_number_of_recon_frame_mutex);
         }
 
-        void pad_ref_and_set_flags(
+        static void pad_ref_and_set_flags(
             PictureControlSet  *picture_control_set_ptr,
             SequenceControlSet *sequence_control_set_ptr
         )

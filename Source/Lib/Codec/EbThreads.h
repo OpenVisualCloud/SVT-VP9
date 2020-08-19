@@ -80,11 +80,11 @@ extern    uint64_t         *total_lib_memory;          // library Memory malloc'
         else { \
             *total_lib_memory += ((n_elements) + (8 - ((n_elements) % 8))); \
         } \
-        if (eb_vp9_num_groups == 2 && alternate_groups){ \
+        if (eb_vp9_num_groups == 2 && eb_vp9_alternate_groups){ \
             eb_vp9_group_affinity.Group = 1 - eb_vp9_group_affinity.Group; \
             SetThreadGroupAffinity(pointer,&eb_vp9_group_affinity,NULL); \
         } \
-        else if (eb_vp9_num_groups == 2 && !alternate_groups){ \
+        else if (eb_vp9_num_groups == 2 && !eb_vp9_alternate_groups){ \
             SetThreadGroupAffinity(pointer,&eb_vp9_group_affinity,NULL); \
         } \
     } \
