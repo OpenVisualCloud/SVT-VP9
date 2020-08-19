@@ -17,16 +17,9 @@ static EB_ALIGN(16) const uint8_t weak_chroma_filter[2][32] = {
         { 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 },
 };
 
-static void eb_vp9_luma_weak_filter_avx2_intrin(
-    __m256i                        top,
-    __m256i                        curr,
-    __m256i                        bottom,
-    __m256i                        curr_prev,
-    __m256i                        curr_next,
-    uint8_t                       *ptr_denoised,
-    uint8_t                       *ptr_noise
-    )
-{
+static inline void eb_vp9_luma_weak_filter_avx2_intrin(
+    __m256i top, __m256i curr, __m256i bottom, __m256i curr_prev,
+    __m256i curr_next, uint8_t *ptr_denoised, uint8_t *ptr_noise) {
     __m256i  top_first_half,
         bottom_first_half,
         filter_first_half,
@@ -74,21 +67,11 @@ static void eb_vp9_luma_weak_filter_avx2_intrin(
     _mm256_storeu_si256((__m256i *)(ptr_denoised ), filter_first_half);
 
     _mm256_storeu_si256((__m256i *)(ptr_noise), _mm256_subs_epu8(curr, filter_first_half));
-
 }
-static void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
-    __m256i                        top,
-    __m256i                        curr,
-    __m256i                        bottom,
-    __m256i                        curr_prev,
-    __m256i                        curr_next,
-    __m256i                        top_prev,
-    __m256i                        top_next,
-    __m256i                        bottom_prev,
-    __m256i                        bottom_next,
-    uint8_t                       *ptr_denoised
-    )
-{
+static inline void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
+    __m256i top, __m256i curr, __m256i bottom, __m256i curr_prev,
+    __m256i curr_next, __m256i top_prev, __m256i top_next, __m256i bottom_prev,
+    __m256i bottom_next, uint8_t *ptr_denoised) {
     __m256i filter_first_half,
         filter_second_half,
         curr_next_first_half,
@@ -174,22 +157,12 @@ static void eb_vp9_chroma_weak_luma_strong_filter_avx2_intrin(
 
     filter_first_half                 = _mm256_permute4x64_epi64(_mm256_packus_epi16(filter_first_half, filter_second_half), 216);
     _mm256_storeu_si256((__m256i *)(ptr_denoised), filter_first_half);
-
 }
 
-static void eb_vp9_chroma_strong_avx2_intrin(
-    __m256i                        top,
-    __m256i                        curr,
-    __m256i                        bottom,
-    __m256i                        curr_prev,
-    __m256i                        curr_next,
-    __m256i                        top_prev,
-    __m256i                        top_next,
-    __m256i                        bottom_prev,
-    __m256i                        bottom_next,
-    uint8_t                       *ptr_denoised
-    )
-{
+static inline void eb_vp9_chroma_strong_avx2_intrin(
+    __m256i top, __m256i curr, __m256i bottom, __m256i curr_prev,
+    __m256i curr_next, __m256i top_prev, __m256i top_next, __m256i bottom_prev,
+    __m256i bottom_next, uint8_t *ptr_denoised) {
     __m256i   curr_left_mid_first_halflo,
         curr_left_mid_first_halfhi,
         curr_prev_permutation,
@@ -266,7 +239,6 @@ static void eb_vp9_chroma_strong_avx2_intrin(
 
     curr_left_mid_first_halflo   = _mm256_insertf128_si256(curr_left_mid_first_halflo, _mm_packus_epi16(_mm256_extracti128_si256(curr_left_mid_first_halfhi, 0), _mm256_extracti128_si256(curr_left_mid_first_halfhi, 1)), 1);
     _mm256_storeu_si256((__m256i *)(ptr_denoised), curr_left_mid_first_halflo);
-
 }
 /*******************************************
 * eb_vp9_noise_extract_luma_weak
