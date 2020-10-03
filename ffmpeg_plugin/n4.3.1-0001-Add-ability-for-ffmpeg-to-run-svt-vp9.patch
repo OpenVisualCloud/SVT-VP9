@@ -21,17 +21,17 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index bdfd731602..778c6f7787 100755
+index bdfd731602..fbe6f838df 100755
 --- a/configure
 +++ b/configure
-@@ -284,6 +284,7 @@ External library support:
+@@ -283,6 +283,7 @@ External library support:
    --enable-libvorbis       enable Vorbis en/decoding via libvorbis,
                             native implementation exists [no]
    --enable-libvpx          enable VP8 and VP9 de/encoding via libvpx [no]
 +  --enable-libsvtvp9       enable VP9 encoding via svt [no]
+   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
    --enable-libwebp         enable WebP encoding via libwebp [no]
    --enable-libx264         enable H.264 encoding via x264 [no]
-   --enable-libx265         enable HEVC encoding via x265 [no]
 @@ -1800,6 +1801,7 @@ EXTERNAL_LIBRARY_LIST="
      librtmp
      libshine
@@ -40,46 +40,46 @@ index bdfd731602..778c6f7787 100755
      libsnappy
      libsoxr
      libspeex
-@@ -3263,6 +3265,7 @@ libvpx_vp8_decoder_deps="libvpx"
+@@ -3253,6 +3255,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
 +libsvt_vp9_encoder_deps="libsvtvp9"
+ libwavpack_encoder_deps="libwavpack"
+ libwavpack_encoder_select="audio_frame_queue"
  libwebp_encoder_deps="libwebp"
- libwebp_anim_encoder_deps="libwebp"
- libx262_encoder_deps="libx262"
-@@ -6435,6 +6438,7 @@ enabled libvpx            && {
+@@ -6412,6 +6415,7 @@ enabled libvpx            && {
      fi
  }
  
-+enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h       eb_vp9_svt_init_handle
++enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h eb_vp9_svt_init_handle
+ enabled libwavpack        && require libwavpack wavpack/wavpack.h WavpackOpenFileOutput  -lwavpack
  enabled libwebp           && {
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
-     enabled libwebp_anim_encoder && check_pkg_config libwebp_anim_encoder "libwebpmux >= 0.4.0" webp/mux.h WebPAnimEncoderOptionsInit; }
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 0d2f7960a9..6607a362bc 100644
+index 18353da549..230660ea27 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1048,6 +1048,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
+@@ -1035,6 +1035,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o libvpx.o
  OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o libvpx.o
 +OBJS-$(CONFIG_LIBSVT_VP9_ENCODER)         += libsvt_vp9.o
+ OBJS-$(CONFIG_LIBWAVPACK_ENCODER)         += libwavpackenc.o
  OBJS-$(CONFIG_LIBWEBP_ENCODER)            += libwebpenc_common.o libwebpenc.o
  OBJS-$(CONFIG_LIBWEBP_ANIM_ENCODER)       += libwebpenc_common.o libwebpenc_animencoder.o
- OBJS-$(CONFIG_LIBX262_ENCODER)            += libx264.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index 1953cd86c1..2689c951f2 100644
+index a5048290f7..c34ef96fb9 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -746,6 +746,7 @@ extern AVCodec ff_libvpx_vp8_encoder;
+@@ -735,6 +735,7 @@ extern AVCodec ff_libvpx_vp8_encoder;
  extern AVCodec ff_libvpx_vp8_decoder;
  extern AVCodec ff_libvpx_vp9_encoder;
  extern AVCodec ff_libvpx_vp9_decoder;
 +extern AVCodec ff_libsvt_vp9_encoder;
+ extern AVCodec ff_libwavpack_encoder;
  /* preferred over libwebp */
  extern AVCodec ff_libwebp_anim_encoder;
- extern AVCodec ff_libwebp_encoder;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
 index c91b2fd169..10cdb7b0d9 100644
 --- a/libavcodec/avcodec.h

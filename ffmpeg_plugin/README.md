@@ -38,10 +38,17 @@ cd ffmpeg
 
 Which patch to apply will depend on which version of FFmpeg you are going to use.
 
-n4.3 and master:
+master:
 
 ```bash
 git apply ../ffmpeg_plugin/master-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
+```
+
+n4.3.1 tag:
+
+```bash
+git checkout n4.3.1
+git apply ../ffmpeg_plugin/n4.3.1-0001-Add-ability-for-ffmpeg-to-run-svt-vp9.patch
 ```
 
 n4.2.3 tag:
