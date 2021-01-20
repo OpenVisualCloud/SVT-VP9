@@ -3,6 +3,12 @@
 [![Travis Build Status](https://travis-ci.org/OpenVisualCloud/SVT-VP9.svg?branch=master)](https://travis-ci.org/OpenVisualCloud/SVT-VP9)
 [![Coverage Status](https://coveralls.io/repos/github/OpenVisualCloud/SVT-VP9/badge.svg?branch=master)](https://coveralls.io/github/OpenVisualCloud/SVT-VP9?branch=master)
 
+---
+
+### <b>Join Hackathon [Open Your Mind to Endless Possibilities](https://software.seek.intel.com/OpenVisualCloudHackathon-contest)<br>Registration: Jan 11 - March 12, 2021</b>   
+
+---
+
 The Scalable Video Technology for VP9 Encoder (SVT-VP9 Encoder) is a VP9-compliant encoder library core. The SVT-VP9 Encoder development is a work-in-progress targeting performance levels applicable to both VOD and Live encoding/transcoding video applications.
 
 The SVT-VP9 Encoder is being optimized to achieve excellent performance levels currently supporting 10 density-quality presets (please refer to the user guide for more details) on a system with a dual Intel® Xeon® Scalable processor targeting:
