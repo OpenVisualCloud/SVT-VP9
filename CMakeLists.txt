@@ -3,7 +3,7 @@
 # SPDX - License - Identifier: BSD - 2 - Clause - Patent
 # ~~~
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 set(project_name "svt-vp9")
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
