@@ -1692,8 +1692,8 @@ EbErrorType eb_vp9_svt_enc_init_parameter(
     config_ptr->asm_type = 1;
 
     // Channel info
-    //config_ptr->logicalProcessors = 0;
-    //config_ptr->target_socket = -1;
+    config_ptr->logical_processors = 0;
+    config_ptr->target_socket = -1;
     config_ptr->channel_id = 0;
     config_ptr->active_channel_count = 1;
 
