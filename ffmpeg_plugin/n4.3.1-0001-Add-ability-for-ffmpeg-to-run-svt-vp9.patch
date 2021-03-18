@@ -12,7 +12,7 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   4 +
- libavcodec/libsvt_vp9.c   | 509 ++++++++++++++++++++++++++++++++++++++
+ libavcodec/libsvt_vp9.c   | 514 ++++++++++++++++++++++++++++++++++++++
  libavformat/dashenc.c     |  49 +++-
  libavformat/ivfenc.c      |  30 ++-
  libavformat/matroskaenc.c | 104 +++++++-
@@ -100,7 +100,7 @@ new file mode 100644
 index 0000000000..a557019c9b
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,509 @@
+@@ -0,0 +1,514 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -163,6 +163,8 @@ index 0000000000..a557019c9b
 +    int rc_mode;
 +    int tune;
 +    int qp;
++
++    int target_socket;
 +
 +    int forced_idr;
 +
@@ -277,7 +279,7 @@ index 0000000000..a557019c9b
 +    param->tune                     = svt_enc->tune;
 +    param->base_layer_switch_mode   = svt_enc->base_layer_switch_mode;
 +    param->qp                       = svt_enc->qp;
-+
++    param->target_socket            = svt_enc->target_socket;
 +    param->target_bit_rate          = avctx->bit_rate;
 +    if (avctx->gop_size > 0)
 +        param->intra_period  = avctx->gop_size - 1;
@@ -565,6 +567,9 @@ index 0000000000..a557019c9b
 +
 +    { "qp", "QP value for intra frames", OFFSET(qp),
 +      AV_OPT_TYPE_INT, { .i64 = 32 }, 0, 51, VE },
++
++    { "socket", "Target CPU socket to use.  -1 use all available", OFFSET(target_socket),
++      AV_OPT_TYPE_INT, { .i64 = -1 }, -1, 1, VE },
 +
 +    { "bl_mode", "Random Access Prediction Structure type setting", OFFSET(base_layer_switch_mode),
 +      AV_OPT_TYPE_BOOL, { .i64 = 0 }, 0, 1, VE },
