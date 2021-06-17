@@ -1,4 +1,4 @@
-From c2cd7ee28a9e5ae280db22f9cfb2efb59342fcda Mon Sep 17 00:00:00 2001
+From bc2198e73ef5f22801ee746076e2407ba752dd4b Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -9,19 +9,20 @@ Signed-off-by: Austin Hu <austin.hu@intel.com>
 Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
 ---
  configure                 |   4 +
+ fftools/ffmpeg.c          |   8 +-
  libavcodec/Makefile       |   1 +
  libavcodec/allcodecs.c    |   1 +
  libavcodec/avcodec.h      |   2 +
- libavcodec/libsvt_vp9.c   | 486 ++++++++++++++++++++++++++++++++++++++
- libavformat/dashenc.c     |  49 +++-
- libavformat/ivfenc.c      |  34 ++-
- libavformat/matroskaenc.c | 112 ++++++++-
+ libavcodec/libsvt_vp9.c   | 494 ++++++++++++++++++++++++++++++++++++++++++++++
+ libavformat/dashenc.c     |  49 ++++-
+ libavformat/ivfenc.c      |  34 +++-
+ libavformat/matroskaenc.c | 112 ++++++++++-
  libavformat/movenc.c      |  42 +++-
- 9 files changed, 713 insertions(+), 13 deletions(-)
+ 10 files changed, 731 insertions(+), 16 deletions(-)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 6a7a85cbb9..4367647a22 100755
+index 6a7a85c..4367647 100755
 --- a/configure
 +++ b/configure
 @@ -278,6 +278,7 @@ External library support:
@@ -56,8 +57,27 @@ index 6a7a85cbb9..4367647a22 100755
  enabled libwavpack        && require libwavpack wavpack/wavpack.h WavpackOpenFileOutput  -lwavpack
  enabled libwebp           && {
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
+diff --git a/fftools/ffmpeg.c b/fftools/ffmpeg.c
+index a2d2f94..90dc5e7 100644
+--- a/fftools/ffmpeg.c
++++ b/fftools/ffmpeg.c
+@@ -765,9 +765,11 @@ static void write_packet(OutputFile *of, AVPacket *pkt, OutputStream *ost, int u
+         if (pkt->dts != AV_NOPTS_VALUE &&
+             pkt->pts != AV_NOPTS_VALUE &&
+             pkt->dts > pkt->pts) {
+-            av_log(s, AV_LOG_WARNING, "Invalid DTS: %"PRId64" PTS: %"PRId64" in output stream %d:%d, replacing by guess\n",
+-                   pkt->dts, pkt->pts,
+-                   ost->file_index, ost->st->index);
++            if(!pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
++                av_log(s, AV_LOG_WARNING, "Invalid DTS: %"PRId64" PTS: %"PRId64" in output stream %d:%d, replacing by guess\n",
++                       pkt->dts, pkt->pts,
++                       ost->file_index, ost->st->index);
++            }
+             pkt->pts =
+             pkt->dts = pkt->pts + pkt->dts + ost->last_mux_dts + 1
+                      - FFMIN3(pkt->pts, pkt->dts, ost->last_mux_dts + 1)
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 3cd73fbcc6..cc756acfe7 100644
+index 3cd73fb..cc756ac 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
 @@ -1001,6 +1001,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
@@ -69,7 +89,7 @@ index 3cd73fbcc6..cc756acfe7 100644
  OBJS-$(CONFIG_LIBWEBP_ENCODER)            += libwebpenc_common.o libwebpenc.o
  OBJS-$(CONFIG_LIBWEBP_ANIM_ENCODER)       += libwebpenc_common.o libwebpenc_animencoder.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index d2f9a39ce5..205333db96 100644
+index d2f9a39..205333d 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
 @@ -716,6 +716,7 @@ extern AVCodec ff_libvpx_vp8_encoder;
@@ -81,7 +101,7 @@ index d2f9a39ce5..205333db96 100644
  /* preferred over libwebp */
  extern AVCodec ff_libwebp_anim_encoder;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index d234271c5b..0d903571b3 100644
+index d234271..0d90357 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
 @@ -1527,6 +1527,8 @@ typedef struct AVPacket {
@@ -95,10 +115,10 @@ index d234271c5b..0d903571b3 100644
      AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..037467366e
+index 0000000..b742f94
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,486 @@
+@@ -0,0 +1,494 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -164,6 +184,8 @@ index 0000000000..037467366e
 +    int level;
 +
 +    int base_layer_switch_mode;
++
++    int dts_offset;
 +} SvtContext;
 +
 +static int error_mapping(EbErrorType svt_ret)
@@ -352,6 +374,8 @@ index 0000000000..037467366e
 +        goto failed_init_handle;
 +    }
 +
++    svt_enc->dts_offset = 0;
++
 + //   if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
 + //       EbBufferHeaderType* headerPtr;
 + //       headerPtr->size       = sizeof(headerPtr);
@@ -469,7 +493,11 @@ index 0000000000..037467366e
 +    memcpy(pkt->data, headerPtr->p_buffer, headerPtr->n_filled_len);
 +    pkt->size = headerPtr->n_filled_len;
 +    pkt->pts  = headerPtr->pts;
-+    pkt->dts  = headerPtr->dts;
++    if(headerPtr->dts < 0 && !svt_enc->dts_offset)
++        svt_enc->dts_offset = -headerPtr->dts;
++
++    pkt->dts = headerPtr->dts + svt_enc->dts_offset;
++
 +    if (headerPtr->pic_type == EB_IDR_PICTURE)
 +        pkt->flags |= AV_PKT_FLAG_KEY;
 +    if (headerPtr->pic_type == EB_NON_REF_PICTURE)
@@ -586,7 +614,7 @@ index 0000000000..037467366e
 +    .wrapper_name   = "libsvt_vp9",
 +};
 diff --git a/libavformat/dashenc.c b/libavformat/dashenc.c
-index f0e45da89a..fdd3eb0cb0 100644
+index f0e45da..fdd3eb0 100644
 --- a/libavformat/dashenc.c
 +++ b/libavformat/dashenc.c
 @@ -1822,6 +1822,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
@@ -660,7 +688,7 @@ index f0e45da89a..fdd3eb0cb0 100644
      .deinit         = dash_free,
      .check_bitstream = dash_check_bitstream,
 diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
-index adf72117e9..05f08131a6 100644
+index adf7211..05f0813 100644
 --- a/libavformat/ivfenc.c
 +++ b/libavformat/ivfenc.c
 @@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
@@ -703,7 +731,7 @@ index adf72117e9..05f08131a6 100644
 @@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
      int ret = 1;
      AVStream *st = s->streams[pkt->stream_index];
-
+ 
 +    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
 +       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
 +        return 0;
@@ -712,7 +740,7 @@ index adf72117e9..05f08131a6 100644
          ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
      else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
 diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index 0f535f61d4..b8638848d1 100644
+index 0f535f6..b863884 100644
 --- a/libavformat/matroskaenc.c
 +++ b/libavformat/matroskaenc.c
 @@ -161,6 +161,9 @@ typedef struct MatroskaMuxContext {
@@ -861,7 +889,7 @@ index 0f535f61d4..b8638848d1 100644
 +            cluster_time = pkt->pts - mkv->cluster_pts;
 +    }
      cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
-
+ 
      // start a new cluster every 5 MB or 5 sec, or 32k / 1 sec for streaming or
 @@ -2523,6 +2608,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
      }
@@ -889,7 +917,7 @@ index 0f535f61d4..b8638848d1 100644
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
 diff --git a/libavformat/movenc.c b/libavformat/movenc.c
-index d0bd1824e1..62e306c0a8 100644
+index d0bd182..145dd1d 100644
 --- a/libavformat/movenc.c
 +++ b/libavformat/movenc.c
 @@ -5625,7 +5625,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
@@ -911,12 +939,12 @@ index d0bd1824e1..62e306c0a8 100644
 +            // Latter 4 one-byte repeated frames
 +            pkt->data = saved_data + saved_size - 4;
 +            pkt->size = 1;
-+            pkt->pts = saved_pts - 2;
++            pkt->pts = saved_pts - 2 * pkt->duration;
 +            ret = ff_mov_write_packet(s, pkt);
 +
 +            pkt->data = saved_data + saved_size - 3;
 +            pkt->size = 1;
-+            pkt->pts = saved_pts - 1;
++            pkt->pts = saved_pts - pkt->duration;
 +            ret = ff_mov_write_packet(s, pkt);
 +
 +            pkt->data = saved_data + saved_size - 2;
@@ -926,7 +954,7 @@ index d0bd1824e1..62e306c0a8 100644
 +
 +            pkt->data = saved_data + saved_size - 1;
 +            pkt->size = 1;
-+            pkt->pts = saved_pts + 1;
++            pkt->pts = saved_pts + pkt->duration;
 +            ret = ff_mov_write_packet(s, pkt);
 +        }
 +        else{
@@ -948,5 +976,6 @@ index d0bd1824e1..62e306c0a8 100644
      if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
          if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
              ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
---
-2.25.1
+-- 
+2.7.4
+
