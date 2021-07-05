@@ -1,4 +1,4 @@
-From bc2198e73ef5f22801ee746076e2407ba752dd4b Mon Sep 17 00:00:00 2001
+From 5a0e851c7451bfaad24d88d28e65037246fcc1a0 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -7,18 +7,13 @@ Signed-off-by: hassene <hassene.tmar@intel.com>
 Signed-off-by: Jing Sun <jing.a.sun@intel.com>
 Signed-off-by: Austin Hu <austin.hu@intel.com>
 Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
+Signed-off-by: Andrei Bich <dronimal@yandex-team.ru>
 ---
- configure                 |   4 +
- fftools/ffmpeg.c          |   8 +-
- libavcodec/Makefile       |   1 +
- libavcodec/allcodecs.c    |   1 +
- libavcodec/avcodec.h      |   2 +
- libavcodec/libsvt_vp9.c   | 494 ++++++++++++++++++++++++++++++++++++++++++++++
- libavformat/dashenc.c     |  49 ++++-
- libavformat/ivfenc.c      |  34 +++-
- libavformat/matroskaenc.c | 112 ++++++++++-
- libavformat/movenc.c      |  42 +++-
- 10 files changed, 731 insertions(+), 16 deletions(-)
+ configure               |   4 +
+ libavcodec/Makefile     |   1 +
+ libavcodec/allcodecs.c  |   1 +
+ libavcodec/libsvt_vp9.c | 705 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 711 insertions(+)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -52,30 +47,11 @@ index 6a7a85c..4367647 100755
 @@ -6299,6 +6302,7 @@ enabled libvpx            && {
      fi
  }
-
+ 
 +enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h eb_vp9_svt_init_handle
  enabled libwavpack        && require libwavpack wavpack/wavpack.h WavpackOpenFileOutput  -lwavpack
  enabled libwebp           && {
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
-diff --git a/fftools/ffmpeg.c b/fftools/ffmpeg.c
-index a2d2f94..90dc5e7 100644
---- a/fftools/ffmpeg.c
-+++ b/fftools/ffmpeg.c
-@@ -765,9 +765,11 @@ static void write_packet(OutputFile *of, AVPacket *pkt, OutputStream *ost, int u
-         if (pkt->dts != AV_NOPTS_VALUE &&
-             pkt->pts != AV_NOPTS_VALUE &&
-             pkt->dts > pkt->pts) {
--            av_log(s, AV_LOG_WARNING, "Invalid DTS: %"PRId64" PTS: %"PRId64" in output stream %d:%d, replacing by guess\n",
--                   pkt->dts, pkt->pts,
--                   ost->file_index, ost->st->index);
-+            if(!pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+                av_log(s, AV_LOG_WARNING, "Invalid DTS: %"PRId64" PTS: %"PRId64" in output stream %d:%d, replacing by guess\n",
-+                       pkt->dts, pkt->pts,
-+                       ost->file_index, ost->st->index);
-+            }
-             pkt->pts =
-             pkt->dts = pkt->pts + pkt->dts + ost->last_mux_dts + 1
-                      - FFMIN3(pkt->pts, pkt->dts, ost->last_mux_dts + 1)
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
 index 3cd73fb..cc756ac 100644
 --- a/libavcodec/Makefile
@@ -100,25 +76,12 @@ index d2f9a39..205333d 100644
  extern AVCodec ff_libwavpack_encoder;
  /* preferred over libwebp */
  extern AVCodec ff_libwebp_anim_encoder;
-diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index d234271..0d90357 100644
---- a/libavcodec/avcodec.h
-+++ b/libavcodec/avcodec.h
-@@ -1527,6 +1527,8 @@ typedef struct AVPacket {
-  */
- #define AV_PKT_FLAG_DISPOSABLE 0x0010
-
-+#define AV_PKT_FLAG_SVT_VP9_EXT_ON  0x10000 // Indicating SVT VP9 frame header ext on
-+#define AV_PKT_FLAG_SVT_VP9_EXT_OFF 0x20000 // Indicating SVT VP9 frame header ext off
-
- enum AVSideDataParamChangeFlags {
-     AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000..b742f94
+index 0000000..6ed6e62
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
-@@ -0,0 +1,494 @@
+@@ -0,0 +1,705 @@
 +/*
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
@@ -148,15 +111,39 @@ index 0000000..b742f94
 +#include "libavutil/common.h"
 +#include "libavutil/frame.h"
 +#include "libavutil/opt.h"
++#include "libavcodec/get_bits.h"
 +
 +#include "internal.h"
++#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
++#include "encode.h"
++#endif
++
 +#include "avcodec.h"
++
++#define SUPERFRAME_INDEX_MAX_SIZE 128
++
++#define RECIVED_FRAMES_MAX_SIZE 32
++#define MAX_VP9_SUPERFRAME_SIZE 8
 +
 +typedef enum eos_status {
 +    EOS_NOT_REACHED = 0,
 +    EOS_REACHED,
 +    EOS_TOTRIGGER
 +}EOS_STATUS;
++
++typedef struct SvtReceivedFrameStruct {
++    // fields for AVPacket
++    AVBufferRef *buf;
++    int64_t pts;
++    int64_t dts;
++    int size;
++    int flags;
++
++    // svt fields:
++    int ready_flag; // frame or superframe in data is visible
++    int frames_count;
++    int frames_sizes[MAX_VP9_SUPERFRAME_SIZE];
++} SvtReceivedFrameStruct;
 +
 +typedef struct SvtContext {
 +    AVClass     *class;
@@ -166,6 +153,8 @@ index 0000000..b742f94
 +
 +    EbBufferHeaderType         *in_buf;
 +    int                         raw_size;
++
++    AVFrame *frame;
 +
 +    AVBufferPool* pool;
 +
@@ -185,7 +174,10 @@ index 0000000..b742f94
 +
 +    int base_layer_switch_mode;
 +
-+    int dts_offset;
++
++    int64_t last_ready_dts;
++    SvtReceivedFrameStruct received_frames[RECIVED_FRAMES_MAX_SIZE];
++    int received_frames_size;
 +} SvtContext;
 +
 +static int error_mapping(EbErrorType svt_ret)
@@ -245,7 +237,7 @@ index 0000000..b742f94
 +
 +    EbSvtEncInput *in_data;
 +
-+    svt_enc->raw_size = (luma_size_8bit + luma_size_10bit) * 3 / 2;
++    svt_enc->raw_size = ((luma_size_8bit + luma_size_10bit) * 3 / 2) * MAX_VP9_SUPERFRAME_SIZE + SUPERFRAME_INDEX_MAX_SIZE;
 +
 +    // allocate buffer for in and out
 +    svt_enc->in_buf           = av_mallocz(sizeof(*svt_enc->in_buf));
@@ -263,6 +255,9 @@ index 0000000..b742f94
 +    svt_enc->pool = av_buffer_pool_init(svt_enc->raw_size, NULL);
 +    if (!svt_enc->pool)
 +        goto failed;
++
++    svt_enc->received_frames_size = 0;
++    svt_enc->last_ready_dts = -1e9;
 +
 +    return 0;
 +
@@ -374,7 +369,9 @@ index 0000000..b742f94
 +        goto failed_init_handle;
 +    }
 +
-+    svt_enc->dts_offset = 0;
++    svt_enc->frame = av_frame_alloc();
++    if (!svt_enc->frame)
++        return AVERROR(ENOMEM);
 +
 + //   if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
 + //       EbBufferHeaderType* headerPtr;
@@ -427,13 +424,16 @@ index 0000000..b742f94
 +    EbBufferHeaderType  *headerPtr = svt_enc->in_buf;
 +
 +    if (!frame) {
++        if (svt_enc->eos_flag == EOS_REACHED)
++            return 0;
++
 +        EbBufferHeaderType headerPtrLast;
 +        headerPtrLast.n_alloc_len   = 0;
 +        headerPtrLast.n_filled_len  = 0;
 +        headerPtrLast.n_tick_count  = 0;
 +        headerPtrLast.p_app_private = NULL;
-+        headerPtrLast.p_buffer     = NULL;
-+        headerPtrLast.flags      = EB_BUFFERFLAG_EOS;
++        headerPtrLast.p_buffer      = NULL;
++        headerPtrLast.flags         = EB_BUFFERFLAG_EOS;
 +
 +        eb_vp9_svt_enc_send_picture(svt_enc->svt_handle, &headerPtrLast);
 +        svt_enc->eos_flag = EOS_REACHED;
@@ -465,54 +465,224 @@ index 0000000..b742f94
 +    return 0;
 +}
 +
++static int is_frame_visible(uint8_t const* ptr, int size) {
++    GetBitContext gb;
++    int ret, visible, profile;
++    if ((ret = init_get_bits8(&gb, ptr, size)) < 0) {
++        return ret;
++    }
++
++    // frame marker
++    get_bits(&gb, 2);
++    profile  = get_bits1(&gb);
++    profile |= get_bits1(&gb) << 1;
++
++    // reserved_zero
++    if (profile == 3) profile += get_bits1(&gb);  // reserved_zero
++
++    // read show_existing_frame
++    if (get_bits1(&gb)) {
++        // show_existing_frame == 1
++        visible = 1;
++    } else {
++        // show_existing_frame == 0
++        // keyframe (frame_type actually)
++        get_bits1(&gb);
++        // read show_frame
++        visible = get_bits1(&gb) ? 2 : 0;
++    }
++
++    return visible;
++}
++
++static int get_received_frame(SvtContext *svt_enc, AVPacket *pkt) {
++    SvtReceivedFrameStruct* rfs = &svt_enc->received_frames[0];
++
++    if (svt_enc->received_frames_size == 0 || !rfs->ready_flag) {
++        return AVERROR(EAGAIN);
++    }
++
++    pkt->buf = rfs->buf;
++    pkt->data = rfs->buf->data;
++    pkt->dts = rfs->dts;
++    pkt->pts = rfs->pts;
++    pkt->flags = rfs->flags;
++    pkt->size = rfs->size;
++
++    --svt_enc->received_frames_size;
++    for (int i = 0; i < svt_enc->received_frames_size; ++i) {
++        svt_enc->received_frames[i] = svt_enc->received_frames[i + 1];
++    }
++
++    return 0;
++}
++
++static int put_received_frame(AVCodecContext *avctx, uint8_t* data, int size, int keyframe, int64_t dts, int64_t pts) {
++    SvtContext  *svt_enc = avctx->priv_data;
++    SvtReceivedFrameStruct* rfs;
++
++    if (svt_enc->received_frames_size == 0 || svt_enc->received_frames[svt_enc->received_frames_size - 1].ready_flag) {
++        ++svt_enc->received_frames_size;
++        if (svt_enc->received_frames_size > RECIVED_FRAMES_MAX_SIZE) {
++            av_log(avctx, AV_LOG_ERROR, "Fail: svt_enc->received_frames_size > RECIVED_FRAMES_MAX_SIZE \n");
++            return AVERROR_BUG;
++        }
++
++        rfs = &svt_enc->received_frames[svt_enc->received_frames_size - 1];
++
++        rfs->buf = av_buffer_pool_get(svt_enc->pool);
++        if (!rfs->buf) {
++            av_log(avctx, AV_LOG_ERROR, "Failed to allocate output packet.\n");
++            return AVERROR(ENOMEM);
++        }
++
++        rfs->size = 0;
++        rfs->flags = 0;
++        rfs->ready_flag = 0;
++        rfs->frames_count = 0;
++    } else {
++        rfs = &svt_enc->received_frames[svt_enc->received_frames_size - 1];
++    }
++
++    rfs->pts = pts;
++    rfs->dts = dts;
++    rfs->flags = (keyframe ? AV_PKT_FLAG_KEY : 0);
++
++    ++rfs->frames_count;
++    if (rfs->frames_count > MAX_VP9_SUPERFRAME_SIZE) {
++        av_log(avctx, AV_LOG_ERROR, "Fail: rfs->frames_count > MAX_VP9_SUPERFRAME_SIZE \n");
++        return AVERROR_BUG;
++    }
++
++    rfs->frames_sizes[rfs->frames_count - 1] = size;
++
++    memcpy(rfs->buf->data + rfs->size, data, size);
++    rfs->size += size;
++
++    int visible = is_frame_visible(data, size);
++    if (visible < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Fail: is_frame_visible \n");
++        return visible;
++    }
++
++
++    rfs->ready_flag = visible;
++
++    if (rfs->ready_flag) {
++        if (rfs->dts <= svt_enc->last_ready_dts) {
++            rfs->dts = svt_enc->last_ready_dts + 1;
++        }
++        svt_enc->last_ready_dts = rfs->dts;
++
++    }
++
++    // add superframe_index if needed
++    if (rfs->ready_flag && rfs->frames_count > 1) {
++        // superframe_header:
++        // 110 - superframe_marker
++        // 11 = 3 = bytes_per_framesize_minus_1 - use 4-bytes size
++        // xxx = frames_in_superframe_minus_1
++        uint8_t header = 0b11011000;
++        header |= (rfs->frames_count - 1) & 0b111;
++
++        uint8_t* ptr = rfs->buf->data + rfs->size;
++
++        ptr[0] = header;
++        ++ptr;
++
++        for (int i = 0; i < rfs->frames_count; ++i) {
++            ptr[0] = (rfs->frames_sizes[i] >>  0) & 0xff;
++            ptr[1] = (rfs->frames_sizes[i] >>  8) & 0xff;
++            ptr[2] = (rfs->frames_sizes[i] >> 16) & 0xff;
++            ptr[3] = (rfs->frames_sizes[i] >> 24) & 0xff;
++
++            ptr += 4;
++        }
++
++        ptr[0] = header;
++        ++ptr;
++
++        rfs->size = ptr - rfs->buf->data;
++    }
++
++    return 0;
++}
++
 +static int eb_receive_packet(AVCodecContext *avctx, AVPacket *pkt)
 +{
 +    SvtContext  *svt_enc = avctx->priv_data;
 +    EbBufferHeaderType   *headerPtr;
 +    EbErrorType          svt_ret;
 +    AVBufferRef *ref;
++    int ret = 0;
++
++    if (get_received_frame(svt_enc, pkt) == 0) {
++        return 0;
++    }
 +
 +    if (EOS_TOTRIGGER == svt_enc->eos_flag) {
 +        pkt = NULL;
 +        return AVERROR_EOF;
 +    }
 +
-+    svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
-+    if (svt_ret == EB_NoErrorEmptyQueue)
-+        return AVERROR(EAGAIN);
-+
-+    ref = av_buffer_pool_get(svt_enc->pool);
-+    if (!ref) {
-+        av_log(avctx, AV_LOG_ERROR, "Failed to allocate output packet.\n");
-+        eb_vp9_svt_release_out_buffer(&headerPtr);
-+        return AVERROR(ENOMEM);
++#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 93, 100)
++    AVFrame *frame = svt_enc->frame;
++    ret = ff_encode_get_frame(avctx, frame);
++    if (ret < 0 && ret != AVERROR_EOF) {
++        return ret;
 +    }
-+    pkt->buf = ref;
-+    pkt->data = ref->data;
++    if (ret == AVERROR_EOF)
++        frame = NULL;
 +
-+    memcpy(pkt->data, headerPtr->p_buffer, headerPtr->n_filled_len);
-+    pkt->size = headerPtr->n_filled_len;
-+    pkt->pts  = headerPtr->pts;
-+    if(headerPtr->dts < 0 && !svt_enc->dts_offset)
-+        svt_enc->dts_offset = -headerPtr->dts;
++    eb_send_frame(avctx, frame);
++    av_frame_unref(svt_enc->frame);
++#endif
 +
-+    pkt->dts = headerPtr->dts + svt_enc->dts_offset;
 +
-+    if (headerPtr->pic_type == EB_IDR_PICTURE)
-+        pkt->flags |= AV_PKT_FLAG_KEY;
-+    if (headerPtr->pic_type == EB_NON_REF_PICTURE)
-+        pkt->flags |= AV_PKT_FLAG_DISPOSABLE;
++    for (;;) {
++        svt_ret = eb_vp9_svt_get_packet(svt_enc->svt_handle, &headerPtr, svt_enc->eos_flag);
++        if (svt_ret == EB_NoErrorEmptyQueue) {
++            return AVERROR(EAGAIN);
++        }
 +
-+    if (headerPtr->flags & EB_BUFFERFLAG_SHOW_EXT)
-+        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_ON;
-+    else
-+        pkt->flags |= AV_PKT_FLAG_SVT_VP9_EXT_OFF;
++        if (EB_BUFFERFLAG_EOS & headerPtr->flags)
++            svt_enc->eos_flag = EOS_TOTRIGGER;
 +
-+    if (EB_BUFFERFLAG_EOS & headerPtr->flags)
-+        svt_enc->eos_flag = EOS_TOTRIGGER;
++        ret = 0;
 +
-+    eb_vp9_svt_release_out_buffer(&headerPtr);
-+    return 0;
++        // ignore headerPtr->dts on purpose
++
++        if (headerPtr->flags & EB_BUFFERFLAG_SHOW_EXT) {
++            ret = put_received_frame(avctx, headerPtr->p_buffer, headerPtr->n_filled_len - 4, 0, headerPtr->pts - 3, headerPtr->pts - 3);
++            if (ret != 0) goto end;
++            ret = put_received_frame(avctx, headerPtr->p_buffer + headerPtr->n_filled_len - 4, 1, 0, headerPtr->pts - 2, headerPtr->pts - 2);
++            if (ret != 0) goto end;
++            ret = put_received_frame(avctx, headerPtr->p_buffer + headerPtr->n_filled_len - 3, 1, 0, headerPtr->pts - 1, headerPtr->pts - 1);
++            if (ret != 0) goto end;
++            ret = put_received_frame(avctx, headerPtr->p_buffer + headerPtr->n_filled_len - 2, 1, 0, headerPtr->pts + 0, headerPtr->pts + 0);
++            if (ret != 0) goto end;
++            ret = put_received_frame(avctx, headerPtr->p_buffer + headerPtr->n_filled_len - 1, 1, 0, headerPtr->pts + 1, headerPtr->pts + 1);
++            if (ret != 0) goto end;
++        } else {
++            ret = put_received_frame(avctx, headerPtr->p_buffer, headerPtr->n_filled_len, headerPtr->pic_type == EB_IDR_PICTURE, headerPtr->pts, headerPtr->pts);
++            if (ret != 0) goto end;
++        }
++
++        ret = get_received_frame(svt_enc, pkt);
++
++        end:
++            eb_vp9_svt_release_out_buffer(&headerPtr);
++
++        if (ret == AVERROR(EAGAIN)) {
++            continue;
++        }
++
++        break;
++    }
++
++
++
++    return ret;
 +}
 +
 +static av_cold int eb_enc_close(AVCodecContext *avctx)
@@ -521,6 +691,8 @@ index 0000000..b742f94
 +
 +    eb_vp9_deinit_encoder(svt_enc->svt_handle);
 +    eb_vp9_deinit_handle(svt_enc->svt_handle);
++
++    av_frame_free(&svt_enc->frame);
 +
 +    free_buffer(svt_enc);
 +
@@ -602,7 +774,9 @@ index 0000000..b742f94
 +    .type           = AVMEDIA_TYPE_VIDEO,
 +    .id             = AV_CODEC_ID_VP9,
 +    .init           = eb_enc_init,
-+    .send_frame     = eb_send_frame,
++#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 93, 100)
++     .send_frame     = eb_send_frame,
++#endif
 +    .receive_packet = eb_receive_packet,
 +    .close          = eb_enc_close,
 +    .capabilities   = AV_CODEC_CAP_DELAY | AV_CODEC_CAP_AUTO_THREADS,
@@ -613,369 +787,6 @@ index 0000000..b742f94
 +    .caps_internal  = FF_CODEC_CAP_INIT_CLEANUP,
 +    .wrapper_name   = "libsvt_vp9",
 +};
-diff --git a/libavformat/dashenc.c b/libavformat/dashenc.c
-index f0e45da..fdd3eb0 100644
---- a/libavformat/dashenc.c
-+++ b/libavformat/dashenc.c
-@@ -1822,6 +1822,48 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
-     return ret;
- }
-
-+static int dash_write_packet_vp9(AVFormatContext *s, AVPacket *pkt)
-+{
-+    int ret;
-+    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+        uint8_t *saved_data = pkt->data;
-+        int      saved_size = pkt->size;
-+        int64_t  saved_pts  = pkt->pts;
-+
-+        // Main frame
-+        pkt->data = saved_data;
-+        pkt->size = saved_size - 4;
-+        pkt->pts = saved_pts;
-+        ret = dash_write_packet(s, pkt);
-+
-+        // Latter 4 one-byte repeated frames
-+        pkt->data = saved_data + saved_size - 4;
-+        pkt->size = 1;
-+        pkt->pts = saved_pts - 2;
-+        ret = dash_write_packet(s, pkt);
-+
-+        pkt->data = saved_data + saved_size - 3;
-+        pkt->size = 1;
-+        pkt->pts = saved_pts - 1;
-+        ret = dash_write_packet(s, pkt);
-+
-+        pkt->data = saved_data + saved_size - 2;
-+        pkt->size = 1;
-+        pkt->pts = saved_pts;
-+        ret = dash_write_packet(s, pkt);
-+
-+        pkt->data = saved_data + saved_size - 1;
-+        pkt->size = 1;
-+        pkt->pts = saved_pts + 1;
-+        ret = dash_write_packet(s, pkt);
-+    }
-+    else{
-+        ret = dash_write_packet(s, pkt);
-+    }
-+
-+    return ret;
-+}
-+
- static int dash_write_trailer(AVFormatContext *s)
- {
-     DASHContext *c = s->priv_data;
-@@ -1869,6 +1911,11 @@ static int dash_check_bitstream(struct AVFormatContext *s, const AVPacket *avpkt
-     DASHContext *c = s->priv_data;
-     OutputStream *os = &c->streams[avpkt->stream_index];
-     AVFormatContext *oc = os->ctx;
-+
-+    if ((avpkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+        (avpkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        return 0;
-+
-     if (oc->oformat->check_bitstream) {
-         int ret;
-         AVPacket pkt = *avpkt;
-@@ -1941,7 +1988,7 @@ AVOutputFormat ff_dash_muxer = {
-     .flags          = AVFMT_GLOBALHEADER | AVFMT_NOFILE | AVFMT_TS_NEGATIVE,
-     .init           = dash_init,
-     .write_header   = dash_write_header,
--    .write_packet   = dash_write_packet,
-+    .write_packet   = dash_write_packet_vp9,
-     .write_trailer  = dash_write_trailer,
-     .deinit         = dash_free,
-     .check_bitstream = dash_check_bitstream,
-diff --git a/libavformat/ivfenc.c b/libavformat/ivfenc.c
-index adf7211..05f0813 100644
---- a/libavformat/ivfenc.c
-+++ b/libavformat/ivfenc.c
-@@ -63,9 +63,33 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
-     AVIOContext *pb = s->pb;
-     IVFEncContext *ctx = s->priv_data;
-
--    avio_wl32(pb, pkt->size);
--    avio_wl64(pb, pkt->pts);
--    avio_write(pb, pkt->data, pkt->size);
-+    if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+        avio_wl32(pb, pkt->size - 4);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data, pkt->size - 4);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts - 2);
-+        avio_write(pb, pkt->data + pkt->size - 4, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts - 1);
-+        avio_write(pb, pkt->data + pkt->size - 3, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data + pkt->size - 2, 1);
-+
-+        avio_wl32(pb, 1);
-+        avio_wl64(pb, pkt->pts + 1);
-+        avio_write(pb, pkt->data + pkt->size - 1, 1);
-+    }
-+    else {
-+        avio_wl32(pb, pkt->size);
-+        avio_wl64(pb, pkt->pts);
-+        avio_write(pb, pkt->data, pkt->size);
-+    }
-+
-     if (ctx->frame_cnt)
-         ctx->sum_delta_pts += pkt->pts - ctx->last_pts;
-     ctx->frame_cnt++;
-@@ -95,6 +119,10 @@ static int ivf_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
-     int ret = 1;
-     AVStream *st = s->streams[pkt->stream_index];
- 
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        return 0;
-+
-     if (st->codecpar->codec_id == AV_CODEC_ID_VP9)
-         ret = ff_stream_add_bitstream_filter(st, "vp9_superframe", NULL);
-     else if (st->codecpar->codec_id == AV_CODEC_ID_AV1)
-diff --git a/libavformat/matroskaenc.c b/libavformat/matroskaenc.c
-index 0f535f6..b863884 100644
---- a/libavformat/matroskaenc.c
-+++ b/libavformat/matroskaenc.c
-@@ -161,6 +161,9 @@ typedef struct MatroskaMuxContext {
-     int64_t *stream_duration_offsets;
-
-     int allow_raw_vfw;
-+
-+    int simple_block_timecode;
-+    int accumulated_cluster_timecode;
- } MatroskaMuxContext;
-
- /** 2 bytes * 7 for EBML IDs, 7 1-byte EBML lengths, 6 1-byte uint,
-@@ -2198,7 +2201,13 @@ static int mkv_write_block(AVFormatContext *s, AVIOContext *pb,
-     put_ebml_num(pb, size + 4, 0);
-     // this assumes stream_index is less than 126
-     avio_w8(pb, 0x80 | track_number);
--    avio_wb16(pb, ts - mkv->cluster_pts);
-+
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+            (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        avio_wb16(pb, mkv->simple_block_timecode);
-+    else
-+        avio_wb16(pb, ts - mkv->cluster_pts);
-+
-     avio_w8(pb, (blockid == MATROSKA_ID_SIMPLEBLOCK && keyframe) ? (1 << 7) : 0);
-     avio_write(pb, data + offset, size);
-     if (data != pkt->data)
-@@ -2405,6 +2414,8 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
-     int64_t ts = mkv->tracks[pkt->stream_index].write_dts ? pkt->dts : pkt->pts;
-     int64_t relative_packet_pos;
-     int dash_tracknum = mkv->is_dash ? mkv->dash_track_number : pkt->stream_index + 1;
-+    double fps = 0;
-+    int pts_interval = 0;
-
-     if (ts == AV_NOPTS_VALUE) {
-         av_log(s, AV_LOG_ERROR, "Can't write packet with unknown timestamp\n");
-@@ -2420,12 +2431,23 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
-         }
-     }
-
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) || (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF)) {
-+        fps = av_q2d(s->streams[pkt->stream_index]->avg_frame_rate);
-+        pts_interval = 1000 / fps;
-+    }
-+
-     if (mkv->cluster_pos == -1) {
-         mkv->cluster_pos = avio_tell(s->pb);
-         ret = start_ebml_master_crc32(&mkv->cluster_bc, mkv);
-         if (ret < 0)
-             return ret;
--        put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, FFMAX(0, ts));
-+
-+        if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) || (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+            put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE,
-+                    mkv->accumulated_cluster_timecode + pts_interval);
-+        else
-+            put_ebml_uint(mkv->cluster_bc, MATROSKA_ID_CLUSTERTIMECODE, FFMAX(0, ts));
-+
-         mkv->cluster_pts = FFMAX(0, ts);
-     }
-     pb = mkv->cluster_bc;
-@@ -2433,10 +2455,68 @@ static int mkv_write_packet_internal(AVFormatContext *s, AVPacket *pkt, int add_
-     relative_packet_pos = avio_tell(pb);
-
-     if (par->codec_type != AVMEDIA_TYPE_SUBTITLE) {
--        ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
--        if (ret < 0)
--            return ret;
--        if ((s->pb->seekable & AVIO_SEEKABLE_NORMAL) && (par->codec_type == AVMEDIA_TYPE_VIDEO && keyframe || add_cue)) {
-+        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+            uint8_t *saved_data = pkt->data;
-+            int saved_size = pkt->size;
-+            int64_t saved_pts = pkt->pts;
-+            // Main frame
-+            pkt->data = saved_data;
-+            pkt->size = saved_size - 4;
-+            pkt->pts = saved_pts;
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+
-+            // Latter 4 one-byte repeated frames
-+            pkt->data = saved_data + saved_size - 4;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts - 2;
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+            mkv->simple_block_timecode += pts_interval;
-+
-+            pkt->data = saved_data + saved_size - 3;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts - 1;
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+            mkv->simple_block_timecode += pts_interval;
-+
-+            pkt->data = saved_data + saved_size - 2;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts;
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+            mkv->simple_block_timecode += pts_interval;
-+
-+            pkt->data = saved_data + saved_size - 1;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts + 1;
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+            mkv->simple_block_timecode += pts_interval;
-+        } else {
-+            ret = mkv_write_block(s, pb, MATROSKA_ID_SIMPLEBLOCK, pkt, keyframe);
-+            if (ret < 0) return ret;
-+            if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF) {
-+                GetBitContext gb;
-+                int invisible, profile;
-+
-+                if ((ret = init_get_bits8(&gb, pkt->data, pkt->size)) < 0)
-+                    return ret;
-+
-+                get_bits(&gb, 2); // frame marker
-+                profile  = get_bits1(&gb);
-+                profile |= get_bits1(&gb) << 1;
-+                if (profile == 3) profile += get_bits1(&gb);
-+
-+                if (get_bits1(&gb)) {
-+                    invisible = 0;
-+                } else {
-+                    get_bits1(&gb); // keyframe
-+                    invisible = !get_bits1(&gb);
-+                }
-+
-+                if (!invisible)
-+                    mkv->simple_block_timecode += pts_interval;
-+            }
-+        }
-+
-+	if ((s->pb->seekable & AVIO_SEEKABLE_NORMAL) && (par->codec_type == AVMEDIA_TYPE_VIDEO && keyframe || add_cue)) {
-             ret = mkv_add_cuepoint(mkv->cues, pkt->stream_index, dash_tracknum, ts, mkv->cluster_pos, relative_packet_pos, -1);
-             if (ret < 0) return ret;
-         }
-@@ -2494,8 +2574,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
-
-     if (mkv->tracks[pkt->stream_index].write_dts)
-         cluster_time = pkt->dts - mkv->cluster_pts;
--    else
--        cluster_time = pkt->pts - mkv->cluster_pts;
-+    else {
-+        if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+                (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+            cluster_time = mkv->accumulated_cluster_timecode - mkv->cluster_pts;
-+        else
-+            cluster_time = pkt->pts - mkv->cluster_pts;
-+    }
-     cluster_time += mkv->tracks[pkt->stream_index].ts_offset;
- 
-     // start a new cluster every 5 MB or 5 sec, or 32k / 1 sec for streaming or
-@@ -2523,6 +2608,13 @@ static int mkv_write_packet(AVFormatContext *s, AVPacket *pkt)
-     }
-
-     if (mkv->cluster_pos != -1 && start_new_cluster) {
-+        if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+                (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF)) {
-+            // Reset Timecode for new cluster.
-+            mkv->accumulated_cluster_timecode += mkv->simple_block_timecode;
-+            mkv->simple_block_timecode = 0;
-+        }
-+
-         mkv_start_new_cluster(s, pkt);
-     }
-
-@@ -2762,6 +2854,10 @@ static int mkv_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
-     int ret = 1;
-     AVStream *st = s->streams[pkt->stream_index];
-
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+       (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        return 0;
-+
-     if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
-         if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
-             ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
-diff --git a/libavformat/movenc.c b/libavformat/movenc.c
-index d0bd182..145dd1d 100644
---- a/libavformat/movenc.c
-+++ b/libavformat/movenc.c
-@@ -5625,7 +5625,43 @@ static int mov_write_single_packet(AVFormatContext *s, AVPacket *pkt)
-             }
-         }
-
--        return ff_mov_write_packet(s, pkt);
-+        if (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) {
-+            uint8_t *saved_data = pkt->data;
-+            int      saved_size = pkt->size;
-+            int64_t  saved_pts  = pkt->pts;
-+
-+            // Main frame
-+            pkt->data = saved_data;
-+            pkt->size = saved_size - 4;
-+            pkt->pts = saved_pts;
-+            ret = ff_mov_write_packet(s, pkt);
-+
-+            // Latter 4 one-byte repeated frames
-+            pkt->data = saved_data + saved_size - 4;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts - 2 * pkt->duration;
-+            ret = ff_mov_write_packet(s, pkt);
-+
-+            pkt->data = saved_data + saved_size - 3;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts - pkt->duration;
-+            ret = ff_mov_write_packet(s, pkt);
-+
-+            pkt->data = saved_data + saved_size - 2;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts;
-+            ret = ff_mov_write_packet(s, pkt);
-+
-+            pkt->data = saved_data + saved_size - 1;
-+            pkt->size = 1;
-+            pkt->pts = saved_pts + pkt->duration;
-+            ret = ff_mov_write_packet(s, pkt);
-+        }
-+        else{
-+            ret = ff_mov_write_packet(s, pkt);
-+        }
-+
-+        return ret;
- }
-
- static int mov_write_subtitle_end_packet(AVFormatContext *s,
-@@ -6764,6 +6800,10 @@ static int mov_check_bitstream(struct AVFormatContext *s, const AVPacket *pkt)
-     int ret = 1;
-     AVStream *st = s->streams[pkt->stream_index];
-
-+    if ((pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_ON) ||
-+        (pkt->flags & AV_PKT_FLAG_SVT_VP9_EXT_OFF))
-+        return 0;
-+
-     if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
-         if (pkt->size > 2 && (AV_RB16(pkt->data) & 0xfff0) == 0xfff0)
-             ret = ff_stream_add_bitstream_filter(st, "aac_adtstoasc", NULL);
 -- 
 2.7.4
 
