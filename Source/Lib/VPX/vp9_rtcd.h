@@ -45,9 +45,9 @@ extern "C" {
     int eb_vp9_diamond_search_sad_avx(const struct macroblock *x, const struct search_site_config *cfg, struct mv *ref_mv, struct mv *best_mv, int search_param, int sad_per_bit, int *num00, const struct vp9_variance_vtable *fn_ptr, const struct mv *center_mv);
     RTCD_EXTERN int(*eb_vp9_diamond_search_sad)(const struct macroblock *x, const struct search_site_config *cfg, struct mv *ref_mv, struct mv *best_mv, int search_param, int sad_per_bit, int *num00, const struct vp9_variance_vtable *fn_ptr, const struct mv *center_mv);
 
-    void vp9_fdct8x8_quant_c(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
-    void vp9_fdct8x8_quant_ssse3(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
-    RTCD_EXTERN void(*vp9_fdct8x8_quant)(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
+    void eb_vp9_fdct8x8_quant_c(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
+    void eb_vp9_fdct8x8_quant_ssse3(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
+    RTCD_EXTERN void(*eb_vp9_fdct8x8_quant)(const int16_t *input, int stride, tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 
     void eb_vp9_fht16x16_c(const int16_t *input, tran_low_t *output, int stride, int tx_type);
     void vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type);
@@ -130,8 +130,8 @@ extern "C" {
         if (flags & HAS_AVX2) eb_vp9_block_error_fp = eb_vp9_block_error_fp_avx2;
         eb_vp9_diamond_search_sad = eb_vp9_diamond_search_sad_c;
         if (flags & HAS_AVX) eb_vp9_diamond_search_sad = eb_vp9_diamond_search_sad_avx;
-        vp9_fdct8x8_quant = vp9_fdct8x8_quant_c;
-        if (flags & HAS_SSSE3) vp9_fdct8x8_quant = vp9_fdct8x8_quant_ssse3;
+        eb_vp9_fdct8x8_quant = eb_vp9_fdct8x8_quant_c;
+        if (flags & HAS_SSSE3) eb_vp9_fdct8x8_quant = eb_vp9_fdct8x8_quant_ssse3;
 #endif
         vp9_fht16x16 = eb_vp9_fht16x16_c;
         if (flags & HAS_AVX2) vp9_fht16x16 = vp9_fht16x16_avx2;

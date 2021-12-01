@@ -1049,7 +1049,7 @@ static void idct32_1024_16x32_avx2(
     add_sub_butterfly_avx2(temp, out, 32);
 }
 
-void vpx_idct32x32_1024_add_avx2(
+void eb_vp9_idct32x32_1024_add_avx2(
     const tran_low_t *input,
     uint8_t          *dest,
     int               stride)

@@ -143,7 +143,7 @@ void eb_vp9_idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride,
   else if (eob <= 12)
     eb_vp9_idct8x8_12_add(input, dest, stride);
   else
-    vpx_idct8x8_64_add(input, dest, stride);
+    eb_vp9_idct8x8_64_add(input, dest, stride);
 }
 
 void eb_vp9_idct16x16_add(const tran_low_t *input, uint8_t *dest, int stride,
@@ -171,7 +171,7 @@ void eb_vp9_idct32x32_add(const tran_low_t *input, uint8_t *dest, int stride,
     // non-zero coeff only in upper-left 16x16
     eb_vp9_idct32x32_135_add(input, dest, stride);
   else
-    vpx_idct32x32_1024_add(input, dest, stride);
+    eb_vp9_idct32x32_1024_add(input, dest, stride);
 }
 
 // iht
