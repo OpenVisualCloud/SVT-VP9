@@ -299,13 +299,13 @@ void vpx_fdct4x4_1_sse2(const int16_t *input, tran_low_t *output, int stride);
 RTCD_EXTERN void(*vpx_fdct4x4_1)(const int16_t *input, tran_low_t *output, int stride);
 #endif
 void eb_vp9_fdct8x8_c(const int16_t *input, tran_low_t *output, int stride);
-void vpx_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride);
-RTCD_EXTERN void(*vpx_fdct8x8)(const int16_t *input, tran_low_t *output, int stride);
+void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride);
+RTCD_EXTERN void(*eb_vp9_fdct8x8)(const int16_t *input, tran_low_t *output, int stride);
 
 #if 0
 void eb_vp9_fdct8x8_1_c(const int16_t *input, tran_low_t *output, int stride);
-void vpx_fdct8x8_1_sse2(const int16_t *input, tran_low_t *output, int stride);
-RTCD_EXTERN void(*vpx_fdct8x8_1)(const int16_t *input, tran_low_t *output, int stride);
+void eb_vp9_fdct8x8_1_sse2(const int16_t *input, tran_low_t *output, int stride);
+RTCD_EXTERN void(*eb_vp9_fdct8x8_1)(const int16_t *input, tran_low_t *output, int stride);
 
 void vpx_get16x16var_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
 void vpx_get16x16var_avx2(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
@@ -373,8 +373,8 @@ void eb_vp9_idct16x16_38_add_sse2(const tran_low_t *input, uint8_t *dest, int st
 RTCD_EXTERN void(*vpx_idct16x16_38_add)(const tran_low_t *input, uint8_t *dest, int stride);
 
 void eb_vp9_idct32x32_1024_add_c(const tran_low_t *input, uint8_t *dest, int stride);
-void vpx_idct32x32_1024_add_avx2(const tran_low_t *input, uint8_t *dest, int stride);
-RTCD_EXTERN void(*vpx_idct32x32_1024_add)(const tran_low_t *input, uint8_t *dest, int stride);
+void eb_vp9_idct32x32_1024_add_avx2(const tran_low_t *input, uint8_t *dest, int stride);
+RTCD_EXTERN void(*eb_vp9_idct32x32_1024_add)(const tran_low_t *input, uint8_t *dest, int stride);
 
 void eb_vp9_idct32x32_135_add_c(const tran_low_t *input, uint8_t *dest, int stride);
 void eb_vp9_idct32x32_135_add_avx2(const tran_low_t *input, uint8_t *dest, int stride);
@@ -406,7 +406,7 @@ RTCD_EXTERN void(*vpx_idct8x8_1_add)(const tran_low_t *input, uint8_t *dest, int
 
 void eb_vp9_idct8x8_64_add_c(const tran_low_t *input, uint8_t *dest, int stride);
 void eb_vp9_idct8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride);
-RTCD_EXTERN void(*vpx_idct8x8_64_add)(const tran_low_t *input, uint8_t *dest, int stride);
+RTCD_EXTERN void(*eb_vp9_idct8x8_64_add)(const tran_low_t *input, uint8_t *dest, int stride);
 
 int16_t vpx_int_pro_col_c(const uint8_t *ref, const int width);
 int16_t vpx_int_pro_col_sse2(const uint8_t *ref, const int width);
@@ -1101,13 +1101,13 @@ static void setup_rtcd_internal(uint32_t asm_type)
 #endif
     vpx_fdct4x4 = eb_vp9_fdct4x4_c;
     if (flags & HAS_SSE2) vpx_fdct4x4 = eb_vp9_fdct4x4_sse2;
-    vpx_fdct8x8 = eb_vp9_fdct8x8_c;
-    if (flags & HAS_AVX2) vpx_fdct8x8 = vpx_fdct8x8_avx2;
+    eb_vp9_fdct8x8 = eb_vp9_fdct8x8_c;
+    if (flags & HAS_AVX2) eb_vp9_fdct8x8 = eb_vp9_fdct8x8_avx2;
 #if 0
     vpx_fdct4x4_1 = eb_vp9_fdct4x4_1_c;
     if (flags & HAS_SSE2) vpx_fdct4x4_1 = vpx_fdct4x4_1_sse2;
-    vpx_fdct8x8_1 = eb_vp9_fdct8x8_1_c;
-    if (flags & HAS_SSE2) vpx_fdct8x8_1 = vpx_fdct8x8_1_sse2;
+    eb_vp9_fdct8x8_1 = eb_vp9_fdct8x8_1_c;
+    if (flags & HAS_SSE2) eb_vp9_fdct8x8_1 = eb_vp9_fdct8x8_1_sse2;
     vpx_get16x16var = vpx_get16x16var_c;
     if (flags & HAS_AVX2) vpx_get16x16var = vpx_get16x16var_avx2;
     vpx_get4x4sse_cs = vpx_get4x4sse_cs_c;
@@ -1141,8 +1141,8 @@ static void setup_rtcd_internal(uint32_t asm_type)
     if (flags & HAS_SSE2) vpx_idct16x16_256_add = eb_vp9_idct16x16_256_add_sse2;
     vpx_idct16x16_38_add = eb_vp9_idct16x16_38_add_c;
     if (flags & HAS_SSE2) vpx_idct16x16_38_add = eb_vp9_idct16x16_38_add_sse2;
-    vpx_idct32x32_1024_add = eb_vp9_idct32x32_1024_add_c;
-    if (flags & HAS_AVX2) vpx_idct32x32_1024_add = vpx_idct32x32_1024_add_avx2;
+    eb_vp9_idct32x32_1024_add = eb_vp9_idct32x32_1024_add_c;
+    if (flags & HAS_AVX2) eb_vp9_idct32x32_1024_add = eb_vp9_idct32x32_1024_add_avx2;
     eb_vp9_idct32x32_135_add = eb_vp9_idct32x32_135_add_c;
     if (flags & HAS_AVX2) eb_vp9_idct32x32_135_add = eb_vp9_idct32x32_135_add_avx2;
     vpx_idct32x32_1_add = eb_vp9_idct32x32_1_add_c;
@@ -1157,8 +1157,8 @@ static void setup_rtcd_internal(uint32_t asm_type)
     if (flags & HAS_SSSE3) eb_vp9_idct8x8_12_add = eb_vp9_idct8x8_12_add_ssse3;
     vpx_idct8x8_1_add = eb_vp9_idct8x8_1_add_c;
     if (flags & HAS_SSE2) vpx_idct8x8_1_add = eb_vp9_idct8x8_1_add_sse2;
-    vpx_idct8x8_64_add = eb_vp9_idct8x8_64_add_c;
-    if (flags & HAS_SSE2) vpx_idct8x8_64_add = eb_vp9_idct8x8_64_add_sse2;
+    eb_vp9_idct8x8_64_add = eb_vp9_idct8x8_64_add_c;
+    if (flags & HAS_SSE2) eb_vp9_idct8x8_64_add = eb_vp9_idct8x8_64_add_sse2;
     eb_vp9_lpf_horizontal_16 = eb_vp9_lpf_horizontal_16_c;
     if (flags & HAS_AVX2) eb_vp9_lpf_horizontal_16 = eb_vp9_lpf_horizontal_16_avx2;
     eb_vp9_lpf_horizontal_16_dual = eb_vp9_lpf_horizontal_16_dual_c;

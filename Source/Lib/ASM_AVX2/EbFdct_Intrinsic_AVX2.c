@@ -478,7 +478,7 @@ static INLINE void right_shift_write_buffer_8x8(const __m256i *const in,
     store_output(out[7], (output + 7 * 8));
 }
 
-void vpx_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
+void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
     int overflow;
     __m256i in[4];
 

@@ -549,7 +549,7 @@ void eb_vp9_fht4x4_c(const int16_t *input, tran_low_t *output, int stride,
   }
 }
 
-void vp9_fdct8x8_quant_c(const int16_t *input, int stride,
+void eb_vp9_fdct8x8_quant_c(const int16_t *input, int stride,
                          tran_low_t *coeff_ptr, intptr_t n_coeffs,
                          int skip_block, const int16_t *round_ptr,
                          const int16_t *quant_ptr, tran_low_t *qcoeff_ptr,
