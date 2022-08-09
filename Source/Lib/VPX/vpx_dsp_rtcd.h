@@ -843,7 +843,7 @@ RTCD_EXTERN uint32_t(*vpx_sub_pixel_variance8x8)(const uint8_t *src_ptr, int sou
 #endif
 void eb_vp9_subtract_block_c(int rows, int cols, int16_t *diff_ptr, ptrdiff_t diff_stride, const uint8_t *src_ptr, ptrdiff_t src_stride, const uint8_t *pred_ptr, ptrdiff_t pred_stride);
 void eb_vp9_subtract_block_sse2(int rows, int cols, int16_t *diff_ptr, ptrdiff_t diff_stride, const uint8_t *src_ptr, ptrdiff_t src_stride, const uint8_t *pred_ptr, ptrdiff_t pred_stride);
-RTCD_EXTERN void(*vpx_subtract_block)(int rows, int cols, int16_t *diff_ptr, ptrdiff_t diff_stride, const uint8_t *src_ptr, ptrdiff_t src_stride, const uint8_t *pred_ptr, ptrdiff_t pred_stride);
+RTCD_EXTERN void(*svt_vpx_subtract_block)(int rows, int cols, int16_t *diff_ptr, ptrdiff_t diff_stride, const uint8_t *src_ptr, ptrdiff_t src_stride, const uint8_t *pred_ptr, ptrdiff_t pred_stride);
 
 #if 0
 uint64_t vpx_sum_squares_2d_i16_c(const int16_t *src, int stride, int size);
@@ -1376,8 +1376,8 @@ static void setup_rtcd_internal(uint32_t asm_type)
     vpx_sub_pixel_variance8x8 = vpx_sub_pixel_variance8x8_c;
     if (flags & HAS_SSSE3) vpx_sub_pixel_variance8x8 = vpx_sub_pixel_variance8x8_ssse3;
 #endif
-    vpx_subtract_block = eb_vp9_subtract_block_c;
-    if (flags & HAS_SSE2) vpx_subtract_block = eb_vp9_subtract_block_sse2;
+    svt_vpx_subtract_block = eb_vp9_subtract_block_c;
+    if (flags & HAS_SSE2) svt_vpx_subtract_block = eb_vp9_subtract_block_sse2;
 #if 0
     vpx_sum_squares_2d_i16 = vpx_sum_squares_2d_i16_c;
     if (flags & HAS_SSE2) vpx_sum_squares_2d_i16 = vpx_sum_squares_2d_i16_sse2;

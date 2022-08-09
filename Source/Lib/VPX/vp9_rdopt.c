@@ -1088,7 +1088,7 @@ static int64_t rd_pick_intra4x4block(VP9_COMP *cpi, MACROBLOCK *x, int row,
         eb_vp9_predict_intra_block(xd, 1, TX_4X4, mode, x->skip_encode ? src : dst,
                                 x->skip_encode ? src_stride : dst_stride, dst,
                                 dst_stride, col + idx, row + idy, 0);
-        vpx_subtract_block(4, 4, src_diff, 8, src, src_stride, dst, dst_stride);
+        svt_vpx_subtract_block(4, 4, src_diff, 8, src, src_stride, dst, dst_stride);
 
         if (xd->lossless) {
           const scan_order *so = &eb_vp9_default_scan_orders[TX_4X4];
@@ -1529,12 +1529,12 @@ static int64_t encode_inter_mb_segment(VP9_COMP *cpi, MACROBLOCK *x,
         height, width, vp9_raster_block_offset_int16(BLOCK_8X8, i, p->src_diff),
         8, src, p->src.stride, dst, pd->dst.stride, xd->bd);
   } else {
-    vpx_subtract_block(height, width,
+    svt_vpx_subtract_block(height, width,
                        vp9_raster_block_offset_int16(BLOCK_8X8, i, p->src_diff),
                        8, src, p->src.stride, dst, pd->dst.stride);
   }
 #else
-  vpx_subtract_block(height, width,
+  svt_vpx_subtract_block(height, width,
                      vp9_raster_block_offset_int16(BLOCK_8X8, i, p->src_diff),
                      8, src, p->src.stride, dst, pd->dst.stride);
 #endif  // CONFIG_VP9_HIGHBITDEPTH
