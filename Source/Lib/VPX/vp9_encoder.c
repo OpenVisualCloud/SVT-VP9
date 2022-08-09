@@ -5752,7 +5752,7 @@ void mode_estimation(VP9_COMP *cpi, MACROBLOCK *x, MACROBLOCKD *xd,
     eb_vp9_predict_intra_block(xd, eb_vp9_b_width_log2_lookup[bsize], tx_size, mode, src,
                             src_stride, dst, dst_stride, 0, 0, 0);
 
-    vpx_subtract_block(bh, bw, src_diff, bw, src, src_stride, dst, dst_stride);
+    svt_vpx_subtract_block(bh, bw, src_diff, bw, src, src_stride, dst, dst_stride);
 
     wht_fwd_txfm(src_diff, bw, coeff, tx_size);
 
@@ -5805,7 +5805,7 @@ void mode_estimation(VP9_COMP *cpi, MACROBLOCK *x, MACROBLOCKD *xd,
           ref_frame[rf_idx]->y_buffer + mb_y_offset,
           ref_frame[rf_idx]->y_stride, &predictor[0], bw, &mv.as_mv, sf, bw, bh,
           0, kernel, MV_PRECISION_Q3, mi_col * MI_SIZE, mi_row * MI_SIZE);
-      vpx_subtract_block(bh, bw, src_diff, bw,
+      svt_vpx_subtract_block(bh, bw, src_diff, bw,
                          xd->cur_buf->y_buffer + mb_y_offset,
                          xd->cur_buf->y_stride, &predictor[0], bw);
     }
@@ -5814,7 +5814,7 @@ void mode_estimation(VP9_COMP *cpi, MACROBLOCK *x, MACROBLOCKD *xd,
                               ref_frame[rf_idx]->y_stride, &predictor[0], bw,
                               &mv.as_mv, sf, bw, bh, 0, kernel, MV_PRECISION_Q3,
                               mi_col * MI_SIZE, mi_row * MI_SIZE);
-    vpx_subtract_block(bh, bw, src_diff, bw,
+    svt_vpx_subtract_block(bh, bw, src_diff, bw,
                        xd->cur_buf->y_buffer + mb_y_offset,
                        xd->cur_buf->y_stride, &predictor[0], bw);
 #endif
