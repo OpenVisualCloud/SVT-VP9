@@ -13,6 +13,8 @@
  * Universal Includes
  ****************************************/
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "EbDefinitions.h"
 #include "EbThreads.h"
 
@@ -45,60 +47,69 @@ void printfTime(const char *fmt, ...)
 /****************************************
  * eb_vp9_create_thread
  ****************************************/
-EbHandle eb_vp9_create_thread(
-    void *thread_function(void *),
-    void *thread_context)
-{
+EbHandle eb_vp9_create_thread(void *thread_function(void *), void *thread_context) {
     EbHandle thread_handle = NULL;
 
 #ifdef _WIN32
 
-    thread_handle = (EbHandle) CreateThread(
-                       NULL,                           // default security attributes
-                       0,                              // default stack size
-                       (LPTHREAD_START_ROUTINE) thread_function, // function to be tied to the new thread
-                       thread_context,                  // context to be tied to the new thread
-                       0,                              // thread active when created
-                       NULL);                          // new thread ID
+    thread_handle = (EbHandle)CreateThread(
+        NULL, // default security attributes
+        0, // default stack size
+        (LPTHREAD_START_ROUTINE)thread_function, // function to be tied to the new thread
+        thread_context, // context to be tied to the new thread
+        0, // thread active when created
+        NULL); // new thread ID
 
-#elif __linux__
-
+#else
     pthread_attr_t attr;
-    struct sched_param param = {
-        .sched_priority = 99
-    };
-    pthread_attr_init(&attr);
-    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-    pthread_attr_setschedparam(&attr, &param);
-
-    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-
-    thread_handle = (pthread_t*) malloc(sizeof(pthread_t));
-    if (thread_handle != NULL) {
-        int ret = pthread_create(
-            (pthread_t*)thread_handle,      // Thread handle
-            &attr,                       // attributes
-            thread_function,                 // function to be run by new thread
-            thread_context);
-
-        if (ret != 0) {
-            if (ret == EPERM) {
-
-                pthread_cancel(*((pthread_t*)thread_handle));
-                free(thread_handle);
-
-                thread_handle = (pthread_t*)malloc(sizeof(pthread_t));
-                if (thread_handle != NULL) {
-                    pthread_create(
-                        (pthread_t*)thread_handle,      // Thread handle
-                        (const pthread_attr_t*)EB_NULL,                        // attributes
-                        thread_function,                 // function to be run by new thread
-                        thread_context);
-                }
-            }
-        }
+    if (pthread_attr_init(&attr)) {
+        SVT_LOG("Failed to initalize thread attributes\n");
+        return NULL;
     }
+    size_t stack_size;
+    if (pthread_attr_getstacksize(&attr, &stack_size)) {
+        SVT_LOG("Failed to get thread stack size\n");
+        pthread_attr_destroy(&attr);
+        return NULL;
+    }
+    // 1 MiB in bytes for now since we can't easily change the stack size after creation
+    const size_t min_stack_size = 1024 * 1024;
+    if (stack_size < min_stack_size && pthread_attr_setstacksize(&attr, min_stack_size)) {
+        SVT_LOG("Failed to set thread stack size\n");
+        pthread_attr_destroy(&attr);
+        return NULL;
+    }
+    pthread_t *th = malloc(sizeof(*th));
+    if (th == NULL) {
+        SVT_LOG("Failed to allocate thread handle\n");
+        return NULL;
+    }
+
+    if (pthread_create(th, &attr, thread_function, thread_context)) {
+        SVT_LOG("Failed to create thread: %s\n", strerror(errno));
+        free(th);
+        return NULL;
+    }
+
     pthread_attr_destroy(&attr);
+
+    /* We can only use realtime priority if we are running as root, so
+     * check if geteuid() == 0 (meaning either root or sudo).
+     * If we don't do this check, we will eventually run into memory
+     * issues if the encoder is uninitalized and re-initalized multiple
+     * times in one executable due to a bug in glibc.
+     * https://sourceware.org/bugzilla/show_bug.cgi?id=19511
+     *
+     * We still need to exclude the case of thread sanitizer because we
+     * run the test as root inside the container and trying to change
+     * the thread priority will __always__ fail the thread sanitizer.
+     * https://github.com/google/sanitizers/issues/1088
+     */
+    if (!geteuid()) {
+        pthread_setschedparam(*th, SCHED_FIFO, &(struct sched_param){.sched_priority = 99});
+        // ignore if this failed
+    }
+    thread_handle = th;
 #endif // _WIN32
 
     return thread_handle;
