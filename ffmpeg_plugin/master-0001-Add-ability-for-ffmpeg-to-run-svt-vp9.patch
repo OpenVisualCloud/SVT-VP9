@@ -1,4 +1,4 @@
-From 1f5ca2132b923cedf7607d949142240e29ea93e5 Mon Sep 17 00:00:00 2001
+From eedf604723c62bf486c1b0c11cc50c4132635ffa Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -10,10 +10,10 @@ Signed-off-by: Andrei Bich <dronimal@yandex-team.ru>
 Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
 ---
  configure               |   4 +
- libavcodec/Makefile     |   5 +-
+ libavcodec/Makefile     |   1 +
  libavcodec/allcodecs.c  |   1 +
  libavcodec/libsvt_vp9.c | 700 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 708 insertions(+), 2 deletions(-)
+ 4 files changed, 706 insertions(+)
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
@@ -53,17 +53,13 @@ index 107d533b3e..e79970efd6 100755
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
      enabled libwebp_anim_encoder && check_pkg_config libwebp_anim_encoder "libwebpmux >= 0.4.0" webp/mux.h WebPAnimEncoderOptionsInit; }
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 1b0226c089..d01e6e76fe 100644
+index 1b0226c089..9f09af6dc1 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1135,8 +1135,9 @@ OBJS-$(CONFIG_LIBVORBIS_ENCODER)          += libvorbisenc.o \
-                                              vorbis_data.o
- OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
+@@ -1137,6 +1137,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
--OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
--OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o
-+OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o libvpx.o
-+OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o libvpx.o
+ OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
+ OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o
 +OBJS-$(CONFIG_LIBSVT_VP9_ENCODER)         += libsvt_vp9.o
  OBJS-$(CONFIG_LIBWEBP_ENCODER)            += libwebpenc_common.o libwebpenc.o
  OBJS-$(CONFIG_LIBWEBP_ANIM_ENCODER)       += libwebpenc_common.o libwebpenc_animencoder.o
