@@ -36,18 +36,6 @@
 extern "C" {
 #endif
 
-unsigned int vpx_avg_4x4_c(const uint8_t *, int p);
-unsigned int vpx_avg_4x4_sse2(const uint8_t *, int p);
-RTCD_EXTERN unsigned int(*vpx_avg_4x4)(const uint8_t *, int p);
-
-unsigned int vpx_avg_8x8_c(const uint8_t *, int p);
-unsigned int vpx_avg_8x8_sse2(const uint8_t *, int p);
-RTCD_EXTERN unsigned int(*vpx_avg_8x8)(const uint8_t *, int p);
-
-void vpx_comp_avg_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
-void vpx_comp_avg_pred_sse2(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
-RTCD_EXTERN void(*vpx_comp_avg_pred)(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
-
 // TT temporary untill we fix the linking error
 void eb_vp9_filter_block1d8_v2_ssse3(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr, ptrdiff_t out_pitch, uint32_t output_height, const int16_t *filter);
 void eb_vp9_filter_block1d16_v2_ssse3(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr, ptrdiff_t out_pitch, uint32_t output_height, const int16_t *filter);
@@ -975,14 +963,6 @@ static void setup_rtcd_internal(uint32_t asm_type)
         flags |= HAS_MMX;
     }
 
-#if 0
-    vpx_avg_4x4 = vpx_avg_4x4_c;
-    if (flags & HAS_SSE2) vpx_avg_4x4 = vpx_avg_4x4_sse2;
-    vpx_avg_8x8 = vpx_avg_8x8_c;
-    if (flags & HAS_SSE2) vpx_avg_8x8 = vpx_avg_8x8_sse2;
-    vpx_comp_avg_pred = vpx_comp_avg_pred_c;
-    if (flags & HAS_SSE2) vpx_comp_avg_pred = vpx_comp_avg_pred_sse2;
-#endif
     eb_vp9_convolve8 = eb_vp9_convolve8_c;
     if (flags & HAS_AVX2) eb_vp9_convolve8 = eb_vp9_convolve8_avx2;
     eb_vp9_convolve8_avg = eb_vp9_convolve8_avg_c;
