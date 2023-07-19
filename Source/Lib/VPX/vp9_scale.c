@@ -78,8 +78,8 @@ void eb_vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w,
   if (sf->x_step_q4 == 16) {
     if (sf->y_step_q4 == 16) {
       // No scaling in either direction.
-      sf->predict[0][0][0] = vpx_convolve_copy;
-      sf->predict[0][0][1] = vpx_convolve_avg;
+      sf->predict[0][0][0] = eb_vpx_convolve_copy;
+      sf->predict[0][0][1] = eb_vpx_convolve_avg;
       sf->predict[0][1][0] = eb_vp9_convolve8_vert;
       sf->predict[0][1][1] = eb_vp9_convolve8_avg_vert;
       sf->predict[1][0][0] = eb_vp9_convolve8_horiz;

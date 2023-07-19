@@ -323,7 +323,7 @@ void transpose_iadst16_avx2(__m256i *const in)
     iadst16_avx2(in);
 }
 
-void vp9_iht16x16_256_add_avx2(
+void eb_vp9_iht16x16_256_add_avx2(
     const tran_low_t *input,
     uint8_t          *dest,
     int               stride,
@@ -374,7 +374,7 @@ static INLINE void recon_and_store_32_avx2(
     _mm256_storeu_si256((__m256i *)dest, d0);
 }
 
-void vpx_idct32x32_1_add_avx2(
+void eb_vpx_idct32x32_1_add_avx2(
     const tran_low_t *input,
     uint8_t          *dest,
     int               stride)

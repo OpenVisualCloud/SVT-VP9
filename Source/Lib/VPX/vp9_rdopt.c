@@ -608,7 +608,7 @@ static void dist_block(const VP9_COMP *cpi, MACROBLOCK *x, int plane,
         recon = CONVERT_TO_BYTEPTR(recon16);
       } else {
 #endif  // CONFIG_VP9_HIGHBITDEPTH
-        vpx_convolve_copy(dst, dst_stride, recon, 32, NULL, 0, 0, 0, 0, bs, bs);
+        eb_vpx_convolve_copy(dst, dst_stride, recon, 32, NULL, 0, 0, 0, 0, bs, bs);
         switch (tx_size) {
           case TX_32X32: eb_vp9_idct32x32_add(dqcoeff, recon, 32, eob); break;
           case TX_16X16: eb_vp9_idct16x16_add(dqcoeff, recon, 32, eob); break;
@@ -1094,7 +1094,7 @@ static int64_t rd_pick_intra4x4block(VP9_COMP *cpi, MACROBLOCK *x, int row,
           const scan_order *so = &eb_vp9_default_scan_orders[TX_4X4];
           const int coeff_ctx =
               combine_entropy_contexts(tempa[idx], templ[idy]);
-          vp9_fwht4x4(src_diff, coeff, 8);
+          eb_vp9_fwht4x4(src_diff, coeff, 8);
           vp9_regular_quantize_b_4x4(x, 0, block, so->scan, so->iscan);
           ratey += cost_coeffs(x, 0, block, TX_4X4, coeff_ctx, so->scan,
                                so->neighbors, cpi->sf.use_fast_coef_costing);
@@ -1109,7 +1109,7 @@ static int64_t rd_pick_intra4x4block(VP9_COMP *cpi, MACROBLOCK *x, int row,
           const scan_order *so = &eb_vp9_scan_orders[TX_4X4][tx_type];
           const int coeff_ctx =
               combine_entropy_contexts(tempa[idx], templ[idy]);
-          vp9_fht4x4(src_diff, coeff, 8, tx_type);
+          eb_vp9_fht4x4(src_diff, coeff, 8, tx_type);
           vp9_regular_quantize_b_4x4(x, 0, block, so->scan, so->iscan);
           ratey += cost_coeffs(x, 0, block, TX_4X4, coeff_ctx, so->scan,
                                so->neighbors, cpi->sf.use_fast_coef_costing);

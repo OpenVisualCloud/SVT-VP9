@@ -2932,7 +2932,7 @@ void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride
   }
 }  // NOLINT
 
-void vpx_partial_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride) {
+void eb_vpx_partial_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride) {
   // Calculate pre-multiplied strides
   const int str1 = stride;
   const int str2 = 2 * stride;

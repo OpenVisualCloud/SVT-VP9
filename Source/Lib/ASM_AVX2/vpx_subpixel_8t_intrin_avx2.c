@@ -16,7 +16,7 @@
 //#include "vpx_dsp/x86/convolve_avx2.h"
 #include "mem.h"
 
-void vpx_convolve_copy_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vpx_convolve_copy_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
     ptrdiff_t dst_stride, const InterpKernel *filter,
     int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
     int w, int h) {
@@ -111,7 +111,7 @@ static INLINE void convolve_avg32(const uint8_t *const src, uint8_t *const dst)
     _mm256_store_si256((__m256i *)dst, a);
 }
 
-void vpx_convolve_avg_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
+void eb_vpx_convolve_avg_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst,
     ptrdiff_t dst_stride, const InterpKernel *filter,
     int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
     int w, int h) {

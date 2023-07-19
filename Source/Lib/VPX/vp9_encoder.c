@@ -6268,11 +6268,11 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
       cpi->td.mb.fwd_txfm4x4 =
           lossless ? vp9_highbd_fwht4x4 : vpx_highbd_fdct4x4;
     else
-      cpi->td.mb.fwd_txfm4x4 = lossless ? vp9_fwht4x4 : vpx_fdct4x4;
+      cpi->td.mb.fwd_txfm4x4 = lossless ? eb_vp9_fwht4x4 : eb_vpx_fdct4x4;
     cpi->td.mb.highbd_inv_txfm_add =
         lossless ? vp9_highbd_iwht4x4_add : vp9_highbd_idct4x4_add;
 #else
-    cpi->td.mb.fwd_txfm4x4 = lossless ? vp9_fwht4x4 : vpx_fdct4x4;
+    cpi->td.mb.fwd_txfm4x4 = lossless ? eb_vp9_fwht4x4 : eb_vpx_fdct4x4;
 #endif  // CONFIG_VP9_HIGHBITDEPTH
     cpi->td.mb.inv_txfm_add = lossless ? eb_vp9_iwht4x4_add : eb_vp9_idct4x4_add;
     vp9_first_pass(cpi, source);

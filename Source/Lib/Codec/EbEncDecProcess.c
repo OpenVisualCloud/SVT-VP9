@@ -472,7 +472,7 @@ void perform_coding_loop(
 
             if (!is_encode_pass && context_ptr->pf_md_level) {
                 memset(trans_coeff_buffer, 0, 1024 * sizeof(int16_t));
-                vpx_partial_fdct32x32(
+                eb_vpx_partial_fdct32x32(
                     residual_quant_coeff_buffer,
                     trans_coeff_buffer,
                     residual_quant_coeff_stride);
@@ -537,7 +537,7 @@ void perform_coding_loop(
                 16,
                 16);
 
-            vp9_fht16x16(
+            eb_vp9_fht16x16(
                 residual_quant_coeff_buffer,
                 trans_coeff_buffer,
                 residual_quant_coeff_stride,
@@ -599,7 +599,7 @@ void perform_coding_loop(
                 8,
                 8);
 
-            vp9_fht8x8(
+            eb_vp9_fht8x8(
                 residual_quant_coeff_buffer,
                 trans_coeff_buffer,
                 residual_quant_coeff_stride,
@@ -662,13 +662,13 @@ void perform_coding_loop(
                 4);
 
             if (tx_type != DCT_DCT)
-                vp9_fht4x4(
+                eb_vp9_fht4x4(
                     residual_quant_coeff_buffer,
                     trans_coeff_buffer,
                     residual_quant_coeff_stride,
                     tx_type);
             else
-                vpx_fdct4x4(
+                eb_vpx_fdct4x4(
                     residual_quant_coeff_buffer,
                     trans_coeff_buffer,
                     residual_quant_coeff_stride);
@@ -716,7 +716,7 @@ void perform_coding_loop(
                         recon_stride,
                         *eob);
                 else
-                    vp9_iht4x4_16_add(
+                    eb_vp9_iht4x4_16_add(
                         recon_coeff_buffer,
                         recon_buffer,
                         recon_stride,
@@ -836,7 +836,7 @@ void perform_inv_trans_add(
                     recon_stride,
                     *eob);
             else
-                vp9_iht4x4_16_add(
+                eb_vp9_iht4x4_16_add(
                     recon_coeff_buffer,
                     recon_buffer,
                     recon_stride,

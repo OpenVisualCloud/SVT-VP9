@@ -496,7 +496,7 @@ void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
 #endif  // DCT_HIGH_BIT_DEPTH
 }
 
-void vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride,
+void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride,
     int tx_type) {
     int overflow = 0;
     __m256i in[4], x[4];
@@ -1012,7 +1012,7 @@ static void fadst16_avx2(__m256i *const in) {
     transpose_16bit_16x16_avx2(in, in);
 }
 
-void vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
+void eb_vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
     int overflow;
     __m256i in[16];
 
@@ -1029,7 +1029,7 @@ void vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
 #endif  // DCT_HIGH_BIT_DEPTH
 }
 
-void vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride,
+void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride,
     int tx_type) {
     int overflow = 0;
     __m256i in[16];

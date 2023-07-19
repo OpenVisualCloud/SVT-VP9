@@ -317,47 +317,47 @@ static void filter_selectively_vert_row2(
 
       if (mask_16x16 & dual_one) {
         if ((mask_16x16 & dual_one) == dual_one) {
-          vpx_lpf_vertical_16_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
+          eb_vpx_lpf_vertical_16_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
                                    lfis[0]->hev_thr);
         } else {
           const loop_filter_thresh *lfi = lfis[!(mask_16x16 & 1)];
-          vpx_lpf_vertical_16(ss[!(mask_16x16 & 1)], pitch, lfi->mblim,
+          eb_vpx_lpf_vertical_16(ss[!(mask_16x16 & 1)], pitch, lfi->mblim,
                               lfi->lim, lfi->hev_thr);
         }
       }
 
       if (mask_8x8 & dual_one) {
         if ((mask_8x8 & dual_one) == dual_one) {
-          vpx_lpf_vertical_8_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
+          eb_vpx_lpf_vertical_8_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
                                   lfis[0]->hev_thr, lfis[1]->mblim,
                                   lfis[1]->lim, lfis[1]->hev_thr);
         } else {
           const loop_filter_thresh *lfi = lfis[!(mask_8x8 & 1)];
-          vpx_lpf_vertical_8(ss[!(mask_8x8 & 1)], pitch, lfi->mblim, lfi->lim,
+          eb_vpx_lpf_vertical_8(ss[!(mask_8x8 & 1)], pitch, lfi->mblim, lfi->lim,
                              lfi->hev_thr);
         }
       }
 
       if (mask_4x4 & dual_one) {
         if ((mask_4x4 & dual_one) == dual_one) {
-          vpx_lpf_vertical_4_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
+          eb_vpx_lpf_vertical_4_dual(ss[0], pitch, lfis[0]->mblim, lfis[0]->lim,
                                   lfis[0]->hev_thr, lfis[1]->mblim,
                                   lfis[1]->lim, lfis[1]->hev_thr);
         } else {
           const loop_filter_thresh *lfi = lfis[!(mask_4x4 & 1)];
-          vpx_lpf_vertical_4(ss[!(mask_4x4 & 1)], pitch, lfi->mblim, lfi->lim,
+          eb_vpx_lpf_vertical_4(ss[!(mask_4x4 & 1)], pitch, lfi->mblim, lfi->lim,
                              lfi->hev_thr);
         }
       }
 
       if (mask_4x4_int & dual_one) {
         if ((mask_4x4_int & dual_one) == dual_one) {
-          vpx_lpf_vertical_4_dual(
+          eb_vpx_lpf_vertical_4_dual(
               ss[0] + 4, pitch, lfis[0]->mblim, lfis[0]->lim, lfis[0]->hev_thr,
               lfis[1]->mblim, lfis[1]->lim, lfis[1]->hev_thr);
         } else {
           const loop_filter_thresh *lfi = lfis[!(mask_4x4_int & 1)];
-          vpx_lpf_vertical_4(ss[!(mask_4x4_int & 1)] + 4, pitch, lfi->mblim,
+          eb_vpx_lpf_vertical_4(ss[!(mask_4x4_int & 1)] + 4, pitch, lfi->mblim,
                              lfi->lim, lfi->hev_thr);
         }
       }
@@ -477,28 +477,28 @@ static void filter_selectively_horiz(
           // Next block's thresholds.
           const loop_filter_thresh *lfin = lfthr + *(lfl + 1);
 
-          vpx_lpf_horizontal_8_dual(s, pitch, lfi->mblim, lfi->lim,
+          eb_vpx_lpf_horizontal_8_dual(s, pitch, lfi->mblim, lfi->lim,
                                     lfi->hev_thr, lfin->mblim, lfin->lim,
                                     lfin->hev_thr);
 
           if ((mask_4x4_int & 3) == 3) {
-            vpx_lpf_horizontal_4_dual(s + 4 * pitch, pitch, lfi->mblim,
+            eb_vpx_lpf_horizontal_4_dual(s + 4 * pitch, pitch, lfi->mblim,
                                       lfi->lim, lfi->hev_thr, lfin->mblim,
                                       lfin->lim, lfin->hev_thr);
           } else {
             if (mask_4x4_int & 1)
-              vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
+              eb_vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
                                    lfi->hev_thr);
             else if (mask_4x4_int & 2)
-              vpx_lpf_horizontal_4(s + 8 + 4 * pitch, pitch, lfin->mblim,
+              eb_vpx_lpf_horizontal_4(s + 8 + 4 * pitch, pitch, lfin->mblim,
                                    lfin->lim, lfin->hev_thr);
           }
           count = 2;
         } else {
-          vpx_lpf_horizontal_8(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+          eb_vpx_lpf_horizontal_8(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
 
           if (mask_4x4_int & 1)
-            vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
+            eb_vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
                                  lfi->hev_thr);
         }
       } else if (mask_4x4 & 1) {
@@ -506,31 +506,31 @@ static void filter_selectively_horiz(
           // Next block's thresholds.
           const loop_filter_thresh *lfin = lfthr + *(lfl + 1);
 
-          vpx_lpf_horizontal_4_dual(s, pitch, lfi->mblim, lfi->lim,
+          eb_vpx_lpf_horizontal_4_dual(s, pitch, lfi->mblim, lfi->lim,
                                     lfi->hev_thr, lfin->mblim, lfin->lim,
                                     lfin->hev_thr);
           if ((mask_4x4_int & 3) == 3) {
-            vpx_lpf_horizontal_4_dual(s + 4 * pitch, pitch, lfi->mblim,
+            eb_vpx_lpf_horizontal_4_dual(s + 4 * pitch, pitch, lfi->mblim,
                                       lfi->lim, lfi->hev_thr, lfin->mblim,
                                       lfin->lim, lfin->hev_thr);
           } else {
             if (mask_4x4_int & 1)
-              vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
+              eb_vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
                                    lfi->hev_thr);
             else if (mask_4x4_int & 2)
-              vpx_lpf_horizontal_4(s + 8 + 4 * pitch, pitch, lfin->mblim,
+              eb_vpx_lpf_horizontal_4(s + 8 + 4 * pitch, pitch, lfin->mblim,
                                    lfin->lim, lfin->hev_thr);
           }
           count = 2;
         } else {
-          vpx_lpf_horizontal_4(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+          eb_vpx_lpf_horizontal_4(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
 
           if (mask_4x4_int & 1)
-            vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
+            eb_vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
                                  lfi->hev_thr);
         }
       } else {
-        vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
+        eb_vpx_lpf_horizontal_4(s + 4 * pitch, pitch, lfi->mblim, lfi->lim,
                              lfi->hev_thr);
       }
     }
@@ -1024,15 +1024,15 @@ static void filter_selectively_vert(
 
     if (mask & 1) {
       if (mask_16x16 & 1) {
-        vpx_lpf_vertical_16(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+        eb_vpx_lpf_vertical_16(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
       } else if (mask_8x8 & 1) {
-        vpx_lpf_vertical_8(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+        eb_vpx_lpf_vertical_8(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
       } else if (mask_4x4 & 1) {
-        vpx_lpf_vertical_4(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+        eb_vpx_lpf_vertical_4(s, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
       }
     }
     if (mask_4x4_int & 1)
-      vpx_lpf_vertical_4(s + 4, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
+      eb_vpx_lpf_vertical_4(s + 4, pitch, lfi->mblim, lfi->lim, lfi->hev_thr);
     s += 8;
     lfl += 1;
     mask_16x16 >>= 1;

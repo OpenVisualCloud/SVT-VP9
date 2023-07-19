@@ -1251,7 +1251,7 @@ void eb_vp9_lpf_horizontal_16_dual_avx2(unsigned char *s, int p,
     _mm_storeu_si128((__m128i *)(s + 6 * p), q6);
   }
 }
-void vpx_lpf_vertical_16_dual_avx2(unsigned char *s, int p,
+void eb_vpx_lpf_vertical_16_dual_avx2(unsigned char *s, int p,
     const uint8_t *blimit, const uint8_t *limit,
     const uint8_t *thresh) {
     __m128i io[16];

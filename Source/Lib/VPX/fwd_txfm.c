@@ -729,7 +729,7 @@ void eb_vp9_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
   }
 }
 
-void vpx_partial_fdct32(const tran_high_t *input, tran_high_t *output, int round) {
+static void vpx_partial_fdct32(const tran_high_t *input, tran_high_t *output, int round) {
     tran_high_t step[32];
     // Stage 1
     step[0] = input[0] + input[(32 - 1)];
@@ -1051,7 +1051,7 @@ void vpx_partial_fdct32(const tran_high_t *input, tran_high_t *output, int round
     output[15] = dct_32_round(step[30] * cospi_15_64 + step[17] * -cospi_17_64);
     //output[31] = dct_32_round(step[31] * cospi_31_64 + step[16] * -cospi_1_64);
 }
-void vpx_partial_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
+void eb_vpx_partial_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
     int i, j;
     tran_high_t output[32 * 32];
 
