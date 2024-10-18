@@ -1,4 +1,4 @@
-From bcecbfb0188680c2f4e355ad843639f6198b36da Mon Sep 17 00:00:00 2001
+From c257eab3e61ff827e3a600f373bc6401b9f56c5d Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -17,18 +17,18 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 71386c3920..3d3e7ba5a5 100755
+index 9f508a2527..4fb034905d 100755
 --- a/configure
 +++ b/configure
-@@ -292,6 +292,7 @@ External library support:
-   --enable-libvorbis       enable Vorbis en/decoding via libvorbis,
+@@ -295,6 +295,7 @@ External library support:
                             native implementation exists [no]
    --enable-libvpx          enable VP8 and VP9 de/encoding via libvpx [no]
+   --enable-libvvenc        enable H.266/VVC encoding via vvenc [no]
 +  --enable-libsvtvp9       enable VP9 encoding via svt [no]
    --enable-libwebp         enable WebP encoding via libwebp [no]
    --enable-libx264         enable H.264 encoding via x264 [no]
    --enable-libx265         enable HEVC encoding via x265 [no]
-@@ -1948,6 +1949,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1955,6 +1956,7 @@ EXTERNAL_LIBRARY_LIST="
      libshaderc
      libshine
      libsmbclient
@@ -36,46 +36,46 @@ index 71386c3920..3d3e7ba5a5 100755
      libsnappy
      libsoxr
      libspeex
-@@ -3537,6 +3539,7 @@ libvpx_vp8_decoder_deps="libvpx"
+@@ -3587,6 +3589,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
 +libsvt_vp9_encoder_deps="libsvtvp9"
+ libvvenc_encoder_deps="libvvenc"
  libwebp_encoder_deps="libwebp"
  libwebp_anim_encoder_deps="libwebp"
- libx262_encoder_deps="libx262"
-@@ -6995,6 +6998,7 @@ enabled libvpx            && {
-     fi
+@@ -7048,6 +7051,7 @@ enabled libvpx            && {
  }
  
+ enabled libvvenc          && require_pkg_config libvvenc "libvvenc >= 1.6.1" "vvenc/vvenc.h" vvenc_get_version
 +enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h       eb_vp9_svt_init_handle
  enabled libwebp           && {
      enabled libwebp_encoder      && require_pkg_config libwebp "libwebp >= 0.2.0" webp/encode.h WebPGetEncoderVersion
      enabled libwebp_anim_encoder && check_pkg_config libwebp_anim_encoder "libwebpmux >= 0.4.0" webp/mux.h WebPAnimEncoderOptionsInit; }
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 8c8c2ce659..2a00269821 100644
+index dd5d0de898..5d2c74e95d 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1149,6 +1149,7 @@ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
+@@ -1160,6 +1160,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
+ OBJS-$(CONFIG_LIBVORBIS_DECODER)          += libvorbisdec.o
+ OBJS-$(CONFIG_LIBVORBIS_ENCODER)          += libvorbisenc.o \
+                                              vorbis_data.o
++OBJS-$(CONFIG_LIBSVT_VP9_ENCODER)         += libsvt_vp9.o
+ OBJS-$(CONFIG_LIBVPX_VP8_DECODER)         += libvpxdec.o
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
- OBJS-$(CONFIG_LIBVPX_VP9_ENCODER)         += libvpxenc.o
-+OBJS-$(CONFIG_LIBSVT_VP9_ENCODER)         += libsvt_vp9.o
- OBJS-$(CONFIG_LIBWEBP_ENCODER)            += libwebpenc_common.o libwebpenc.o
- OBJS-$(CONFIG_LIBWEBP_ANIM_ENCODER)       += libwebpenc_common.o libwebpenc_animencoder.o
- OBJS-$(CONFIG_LIBX262_ENCODER)            += libx264.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index 2386b450a6..58b17d4c34 100644
+index c7e5f9910c..acb332fb08 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -799,6 +799,7 @@ extern const FFCodec ff_libvpx_vp8_encoder;
+@@ -798,6 +798,7 @@ extern const FFCodec ff_libuavs3d_decoder;
+ extern const FFCodec ff_libvo_amrwbenc_encoder;
+ extern const FFCodec ff_libvorbis_encoder;
+ extern const FFCodec ff_libvorbis_decoder;
++extern const FFCodec ff_libsvt_vp9_encoder;
+ extern const FFCodec ff_libvpx_vp8_encoder;
  extern const FFCodec ff_libvpx_vp8_decoder;
  extern FFCodec ff_libvpx_vp9_encoder;
- extern const FFCodec ff_libvpx_vp9_decoder;
-+extern const FFCodec ff_libsvt_vp9_encoder;
- /* preferred over libwebp */
- extern const FFCodec ff_libwebp_anim_encoder;
- extern const FFCodec ff_libwebp_encoder;
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
 index 0000000000..05d2a95e99
@@ -784,5 +784,5 @@ index 0000000000..05d2a95e99
 +    .p.wrapper_name   = "libsvt_vp9",
 +};
 -- 
-2.44.0
+2.46.1
 
