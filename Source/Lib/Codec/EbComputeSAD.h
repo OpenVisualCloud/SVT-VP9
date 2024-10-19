@@ -154,12 +154,14 @@ extern "C" {
         eb_vp9_get_eight_horizontal_search_point_results_8x8_16x16_pu_avx2_intrin,
     };
 
-    static EbGeteightsaD32x32 FUNC_TABLE eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array[ASM_TYPE_TOTAL] =
-    {
-        // C_DEFAULT
-        eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64,
-        // AVX2
-        eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin,
+    static EbGeteightsaD32x32 FUNC_TABLE
+        eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_func_ptr_array
+            [ASM_TYPE_TOTAL] = {
+                // C_DEFAULT
+                eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64,
+                // AVX2
+                eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64,
+                // eb_vp9_get_eight_horizontal_search_point_results_32x32_64x64_pu_avx2_intrin produces worse results
     };
 #endif
 
