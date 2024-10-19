@@ -114,7 +114,6 @@ static INLINE void d135_predictor(uint8_t *dst, ptrdiff_t stride, int bs,
 #else
   uint8_t border[32 + 32 - 1];  // outer border from bottom-left to top-right
 #endif
-
   // dst(bs, bs - 2)[0], i.e., border starting at bottom-left
   for (i = 0; i < bs - 2; ++i) {
     border[i] = AVG3(left[bs - 3 - i], left[bs - 2 - i], left[bs - 1 - i]);
@@ -126,8 +125,7 @@ static INLINE void d135_predictor(uint8_t *dst, ptrdiff_t stride, int bs,
   for (i = 0; i < bs - 2; ++i) {
     border[bs + 1 + i] = AVG3(above[i], above[i + 1], above[i + 2]);
   }
-
-  for (i = 0; i < bs - 1; ++i) {
+  for (i = 0; i < bs; ++i) {
     memcpy(dst + i * stride, border + bs - 1 - i, bs);
   }
 }
