@@ -276,9 +276,6 @@ EB_AURA_STATUS aura_detection64x64(
             left_dist = picture_control_set_ptr->parent_pcs_ptr->me_results[sb_index + sb_offset]->distortion_direction[0].distortion;
 
             //RightDistortion
-            sb_offset = 1;
-            right_dist = picture_control_set_ptr->parent_pcs_ptr->me_results[sb_index + sb_offset]->distortion_direction[0].distortion;
-
             right_dist = (sb_params->horizontal_index < (uint32_t)(picture_width_in_sb - 2)) ? top_r_dist : curr_dist;
 
             local_avg_dist = MIN(MIN(MIN(top_l_dist, MIN(top_r_dist, top_dist)), left_dist), right_dist);
