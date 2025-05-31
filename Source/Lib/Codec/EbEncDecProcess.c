@@ -5141,7 +5141,7 @@ static void perform_dist_rate_calc(
                 context_ptr->bipred3x3_injection = EB_FALSE;
 
             // Set Limit INTRA Flag
-            if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
+            if (picture_control_set_ptr->enc_mode <= ENC_MODE_5) {
                 context_ptr->limit_intra = EB_FALSE;
             }
             else {
