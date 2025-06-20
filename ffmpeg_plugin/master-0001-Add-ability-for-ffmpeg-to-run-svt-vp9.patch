@@ -82,7 +82,7 @@ index 0000000000..05d2a95e99
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
 @@ -0,0 +1,701 @@
-+/*
++/**
 +* Scalable Video Technology for VP9 encoder library plugin
 +*
 +* Copyright (c) 2018 Intel Corporation
@@ -295,10 +295,10 @@ index 0000000000..05d2a95e99
 +
 +    if (avctx->framerate.num > 0 && avctx->framerate.den > 0) {
 +        param->frame_rate_numerator     = avctx->framerate.num;
-+        param->frame_rate_denominator   = avctx->framerate.den * avctx->ticks_per_frame;
++        param->frame_rate_denominator   = avctx->framerate.den;
 +    } else {
 +        param->frame_rate_numerator     = avctx->time_base.den;
-+        param->frame_rate_denominator   = avctx->time_base.num * avctx->ticks_per_frame;
++        param->frame_rate_denominator   = avctx->time_base.num;
 +    }
 +
 +    if (param->rate_control_mode) {
