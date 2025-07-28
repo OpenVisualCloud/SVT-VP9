@@ -1,4 +1,4 @@
-From 38eb54ccd1f624e2ab700c1b10a0e6980df9c0b2 Mon Sep 17 00:00:00 2001
+From 0227ddaf610f93c216e96b094ccdd670b79cb7a1 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -17,7 +17,7 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 9f508a2527..a73e1f73c1 100755
+index ac143f2fea..777a335e69 100755
 --- a/configure
 +++ b/configure
 @@ -278,6 +278,7 @@ External library support:
@@ -28,7 +28,7 @@ index 9f508a2527..a73e1f73c1 100755
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1955,6 +1956,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1972,6 +1973,7 @@ EXTERNAL_LIBRARY_LIST="
      libshaderc
      libshine
      libsmbclient
@@ -36,7 +36,7 @@ index 9f508a2527..a73e1f73c1 100755
      libsnappy
      libsoxr
      libspeex
-@@ -3587,6 +3589,7 @@ libvpx_vp8_decoder_deps="libvpx"
+@@ -3643,6 +3645,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
@@ -44,19 +44,19 @@ index 9f508a2527..a73e1f73c1 100755
  libvvenc_encoder_deps="libvvenc"
  libwebp_encoder_deps="libwebp"
  libwebp_anim_encoder_deps="libwebp"
-@@ -7008,6 +7011,7 @@ enabled libssh            && require_pkg_config libssh "libssh >= 0.6.0" libssh/
- enabled libspeex          && require_pkg_config libspeex speex speex/speex.h speex_decoder_init
- enabled libsrt            && require_pkg_config libsrt "srt >= 1.3.0" srt/srt.h srt_socket
- enabled libsvtav1         && require_pkg_config libsvtav1 "SvtAv1Enc >= 0.9.0" EbSvtAv1Enc.h svt_av1_enc_init_handle
+@@ -7125,6 +7128,7 @@ enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame
+                                die "ERROR: libtwolame must be installed and version must be >= 0.3.10"; }
+ enabled libuavs3d         && require_pkg_config libuavs3d "uavs3d >= 1.1.41" uavs3d.h uavs3d_decode
+ enabled libv4l2           && require_pkg_config libv4l2 libv4l2 libv4l2.h v4l2_ioctl
 +enabled libsvtvp9         && require_pkg_config libsvtvp9 SvtVp9Enc EbSvtVp9Enc.h       eb_vp9_svt_init_handle
- enabled libtensorflow     && require libtensorflow tensorflow/c/c_api.h TF_Version -ltensorflow
- enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
- enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
+ enabled libvidstab        && require_pkg_config libvidstab "vidstab >= 0.98" vid.stab/libvidstab.h vsMotionDetectInit
+ enabled libvmaf           && require_pkg_config libvmaf "libvmaf >= 2.0.0" libvmaf.h vmaf_init
+ enabled libvmaf           && check_pkg_config libvmaf_cuda "libvmaf >= 2.0.0" libvmaf_cuda.h vmaf_cuda_state_init
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index dd5d0de898..5d2c74e95d 100644
+index f935cfbe0d..6fea6b9b5d 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1160,6 +1160,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
+@@ -1184,6 +1184,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
  OBJS-$(CONFIG_LIBVORBIS_DECODER)          += libvorbisdec.o
  OBJS-$(CONFIG_LIBVORBIS_ENCODER)          += libvorbisenc.o \
                                               vorbis_data.o
@@ -65,10 +65,10 @@ index dd5d0de898..5d2c74e95d 100644
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index c7e5f9910c..acb332fb08 100644
+index 3aaa351157..7277515249 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -798,6 +798,7 @@ extern const FFCodec ff_libuavs3d_decoder;
+@@ -808,6 +808,7 @@ extern const FFCodec ff_libuavs3d_decoder;
  extern const FFCodec ff_libvo_amrwbenc_encoder;
  extern const FFCodec ff_libvorbis_encoder;
  extern const FFCodec ff_libvorbis_decoder;
@@ -784,5 +784,5 @@ index 0000000000..05d2a95e99
 +    .p.wrapper_name   = "libsvt_vp9",
 +};
 -- 
-2.46.1
+2.50.1
 
