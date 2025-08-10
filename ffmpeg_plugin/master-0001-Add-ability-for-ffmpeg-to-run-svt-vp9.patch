@@ -1,4 +1,4 @@
-From 0227ddaf610f93c216e96b094ccdd670b79cb7a1 Mon Sep 17 00:00:00 2001
+From e532d4b233046eb70bdfc8484634d5ba1c521e77 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -17,7 +17,7 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index ac143f2fea..777a335e69 100755
+index 727c3daea8..1da8f40bff 100755
 --- a/configure
 +++ b/configure
 @@ -278,6 +278,7 @@ External library support:
@@ -28,7 +28,7 @@ index ac143f2fea..777a335e69 100755
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1972,6 +1973,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -1973,6 +1974,7 @@ EXTERNAL_LIBRARY_LIST="
      libshaderc
      libshine
      libsmbclient
@@ -36,7 +36,7 @@ index ac143f2fea..777a335e69 100755
      libsnappy
      libsoxr
      libspeex
-@@ -3643,6 +3645,7 @@ libvpx_vp8_decoder_deps="libvpx"
+@@ -3658,6 +3660,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
@@ -44,7 +44,7 @@ index ac143f2fea..777a335e69 100755
  libvvenc_encoder_deps="libvvenc"
  libwebp_encoder_deps="libwebp"
  libwebp_anim_encoder_deps="libwebp"
-@@ -7125,6 +7128,7 @@ enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame
+@@ -7160,6 +7163,7 @@ enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame
                                 die "ERROR: libtwolame must be installed and version must be >= 0.3.10"; }
  enabled libuavs3d         && require_pkg_config libuavs3d "uavs3d >= 1.1.41" uavs3d.h uavs3d_decode
  enabled libv4l2           && require_pkg_config libv4l2 libv4l2 libv4l2.h v4l2_ioctl
@@ -53,10 +53,10 @@ index ac143f2fea..777a335e69 100755
  enabled libvmaf           && require_pkg_config libvmaf "libvmaf >= 2.0.0" libvmaf.h vmaf_init
  enabled libvmaf           && check_pkg_config libvmaf_cuda "libvmaf >= 2.0.0" libvmaf_cuda.h vmaf_cuda_state_init
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index f935cfbe0d..6fea6b9b5d 100644
+index 83ef92963a..d63ec14d84 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1184,6 +1184,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
+@@ -1191,6 +1191,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
  OBJS-$(CONFIG_LIBVORBIS_DECODER)          += libvorbisdec.o
  OBJS-$(CONFIG_LIBVORBIS_ENCODER)          += libvorbisenc.o \
                                               vorbis_data.o
@@ -65,10 +65,10 @@ index f935cfbe0d..6fea6b9b5d 100644
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index 3aaa351157..7277515249 100644
+index f5ec2e01e8..11928d7afa 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -808,6 +808,7 @@ extern const FFCodec ff_libuavs3d_decoder;
+@@ -809,6 +809,7 @@ extern const FFCodec ff_libuavs3d_decoder;
  extern const FFCodec ff_libvo_amrwbenc_encoder;
  extern const FFCodec ff_libvorbis_encoder;
  extern const FFCodec ff_libvorbis_decoder;
@@ -78,7 +78,7 @@ index 3aaa351157..7277515249 100644
  extern FFCodec ff_libvpx_vp9_encoder;
 diff --git a/libavcodec/libsvt_vp9.c b/libavcodec/libsvt_vp9.c
 new file mode 100644
-index 0000000000..05d2a95e99
+index 0000000000..90ed5cbff2
 --- /dev/null
 +++ b/libavcodec/libsvt_vp9.c
 @@ -0,0 +1,701 @@
@@ -294,11 +294,11 @@ index 0000000000..05d2a95e99
 +        param->intra_period  = avctx->gop_size - 1;
 +
 +    if (avctx->framerate.num > 0 && avctx->framerate.den > 0) {
-+        param->frame_rate_numerator     = avctx->framerate.num;
-+        param->frame_rate_denominator   = avctx->framerate.den * avctx->ticks_per_frame;
++        param->frame_rate_numerator   = avctx->framerate.num;
++        param->frame_rate_denominator = avctx->framerate.den;
 +    } else {
-+        param->frame_rate_numerator     = avctx->time_base.den;
-+        param->frame_rate_denominator   = avctx->time_base.num * avctx->ticks_per_frame;
++        param->frame_rate_numerator   = avctx->time_base.den;
++        param->frame_rate_denominator = avctx->time_base.num;
 +    }
 +
 +    if (param->rate_control_mode) {
