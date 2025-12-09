@@ -13,8 +13,7 @@
 /**************************************
  * Context
  **************************************/
-typedef struct InitialRateControlContext
-{
+typedef struct InitialRateControlContext {
     EbFifo *motion_estimation_results_input_fifo_ptr;
     EbFifo *initialrate_control_results_output_fifo_ptr;
 
@@ -23,11 +22,10 @@ typedef struct InitialRateControlContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(
-    InitialRateControlContext **context_dbl_ptr,
-    EbFifo                     *motion_estimation_results_input_fifo_ptr,
-    EbFifo                     *picture_demux_results_output_fifo_ptr);
+extern EbErrorType eb_vp9_initial_eb_vp9_rate_control_context_ctor(InitialRateControlContext **context_dbl_ptr,
+                                                                   EbFifo *motion_estimation_results_input_fifo_ptr,
+                                                                   EbFifo *picture_demux_results_output_fifo_ptr);
 
-extern void* eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr);
+extern void *eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr);
 
 #endif // EbInitialRateControl_h

@@ -12,39 +12,33 @@
 #include <stdint.h>
 #include "vpx_dsp_rtcd.h"
 
-void eb_vp9_subtract_block_c(int rows, int cols, int16_t *diff,
-                          ptrdiff_t diff_stride, const uint8_t *src,
-                          ptrdiff_t src_stride, const uint8_t *pred,
-                          ptrdiff_t pred_stride) {
-  int r, c;
+void eb_vp9_subtract_block_c(int rows, int cols, int16_t *diff, ptrdiff_t diff_stride, const uint8_t *src,
+                             ptrdiff_t src_stride, const uint8_t *pred, ptrdiff_t pred_stride) {
+    int r, c;
 
-  for (r = 0; r < rows; r++) {
-    for (c = 0; c < cols; c++) diff[c] = src[c] - pred[c];
+    for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++) diff[c] = src[c] - pred[c];
 
-    diff += diff_stride;
-    pred += pred_stride;
-    src += src_stride;
-  }
+        diff += diff_stride;
+        pred += pred_stride;
+        src += src_stride;
+    }
 }
 
 #if CONFIG_VP9_HIGHBITDEPTH
-void vpx_highbd_subtract_block_c(int rows, int cols, int16_t *diff,
-                                 ptrdiff_t diff_stride, const uint8_t *src8,
-                                 ptrdiff_t src_stride, const uint8_t *pred8,
-                                 ptrdiff_t pred_stride, int bd) {
-  int r, c;
-  uint16_t *src = CONVERT_TO_SHORTPTR(src8);
-  uint16_t *pred = CONVERT_TO_SHORTPTR(pred8);
-  (void)bd;
+void vpx_highbd_subtract_block_c(int rows, int cols, int16_t *diff, ptrdiff_t diff_stride, const uint8_t *src8,
+                                 ptrdiff_t src_stride, const uint8_t *pred8, ptrdiff_t pred_stride, int bd) {
+    int       r, c;
+    uint16_t *src  = CONVERT_TO_SHORTPTR(src8);
+    uint16_t *pred = CONVERT_TO_SHORTPTR(pred8);
+    (void)bd;
 
-  for (r = 0; r < rows; r++) {
-    for (c = 0; c < cols; c++) {
-      diff[c] = src[c] - pred[c];
+    for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++) { diff[c] = src[c] - pred[c]; }
+
+        diff += diff_stride;
+        pred += pred_stride;
+        src += src_stride;
     }
-
-    diff += diff_stride;
-    pred += pred_stride;
-    src += src_stride;
-  }
 }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH

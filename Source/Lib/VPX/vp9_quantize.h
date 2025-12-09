@@ -19,26 +19,25 @@ extern "C" {
 #endif
 
 typedef struct {
-  DECLARE_ALIGNED(16, int16_t, y_quant[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_quant_shift[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_zbin[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_round[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_quant[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_quant_shift[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_zbin[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_round[QINDEX_RANGE][8]);
 
-  // TODO(jingning): in progress of re-working the quantization. will decide
-  // if we want to deprecate the current use of y_quant.
-  DECLARE_ALIGNED(16, int16_t, y_quant_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_quant_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_round_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_round_fp[QINDEX_RANGE][8]);
+    // TODO(jingning): in progress of re-working the quantization. will decide
+    // if we want to deprecate the current use of y_quant.
+    DECLARE_ALIGNED(16, int16_t, y_quant_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_round_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_round_fp[QINDEX_RANGE][8]);
 
-  DECLARE_ALIGNED(16, int16_t, uv_quant[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_quant_shift[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_zbin[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_round[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant_shift[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_zbin[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_round[QINDEX_RANGE][8]);
 } QUANTS;
 
-void vp9_regular_quantize_b_4x4(MACROBLOCK *x, int plane, int block,
-                                const int16_t *scan, const int16_t *iscan);
+void vp9_regular_quantize_b_4x4(MACROBLOCK *x, int plane, int block, const int16_t *scan, const int16_t *iscan);
 
 struct VP9_COMP;
 struct VP9Common;
@@ -56,7 +55,7 @@ int eb_vp9_quantizer_to_qindex(int quantizer);
 int eb_vp9_qindex_to_quantizer(int qindex);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_QUANTIZE_H_
+#endif // VPX_VP9_ENCODER_VP9_QUANTIZE_H_

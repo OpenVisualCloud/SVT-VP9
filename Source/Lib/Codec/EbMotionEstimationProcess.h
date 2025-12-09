@@ -15,8 +15,7 @@
 /**************************************
  * Context
  **************************************/
-typedef struct MotionEstimationContext
-{
+typedef struct MotionEstimationContext {
     EbFifo    *picture_decision_results_input_fifo_ptr;
     EbFifo    *motion_estimation_results_output_fifo_ptr;
     MeContext *me_context_ptr;
@@ -26,11 +25,10 @@ typedef struct MotionEstimationContext
 /***************************************
  * Extern Function Declaration
  ***************************************/
-extern EbErrorType eb_vp9_motion_estimation_context_ctor(
-    MotionEstimationContext **context_dbl_ptr,
-    EbFifo                   *picture_decision_results_input_fifo_ptr,
-    EbFifo                   *motion_estimation_results_output_fifo_ptr);
+extern EbErrorType eb_vp9_motion_estimation_context_ctor(MotionEstimationContext **context_dbl_ptr,
+                                                         EbFifo *picture_decision_results_input_fifo_ptr,
+                                                         EbFifo *motion_estimation_results_output_fifo_ptr);
 
-extern void* eb_vp9_motion_estimation_kernel(void *input_ptr);
+extern void *eb_vp9_motion_estimation_kernel(void *input_ptr);
 
 #endif // EbMotionEstimationProcess_h

@@ -11,9 +11,8 @@
 #include "vp9_rtcd.h"
 #include "inv_txfm_sse2.h"
 
-void eb_vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
-    int tx_type) {
-    __m128i in[2];
+void eb_vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int stride, int tx_type) {
+    __m128i       in[2];
     const __m128i eight = _mm_set1_epi16(8);
 
     in[0] = load_input_data8(input);
@@ -49,9 +48,8 @@ void eb_vp9_iht4x4_16_add_sse2(const tran_low_t *input, uint8_t *dest, int strid
     recon_and_store4x4_sse2(in, dest, stride);
 }
 
-void eb_vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride,
-    int tx_type) {
-    __m128i in[8];
+void eb_vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int stride, int tx_type) {
+    __m128i       in[8];
     const __m128i final_rounding = _mm_set1_epi16(1 << 4);
 
     // load input data
@@ -113,24 +111,21 @@ void eb_vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int strid
     recon_and_store(in[7], dest + 7 * stride);
 }
 
-static INLINE void load_buffer_8x16(const tran_low_t *const input,
-    const int stride, __m128i *const in) {
+static INLINE void load_buffer_8x16(const tran_low_t *const input, const int stride, __m128i *const in) {
     load_buffer_8x8(input + 0 * 16, stride, in + 0);
     load_buffer_8x8(input + 8 * 16, stride, in + 8);
 }
 
-static INLINE void write_buffer_16x1(const __m128i in0, const __m128i in1,
-    uint8_t *const dest) {
+static INLINE void write_buffer_16x1(const __m128i in0, const __m128i in1, uint8_t *const dest) {
     const __m128i final_rounding = _mm_set1_epi16(1 << 5);
-    const __m128i d0 = _mm_adds_epi16(in0, final_rounding);
-    const __m128i d1 = _mm_adds_epi16(in1, final_rounding);
-    const __m128i d2 = _mm_srai_epi16(d0, 6);
-    const __m128i d3 = _mm_srai_epi16(d1, 6);
+    const __m128i d0             = _mm_adds_epi16(in0, final_rounding);
+    const __m128i d1             = _mm_adds_epi16(in1, final_rounding);
+    const __m128i d2             = _mm_srai_epi16(d0, 6);
+    const __m128i d3             = _mm_srai_epi16(d1, 6);
     recon_and_store_16(d2, d3, dest);
 }
 
-static INLINE void write_buffer_16x16(__m128i *const in0, __m128i *const in1,
-    uint8_t *const dest, const int stride) {
+static INLINE void write_buffer_16x16(__m128i *const in0, __m128i *const in1, uint8_t *const dest, const int stride) {
     // Final rounding and shift
     write_buffer_16x1(in0[0], in1[0], dest + 0 * stride);
     write_buffer_16x1(in0[1], in1[1], dest + 1 * stride);

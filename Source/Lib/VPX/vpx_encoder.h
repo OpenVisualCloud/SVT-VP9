@@ -45,10 +45,10 @@ extern "C" {
 #define MAX_PERIODICITY VPX_TS_MAX_PERIODICITY
 
 /*! Temporal+Spatial Scalability: Maximum number of coding layers */
-#define VPX_MAX_LAYERS 12  // 3 temporal + 4 spatial layers are allowed.
+#define VPX_MAX_LAYERS 12 // 3 temporal + 4 spatial layers are allowed.
 
 /*!\deprecated Use #VPX_MAX_LAYERS instead. */
-#define MAX_LAYERS VPX_MAX_LAYERS  // 3 temporal + 4 spatial layers allowed.
+#define MAX_LAYERS VPX_MAX_LAYERS // 3 temporal + 4 spatial layers allowed.
 
 /*! Spatial Scalability: Maximum number of coding layers */
 #define VPX_SS_MAX_LAYERS 5
@@ -64,8 +64,7 @@ extern "C" {
  * types, removing or reassigning enums, adding/removing/rearranging
  * fields to structures
  */
-#define VPX_ENCODER_ABI_VERSION \
-  (14 + VPX_CODEC_ABI_VERSION) /**<\hideinitializer*/
+#define VPX_ENCODER_ABI_VERSION (14 + VPX_CODEC_ABI_VERSION) /**<\hideinitializer*/
 
 /*! \brief Encoder capabilities bitfield
  *
@@ -102,8 +101,8 @@ extern "C" {
  * This structure is able to hold a reference to any fixed size buffer.
  */
 typedef struct vpx_fixed_buf {
-  void *buf;       /**< pointer to the data */
-  size_t sz;       /**< Length of the buffer, in chars */
+    void  *buf; /**< pointer to the data */
+    size_t sz; /**< Length of the buffer, in chars */
 } vpx_fixed_buf_t; /**< alias for struct vpx_fixed_buf */
 
 /*!\brief Time Stamp Type
@@ -152,11 +151,11 @@ typedef uint32_t vpx_codec_er_flags_t;
  * extend this list to provide additional functionality.
  */
 enum vpx_codec_cx_pkt_kind {
-  VPX_CODEC_CX_FRAME_PKT,    /**< Compressed video frame */
-  VPX_CODEC_STATS_PKT,       /**< Two-pass statistics for this frame */
-  VPX_CODEC_FPMB_STATS_PKT,  /**< first pass mb statistics for this frame */
-  VPX_CODEC_PSNR_PKT,        /**< PSNR statistics for this frame */
-  VPX_CODEC_CUSTOM_PKT = 256 /**< Algorithm extensions  */
+    VPX_CODEC_CX_FRAME_PKT, /**< Compressed video frame */
+    VPX_CODEC_STATS_PKT, /**< Two-pass statistics for this frame */
+    VPX_CODEC_FPMB_STATS_PKT, /**< first pass mb statistics for this frame */
+    VPX_CODEC_PSNR_PKT, /**< PSNR statistics for this frame */
+    VPX_CODEC_CUSTOM_PKT = 256 /**< Algorithm extensions  */
 };
 
 /*!\brief Encoder output packet
@@ -165,44 +164,44 @@ enum vpx_codec_cx_pkt_kind {
  * may produce while compressing a frame.
  */
 typedef struct vpx_codec_cx_pkt {
-  enum vpx_codec_cx_pkt_kind kind; /**< packet variant */
-  union {
-    struct {
-      void *buf; /**< compressed data buffer */
-      size_t sz; /**< length of compressed data */
-      /*!\brief time stamp to show frame (in timebase units) */
-      vpx_codec_pts_t pts;
-      /*!\brief duration to show frame (in timebase units) */
-      unsigned long duration;
-      vpx_codec_frame_flags_t flags; /**< flags for this frame */
-      /*!\brief the partition id defines the decoding order of the partitions.
+    enum vpx_codec_cx_pkt_kind kind; /**< packet variant */
+    union {
+        struct {
+            void  *buf; /**< compressed data buffer */
+            size_t sz; /**< length of compressed data */
+            /*!\brief time stamp to show frame (in timebase units) */
+            vpx_codec_pts_t pts;
+            /*!\brief duration to show frame (in timebase units) */
+            unsigned long           duration;
+            vpx_codec_frame_flags_t flags; /**< flags for this frame */
+            /*!\brief the partition id defines the decoding order of the partitions.
        * Only applicable when "output partition" mode is enabled. First
        * partition has id 0.*/
-      int partition_id;
-      /*!\brief Width and height of frames in this packet. VP8 will only use the
+            int partition_id;
+            /*!\brief Width and height of frames in this packet. VP8 will only use the
        * first one.*/
-      unsigned int width[VPX_SS_MAX_LAYERS];  /**< frame width */
-      unsigned int height[VPX_SS_MAX_LAYERS]; /**< frame height */
-      /*!\brief Flag to indicate if spatial layer frame in this packet is
+            unsigned int width[VPX_SS_MAX_LAYERS]; /**< frame width */
+            unsigned int height[VPX_SS_MAX_LAYERS]; /**< frame height */
+            /*!\brief Flag to indicate if spatial layer frame in this packet is
        * encoded or dropped. VP8 will always be set to 1.*/
-      uint8_t spatial_layer_encoded[VPX_SS_MAX_LAYERS];
-    } frame;                            /**< data for compressed frame packet */
-    vpx_fixed_buf_t twopass_stats;      /**< data for two-pass packet */
-    vpx_fixed_buf_t firstpass_mb_stats; /**< first pass mb packet */
-    struct vpx_psnr_pkt {
-      unsigned int samples[4]; /**< Number of samples, total/y/u/v */
-      uint64_t sse[4];         /**< sum squared error, total/y/u/v */
-      double psnr[4];          /**< PSNR, total/y/u/v */
-    } psnr;                    /**< data for PSNR packet */
-    vpx_fixed_buf_t raw;       /**< data for arbitrary packets */
+            uint8_t spatial_layer_encoded[VPX_SS_MAX_LAYERS];
+        } frame; /**< data for compressed frame packet */
+        vpx_fixed_buf_t twopass_stats; /**< data for two-pass packet */
+        vpx_fixed_buf_t firstpass_mb_stats; /**< first pass mb packet */
+        struct vpx_psnr_pkt {
+            unsigned int samples[4]; /**< Number of samples, total/y/u/v */
+            uint64_t     sse[4]; /**< sum squared error, total/y/u/v */
+            double       psnr[4]; /**< PSNR, total/y/u/v */
+        } psnr; /**< data for PSNR packet */
+        vpx_fixed_buf_t raw; /**< data for arbitrary packets */
 
-    /* This packet size is fixed to allow codecs to extend this
+        /* This packet size is fixed to allow codecs to extend this
      * interface without having to manage storage for raw packets,
      * i.e., if it's smaller than 128 bytes, you can store in the
      * packet list directly.
      */
-    char pad[128 - sizeof(enum vpx_codec_cx_pkt_kind)]; /**< fixed sz */
-  } data;                                               /**< packet data */
+        char pad[128 - sizeof(enum vpx_codec_cx_pkt_kind)]; /**< fixed sz */
+    } data; /**< packet data */
 } vpx_codec_cx_pkt_t; /**< alias for struct vpx_codec_cx_pkt */
 
 /*!\brief Encoder return output buffer callback
@@ -212,13 +211,12 @@ typedef struct vpx_codec_cx_pkt {
  */
 // putting the definitions here for now. (agrange: find if there
 // is a better place for this)
-typedef void (*vpx_codec_enc_output_cx_pkt_cb_fn_t)(vpx_codec_cx_pkt_t *pkt,
-                                                    void *user_data);
+typedef void (*vpx_codec_enc_output_cx_pkt_cb_fn_t)(vpx_codec_cx_pkt_t *pkt, void *user_data);
 
 /*!\brief Callback function pointer / user data pair storage */
 typedef struct vpx_codec_enc_output_cx_cb_pair {
-  vpx_codec_enc_output_cx_pkt_cb_fn_t output_cx_pkt; /**< Callback function */
-  void *user_priv; /**< pointer to private data */
+    vpx_codec_enc_output_cx_pkt_cb_fn_t output_cx_pkt; /**< Callback function */
+    void                               *user_priv; /**< pointer to private data */
 } vpx_codec_priv_output_cx_pkt_cb_pair_t;
 
 /*!\brief Rational Number
@@ -226,23 +224,23 @@ typedef struct vpx_codec_enc_output_cx_cb_pair {
  * This structure holds a fractional value.
  */
 typedef struct vpx_rational {
-  int num;        /**< fraction numerator */
-  int den;        /**< fraction denominator */
+    int num; /**< fraction numerator */
+    int den; /**< fraction denominator */
 } vpx_rational_t; /**< alias for struct vpx_rational */
 
 /*!\brief Multi-pass Encoding Pass */
 enum vpx_enc_pass {
-  VPX_RC_ONE_PASS,   /**< Single pass mode */
-  VPX_RC_FIRST_PASS, /**< First pass of multi-pass mode */
-  VPX_RC_LAST_PASS   /**< Final pass of multi-pass mode */
+    VPX_RC_ONE_PASS, /**< Single pass mode */
+    VPX_RC_FIRST_PASS, /**< First pass of multi-pass mode */
+    VPX_RC_LAST_PASS /**< Final pass of multi-pass mode */
 };
 
 /*!\brief Rate control mode */
 enum vpx_rc_mode {
-  VPX_VBR, /**< Variable Bit Rate (VBR) mode */
-  VPX_CBR, /**< Constant Bit Rate (CBR) mode */
-  VPX_CQ,  /**< Constrained Quality (CQ)  mode */
-  VPX_Q,   /**< Constant Quality (Q) mode */
+    VPX_VBR, /**< Variable Bit Rate (VBR) mode */
+    VPX_CBR, /**< Constant Bit Rate (CBR) mode */
+    VPX_CQ, /**< Constrained Quality (CQ)  mode */
+    VPX_Q, /**< Constant Quality (Q) mode */
 };
 
 /*!\brief Keyframe placement mode.
@@ -254,9 +252,9 @@ enum vpx_rc_mode {
  * are VPX_KF_AUTO and VPX_KF_DISABLED.
  */
 enum vpx_kf_mode {
-  VPX_KF_FIXED,       /**< deprecated, implies VPX_KF_DISABLED */
-  VPX_KF_AUTO,        /**< Encoder determines optimal placement automatically */
-  VPX_KF_DISABLED = 0 /**< Encoder does not place keyframes. */
+    VPX_KF_FIXED, /**< deprecated, implies VPX_KF_DISABLED */
+    VPX_KF_AUTO, /**< Encoder determines optimal placement automatically */
+    VPX_KF_DISABLED = 0 /**< Encoder does not place keyframes. */
 };
 
 /*!\brief Encoded Frame Flags
@@ -276,28 +274,28 @@ typedef long vpx_enc_frame_flags_t;
  * however.
  */
 typedef struct vpx_codec_enc_cfg {
-  /*
+    /*
    * generic settings (g)
    */
 
-  /*!\brief Algorithm specific "usage" value
+    /*!\brief Algorithm specific "usage" value
    *
    * Algorithms may define multiple values for usage, which may convey the
    * intent of how the application intends to use the stream. If this value
    * is non-zero, consult the documentation for the codec to determine its
    * meaning.
    */
-  unsigned int g_usage;
+    unsigned int g_usage;
 
-  /*!\brief Maximum number of threads to use
+    /*!\brief Maximum number of threads to use
    *
    * For multi-threaded implementations, use no more than this number of
    * threads. The codec may use fewer threads than allowed. The value
    * 0 is equivalent to the value 1.
    */
-  unsigned int g_threads;
+    unsigned int g_threads;
 
-  /*!\brief Bitstream profile to use
+    /*!\brief Bitstream profile to use
    *
    * Some codecs support a notion of multiple bitstream profiles. Typically
    * this maps to a set of features that are turned on or off. Often the
@@ -305,43 +303,43 @@ typedef struct vpx_codec_enc_cfg {
    * Consult the documentation for the codec to determine the valid values
    * for this parameter, or set to zero for a sane default.
    */
-  unsigned int g_profile; /**< profile of bitstream to use */
+    unsigned int g_profile; /**< profile of bitstream to use */
 
-  /*!\brief Width of the frame
+    /*!\brief Width of the frame
    *
    * This value identifies the presentation resolution of the frame,
    * in pixels. Note that the frames passed as input to the encoder must
    * have this resolution. Frames will be presented by the decoder in this
    * resolution, independent of any spatial resampling the encoder may do.
    */
-  unsigned int g_w;
+    unsigned int g_w;
 
-  /*!\brief Height of the frame
+    /*!\brief Height of the frame
    *
    * This value identifies the presentation resolution of the frame,
    * in pixels. Note that the frames passed as input to the encoder must
    * have this resolution. Frames will be presented by the decoder in this
    * resolution, independent of any spatial resampling the encoder may do.
    */
-  unsigned int g_h;
+    unsigned int g_h;
 
-  /*!\brief Bit-depth of the codec
+    /*!\brief Bit-depth of the codec
    *
    * This value identifies the bit_depth of the codec,
    * Only certain bit-depths are supported as identified in the
    * vpx_bit_depth_t enum.
    */
-  vpx_bit_depth_t g_bit_depth;
+    vpx_bit_depth_t g_bit_depth;
 
-  /*!\brief Bit-depth of the input frames
+    /*!\brief Bit-depth of the input frames
    *
    * This value identifies the bit_depth of the input frames in bits.
    * Note that the frames passed as input to the encoder must have
    * this bit-depth.
    */
-  unsigned int g_input_bit_depth;
+    unsigned int g_input_bit_depth;
 
-  /*!\brief Stream timebase units
+    /*!\brief Stream timebase units
    *
    * Indicates the smallest interval of time, in seconds, used by the stream.
    * For fixed frame rate material, or variable frame rate material where
@@ -353,24 +351,24 @@ typedef struct vpx_codec_enc_cfg {
    * \ref RECOMMENDED method is to set the timebase to that of the parent
    * container or multimedia framework (ex: 1/1000 for ms, as in FLV).
    */
-  struct vpx_rational g_timebase;
+    struct vpx_rational g_timebase;
 
-  /*!\brief Enable error resilient modes.
+    /*!\brief Enable error resilient modes.
    *
    * The error resilient bitfield indicates to the encoder which features
    * it should enable to take measures for streaming over lossy or noisy
    * links.
    */
-  vpx_codec_er_flags_t g_error_resilient;
+    vpx_codec_er_flags_t g_error_resilient;
 
-  /*!\brief Multi-pass Encoding Mode
+    /*!\brief Multi-pass Encoding Mode
    *
    * This value should be set to the current phase for multi-pass encoding.
    * For single pass, set to #VPX_RC_ONE_PASS.
    */
-  enum vpx_enc_pass g_pass;
+    enum vpx_enc_pass g_pass;
 
-  /*!\brief Allow lagged encoding
+    /*!\brief Allow lagged encoding
    *
    * If set, this value allows the encoder to consume a number of input
    * frames before producing output frames. This allows the encoder to
@@ -382,13 +380,13 @@ typedef struct vpx_codec_enc_cfg {
    * sooner than the given limit. Set this value to 0 to disable this
    * feature.
    */
-  unsigned int g_lag_in_frames;
+    unsigned int g_lag_in_frames;
 
-  /*
+    /*
    * rate control settings (rc)
    */
 
-  /*!\brief Temporal resampling configuration, if supported by the codec.
+    /*!\brief Temporal resampling configuration, if supported by the codec.
    *
    * Temporal resampling allows the codec to "drop" frames as a strategy to
    * meet its target data rate. This can cause temporal discontinuities in
@@ -404,48 +402,48 @@ typedef struct vpx_codec_enc_cfg {
    * dropped frame is indicated. Set the threshold to zero (0) to disable
    * this feature.
    */
-  unsigned int rc_dropframe_thresh;
+    unsigned int rc_dropframe_thresh;
 
-  /*!\brief Enable/disable spatial resampling, if supported by the codec.
+    /*!\brief Enable/disable spatial resampling, if supported by the codec.
    *
    * Spatial resampling allows the codec to compress a lower resolution
    * version of the frame, which is then upscaled by the encoder to the
    * correct presentation resolution. This increases visual quality at
    * low data rates, at the expense of CPU time on the encoder/decoder.
    */
-  unsigned int rc_resize_allowed;
+    unsigned int rc_resize_allowed;
 
-  /*!\brief Internal coded frame width.
+    /*!\brief Internal coded frame width.
    *
    * If spatial resampling is enabled this specifies the width of the
    * encoded frame.
    */
-  unsigned int rc_scaled_width;
+    unsigned int rc_scaled_width;
 
-  /*!\brief Internal coded frame height.
+    /*!\brief Internal coded frame height.
    *
    * If spatial resampling is enabled this specifies the height of the
    * encoded frame.
    */
-  unsigned int rc_scaled_height;
+    unsigned int rc_scaled_height;
 
-  /*!\brief Spatial resampling up watermark.
+    /*!\brief Spatial resampling up watermark.
    *
    * This threshold is described as a percentage of the target data buffer.
    * When the data buffer rises above this percentage of fullness, the
    * encoder will step up to a higher resolution version of the frame.
    */
-  unsigned int rc_resize_up_thresh;
+    unsigned int rc_resize_up_thresh;
 
-  /*!\brief Spatial resampling down watermark.
+    /*!\brief Spatial resampling down watermark.
    *
    * This threshold is described as a percentage of the target data buffer.
    * When the data buffer falls below this percentage of fullness, the
    * encoder will step down to a lower resolution version of the frame.
    */
-  unsigned int rc_resize_down_thresh;
+    unsigned int rc_resize_down_thresh;
 
-  /*!\brief Rate control algorithm to use.
+    /*!\brief Rate control algorithm to use.
    *
    * Indicates whether the end usage of this stream is to be streamed over
    * a bandwidth constrained link, indicating that Constant Bit Rate (CBR)
@@ -453,33 +451,33 @@ typedef struct vpx_codec_enc_cfg {
    * bandwidth link, as from a local disk, where higher variations in
    * bitrate are acceptable.
    */
-  enum vpx_rc_mode rc_end_usage;
+    enum vpx_rc_mode rc_end_usage;
 
-  /*!\brief Two-pass stats buffer.
+    /*!\brief Two-pass stats buffer.
    *
    * A buffer containing all of the stats packets produced in the first
    * pass, concatenated.
    */
-  vpx_fixed_buf_t rc_twopass_stats_in;
+    vpx_fixed_buf_t rc_twopass_stats_in;
 
-  /*!\brief first pass mb stats buffer.
+    /*!\brief first pass mb stats buffer.
    *
    * A buffer containing all of the first pass mb stats packets produced
    * in the first pass, concatenated.
    */
-  vpx_fixed_buf_t rc_firstpass_mb_stats_in;
+    vpx_fixed_buf_t rc_firstpass_mb_stats_in;
 
-  /*!\brief Target data rate
+    /*!\brief Target data rate
    *
    * Target bandwidth to use for this stream, in kilobits per second.
    */
-  unsigned int rc_target_bitrate;
+    unsigned int rc_target_bitrate;
 
-  /*
+    /*
    * quantizer settings
    */
 
-  /*!\brief Minimum (Best Quality) Quantizer
+    /*!\brief Minimum (Best Quality) Quantizer
    *
    * The quantizer is the most direct control over the quality of the
    * encoded image. The range of valid values for the quantizer is codec
@@ -487,9 +485,9 @@ typedef struct vpx_codec_enc_cfg {
    * values to use. To determine the range programmatically, call
    * vpx_codec_enc_config_default() with a usage value of 0.
    */
-  unsigned int rc_min_quantizer;
+    unsigned int rc_min_quantizer;
 
-  /*!\brief Maximum (Worst Quality) Quantizer
+    /*!\brief Maximum (Worst Quality) Quantizer
    *
    * The quantizer is the most direct control over the quality of the
    * encoded image. The range of valid values for the quantizer is codec
@@ -497,13 +495,13 @@ typedef struct vpx_codec_enc_cfg {
    * values to use. To determine the range programmatically, call
    * vpx_codec_enc_config_default() with a usage value of 0.
    */
-  unsigned int rc_max_quantizer;
+    unsigned int rc_max_quantizer;
 
-  /*
+    /*
    * bitrate tolerance
    */
 
-  /*!\brief Rate control adaptation undershoot control
+    /*!\brief Rate control adaptation undershoot control
    *
    * VP8: Expressed as a percentage of the target bitrate,
    * controls the maximum allowed adaptation speed of the codec.
@@ -516,9 +514,9 @@ typedef struct vpx_codec_enc_cfg {
    *   *
    * Valid values in the range VP8:0-1000 VP9: 0-100.
    */
-  unsigned int rc_undershoot_pct;
+    unsigned int rc_undershoot_pct;
 
-  /*!\brief Rate control adaptation overshoot control
+    /*!\brief Rate control adaptation overshoot control
    *
    * VP8: Expressed as a percentage of the target bitrate,
    * controls the maximum allowed adaptation speed of the codec.
@@ -531,13 +529,13 @@ typedef struct vpx_codec_enc_cfg {
    *
    * Valid values in the range VP8:0-1000 VP9: 0-100.
    */
-  unsigned int rc_overshoot_pct;
+    unsigned int rc_overshoot_pct;
 
-  /*
+    /*
    * decoder buffer model parameters
    */
 
-  /*!\brief Decoder Buffer Size
+    /*!\brief Decoder Buffer Size
    *
    * This value indicates the amount of data that may be buffered by the
    * decoding application. Note that this value is expressed in units of
@@ -546,31 +544,31 @@ typedef struct vpx_codec_enc_cfg {
    * target bitrate (#rc_target_bitrate) to convert to bits/bytes, if
    * necessary.
    */
-  unsigned int rc_buf_sz;
+    unsigned int rc_buf_sz;
 
-  /*!\brief Decoder Buffer Initial Size
+    /*!\brief Decoder Buffer Initial Size
    *
    * This value indicates the amount of data that will be buffered by the
    * decoding application prior to beginning playback. This value is
    * expressed in units of time (milli_seconds). Use the target bitrate
    * (#rc_target_bitrate) to convert to bits/bytes, if necessary.
    */
-  unsigned int rc_buf_initial_sz;
+    unsigned int rc_buf_initial_sz;
 
-  /*!\brief Decoder Buffer Optimal Size
+    /*!\brief Decoder Buffer Optimal Size
    *
    * This value indicates the amount of data that the encoder should try
    * to maintain in the decoder's buffer. This value is expressed in units
    * of time (milli_seconds). Use the target bitrate (#rc_target_bitrate)
    * to convert to bits/bytes, if necessary.
    */
-  unsigned int rc_buf_optimal_sz;
+    unsigned int rc_buf_optimal_sz;
 
-  /*
+    /*
    * 2 pass rate control parameters
    */
 
-  /*!\brief Two-pass mode CBR/VBR bias
+    /*!\brief Two-pass mode CBR/VBR bias
    *
    * Bias, expressed on a scale of 0 to 100, for determining target size
    * for the current frame. The value 0 indicates the optimal CBR mode
@@ -578,137 +576,137 @@ typedef struct vpx_codec_enc_cfg {
    * value should be used. Values in between indicate which way the
    * encoder should "lean."
    */
-  unsigned int rc_2pass_vbr_bias_pct;
+    unsigned int rc_2pass_vbr_bias_pct;
 
-  /*!\brief Two-pass mode per-GOP minimum bitrate
+    /*!\brief Two-pass mode per-GOP minimum bitrate
    *
    * This value, expressed as a percentage of the target bitrate, indicates
    * the minimum bitrate to be used for a single GOP (aka "section")
    */
-  unsigned int rc_2pass_vbr_minsection_pct;
+    unsigned int rc_2pass_vbr_minsection_pct;
 
-  /*!\brief Two-pass mode per-GOP maximum bitrate
+    /*!\brief Two-pass mode per-GOP maximum bitrate
    *
    * This value, expressed as a percentage of the target bitrate, indicates
    * the maximum bitrate to be used for a single GOP (aka "section")
    */
-  unsigned int rc_2pass_vbr_maxsection_pct;
+    unsigned int rc_2pass_vbr_maxsection_pct;
 
-  /*!\brief Two-pass corpus vbr mode complexity control
+    /*!\brief Two-pass corpus vbr mode complexity control
    * Used only in VP9: A value representing the corpus midpoint complexity
    * for corpus vbr mode. This value defaults to 0 which disables corpus vbr
    * mode in favour of normal vbr mode.
    */
-  unsigned int rc_2pass_vbr_corpus_complexity;
+    unsigned int rc_2pass_vbr_corpus_complexity;
 
-  /*
+    /*
    * keyframing settings (kf)
    */
 
-  /*!\brief Keyframe placement mode
+    /*!\brief Keyframe placement mode
    *
    * This value indicates whether the encoder should place keyframes at a
    * fixed interval, or determine the optimal placement automatically
    * (as governed by the #kf_min_dist and #kf_max_dist parameters)
    */
-  enum vpx_kf_mode kf_mode;
+    enum vpx_kf_mode kf_mode;
 
-  /*!\brief Keyframe minimum interval
+    /*!\brief Keyframe minimum interval
    *
    * This value, expressed as a number of frames, prevents the encoder from
    * placing a keyframe nearer than kf_min_dist to the previous keyframe. At
    * least kf_min_dist frames non-keyframes will be coded before the next
    * keyframe. Set kf_min_dist equal to kf_max_dist for a fixed interval.
    */
-  unsigned int kf_min_dist;
+    unsigned int kf_min_dist;
 
-  /*!\brief Keyframe maximum interval
+    /*!\brief Keyframe maximum interval
    *
    * This value, expressed as a number of frames, forces the encoder to code
    * a keyframe if one has not been coded in the last kf_max_dist frames.
    * A value of 0 implies all frames will be keyframes. Set kf_min_dist
    * equal to kf_max_dist for a fixed interval.
    */
-  unsigned int kf_max_dist;
+    unsigned int kf_max_dist;
 
-  /*
+    /*
    * Spatial scalability settings (ss)
    */
 
-  /*!\brief Number of spatial coding layers.
+    /*!\brief Number of spatial coding layers.
    *
    * This value specifies the number of spatial coding layers to be used.
    */
-  unsigned int ss_number_layers;
+    unsigned int ss_number_layers;
 
-  /*!\brief Enable auto alt reference flags for each spatial layer.
+    /*!\brief Enable auto alt reference flags for each spatial layer.
    *
    * These values specify if auto alt reference frame is enabled for each
    * spatial layer.
    */
-  int ss_enable_auto_alt_ref[VPX_SS_MAX_LAYERS];
+    int ss_enable_auto_alt_ref[VPX_SS_MAX_LAYERS];
 
-  /*!\brief Target bitrate for each spatial layer.
+    /*!\brief Target bitrate for each spatial layer.
    *
    * These values specify the target coding bitrate to be used for each
    * spatial layer.
    */
-  unsigned int ss_target_bitrate[VPX_SS_MAX_LAYERS];
+    unsigned int ss_target_bitrate[VPX_SS_MAX_LAYERS];
 
-  /*!\brief Number of temporal coding layers.
+    /*!\brief Number of temporal coding layers.
    *
    * This value specifies the number of temporal layers to be used.
    */
-  unsigned int ts_number_layers;
+    unsigned int ts_number_layers;
 
-  /*!\brief Target bitrate for each temporal layer.
+    /*!\brief Target bitrate for each temporal layer.
    *
    * These values specify the target coding bitrate to be used for each
    * temporal layer.
    */
-  unsigned int ts_target_bitrate[VPX_TS_MAX_LAYERS];
+    unsigned int ts_target_bitrate[VPX_TS_MAX_LAYERS];
 
-  /*!\brief Frame rate decimation factor for each temporal layer.
+    /*!\brief Frame rate decimation factor for each temporal layer.
    *
    * These values specify the frame rate decimation factors to apply
    * to each temporal layer.
    */
-  unsigned int ts_rate_decimator[VPX_TS_MAX_LAYERS];
+    unsigned int ts_rate_decimator[VPX_TS_MAX_LAYERS];
 
-  /*!\brief Length of the sequence defining frame temporal layer membership.
+    /*!\brief Length of the sequence defining frame temporal layer membership.
    *
    * This value specifies the length of the sequence that defines the
    * membership of frames to temporal layers. For example, if the
    * ts_periodicity = 8, then the frames are assigned to coding layers with a
    * repeated sequence of length 8.
    */
-  unsigned int ts_periodicity;
+    unsigned int ts_periodicity;
 
-  /*!\brief Template defining the membership of frames to temporal layers.
+    /*!\brief Template defining the membership of frames to temporal layers.
    *
    * This array defines the membership of frames to temporal coding layers.
    * For a 2-layer encoding that assigns even numbered frames to one temporal
    * layer (0) and odd numbered frames to a second temporal layer (1) with
    * ts_periodicity=8, then ts_layer_id = (0,1,0,1,0,1,0,1).
    */
-  unsigned int ts_layer_id[VPX_TS_MAX_PERIODICITY];
+    unsigned int ts_layer_id[VPX_TS_MAX_PERIODICITY];
 
-  /*!\brief Target bitrate for each spatial/temporal layer.
+    /*!\brief Target bitrate for each spatial/temporal layer.
    *
    * These values specify the target coding bitrate to be used for each
    * spatial/temporal layer.
    *
    */
-  unsigned int layer_target_bitrate[VPX_MAX_LAYERS];
+    unsigned int layer_target_bitrate[VPX_MAX_LAYERS];
 
-  /*!\brief Temporal layering mode indicating which temporal layering scheme to
+    /*!\brief Temporal layering mode indicating which temporal layering scheme to
    * use.
    *
    * The value (refer to VP9E_TEMPORAL_LAYERING_MODE) specifies the
    * temporal layering mode to use.
    *
    */
-  int temporal_layering_mode;
+    int temporal_layering_mode;
 } vpx_codec_enc_cfg_t; /**< alias for struct vpx_codec_enc_cfg */
 
 /*!\brief  vp9 svc extra configure parameters
@@ -717,12 +715,12 @@ typedef struct vpx_codec_enc_cfg {
  *
  */
 typedef struct vpx_svc_parameters {
-  int max_quantizers[VPX_MAX_LAYERS];     /**< Max Q for each layer */
-  int min_quantizers[VPX_MAX_LAYERS];     /**< Min Q for each layer */
-  int scaling_factor_num[VPX_MAX_LAYERS]; /**< Scaling factor-numerator */
-  int scaling_factor_den[VPX_MAX_LAYERS]; /**< Scaling factor-denominator */
-  int speed_per_layer[VPX_MAX_LAYERS];    /**< Speed setting for each sl */
-  int temporal_layering_mode;             /**< Temporal layering mode */
+    int max_quantizers[VPX_MAX_LAYERS]; /**< Max Q for each layer */
+    int min_quantizers[VPX_MAX_LAYERS]; /**< Min Q for each layer */
+    int scaling_factor_num[VPX_MAX_LAYERS]; /**< Scaling factor-numerator */
+    int scaling_factor_den[VPX_MAX_LAYERS]; /**< Scaling factor-denominator */
+    int speed_per_layer[VPX_MAX_LAYERS]; /**< Speed setting for each sl */
+    int temporal_layering_mode; /**< Temporal layering mode */
 } vpx_svc_extra_cfg_t;
 
 /*!\brief Initialize an encoder instance
@@ -747,9 +745,7 @@ typedef struct vpx_svc_parameters {
  * \retval #VPX_CODEC_MEM_ERROR
  *     Memory allocation failed.
  */
-vpx_codec_err_t vpx_codec_enc_init_ver(vpx_codec_ctx_t *ctx,
-                                       vpx_codec_iface_t *iface,
-                                       const vpx_codec_enc_cfg_t *cfg,
+vpx_codec_err_t vpx_codec_enc_init_ver(vpx_codec_ctx_t *ctx, vpx_codec_iface_t *iface, const vpx_codec_enc_cfg_t *cfg,
                                        vpx_codec_flags_t flags, int ver);
 
 /*!\brief Convenience macro for vpx_codec_enc_init_ver()
@@ -757,7 +753,7 @@ vpx_codec_err_t vpx_codec_enc_init_ver(vpx_codec_ctx_t *ctx,
  * Ensures the ABI version parameter is properly set.
  */
 #define vpx_codec_enc_init(ctx, iface, cfg, flags) \
-  vpx_codec_enc_init_ver(ctx, iface, cfg, flags, VPX_ENCODER_ABI_VERSION)
+    vpx_codec_enc_init_ver(ctx, iface, cfg, flags, VPX_ENCODER_ABI_VERSION)
 
 /*!\brief Initialize multi-encoder instance
  *
@@ -779,17 +775,15 @@ vpx_codec_err_t vpx_codec_enc_init_ver(vpx_codec_ctx_t *ctx,
  * \retval #VPX_CODEC_MEM_ERROR
  *     Memory allocation failed.
  */
-vpx_codec_err_t vpx_codec_enc_init_multi_ver(
-    vpx_codec_ctx_t *ctx, vpx_codec_iface_t *iface, vpx_codec_enc_cfg_t *cfg,
-    int num_enc, vpx_codec_flags_t flags, vpx_rational_t *dsf, int ver);
+vpx_codec_err_t vpx_codec_enc_init_multi_ver(vpx_codec_ctx_t *ctx, vpx_codec_iface_t *iface, vpx_codec_enc_cfg_t *cfg,
+                                             int num_enc, vpx_codec_flags_t flags, vpx_rational_t *dsf, int ver);
 
 /*!\brief Convenience macro for vpx_codec_enc_init_multi_ver()
  *
  * Ensures the ABI version parameter is properly set.
  */
 #define vpx_codec_enc_init_multi(ctx, iface, cfg, num_enc, flags, dsf) \
-  vpx_codec_enc_init_multi_ver(ctx, iface, cfg, num_enc, flags, dsf,   \
-                               VPX_ENCODER_ABI_VERSION)
+    vpx_codec_enc_init_multi_ver(ctx, iface, cfg, num_enc, flags, dsf, VPX_ENCODER_ABI_VERSION)
 
 /*!\brief Get a default configuration
  *
@@ -810,9 +804,7 @@ vpx_codec_err_t vpx_codec_enc_init_multi_ver(
  * \retval #VPX_CODEC_INVALID_PARAM
  *     A parameter was NULL, or the usage value was not recognized.
  */
-vpx_codec_err_t vpx_codec_enc_config_default(vpx_codec_iface_t *iface,
-                                             vpx_codec_enc_cfg_t *cfg,
-                                             unsigned int reserved);
+vpx_codec_err_t vpx_codec_enc_config_default(vpx_codec_iface_t *iface, vpx_codec_enc_cfg_t *cfg, unsigned int reserved);
 
 /*!\brief Set or change configuration
  *
@@ -828,8 +820,7 @@ vpx_codec_err_t vpx_codec_enc_config_default(vpx_codec_iface_t *iface,
  * \retval #VPX_CODEC_INVALID_PARAM
  *     A parameter was NULL, or the usage value was not recognized.
  */
-vpx_codec_err_t vpx_codec_enc_config_set(vpx_codec_ctx_t *ctx,
-                                         const vpx_codec_enc_cfg_t *cfg);
+vpx_codec_err_t vpx_codec_enc_config_set(vpx_codec_ctx_t *ctx, const vpx_codec_enc_cfg_t *cfg);
 
 /*!\brief Get global stream headers
  *
@@ -886,10 +877,8 @@ vpx_fixed_buf_t *vpx_codec_get_global_headers(vpx_codec_ctx_t *ctx);
  * \retval #VPX_CODEC_INVALID_PARAM
  *     A parameter was NULL, the image format is unsupported, etc.
  */
-vpx_codec_err_t vpx_codec_encode(vpx_codec_ctx_t *ctx, const vpx_image_t *img,
-                                 vpx_codec_pts_t pts, unsigned long duration,
-                                 vpx_enc_frame_flags_t flags,
-                                 unsigned long deadline);
+vpx_codec_err_t vpx_codec_encode(vpx_codec_ctx_t *ctx, const vpx_image_t *img, vpx_codec_pts_t pts,
+                                 unsigned long duration, vpx_enc_frame_flags_t flags, unsigned long deadline);
 
 /*!\brief Set compressed data output buffer
  *
@@ -934,9 +923,7 @@ vpx_codec_err_t vpx_codec_encode(vpx_codec_ctx_t *ctx, const vpx_image_t *img,
  * \retval #VPX_CODEC_INVALID_PARAM
  *     A parameter was NULL, the image format is unsupported, etc.
  */
-vpx_codec_err_t vpx_codec_set_cx_data_buf(vpx_codec_ctx_t *ctx,
-                                          const vpx_fixed_buf_t *buf,
-                                          unsigned int pad_before,
+vpx_codec_err_t vpx_codec_set_cx_data_buf(vpx_codec_ctx_t *ctx, const vpx_fixed_buf_t *buf, unsigned int pad_before,
                                           unsigned int pad_after);
 
 /*!\brief Encoded data iterator
@@ -962,8 +949,7 @@ vpx_codec_err_t vpx_codec_set_cx_data_buf(vpx_codec_ctx_t *ctx,
  *         two-pass statistics, etc.) or NULL to signal end-of-list.
  *
  */
-const vpx_codec_cx_pkt_t *vpx_codec_get_cx_data(vpx_codec_ctx_t *ctx,
-                                                vpx_codec_iter_t *iter);
+const vpx_codec_cx_pkt_t *vpx_codec_get_cx_data(vpx_codec_ctx_t *ctx, vpx_codec_iter_t *iter);
 
 /*!\brief Get Preview Frame
  *
@@ -983,4 +969,4 @@ const vpx_image_t *vpx_codec_get_preview_frame(vpx_codec_ctx_t *ctx);
 #ifdef __cplusplus
 }
 #endif
-#endif  // VPX_VPX_VPX_ENCODER_H_
+#endif // VPX_VPX_VPX_ENCODER_H_

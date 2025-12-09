@@ -30,8 +30,7 @@
 static INLINE int check_epi16_overflow_x1_avx2(const __m256i reg) {
     const __m256i max_overflow = _mm256_set1_epi16(0x7fff);
     const __m256i min_overflow = _mm256_set1_epi16((short)0x8000);
-    const __m256i cmp = _mm256_or_si256(_mm256_cmpeq_epi16(reg, max_overflow),
-        _mm256_cmpeq_epi16(reg, min_overflow));
+    const __m256i cmp = _mm256_or_si256(_mm256_cmpeq_epi16(reg, max_overflow), _mm256_cmpeq_epi16(reg, min_overflow));
     return _mm256_movemask_epi8(cmp);
 }
 
@@ -53,9 +52,7 @@ static INLINE int check_epi16_overflow_x8_avx2(const __m256i *const preg) {
     return res0 + res1;
 }
 
-static INLINE void transpose_16bit_fdct_8x8_avx2(const __m256i *const in,
-    __m256i *const out)
-{
+static INLINE void transpose_16bit_fdct_8x8_avx2(const __m256i *const in, __m256i *const out) {
     const __m256i idx_transform0 = _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7);
     const __m256i idx_transform1 = _mm256_setr_epi32(2, 6, 3, 7, 0, 4, 1, 5);
 
@@ -95,40 +92,35 @@ static INLINE void transpose_16bit_fdct_8x8_avx2(const __m256i *const in,
     out[3] = _mm256_permutevar8x32_epi32(b3, idx_transform1);
 }
 
-static INLINE void store_output_8x2_avx2(const __m256i output,
-    tran_low_t *const dst_ptr, const int stride)
-{
+static INLINE void store_output_8x2_avx2(const __m256i output, tran_low_t *const dst_ptr, const int stride) {
 #if CONFIG_VP9_HIGHBITDEPTH
     const __m256i sign_bits = _mm256_srai_epi16(output, 15);
-    const __m256i out = _mm256_permute4x64_epi64(output, 0xD8);
-    const __m256i out0 = _mm256_unpacklo_epi16(out, sign_bits);
-    const __m256i out1 = _mm256_unpackhi_epi16(out, sign_bits);
+    const __m256i out       = _mm256_permute4x64_epi64(output, 0xD8);
+    const __m256i out0      = _mm256_unpacklo_epi16(out, sign_bits);
+    const __m256i out1      = _mm256_unpackhi_epi16(out, sign_bits);
     _mm256_store_si256((__m256i *)(dst_ptr + 0 * stride), out0);
     _mm256_store_si256((__m256i *)(dst_ptr + 1 * stride), out1);
 #else
     store16bit_signed_8x2_avx2(output, dst_ptr, stride);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 }
 
-static INLINE void store_output_avx2(const __m256i output,
-    tran_low_t *const dst_ptr)
-{
+static INLINE void store_output_avx2(const __m256i output, tran_low_t *const dst_ptr) {
 #if CONFIG_VP9_HIGHBITDEPTH
     const __m256i sign_bits = _mm256_srai_epi16(output, 15);
-    const __m256i out = _mm256_permute4x64_epi64(output, 0xD8);
-    const __m256i out0 = _mm256_unpacklo_epi16(out, sign_bits);
-    const __m256i out1 = _mm256_unpackhi_epi16(out, sign_bits);
+    const __m256i out       = _mm256_permute4x64_epi64(output, 0xD8);
+    const __m256i out0      = _mm256_unpacklo_epi16(out, sign_bits);
+    const __m256i out1      = _mm256_unpackhi_epi16(out, sign_bits);
     _mm256_store_si256((__m256i *)(dst_ptr + 0), out0);
     _mm256_store_si256((__m256i *)(dst_ptr + 8), out1);
 #else
     _mm256_store_si256((__m256i *)dst_ptr, output);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 }
 
- // load 8x8 array
-static INLINE void load_buffer_left_shift2_fdct_8x8_avx2(
-    const int16_t *const input, const int stride, __m256i *const in)
-{
+// load 8x8 array
+static INLINE void load_buffer_left_shift2_fdct_8x8_avx2(const int16_t *const input, const int stride,
+                                                         __m256i *const in) {
     in[0] = load16bit_signed_8x2_avx2(input + 0 * stride, stride);
     in[1] = load16bit_signed_8x2_avx2(input + 2 * stride, stride);
     in[2] = load16bit_signed_8x2_rev_avx2(input + 4 * stride, stride);
@@ -141,9 +133,7 @@ static INLINE void load_buffer_left_shift2_fdct_8x8_avx2(
 }
 
 // load 8x8 array
-static INLINE void load_buffer_left_shift2_fadst_8x8(
-    const int16_t *const input, const int stride, __m256i *const in)
-{
+static INLINE void load_buffer_left_shift2_fadst_8x8(const int16_t *const input, const int stride, __m256i *const in) {
     __m128i in128[8];
 
     in128[0] = _mm_load_si128((const __m128i *)(input + 0 * stride));
@@ -166,45 +156,35 @@ static INLINE void load_buffer_left_shift2_fadst_8x8(
     in[3] = _mm256_slli_epi16(in[3], 2);
 }
 
-static INLINE void add_sub_8x4x2_avx2(const __m256i *const in,
-    __m256i *const out256)
-{
+static INLINE void add_sub_8x4x2_avx2(const __m256i *const in, __m256i *const out256) {
     const __m256i in1 = _mm256_permute4x64_epi64(in[1], 0x4E);
-    out256[0] = _mm256_add_epi16(in[0], in1);
-    out256[1] = _mm256_sub_epi16(in[0], in1);
+    out256[0]         = _mm256_add_epi16(in[0], in1);
+    out256[1]         = _mm256_sub_epi16(in[0], in1);
 }
 
-static INLINE void add_sub_8x8x2_avx2(const __m256i *const in,
-    __m256i *const out256)
-{
+static INLINE void add_sub_8x8x2_avx2(const __m256i *const in, __m256i *const out256) {
     out256[0] = _mm256_add_epi16(in[0], in[3]);
     out256[1] = _mm256_add_epi16(in[1], in[2]);
     out256[2] = _mm256_sub_epi16(in[1], in[2]);
     out256[3] = _mm256_sub_epi16(in[0], in[3]);
 }
 
-static INLINE void highbd_add_sub_8x4x2_avx2(const __m256i *const in,
-    __m256i *const out256)
-{
+static INLINE void highbd_add_sub_8x4x2_avx2(const __m256i *const in, __m256i *const out256) {
     const __m256i in0 = _mm256_permute4x64_epi64(in[1], 0x4E);
-    out256[0] = ADD_EPI16_AVX2(in[0], in0);
-    out256[1] = SUB_EPI16_AVX2(in[0], in0);
+    out256[0]         = ADD_EPI16_AVX2(in[0], in0);
+    out256[1]         = SUB_EPI16_AVX2(in[0], in0);
 }
 
-static INLINE void highbd_add_sub_8x8x2_avx2(const __m256i *const in,
-    __m256i *const out256)
-{
+static INLINE void highbd_add_sub_8x8x2_avx2(const __m256i *const in, __m256i *const out256) {
     out256[0] = ADD_EPI16_AVX2(in[0], in[3]);
     out256[1] = ADD_EPI16_AVX2(in[1], in[2]);
     out256[2] = SUB_EPI16_AVX2(in[1], in[2]);
     out256[3] = SUB_EPI16_AVX2(in[0], in[3]);
 }
 
-static INLINE __m256i fdct8_kernel_avx2(const __m128i in0, const __m128i in1,
-    const __m128i c0, const __m128i c1)
-{
+static INLINE __m256i fdct8_kernel_avx2(const __m128i in0, const __m128i in1, const __m128i c0, const __m128i c1) {
     const __m128i k__DCT_CONST_ROUNDING = _mm_set1_epi32(DCT_CONST_ROUNDING);
-    __m128i u[4], v[4];
+    __m128i       u[4], v[4];
 
     u[0] = _mm_unpacklo_epi16(in0, in1);
     u[1] = _mm_unpackhi_epi16(in0, in1);
@@ -226,14 +206,12 @@ static INLINE __m256i fdct8_kernel_avx2(const __m128i in0, const __m128i in1,
     return _mm256_setr_m128i(u[1], u[0]);
 }
 
-static INLINE void dual_fdct8_kernel_avx2(const __m256i in0, const __m256i in1,
-    const __m256i c0, const __m256i c1, __m256i *const out0,
-    __m256i *const out1)
-{
+static INLINE void dual_fdct8_kernel_avx2(const __m256i in0, const __m256i in1, const __m256i c0, const __m256i c1,
+                                          __m256i *const out0, __m256i *const out1) {
     const __m256i k__DCT_CONST_ROUNDING = _mm256_set1_epi32(DCT_CONST_ROUNDING);
-    const __m256i in_lo = _mm256_inserti128_si256(in0, _mm256_extracti128_si256(in1, 0), 1);
-    const __m256i in_hi = _mm256_inserti128_si256(in1, _mm256_extracti128_si256(in0, 1), 0);
-    __m256i u[4], v[4];
+    const __m256i in_lo                 = _mm256_inserti128_si256(in0, _mm256_extracti128_si256(in1, 0), 1);
+    const __m256i in_hi                 = _mm256_inserti128_si256(in1, _mm256_extracti128_si256(in0, 1), 0);
+    __m256i       u[4], v[4];
 
     u[0] = _mm256_unpacklo_epi16(in_lo, in_hi);
     u[1] = _mm256_unpackhi_epi16(in_lo, in_hi);
@@ -256,20 +234,20 @@ static INLINE void dual_fdct8_kernel_avx2(const __m256i in0, const __m256i in1,
 
 static void fdct8_avx2(__m256i *const in) {
     // constants
-    const __m128i k__cospi_p16_p16 = _mm_set1_epi16(cospi_16_64);
-    const __m128i k__cospi_p16_m16 = pair_set_epi16(cospi_16_64, -cospi_16_64);
-    const __m128i k__cospi_p08_p24 = pair_set_epi16(cospi_8_64, cospi_24_64);
-    const __m128i k__cospi_p24_m08 = pair_set_epi16(cospi_24_64, -cospi_8_64);
-    const __m128i k__cospi_p04_p28 = pair_set_epi16(cospi_4_64, cospi_28_64);
-    const __m128i k__cospi_p28_m04 = pair_set_epi16(cospi_28_64, -cospi_4_64);
-    const __m128i k__cospi_p20_p12 = pair_set_epi16(cospi_20_64, cospi_12_64);
-    const __m128i k__cospi_p12_m20 = pair_set_epi16(cospi_12_64, -cospi_20_64);
+    const __m128i k__cospi_p16_p16         = _mm_set1_epi16(cospi_16_64);
+    const __m128i k__cospi_p16_m16         = pair_set_epi16(cospi_16_64, -cospi_16_64);
+    const __m128i k__cospi_p08_p24         = pair_set_epi16(cospi_8_64, cospi_24_64);
+    const __m128i k__cospi_p24_m08         = pair_set_epi16(cospi_24_64, -cospi_8_64);
+    const __m128i k__cospi_p04_p28         = pair_set_epi16(cospi_4_64, cospi_28_64);
+    const __m128i k__cospi_p28_m04         = pair_set_epi16(cospi_28_64, -cospi_4_64);
+    const __m128i k__cospi_p20_p12         = pair_set_epi16(cospi_20_64, cospi_12_64);
+    const __m128i k__cospi_p12_m20         = pair_set_epi16(cospi_12_64, -cospi_20_64);
     const __m256i k__cospi_p16_p16_p08_p24 = _mm256_setr_m128i(k__cospi_p16_p16, k__cospi_p08_p24);
     const __m256i k__cospi_p16_m16_p24_m08 = _mm256_setr_m128i(k__cospi_p16_m16, k__cospi_p24_m08);
     const __m256i k__cospi_p04_p28_p12_m20 = _mm256_setr_m128i(k__cospi_p04_p28, k__cospi_p12_m20);
     const __m256i k__cospi_p28_m04_p20_p12 = _mm256_setr_m128i(k__cospi_p28_m04, k__cospi_p20_p12);
-    __m256i s[4], x[2], t;
-    __m128i s5, s6;
+    __m256i       s[4], x[2], t;
+    __m128i       s5, s6;
 
     // stage 1
     add_sub_8x8x2_avx2(in, s);
@@ -279,7 +257,7 @@ static void fdct8_avx2(__m256i *const in) {
     // stage 2
     s5 = _mm256_extracti128_si256(s[2], 0);
     s6 = _mm256_extracti128_si256(s[3], 1);
-    t = fdct8_kernel_avx2(s6, s5, k__cospi_p16_m16, k__cospi_p16_p16);
+    t  = fdct8_kernel_avx2(s6, s5, k__cospi_p16_m16, k__cospi_p16_p16);
 
     // stage 3
     s[2] = _mm256_inserti128_si256(s[3], _mm256_extracti128_si256(s[2], 1), 1);
@@ -294,24 +272,23 @@ static void fdct8_avx2(__m256i *const in) {
     transpose_16bit_fdct_8x8_avx2(in, in);
 }
 
-static int fdct8_overflow_avx2(__m256i *const in, const int pass)
-{
+static int fdct8_overflow_avx2(__m256i *const in, const int pass) {
     // constants
-    const __m128i k__cospi_p16_p16 = _mm_set1_epi16(cospi_16_64);
-    const __m128i k__cospi_p16_m16 = pair_set_epi16(cospi_16_64, -cospi_16_64);
-    const __m128i k__cospi_p08_p24 = pair_set_epi16(cospi_8_64, cospi_24_64);
-    const __m128i k__cospi_p24_m08 = pair_set_epi16(cospi_24_64, -cospi_8_64);
-    const __m128i k__cospi_p04_p28 = pair_set_epi16(cospi_4_64, cospi_28_64);
-    const __m128i k__cospi_p28_m04 = pair_set_epi16(cospi_28_64, -cospi_4_64);
-    const __m128i k__cospi_p20_p12 = pair_set_epi16(cospi_20_64, cospi_12_64);
-    const __m128i k__cospi_p12_m20 = pair_set_epi16(cospi_12_64, -cospi_20_64);
+    const __m128i k__cospi_p16_p16         = _mm_set1_epi16(cospi_16_64);
+    const __m128i k__cospi_p16_m16         = pair_set_epi16(cospi_16_64, -cospi_16_64);
+    const __m128i k__cospi_p08_p24         = pair_set_epi16(cospi_8_64, cospi_24_64);
+    const __m128i k__cospi_p24_m08         = pair_set_epi16(cospi_24_64, -cospi_8_64);
+    const __m128i k__cospi_p04_p28         = pair_set_epi16(cospi_4_64, cospi_28_64);
+    const __m128i k__cospi_p28_m04         = pair_set_epi16(cospi_28_64, -cospi_4_64);
+    const __m128i k__cospi_p20_p12         = pair_set_epi16(cospi_20_64, cospi_12_64);
+    const __m128i k__cospi_p12_m20         = pair_set_epi16(cospi_12_64, -cospi_20_64);
     const __m256i k__cospi_p16_p16_p08_p24 = _mm256_setr_m128i(k__cospi_p16_p16, k__cospi_p08_p24);
     const __m256i k__cospi_p16_m16_p24_m08 = _mm256_setr_m128i(k__cospi_p16_m16, k__cospi_p24_m08);
     const __m256i k__cospi_p04_p28_p12_m20 = _mm256_setr_m128i(k__cospi_p04_p28, k__cospi_p12_m20);
     const __m256i k__cospi_p28_m04_p20_p12 = _mm256_setr_m128i(k__cospi_p28_m04, k__cospi_p20_p12);
-    int overflow = 0;
-    __m256i s[4], x[2], t;
-    __m128i s5, s6;
+    int           overflow                 = 0;
+    __m256i       s[4], x[2], t;
+    __m128i       s5, s6;
 
     // stage 1
     highbd_add_sub_8x8x2_avx2(in, s);
@@ -322,14 +299,14 @@ static int fdct8_overflow_avx2(__m256i *const in, const int pass)
     overflow |= check_epi16_overflow_x2_avx2(x);
 #else
     (void)pass;
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 
     dual_fdct8_kernel_avx2(x[0], x[1], k__cospi_p16_p16_p08_p24, k__cospi_p16_m16_p24_m08, &in[0], &in[1]);
 
     // stage 2
     s5 = _mm256_extracti128_si256(s[2], 0);
     s6 = _mm256_extracti128_si256(s[3], 1);
-    t = fdct8_kernel_avx2(s6, s5, k__cospi_p16_m16, k__cospi_p16_p16);
+    t  = fdct8_kernel_avx2(s6, s5, k__cospi_p16_m16, k__cospi_p16_p16);
 
     // stage 3
     s[2] = _mm256_inserti128_si256(s[3], _mm256_extracti128_si256(s[2], 1), 1);
@@ -344,7 +321,7 @@ static int fdct8_overflow_avx2(__m256i *const in, const int pass)
     overflow |= check_epi16_overflow_x4_avx2(in);
     overflow |= check_epi16_overflow_x1_avx2(t);
     overflow |= check_epi16_overflow_x2_avx2(x);
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 
     // transpose
     transpose_16bit_fdct_8x8_avx2(in, in);
@@ -352,10 +329,9 @@ static int fdct8_overflow_avx2(__m256i *const in, const int pass)
     return overflow;
 }
 
-static INLINE __m256i fadst8_core_avx2(const __m256i *const in, const __m256i k)
-{
+static INLINE __m256i fadst8_core_avx2(const __m256i *const in, const __m256i k) {
     const __m256i k__DCT_CONST_ROUNDING = _mm256_set1_epi32(DCT_CONST_ROUNDING);
-    __m256i u[2], v[2];
+    __m256i       u[2], v[2];
 
     u[0] = _mm256_madd_epi16(in[0], k);
     u[1] = _mm256_madd_epi16(in[1], k);
@@ -379,17 +355,16 @@ static INLINE __m256i fadst8_core_avx2(const __m256i *const in, const __m256i k)
     return _mm256_permute4x64_epi64(u[0], 0xD8);
 }
 
-static INLINE void fadst8_kernel_avx2(const __m256i in0, const __m256i in1,
-    const tran_coef_t c0, const tran_coef_t c1, const tran_coef_t c2,
-    const tran_coef_t c3, __m256i *const out0, __m256i *const out1)
-{
-    const __m128i k0 = pair_set_epi16(c0, c1);
-    const __m128i k1 = pair_set_epi16(c1, -c0);
-    const __m128i k2 = pair_set_epi16(c2, c3);
-    const __m128i k3 = pair_set_epi16(c3, -c2);
+static INLINE void fadst8_kernel_avx2(const __m256i in0, const __m256i in1, const tran_coef_t c0, const tran_coef_t c1,
+                                      const tran_coef_t c2, const tran_coef_t c3, __m256i *const out0,
+                                      __m256i *const out1) {
+    const __m128i k0   = pair_set_epi16(c0, c1);
+    const __m128i k1   = pair_set_epi16(c1, -c0);
+    const __m128i k2   = pair_set_epi16(c2, c3);
+    const __m128i k3   = pair_set_epi16(c3, -c2);
     const __m256i cst0 = _mm256_setr_m128i(k0, k2);
     const __m256i cst1 = _mm256_setr_m128i(k1, k3);
-    __m256i s[2];
+    __m256i       s[2];
 
     s[0] = _mm256_unpacklo_epi16(in0, in1); // 0 2
     s[1] = _mm256_unpackhi_epi16(in0, in1); // 1 3
@@ -400,12 +375,12 @@ static INLINE void fadst8_kernel_avx2(const __m256i in0, const __m256i in1,
 
 static void fadst8_avx2(__m256i *const in) {
     // Constants
-    const __m256i k__const_0 = _mm256_set1_epi16(0);
-    const __m128i k__cospi_p16_p16 = _mm_set1_epi16(cospi_16_64);
-    const __m128i k__cospi_p16_m16 = pair_set_epi16(cospi_16_64, -cospi_16_64);
+    const __m256i k__const_0               = _mm256_set1_epi16(0);
+    const __m128i k__cospi_p16_p16         = _mm_set1_epi16(cospi_16_64);
+    const __m128i k__cospi_p16_m16         = pair_set_epi16(cospi_16_64, -cospi_16_64);
     const __m256i k__cospi_p16_p16_p16_p16 = _mm256_setr_m128i(k__cospi_p16_p16, k__cospi_p16_p16);
     const __m256i k__cospi_p16_m16_p16_m16 = _mm256_setr_m128i(k__cospi_p16_m16, k__cospi_p16_m16);
-    __m256i x[4];
+    __m256i       x[4];
 
     // stage 1
     fadst8_kernel_avx2(in[3], in[0], cospi_2_64, cospi_30_64, cospi_18_64, cospi_14_64, &x[0], &x[1]);
@@ -416,8 +391,8 @@ static void fadst8_avx2(__m256i *const in) {
     in[1] = _mm256_inserti128_si256(x[2], _mm256_extracti128_si256(x[3], 0), 1);
     in[2] = _mm256_inserti128_si256(x[2], _mm256_extracti128_si256(x[0], 1), 0);
     in[3] = _mm256_inserti128_si256(x[3], _mm256_extracti128_si256(x[1], 1), 0);
-    x[0] = _mm256_add_epi16(in[0], in[1]);
-    x[1] = _mm256_sub_epi16(in[0], in[1]);
+    x[0]  = _mm256_add_epi16(in[0], in[1]);
+    x[1]  = _mm256_sub_epi16(in[0], in[1]);
 
     fadst8_kernel_avx2(in[2], in[3], cospi_8_64, cospi_24_64, -cospi_24_64, cospi_8_64, &x[2], &in[3]);
 
@@ -436,9 +411,7 @@ static void fadst8_avx2(__m256i *const in) {
     transpose_16bit_fdct_8x8_avx2(in, in);
 }
 
-static INLINE void right_shift_write_buffer_8x8(const __m256i *const in,
-    tran_low_t *const output)
-{
+static INLINE void right_shift_write_buffer_8x8(const __m256i *const in, tran_low_t *const output) {
     __m256i sign[4], res[4];
     __m128i out[8];
 
@@ -468,18 +441,18 @@ static INLINE void right_shift_write_buffer_8x8(const __m256i *const in,
     out[6] = _mm256_extracti128_si256(res[3], 1);
     out[7] = _mm256_extracti128_si256(res[3], 0);
 
-    store_output(out[0], (output + 0 * 8));
-    store_output(out[1], (output + 1 * 8));
-    store_output(out[2], (output + 2 * 8));
-    store_output(out[3], (output + 3 * 8));
-    store_output(out[4], (output + 4 * 8));
-    store_output(out[5], (output + 5 * 8));
-    store_output(out[6], (output + 6 * 8));
-    store_output(out[7], (output + 7 * 8));
+    store_output(out[0], output + 0 * 8);
+    store_output(out[1], output + 1 * 8);
+    store_output(out[2], output + 2 * 8);
+    store_output(out[3], output + 3 * 8);
+    store_output(out[4], output + 4 * 8);
+    store_output(out[5], output + 5 * 8);
+    store_output(out[6], output + 6 * 8);
+    store_output(out[7], output + 7 * 8);
 }
 
 void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
-    int overflow;
+    int     overflow;
     __m256i in[4];
 
     load_buffer_left_shift2_fdct_8x8_avx2(input, stride, in);
@@ -493,12 +466,11 @@ void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
     }
 #else
     (void)overflow;
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 }
 
-void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride,
-    int tx_type) {
-    int overflow = 0;
+void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
+    int     overflow = 0;
     __m256i in[4], x[4];
 
     switch (tx_type) {
@@ -544,15 +516,13 @@ void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride,
     }
 #else
     (void)overflow;
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 }
 
 //------------------------------------------------------------------------------
 
- // load 16x8 array
-static INLINE void load_buffer_left_shift2_16x8_avx2(const int16_t *const input,
-    const int stride, __m256i *const in)
-{
+// load 16x8 array
+static INLINE void load_buffer_left_shift2_16x8_avx2(const int16_t *const input, const int stride, __m256i *const in) {
     in[0] = _mm256_loadu_si256((const __m256i *)(input + 0 * stride));
     in[1] = _mm256_loadu_si256((const __m256i *)(input + 1 * stride));
     in[2] = _mm256_loadu_si256((const __m256i *)(input + 2 * stride));
@@ -572,24 +542,19 @@ static INLINE void load_buffer_left_shift2_16x8_avx2(const int16_t *const input,
     in[7] = _mm256_slli_epi16(in[7], 2);
 }
 
-static INLINE void load_buffer_left_shift2_16x16_avx2(
-    const int16_t *const input, const int stride, __m256i *const in) {
+static INLINE void load_buffer_left_shift2_16x16_avx2(const int16_t *const input, const int stride, __m256i *const in) {
     load_buffer_left_shift2_16x8_avx2(input + 0 * stride, stride, in + 0);
     load_buffer_left_shift2_16x8_avx2(input + 8 * stride, stride, in + 8);
 }
 
-static INLINE void add_sub_16x4_avx2(const __m256i *const in,
-    __m256i *const out)
-{
+static INLINE void add_sub_16x4_avx2(const __m256i *const in, __m256i *const out) {
     out[0] = _mm256_add_epi16(in[0], in[3]);
     out[1] = _mm256_add_epi16(in[1], in[2]);
     out[2] = _mm256_sub_epi16(in[1], in[2]);
     out[3] = _mm256_sub_epi16(in[0], in[3]);
 }
 
-static INLINE void add_sub_16x8_avx2(const __m256i *const in,
-    __m256i *const out)
-{
+static INLINE void add_sub_16x8_avx2(const __m256i *const in, __m256i *const out) {
     out[0] = _mm256_add_epi16(in[0], in[7]);
     out[1] = _mm256_add_epi16(in[1], in[6]);
     out[2] = _mm256_add_epi16(in[2], in[5]);
@@ -600,18 +565,14 @@ static INLINE void add_sub_16x8_avx2(const __m256i *const in,
     out[7] = _mm256_sub_epi16(in[0], in[7]);
 }
 
-static INLINE void highbd_add_sub_16x4_avx2(const __m256i *const in,
-    __m256i *const out)
-{
+static INLINE void highbd_add_sub_16x4_avx2(const __m256i *const in, __m256i *const out) {
     out[0] = ADD_EPI16_AVX2(in[0], in[3]);
     out[1] = ADD_EPI16_AVX2(in[1], in[2]);
     out[2] = SUB_EPI16_AVX2(in[1], in[2]);
     out[3] = SUB_EPI16_AVX2(in[0], in[3]);
 }
 
-static INLINE void highbd_add_sub_16x8_avx2(const __m256i *const in,
-    __m256i *const out)
-{
+static INLINE void highbd_add_sub_16x8_avx2(const __m256i *const in, __m256i *const out) {
     out[0] = ADD_EPI16_AVX2(in[0], in[7]);
     out[1] = ADD_EPI16_AVX2(in[1], in[6]);
     out[2] = ADD_EPI16_AVX2(in[2], in[5]);
@@ -648,7 +609,7 @@ static INLINE void right_shift2_16x8_avx2(__m256i *const in) {
 
 static INLINE void right_shift_16x8_avx2(__m256i *const res) {
     const __m256i const_rounding = _mm256_set1_epi16(1);
-    __m256i sign[8];
+    __m256i       sign[8];
 
     sign[0] = _mm256_srai_epi16(res[0], 15);
     sign[1] = _mm256_srai_epi16(res[1], 15);
@@ -699,29 +660,26 @@ static INLINE void right_shift_16x16_avx2(__m256i *const res) {
 }
 
 // write 8x8 array
-static INLINE void write_buffer_16x8_avx2(const __m256i *const res,
-    tran_low_t *const output, const int stride) {
-    store_output_avx2(res[0], (output + 0 * stride));
-    store_output_avx2(res[1], (output + 1 * stride));
-    store_output_avx2(res[2], (output + 2 * stride));
-    store_output_avx2(res[3], (output + 3 * stride));
-    store_output_avx2(res[4], (output + 4 * stride));
-    store_output_avx2(res[5], (output + 5 * stride));
-    store_output_avx2(res[6], (output + 6 * stride));
-    store_output_avx2(res[7], (output + 7 * stride));
+static INLINE void write_buffer_16x8_avx2(const __m256i *const res, tran_low_t *const output, const int stride) {
+    store_output_avx2(res[0], output + 0 * stride);
+    store_output_avx2(res[1], output + 1 * stride);
+    store_output_avx2(res[2], output + 2 * stride);
+    store_output_avx2(res[3], output + 3 * stride);
+    store_output_avx2(res[4], output + 4 * stride);
+    store_output_avx2(res[5], output + 5 * stride);
+    store_output_avx2(res[6], output + 6 * stride);
+    store_output_avx2(res[7], output + 7 * stride);
 }
 
-static INLINE void write_buffer_16x16_avx2(const __m256i *const res,
-    tran_low_t *const output, const int stride) {
+static INLINE void write_buffer_16x16_avx2(const __m256i *const res, tran_low_t *const output, const int stride) {
     write_buffer_16x8_avx2(res + 0, output + 0 * stride, stride);
     write_buffer_16x8_avx2(res + 8, output + 8 * stride, stride);
 }
 
-static INLINE void fadst16_core_avx2(const __m256i *const in, const __m256i c0,
-    const __m256i c1, __m256i *const out0, __m256i *const out1)
-{
+static INLINE void fadst16_core_avx2(const __m256i *const in, const __m256i c0, const __m256i c1, __m256i *const out0,
+                                     __m256i *const out1) {
     const __m256i k__DCT_CONST_ROUNDING = _mm256_set1_epi32(DCT_CONST_ROUNDING);
-    __m256i u[4], v[4];
+    __m256i       u[4], v[4];
 
     u[0] = _mm256_madd_epi16(in[0], c0);
     u[1] = _mm256_madd_epi16(in[1], c0);
@@ -750,17 +708,15 @@ static INLINE void fadst16_core_avx2(const __m256i *const in, const __m256i c0,
     *out1 = _mm256_packs_epi32(v[2], v[3]);
 }
 
-static INLINE void fadst16_kernel_avx2(const __m256i in0, const __m256i in1,
-    const __m256i in2, const __m256i in3, const tran_coef_t c0,
-    const tran_coef_t c1, const tran_coef_t c2, const tran_coef_t c3,
-    __m256i *const out0, __m256i *const out1, __m256i *const out2,
-    __m256i *const out3)
-{
+static INLINE void fadst16_kernel_avx2(const __m256i in0, const __m256i in1, const __m256i in2, const __m256i in3,
+                                       const tran_coef_t c0, const tran_coef_t c1, const tran_coef_t c2,
+                                       const tran_coef_t c3, __m256i *const out0, __m256i *const out1,
+                                       __m256i *const out2, __m256i *const out3) {
     const __m256i cst0 = pair_set_epi16_avx2(c0, c1);
     const __m256i cst1 = pair_set_epi16_avx2(c1, -c0);
     const __m256i cst2 = pair_set_epi16_avx2(c2, c3);
     const __m256i cst3 = pair_set_epi16_avx2(c3, -c2);
-    __m256i s[4];
+    __m256i       s[4];
 
     s[0] = _mm256_unpacklo_epi16(in0, in1);
     s[1] = _mm256_unpackhi_epi16(in0, in1);
@@ -857,7 +813,7 @@ static void fdct16_avx2(__m256i *const in) {
 }
 
 static int fdct16_overflow_avx2(__m256i *const in) {
-    int overflow = 0;
+    int     overflow = 0;
     __m256i in_high[8], step1[8], step2[8], step3[8], s[8], t[4], x[4];
 
     // Calculate input for the first 8 results.
@@ -898,7 +854,7 @@ static int fdct16_overflow_avx2(__m256i *const in) {
     overflow |= check_epi16_overflow_x8_avx2(s);
     overflow |= check_epi16_overflow_x4_avx2(x);
     overflow |= check_epi16_overflow_x2_avx2(t);
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 
     // stage 3
     x[0] = ADD_EPI16_AVX2(s[4], t[2]);
@@ -953,7 +909,7 @@ static int fdct16_overflow_avx2(__m256i *const in) {
     overflow |= check_epi16_overflow_x8_avx2(step1);
     overflow |= check_epi16_overflow_x8_avx2(step2);
     overflow |= check_epi16_overflow_x8_avx2(step3);
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 
     // transpose
     transpose_16bit_16x16_avx2(in, in);
@@ -963,12 +919,16 @@ static int fdct16_overflow_avx2(__m256i *const in) {
 
 static void fadst16_avx2(__m256i *const in) {
     const __m256i kZero = _mm256_set1_epi16(0);
-    __m256i s[16], x[16];
+    __m256i       s[16], x[16];
 
-    fadst16_kernel_avx2(in[15], in[0], in[7], in[8], cospi_1_64, cospi_31_64, cospi_17_64, cospi_15_64, &s[0], &s[8], &s[1], &s[9]);
-    fadst16_kernel_avx2(in[13], in[2], in[5], in[10], cospi_5_64, cospi_27_64, cospi_21_64, cospi_11_64, &s[2], &s[10], &s[3], &s[11]);
-    fadst16_kernel_avx2(in[11], in[4], in[3], in[12], cospi_9_64, cospi_23_64, cospi_25_64, cospi_7_64, &s[4], &s[12], &s[5], &s[13]);
-    fadst16_kernel_avx2(in[9], in[6], in[1], in[14], cospi_13_64, cospi_19_64, cospi_29_64, cospi_3_64, &s[6], &s[14], &s[7], &s[15]);
+    fadst16_kernel_avx2(
+        in[15], in[0], in[7], in[8], cospi_1_64, cospi_31_64, cospi_17_64, cospi_15_64, &s[0], &s[8], &s[1], &s[9]);
+    fadst16_kernel_avx2(
+        in[13], in[2], in[5], in[10], cospi_5_64, cospi_27_64, cospi_21_64, cospi_11_64, &s[2], &s[10], &s[3], &s[11]);
+    fadst16_kernel_avx2(
+        in[11], in[4], in[3], in[12], cospi_9_64, cospi_23_64, cospi_25_64, cospi_7_64, &s[4], &s[12], &s[5], &s[13]);
+    fadst16_kernel_avx2(
+        in[9], in[6], in[1], in[14], cospi_13_64, cospi_19_64, cospi_29_64, cospi_3_64, &s[6], &s[14], &s[7], &s[15]);
 
     // stage 2
     x[0] = _mm256_add_epi16(s[0], s[4]);
@@ -979,20 +939,34 @@ static void fadst16_avx2(__m256i *const in) {
     x[5] = _mm256_sub_epi16(s[1], s[5]);
     x[6] = _mm256_sub_epi16(s[2], s[6]);
     x[7] = _mm256_sub_epi16(s[3], s[7]);
-    fadst16_kernel_avx2(s[8], s[9], s[12], s[13], cospi_4_64, cospi_28_64, -cospi_28_64, cospi_4_64, &x[8], &x[12], &x[9], &x[13]);
-    fadst16_kernel_avx2(s[10], s[11], s[14], s[15], cospi_20_64, cospi_12_64, -cospi_12_64, cospi_20_64, &x[10], &x[14], &x[11], &x[15]);
+    fadst16_kernel_avx2(
+        s[8], s[9], s[12], s[13], cospi_4_64, cospi_28_64, -cospi_28_64, cospi_4_64, &x[8], &x[12], &x[9], &x[13]);
+    fadst16_kernel_avx2(s[10],
+                        s[11],
+                        s[14],
+                        s[15],
+                        cospi_20_64,
+                        cospi_12_64,
+                        -cospi_12_64,
+                        cospi_20_64,
+                        &x[10],
+                        &x[14],
+                        &x[11],
+                        &x[15]);
 
     // stage 3
     s[0] = _mm256_add_epi16(x[0], x[2]);
     s[1] = _mm256_add_epi16(x[1], x[3]);
     s[2] = _mm256_sub_epi16(x[0], x[2]);
     s[3] = _mm256_sub_epi16(x[1], x[3]);
-    fadst16_kernel_avx2(x[4], x[5], x[6], x[7], cospi_8_64, cospi_24_64, -cospi_24_64, cospi_8_64, &s[4], &s[6], &s[5], &s[7]);
-    s[8] = _mm256_add_epi16(x[8], x[10]);
-    s[9] = _mm256_add_epi16(x[9], x[11]);
+    fadst16_kernel_avx2(
+        x[4], x[5], x[6], x[7], cospi_8_64, cospi_24_64, -cospi_24_64, cospi_8_64, &s[4], &s[6], &s[5], &s[7]);
+    s[8]  = _mm256_add_epi16(x[8], x[10]);
+    s[9]  = _mm256_add_epi16(x[9], x[11]);
     s[10] = _mm256_sub_epi16(x[8], x[10]);
     s[11] = _mm256_sub_epi16(x[9], x[11]);
-    fadst16_kernel_avx2(x[12], x[13], x[14], x[15], cospi_8_64, cospi_24_64, -cospi_24_64, cospi_8_64, &s[12], &s[14], &s[13], &s[15]);
+    fadst16_kernel_avx2(
+        x[12], x[13], x[14], x[15], cospi_8_64, cospi_24_64, -cospi_24_64, cospi_8_64, &s[12], &s[14], &s[13], &s[15]);
 
     // stage 4
     in[0] = s[0];
@@ -1013,7 +987,7 @@ static void fadst16_avx2(__m256i *const in) {
 }
 
 void eb_vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
-    int overflow;
+    int     overflow;
     __m256i in[16];
 
     load_buffer_left_shift2_16x16_avx2(input, stride, in);
@@ -1026,12 +1000,11 @@ void eb_vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride)
     if (overflow) {
         vpx_highbd_fdct16x16_c(input, output, stride);
     }
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 }
 
-void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride,
-    int tx_type) {
-    int overflow = 0;
+void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
+    int     overflow = 0;
     __m256i in[16];
 
     load_buffer_left_shift2_16x16_avx2(input, stride, in);
@@ -1071,5 +1044,5 @@ void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride,
     }
 #else
     (void)overflow;
-#endif  // DCT_HIGH_BIT_DEPTH
+#endif // DCT_HIGH_BIT_DEPTH
 }

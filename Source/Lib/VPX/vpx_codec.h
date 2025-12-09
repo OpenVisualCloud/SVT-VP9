@@ -89,38 +89,38 @@ extern "C" {
 
 /*!\brief Algorithm return codes */
 typedef enum {
-  /*!\brief Operation completed without error */
-  VPX_CODEC_OK,
+    /*!\brief Operation completed without error */
+    VPX_CODEC_OK,
 
-  /*!\brief Unspecified error */
-  VPX_CODEC_ERROR,
+    /*!\brief Unspecified error */
+    VPX_CODEC_ERROR,
 
-  /*!\brief Memory operation failed */
-  VPX_CODEC_MEM_ERROR,
+    /*!\brief Memory operation failed */
+    VPX_CODEC_MEM_ERROR,
 
-  /*!\brief ABI version mismatch */
-  VPX_CODEC_ABI_MISMATCH,
+    /*!\brief ABI version mismatch */
+    VPX_CODEC_ABI_MISMATCH,
 
-  /*!\brief Algorithm does not have required capability */
-  VPX_CODEC_INCAPABLE,
+    /*!\brief Algorithm does not have required capability */
+    VPX_CODEC_INCAPABLE,
 
-  /*!\brief The given bitstream is not supported.
+    /*!\brief The given bitstream is not supported.
    *
    * The bitstream was unable to be parsed at the highest level. The decoder
    * is unable to proceed. This error \ref SHOULD be treated as fatal to the
    * stream. */
-  VPX_CODEC_UNSUP_BITSTREAM,
+    VPX_CODEC_UNSUP_BITSTREAM,
 
-  /*!\brief Encoded bitstream uses an unsupported feature
+    /*!\brief Encoded bitstream uses an unsupported feature
    *
    * The decoder does not implement a feature required by the encoder. This
    * return code should only be used for features that prevent future
    * pictures from being properly decoded. This error \ref MAY be treated as
    * fatal to the stream or \ref MAY be treated as fatal to the current GOP.
    */
-  VPX_CODEC_UNSUP_FEATURE,
+    VPX_CODEC_UNSUP_FEATURE,
 
-  /*!\brief The coded data for this stream is corrupt or incomplete
+    /*!\brief The coded data for this stream is corrupt or incomplete
    *
    * There was a problem decoding the current frame.  This return code
    * should only be used for failures that prevent future pictures from
@@ -128,17 +128,17 @@ typedef enum {
    * stream or \ref MAY be treated as fatal to the current GOP. If decoding
    * is continued for the current GOP, artifacts may be present.
    */
-  VPX_CODEC_CORRUPT_FRAME,
+    VPX_CODEC_CORRUPT_FRAME,
 
-  /*!\brief An application-supplied parameter is not valid.
+    /*!\brief An application-supplied parameter is not valid.
    *
    */
-  VPX_CODEC_INVALID_PARAM,
+    VPX_CODEC_INVALID_PARAM,
 
-  /*!\brief An iterator reached the end of list.
+    /*!\brief An iterator reached the end of list.
    *
    */
-  VPX_CODEC_LIST_END
+    VPX_CODEC_LIST_END
 
 } vpx_codec_err_t;
 
@@ -196,19 +196,19 @@ typedef const void *vpx_codec_iter_t;
  * algorithm.
  */
 typedef struct vpx_codec_ctx {
-  const char *name;             /**< Printable interface name */
-  vpx_codec_iface_t *iface;     /**< Interface pointers */
-  vpx_codec_err_t err;          /**< Last returned error */
-  const char *err_detail;       /**< Detailed info, if available */
-  vpx_codec_flags_t init_flags; /**< Flags passed at init time */
-  union {
-    /**< Decoder Configuration pointer */
-    const struct vpx_codec_dec_cfg *dec;
-    /**< Encoder Configuration pointer */
-    const struct vpx_codec_enc_cfg *enc;
-    const void *raw;
-  } config;               /**< Configuration pointer aliasing union */
-  vpx_codec_priv_t *priv; /**< Algorithm private storage */
+    const char        *name; /**< Printable interface name */
+    vpx_codec_iface_t *iface; /**< Interface pointers */
+    vpx_codec_err_t    err; /**< Last returned error */
+    const char        *err_detail; /**< Detailed info, if available */
+    vpx_codec_flags_t  init_flags; /**< Flags passed at init time */
+    union {
+        /**< Decoder Configuration pointer */
+        const struct vpx_codec_dec_cfg *dec;
+        /**< Encoder Configuration pointer */
+        const struct vpx_codec_enc_cfg *enc;
+        const void                     *raw;
+    } config; /**< Configuration pointer aliasing union */
+    vpx_codec_priv_t *priv; /**< Algorithm private storage */
 } vpx_codec_ctx_t;
 
 /*!\brief Bit depth for codec
@@ -216,9 +216,9 @@ typedef struct vpx_codec_ctx {
  * This enumeration determines the bit depth of the codec.
  */
 typedef enum vpx_bit_depth {
-  VPX_BITS_8 = 8,   /**<  8 bits */
-  VPX_BITS_10 = 10, /**< 10 bits */
-  VPX_BITS_12 = 12, /**< 12 bits */
+    VPX_BITS_8  = 8, /**<  8 bits */
+    VPX_BITS_10 = 10, /**< 10 bits */
+    VPX_BITS_12 = 12, /**< 12 bits */
 } vpx_bit_depth_t;
 
 /*
@@ -241,12 +241,9 @@ typedef enum vpx_bit_depth {
  *
  */
 int vpx_codec_version(void);
-#define VPX_VERSION_MAJOR(v) \
-  ((v >> 16) & 0xff) /**< extract major from packed version */
-#define VPX_VERSION_MINOR(v) \
-  ((v >> 8) & 0xff) /**< extract minor from packed version */
-#define VPX_VERSION_PATCH(v) \
-  ((v >> 0) & 0xff) /**< extract patch from packed version */
+#define VPX_VERSION_MAJOR(v) ((v >> 16) & 0xff) /**< extract major from packed version */
+#define VPX_VERSION_MINOR(v) ((v >> 8) & 0xff) /**< extract minor from packed version */
+#define VPX_VERSION_PATCH(v) ((v >> 0) & 0xff) /**< extract patch from packed version */
 
 /*!\brief Return the version major number */
 #define vpx_codec_version_major() ((vpx_codec_version() >> 16) & 0xff)
@@ -399,8 +396,7 @@ vpx_codec_err_t vpx_codec_control_(vpx_codec_ctx_t *ctx, int ctrl_id, ...);
  * It works by dispatching the call to the control function through a wrapper
  * function named with the id parameter.
  */
-#define vpx_codec_control(ctx, id, data) \
-  vpx_codec_control_##id(ctx, id, data) /**<\hideinitializer*/
+#define vpx_codec_control(ctx, id, data) vpx_codec_control_##id(ctx, id, data) /**<\hideinitializer*/
 #endif
 /*!\brief vpx_codec_control type definition macro
  *
@@ -413,14 +409,12 @@ vpx_codec_err_t vpx_codec_control_(vpx_codec_ctx_t *ctx, int ctrl_id, ...);
  * the correctly typed arguments as a wrapper to the type-unsafe internal
  * function.
  */
-#define VPX_CTRL_USE_TYPE(id, typ)                                           \
-  static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *, int, typ) \
-      VPX_UNUSED;                                                            \
-                                                                             \
-  static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *ctx,        \
-                                                int ctrl_id, typ data) {     \
-    return vpx_codec_control_(ctx, ctrl_id, data);                           \
-  } /**<\hideinitializer*/
+#define VPX_CTRL_USE_TYPE(id, typ)                                                               \
+    static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *, int, typ) VPX_UNUSED;       \
+                                                                                                 \
+    static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *ctx, int ctrl_id, typ data) { \
+        return vpx_codec_control_(ctx, ctrl_id, data);                                           \
+    } /**<\hideinitializer*/
 
 /*!\brief vpx_codec_control deprecated type definition macro
  *
@@ -432,14 +426,14 @@ vpx_codec_err_t vpx_codec_control_(vpx_codec_ctx_t *ctx, int ctrl_id, ...);
  * It defines a static function with the correctly typed arguments as a
  * wrapper to the type-unsafe internal function.
  */
-#define VPX_CTRL_USE_TYPE_DEPRECATED(id, typ)                            \
-  VPX_DECLSPEC_DEPRECATED static vpx_codec_err_t vpx_codec_control_##id( \
-      vpx_codec_ctx_t *, int, typ) VPX_DEPRECATED VPX_UNUSED;            \
-                                                                         \
-  VPX_DECLSPEC_DEPRECATED static vpx_codec_err_t vpx_codec_control_##id( \
-      vpx_codec_ctx_t *ctx, int ctrl_id, typ data) {                     \
-    return vpx_codec_control_(ctx, ctrl_id, data);                       \
-  } /**<\hideinitializer*/
+#define VPX_CTRL_USE_TYPE_DEPRECATED(id, typ)                                                          \
+    VPX_DECLSPEC_DEPRECATED static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *, int, typ) \
+        VPX_DEPRECATED                             VPX_UNUSED;                                         \
+                                                                                                       \
+    VPX_DECLSPEC_DEPRECATED static vpx_codec_err_t vpx_codec_control_##id(                             \
+        vpx_codec_ctx_t *ctx, int ctrl_id, typ data) {                                                 \
+        return vpx_codec_control_(ctx, ctrl_id, data);                                                 \
+    } /**<\hideinitializer*/
 
 /*!\brief vpx_codec_control void type definition macro
  *
@@ -451,14 +445,12 @@ vpx_codec_err_t vpx_codec_control_(vpx_codec_ctx_t *ctx, int ctrl_id, ...);
  * It defines a static function without a data argument as a wrapper to the
  * type-unsafe internal function.
  */
-#define VPX_CTRL_VOID(id)                                               \
-  static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *, int) \
-      VPX_UNUSED;                                                       \
-                                                                        \
-  static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *ctx,   \
-                                                int ctrl_id) {          \
-    return vpx_codec_control_(ctx, ctrl_id);                            \
-  } /**<\hideinitializer*/
+#define VPX_CTRL_VOID(id)                                                              \
+    static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *, int) VPX_UNUSED;  \
+                                                                                       \
+    static vpx_codec_err_t vpx_codec_control_##id(vpx_codec_ctx_t *ctx, int ctrl_id) { \
+        return vpx_codec_control_(ctx, ctrl_id);                                       \
+    } /**<\hideinitializer*/
 
 #endif
 
@@ -466,4 +458,4 @@ vpx_codec_err_t vpx_codec_control_(vpx_codec_ctx_t *ctx, int ctrl_id, ...);
 #ifdef __cplusplus
 }
 #endif
-#endif  // VPX_VPX_VPX_CODEC_H_
+#endif // VPX_VPX_VPX_CODEC_H_

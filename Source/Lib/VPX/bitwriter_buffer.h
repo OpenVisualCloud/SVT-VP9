@@ -21,8 +21,8 @@ extern "C" {
 #endif
 
 struct vpx_write_bit_buffer {
-  uint8_t *bit_buffer;
-  size_t bit_offset;
+    uint8_t *bit_buffer;
+    size_t   bit_offset;
 };
 
 size_t eb_vp9_wb_bytes_written(const struct vpx_write_bit_buffer *wb);
@@ -31,11 +31,10 @@ void eb_vp9_wb_write_bit(struct vpx_write_bit_buffer *wb, int bit);
 
 void eb_vp9_wb_write_literal(struct vpx_write_bit_buffer *wb, int data, int bits);
 
-void eb_vp9_wb_write_inv_signed_literal(struct vpx_write_bit_buffer *wb, int data,
-                                     int bits);
+void eb_vp9_wb_write_inv_signed_literal(struct vpx_write_bit_buffer *wb, int data, int bits);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VPX_DSP_BITWRITER_BUFFER_H_
+#endif // VPX_VPX_DSP_BITWRITER_BUFFER_H_

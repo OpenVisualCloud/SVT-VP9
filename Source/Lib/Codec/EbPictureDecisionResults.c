@@ -7,16 +7,13 @@
 
 #include "EbPictureDecisionResults.h"
 
-EbErrorType eb_vp9_picture_decision_result_ctor(
-    EbPtr *object_dbl_ptr,
-    EbPtr  object_init_data_ptr)
-{
+EbErrorType eb_vp9_picture_decision_result_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
     PictureDecisionResults *object_ptr;
     EB_MALLOC(PictureDecisionResults *, object_ptr, sizeof(PictureDecisionResults), EB_N_PTR);
 
-    *object_dbl_ptr = (EbPtr) object_ptr;
+    *object_dbl_ptr      = (EbPtr)object_ptr;
     object_init_data_ptr = 0;
-    (void) object_init_data_ptr;
+    (void)object_init_data_ptr;
 
     return EB_ErrorNone;
 }

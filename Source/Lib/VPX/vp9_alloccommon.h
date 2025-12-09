@@ -11,7 +11,7 @@
 #ifndef VPX_VP9_COMMON_VP9_ALLOCCOMMON_H_
 #define VPX_VP9_COMMON_VP9_ALLOCCOMMON_H_
 
-#define INVALID_IDX -1  // Invalid buffer index.
+#define INVALID_IDX -1 // Invalid buffer index.
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +39,7 @@ void eb_vp9_swap_current_and_last_seg_map(struct VP9Common *cm);
 #endif
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_COMMON_VP9_ALLOCCOMMON_H_
+#endif // VPX_VP9_COMMON_VP9_ALLOCCOMMON_H_

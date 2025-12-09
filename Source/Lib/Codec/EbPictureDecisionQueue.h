@@ -12,12 +12,11 @@
 #include "EbSystemResourceManager.h"
 #include "EbPredictionStructure.h"
 #include "EbApiSei.h"
-#include"EbPictureControlSet.h"
+#include "EbPictureControlSet.h"
 /************************************************
  * PA Reference Queue Entry
  ************************************************/
-typedef struct PaReferenceQueueEntry
-{
+typedef struct PaReferenceQueueEntry {
     EbObjectWrapper         *input_object_ptr;
     uint64_t                 picture_number;
     uint32_t                 dependent_count;
@@ -32,7 +31,6 @@ typedef struct PaReferenceQueueEntry
 
 } PaReferenceQueueEntry;
 
-extern EbErrorType eb_vp9_pa_eb_vp9_reference_queue_entry_ctor(
-    PaReferenceQueueEntry  **entry_dbl_ptr);
+extern EbErrorType eb_vp9_pa_eb_vp9_reference_queue_entry_ctor(PaReferenceQueueEntry **entry_dbl_ptr);
 
 #endif // EbPictureDecisionQueue_h

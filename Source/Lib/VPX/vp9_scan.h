@@ -23,35 +23,31 @@ extern "C" {
 #define MAX_NEIGHBORS 2
 
 typedef struct {
-  const int16_t *scan;
-  const int16_t *iscan;
-  const int16_t *neighbors;
+    const int16_t *scan;
+    const int16_t *iscan;
+    const int16_t *neighbors;
 } scan_order;
 
 extern const scan_order eb_vp9_default_scan_orders[TX_SIZES];
 extern const scan_order eb_vp9_scan_orders[TX_SIZES][TX_TYPES];
 
-static INLINE int get_coef_context(const int16_t *neighbors,
-                                   const uint8_t *token_cache, int c) {
-  return (1 + token_cache[neighbors[MAX_NEIGHBORS * c + 0]] +
-          token_cache[neighbors[MAX_NEIGHBORS * c + 1]]) >>
-         1;
+static INLINE int get_coef_context(const int16_t *neighbors, const uint8_t *token_cache, int c) {
+    return (1 + token_cache[neighbors[MAX_NEIGHBORS * c + 0]] + token_cache[neighbors[MAX_NEIGHBORS * c + 1]]) >> 1;
 }
 
-static INLINE const scan_order *get_scan(const MACROBLOCKD *xd, TX_SIZE tx_size,
-                                         PLANE_TYPE type, int block_idx) {
-  const ModeInfo *const mi = xd->mi[0];
+static INLINE const scan_order *get_scan(const MACROBLOCKD *xd, TX_SIZE tx_size, PLANE_TYPE type, int block_idx) {
+    const ModeInfo *const mi = xd->mi[0];
 
-  if (is_inter_block(mi) || type != PLANE_TYPE_Y || xd->lossless) {
-    return &eb_vp9_default_scan_orders[tx_size];
-  } else {
-    const PREDICTION_MODE mode = get_y_mode(mi, block_idx);
-    return &eb_vp9_scan_orders[tx_size][eb_vp9_intra_mode_to_tx_type_lookup[mode]];
-  }
+    if (is_inter_block(mi) || type != PLANE_TYPE_Y || xd->lossless) {
+        return &eb_vp9_default_scan_orders[tx_size];
+    } else {
+        const PREDICTION_MODE mode = get_y_mode(mi, block_idx);
+        return &eb_vp9_scan_orders[tx_size][eb_vp9_intra_mode_to_tx_type_lookup[mode]];
+    }
 }
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_COMMON_VP9_SCAN_H_
+#endif // VPX_VP9_COMMON_VP9_SCAN_H_

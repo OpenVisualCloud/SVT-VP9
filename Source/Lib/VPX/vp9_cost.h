@@ -31,31 +31,29 @@ extern const uint16_t eb_vp9_prob_cost[256];
 
 #define vp9_cost_bit(prob, bit) vp9_cost_zero((bit) ? 256 - (prob) : (prob))
 
-static INLINE unsigned int cost_branch256(const unsigned int ct[2],
-                                          vpx_prob p) {
-  assert(p > 0);
-  return ct[0] * vp9_cost_zero(p) + ct[1] * vp9_cost_one(p);
+static INLINE unsigned int cost_branch256(const unsigned int ct[2], vpx_prob p) {
+    assert(p > 0);
+    return ct[0] * vp9_cost_zero(p) + ct[1] * vp9_cost_one(p);
 }
 
-static INLINE int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits,
-                             int len) {
-  int cost = 0;
-  vpx_tree_index i = 0;
+static INLINE int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits, int len) {
+    int            cost = 0;
+    vpx_tree_index i    = 0;
 
-  do {
-    const int bit = (bits >> --len) & 1;
-    cost += vp9_cost_bit(probs[i >> 1], bit);
-    i = tree[i + bit];
-  } while (len);
+    do {
+        const int bit = (bits >> --len) & 1;
+        cost += vp9_cost_bit(probs[i >> 1], bit);
+        i = tree[i + bit];
+    } while (len);
 
-  return cost;
+    return cost;
 }
 
 void eb_vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree);
 void eb_vp9_cost_tokens_skip(int *costs, const vpx_prob *probs, vpx_tree tree);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_COST_H_
+#endif // VPX_VP9_ENCODER_VP9_COST_H_

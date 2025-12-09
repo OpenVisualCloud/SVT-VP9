@@ -65,81 +65,81 @@
 #undef mem_get_be16
 #define mem_get_be16 mem_ops_wrap_symbol(mem_get_be16)
 static unsigned MEM_VALUE_T mem_get_be16(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = mem[0] << 8;
-  val |= (unsigned)mem[1];
-  return val;
+    val = mem[0] << 8;
+    val |= (unsigned)mem[1];
+    return val;
 }
 
 #undef mem_get_be24
 #define mem_get_be24 mem_ops_wrap_symbol(mem_get_be24)
 static unsigned MEM_VALUE_T mem_get_be24(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = mem[0] << 16;
-  val |= mem[1] << 8;
-  val |= (unsigned)mem[2];
-  return val;
+    val = mem[0] << 16;
+    val |= mem[1] << 8;
+    val |= (unsigned)mem[2];
+    return val;
 }
 
 #undef mem_get_be32
 #define mem_get_be32 mem_ops_wrap_symbol(mem_get_be32)
 static unsigned MEM_VALUE_T mem_get_be32(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = ((unsigned MEM_VALUE_T)mem[0]) << 24;
-  val |= mem[1] << 16;
-  val |= mem[2] << 8;
-  val |= (unsigned)mem[3];
-  return val;
+    val = ((unsigned MEM_VALUE_T)mem[0]) << 24;
+    val |= mem[1] << 16;
+    val |= mem[2] << 8;
+    val |= (unsigned)mem[3];
+    return val;
 }
 
 #undef mem_get_le16
 #define mem_get_le16 mem_ops_wrap_symbol(mem_get_le16)
 static unsigned MEM_VALUE_T mem_get_le16(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = mem[1] << 8;
-  val |= (unsigned)mem[0];
-  return val;
+    val = mem[1] << 8;
+    val |= (unsigned)mem[0];
+    return val;
 }
 
 #undef mem_get_le24
 #define mem_get_le24 mem_ops_wrap_symbol(mem_get_le24)
 static unsigned MEM_VALUE_T mem_get_le24(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = mem[2] << 16;
-  val |= mem[1] << 8;
-  val |= (unsigned)mem[0];
-  return val;
+    val = mem[2] << 16;
+    val |= mem[1] << 8;
+    val |= (unsigned)mem[0];
+    return val;
 }
 
 #undef mem_get_le32
 #define mem_get_le32 mem_ops_wrap_symbol(mem_get_le32)
 static unsigned MEM_VALUE_T mem_get_le32(const void *vmem) {
-  unsigned MEM_VALUE_T val;
-  const MAU_T *mem = (const MAU_T *)vmem;
+    unsigned MEM_VALUE_T val;
+    const MAU_T         *mem = (const MAU_T *)vmem;
 
-  val = ((unsigned MEM_VALUE_T)mem[3]) << 24;
-  val |= mem[2] << 16;
-  val |= mem[1] << 8;
-  val |= (unsigned)mem[0];
-  return val;
+    val = ((unsigned MEM_VALUE_T)mem[3]) << 24;
+    val |= mem[2] << 16;
+    val |= mem[1] << 8;
+    val |= (unsigned)mem[0];
+    return val;
 }
 
-#define mem_get_s_generic(end, sz)                                            \
-  static VPX_INLINE signed MEM_VALUE_T mem_get_s##end##sz(const void *vmem) { \
-    const MAU_T *mem = (const MAU_T *)vmem;                                   \
-    signed MEM_VALUE_T val = mem_get_##end##sz(mem);                          \
-    return (val << (MEM_VALUE_T_SZ_BITS - sz)) >> (MEM_VALUE_T_SZ_BITS - sz); \
-  }
+#define mem_get_s_generic(end, sz)                                                \
+    static VPX_INLINE signed MEM_VALUE_T mem_get_s##end##sz(const void *vmem) {   \
+        const MAU_T       *mem = (const MAU_T *)vmem;                             \
+        signed MEM_VALUE_T val = mem_get_##end##sz(mem);                          \
+        return (val << (MEM_VALUE_T_SZ_BITS - sz)) >> (MEM_VALUE_T_SZ_BITS - sz); \
+    }
 
 /* clang-format off */
 #undef  mem_get_sbe16
@@ -227,4 +227,4 @@ static VPX_INLINE void mem_put_le32(void *vmem, MEM_VALUE_T val) {
 }
 /* clang-format on */
 
-#endif  // VPX_VPX_PORTS_MEM_OPS_H_
+#endif // VPX_VPX_PORTS_MEM_OPS_H_

@@ -14,19 +14,19 @@ extern "C" {
 /************************************************
  * Defines
  ************************************************/
-#define FLAT_PREDICTION_STRUCTURE_PERIOD                                    1
-#define TWO_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD                  2
-#define THREE_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD                4
-#define FOUR_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD                 8
-#define MAX_PREDICTION_STRUCTURE_PERIOD                                     64
+#define FLAT_PREDICTION_STRUCTURE_PERIOD 1
+#define TWO_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD 2
+#define THREE_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD 4
+#define FOUR_LEVEL_HIERARCHICAL_PREDICTION_STRUCTURE_PERIOD 8
+#define MAX_PREDICTION_STRUCTURE_PERIOD 64
 
 /************************************************
  * RPS defines
  ************************************************/
-#define RPS_UNUSED                                                          ~0
-#define MAX_NUM_OF_NEGATIVE_REF_PICS                                        5
-#define MAX_NUM_OF_POSITIVE_REF_PICS                                        5
-#define MAX_NUM_OF_REF_PICS_TOTAL                                           (MAX_NUM_OF_POSITIVE_REF_PICS + MAX_NUM_OF_NEGATIVE_REF_PICS)
+#define RPS_UNUSED ~0
+#define MAX_NUM_OF_NEGATIVE_REF_PICS 5
+#define MAX_NUM_OF_POSITIVE_REF_PICS 5
+#define MAX_NUM_OF_REF_PICS_TOTAL (MAX_NUM_OF_POSITIVE_REF_PICS + MAX_NUM_OF_NEGATIVE_REF_PICS)
 
 /************************************************
  * Reference List
@@ -35,8 +35,7 @@ extern "C" {
  *    the pictures referenced by the current
  *    picture.
  ************************************************/
-typedef struct ReferenceList
-{
+typedef struct ReferenceList {
     int32_t  reference_list;
     uint32_t reference_list_count;
 
@@ -56,8 +55,7 @@ typedef struct ReferenceList
  *     by the referenceCount group in ascending
  *     order.  The grouping is not display order!
  ************************************************/
-typedef struct DependentList
-{
+typedef struct DependentList {
     int32_t *list;
     uint32_t list_count;
 
@@ -69,8 +67,7 @@ typedef struct DependentList
  *   configurations for each Prediction Structure
  *   Config Entry.
  ************************************************/
-typedef struct PredictionStructureConfigEntry
-{
+typedef struct PredictionStructureConfigEntry {
     uint32_t temporal_layer_index;
     uint32_t decode_order;
     int32_t  ref_list0;
@@ -83,8 +80,7 @@ typedef struct PredictionStructureConfigEntry
  *   Contains a collection of basic control data
  *   for the basic prediction structure.
  ************************************************/
-typedef struct PredictionStructureConfig
-{
+typedef struct PredictionStructureConfig {
     uint32_t                        entry_count;
     PredictionStructureConfigEntry *entry_array;
 } PredictionStructureConfig;
@@ -95,8 +91,7 @@ typedef struct PredictionStructureConfig
  *   for a particular picture in the Prediction
  *   Structure.
  ************************************************/
-typedef struct PredictionStructureEntry
-{
+typedef struct PredictionStructureEntry {
     ReferenceList ref_list0;
     ReferenceList ref_list1;
     DependentList dep_list0;
@@ -106,31 +101,31 @@ typedef struct PredictionStructureEntry
     EB_BOOL       is_referenced;
 
     // High-level RPS
-    EB_BOOL       short_term_rps_in_sps_flag;
-    uint32_t      short_term_rps_in_sps_index;
-    EB_BOOL       inter_rps_prediction_flag;
-    EB_BOOL       long_term_rps_present_flag;
+    EB_BOOL  short_term_rps_in_sps_flag;
+    uint32_t short_term_rps_in_sps_index;
+    EB_BOOL  inter_rps_prediction_flag;
+    EB_BOOL  long_term_rps_present_flag;
 
     // Non-Predicted Short-Term RPS
-    uint32_t      negative_ref_pics_total_count;
-    uint32_t      positive_ref_pics_total_count;
-    uint32_t      delta_negative_gop_pos_minus1[MAX_NUM_OF_NEGATIVE_REF_PICS];
-    uint32_t      delta_positive_gop_pos_minus1[MAX_NUM_OF_POSITIVE_REF_PICS];
-    EB_BOOL       used_by_negative_curr_pic_flag[MAX_NUM_OF_NEGATIVE_REF_PICS];
-    EB_BOOL       used_by_positive_curr_pic_flag[MAX_NUM_OF_POSITIVE_REF_PICS];
+    uint32_t negative_ref_pics_total_count;
+    uint32_t positive_ref_pics_total_count;
+    uint32_t delta_negative_gop_pos_minus1[MAX_NUM_OF_NEGATIVE_REF_PICS];
+    uint32_t delta_positive_gop_pos_minus1[MAX_NUM_OF_POSITIVE_REF_PICS];
+    EB_BOOL  used_by_negative_curr_pic_flag[MAX_NUM_OF_NEGATIVE_REF_PICS];
+    EB_BOOL  used_by_positive_curr_pic_flag[MAX_NUM_OF_POSITIVE_REF_PICS];
 
     // List Construction
-    EB_BOOL       ref_pics_override_total_count_flag;
-    int32_t       ref_pics_list0_total_count_minus1;
-    int32_t       ref_pics_list1_total_count_minus1;
-    EB_BOOL       restricted_ref_pic_lists_flag;                        // Same list enable flag (if set,
-                                                                        //   it implies all slices of the
-                                                                        //   same type in the same picture
-                                                                        //   have identical lists)
+    EB_BOOL ref_pics_override_total_count_flag;
+    int32_t ref_pics_list0_total_count_minus1;
+    int32_t ref_pics_list1_total_count_minus1;
+    EB_BOOL restricted_ref_pic_lists_flag; // Same list enable flag (if set,
+    //   it implies all slices of the
+    //   same type in the same picture
+    //   have identical lists)
 
     // List Modification
     // *Note - This should probably be moved to the slice header since its a dynamic control - JMJ Jan 2, 2013
-    EB_BOOL       list0_modification_flag;
+    EB_BOOL list0_modification_flag;
 
     // Lists Combination (STUB)
 
@@ -141,9 +136,7 @@ typedef struct PredictionStructureEntry
  *   Contains a collection of control and RPS
  *   data types for an entire Prediction Structure
  ************************************************/
-typedef struct PredictionStructure
-{
-
+typedef struct PredictionStructure {
     uint32_t                   pred_struct_entry_count;
     PredictionStructureEntry **pred_struct_entry_ptr_array;
     EB_PRED                    pred_type;
@@ -152,16 +145,16 @@ typedef struct PredictionStructure
     uint32_t                   maximum_extent;
 
     // Section Indices
-    uint32_t                   leading_pic_index;
-    uint32_t                   init_pic_index;
-    uint32_t                   steady_state_index;
+    uint32_t leading_pic_index;
+    uint32_t init_pic_index;
+    uint32_t steady_state_index;
 
     // RPS Related Entries
-    EB_BOOL                    restricted_ref_pic_lists_enable_flag;
-    EB_BOOL                    lists_modification_enable_flag;
-    EB_BOOL                    long_term_enable_flag;
-    uint32_t                   default_ref_pics_list0_total_count_minus1;
-    uint32_t                   default_ref_pics_list1_total_count_minus1;
+    EB_BOOL  restricted_ref_pic_lists_enable_flag;
+    EB_BOOL  lists_modification_enable_flag;
+    EB_BOOL  long_term_enable_flag;
+    uint32_t default_ref_pics_list0_total_count_minus1;
+    uint32_t default_ref_pics_list1_total_count_minus1;
 
 } PredictionStructure;
 
@@ -170,8 +163,7 @@ typedef struct PredictionStructure
  *   Contains the control structures for all
  *   supported prediction structures.
  ************************************************/
-typedef struct PredictionStructureGroup
-{
+typedef struct PredictionStructureGroup {
     PredictionStructure **prediction_structure_ptr_array;
     uint32_t              prediction_structure_count;
 } PredictionStructureGroup;
@@ -179,20 +171,16 @@ typedef struct PredictionStructureGroup
 /************************************************
  * Declarations
  ************************************************/
-extern EbErrorType eb_vp9_prediction_structure_group_ctor(
-    PredictionStructureGroup **prediction_structure_group_dbl_ptr,
-    uint32_t                   base_layer_switch_mode);
+extern EbErrorType eb_vp9_prediction_structure_group_ctor(PredictionStructureGroup **prediction_structure_group_dbl_ptr,
+                                                          uint32_t                   base_layer_switch_mode);
 
-extern PredictionStructure* eb_vp9_get_prediction_structure(
-    PredictionStructureGroup *prediction_structure_group_ptr,
-    EB_PRED                   pred_structure,
-    uint32_t                  number_of_references,
-    uint32_t                  levels_of_hierarchy);
+extern PredictionStructure *eb_vp9_get_prediction_structure(PredictionStructureGroup *prediction_structure_group_ptr,
+                                                            EB_PRED pred_structure, uint32_t number_of_references,
+                                                            uint32_t levels_of_hierarchy);
 
-typedef struct RpsNode
-{
+typedef struct RpsNode {
     uint8_t refresh_frame_mask;
-    uint8_t ref_dpb_index[3];//LAST-GOLDEN-ALT
+    uint8_t ref_dpb_index[3]; //LAST-GOLDEN-ALT
 } RpsNode;
 
 #ifdef __cplusplus

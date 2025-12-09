@@ -30,55 +30,50 @@ extern "C" {
 
 // Segment level features.
 typedef enum {
-  SEG_LVL_ALT_Q = 0,      // Use alternate Quantizer ....
-  SEG_LVL_ALT_LF = 1,     // Use alternate loop filter value...
-  SEG_LVL_REF_FRAME = 2,  // Optional Segment reference frame
-  SEG_LVL_SKIP = 3,       // Optional Segment (0,0) + skip mode
-  SEG_LVL_MAX = 4         // Number of features supported
+    SEG_LVL_ALT_Q     = 0, // Use alternate Quantizer ....
+    SEG_LVL_ALT_LF    = 1, // Use alternate loop filter value...
+    SEG_LVL_REF_FRAME = 2, // Optional Segment reference frame
+    SEG_LVL_SKIP      = 3, // Optional Segment (0,0) + skip mode
+    SEG_LVL_MAX       = 4 // Number of features supported
 } SEG_LVL_FEATURES;
 
 struct segmentation {
-  uint8_t enabled;
-  uint8_t update_map;
-  uint8_t update_data;
-  uint8_t abs_delta;
-  uint8_t temporal_update;
+    uint8_t enabled;
+    uint8_t update_map;
+    uint8_t update_data;
+    uint8_t abs_delta;
+    uint8_t temporal_update;
 
-  vpx_prob tree_probs[SEG_TREE_PROBS];
-  vpx_prob pred_probs[PREDICTION_PROBS];
+    vpx_prob tree_probs[SEG_TREE_PROBS];
+    vpx_prob pred_probs[PREDICTION_PROBS];
 
-  int16_t feature_data[MAX_SEGMENTS][SEG_LVL_MAX];
-  uint32_t feature_mask[MAX_SEGMENTS];
-  int aq_av_offset;
+    int16_t  feature_data[MAX_SEGMENTS][SEG_LVL_MAX];
+    uint32_t feature_mask[MAX_SEGMENTS];
+    int      aq_av_offset;
 };
 
-static INLINE int segfeature_active(const struct segmentation *seg,
-                                    int segment_id,
-                                    SEG_LVL_FEATURES feature_id) {
-  return seg->enabled && (seg->feature_mask[segment_id] & (1 << feature_id));
+static INLINE int segfeature_active(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
+    return seg->enabled && (seg->feature_mask[segment_id] & (1 << feature_id));
 }
 
 void eb_vp9_clearall_segfeatures(struct segmentation *seg);
 
-void eb_vp9_enable_segfeature(struct segmentation *seg, int segment_id,
-                           SEG_LVL_FEATURES feature_id);
+void eb_vp9_enable_segfeature(struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id);
 
 int eb_vp9_seg_feature_data_max(SEG_LVL_FEATURES feature_id);
 
 int eb_vp9_is_segfeature_signed(SEG_LVL_FEATURES feature_id);
 
-void eb_vp9_set_segdata(struct segmentation *seg, int segment_id,
-                     SEG_LVL_FEATURES feature_id, int seg_data);
+void eb_vp9_set_segdata(struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id, int seg_data);
 
-static INLINE int get_segdata(const struct segmentation *seg, int segment_id,
-                              SEG_LVL_FEATURES feature_id) {
-  return seg->feature_data[segment_id][feature_id];
+static INLINE int get_segdata(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
+    return seg->feature_data[segment_id][feature_id];
 }
 
 extern const vpx_tree_index eb_vp9_segment_tree[TREE_SIZE(MAX_SEGMENTS)];
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_COMMON_VP9_SEG_COMMON_H_
+#endif // VPX_VP9_COMMON_VP9_SEG_COMMON_H_

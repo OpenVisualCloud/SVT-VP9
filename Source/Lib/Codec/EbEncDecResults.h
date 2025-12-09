@@ -14,8 +14,7 @@ extern "C" {
 /**************************************
  * Process Results
  **************************************/
-typedef struct EncDecResults
-{
+typedef struct EncDecResults {
     EbObjectWrapper *picture_control_set_wrapper_ptr;
     uint32_t         completed_sb_row_index_start;
     uint32_t         completed_sb_row_count;
@@ -23,15 +22,13 @@ typedef struct EncDecResults
 } EncDecResults;
 
 typedef struct EncDecResultsInitData {
-    uint32_t         junk;
+    uint32_t junk;
 } EncDecResultsInitData;
 
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_enc_dec_results_ctor(
-    EbPtr *object_dbl_ptr,
-    EbPtr  object_init_data_ptr);
+extern EbErrorType eb_vp9_enc_dec_results_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #ifdef __cplusplus
 }

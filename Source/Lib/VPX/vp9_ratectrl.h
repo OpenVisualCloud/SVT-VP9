@@ -27,7 +27,7 @@ extern "C" {
 
 #define MIN_GF_INTERVAL 4
 #define MAX_GF_INTERVAL 16
-#define FIXED_GF_INTERVAL 8  // Used in some testing modes only
+#define FIXED_GF_INTERVAL 8 // Used in some testing modes only
 #define ONEHALFONLY_RESIZE 0
 
 #define FRAME_OVERHEAD_BITS 200
@@ -42,12 +42,12 @@ extern "C" {
 #define MAX_STATIC_GF_GROUP_LENGTH 250
 
 typedef enum {
-  INTER_NORMAL = 0,
-  INTER_HIGH = 1,
-  GF_ARF_LOW = 2,
-  GF_ARF_STD = 3,
-  KF_STD = 4,
-  RATE_FACTOR_LEVELS = 5
+    INTER_NORMAL       = 0,
+    INTER_HIGH         = 1,
+    GF_ARF_LOW         = 2,
+    GF_ARF_STD         = 3,
+    KF_STD             = 4,
+    RATE_FACTOR_LEVELS = 5
 } RATE_FACTOR_LEVEL;
 
 #endif
@@ -95,11 +95,11 @@ typedef struct {
   int last_boosted_qindex;  // Last boosted GF/KF/ARF q
   int last_kf_qindex;       // Q index of the last key frame coded.
 #endif
-  int gfu_boost;
+    int gfu_boost;
 #if 0
   int last_boost;
 #endif
-  int kf_boost;
+    int kf_boost;
 #if 0
   double rate_correction_factors[RATE_FACTOR_LEVELS];
 
@@ -151,8 +151,8 @@ typedef struct {
   int64_t total_target_bits;
   int64_t total_target_vs_actual;
 #endif
-  int worst_quality;
-  int best_quality;
+    int worst_quality;
+    int best_quality;
 #if 0
   int64_t starting_buffer_level;
   int64_t optimal_buffer_level;
@@ -291,14 +291,12 @@ void vp9_rc_set_frame_target(struct VP9_COMP *cpi, int target);
 #endif
 // Computes a q delta (in "q index" terms) to get from a starting q value
 // to a target q value
-int eb_vp9_compute_qdelta(const RATE_CONTROL *rc, double qstart, double qtarget,
-                       vpx_bit_depth_t bit_depth);
+int eb_vp9_compute_qdelta(const RATE_CONTROL *rc, double qstart, double qtarget, vpx_bit_depth_t bit_depth);
 
 // Computes a q delta (in "q index" terms) to get from a starting q value
 // to a value that should equate to the given rate ratio.
-int eb_vp9_compute_qdelta_by_rate(const RATE_CONTROL *rc, FRAME_TYPE frame_type,
-                               int qindex, double rate_target_ratio,
-                               vpx_bit_depth_t bit_depth);
+int eb_vp9_compute_qdelta_by_rate(const RATE_CONTROL *rc, FRAME_TYPE frame_type, int qindex, double rate_target_ratio,
+                                  vpx_bit_depth_t bit_depth);
 #if ADAPTIVE_QP_INDEX_GEN
 int eb_vp9_frame_type_qdelta(struct VP9_COMP *cpi, int rf_level, int q);
 #endif
@@ -328,7 +326,7 @@ int get_gf_active_quality(struct VP9_COMP *cpi, int q, vpx_bit_depth_t bit_depth
 #endif
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_RATECTRL_H_
+#endif // VPX_VP9_ENCODER_VP9_RATECTRL_H_
