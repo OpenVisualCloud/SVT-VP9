@@ -17,39 +17,27 @@ extern "C" {
 * eb_vp9_noise_extract_luma_weak
 *  weak filter Luma and store noise.
 *******************************************/
-void eb_vp9_noise_extract_luma_weak_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,
-    EbPictureBufferDesc *denoised_picture_ptr,
-    EbPictureBufferDesc *noise_picture_ptr,
-    uint32_t             sb_origin_y,
-    uint32_t             sb_origin_x
-    );
+void eb_vp9_noise_extract_luma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
+                                                EbPictureBufferDesc *denoised_picture_ptr,
+                                                EbPictureBufferDesc *noise_picture_ptr, uint32_t sb_origin_y,
+                                                uint32_t sb_origin_x);
 
-void eb_vp9_noise_extract_luma_weak_sb_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,
-    EbPictureBufferDesc *denoised_picture_ptr,
-    EbPictureBufferDesc *noise_picture_ptr,
-    uint32_t             sb_origin_y,
-    uint32_t             sb_origin_x
-    );
+void eb_vp9_noise_extract_luma_weak_sb_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
+                                                   EbPictureBufferDesc *denoised_picture_ptr,
+                                                   EbPictureBufferDesc *noise_picture_ptr, uint32_t sb_origin_y,
+                                                   uint32_t sb_origin_x);
 
-void eb_vp9_noise_extract_chroma_strong_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,
-    EbPictureBufferDesc *denoised_picture_ptr,
-    uint32_t             sb_origin_y,
-    uint32_t             sb_origin_x);
+void eb_vp9_noise_extract_chroma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
+                                                    EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                                    uint32_t sb_origin_x);
 
-void eb_vp9_noise_extract_chroma_weak_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,
-    EbPictureBufferDesc *denoised_picture_ptr,
-    uint32_t             sb_origin_y,
-    uint32_t             sb_origin_x);
+void eb_vp9_noise_extract_chroma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
+                                                  EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                                  uint32_t sb_origin_x);
 
-void eb_vp9_noise_extract_luma_strong_avx2_intrin(
-    EbPictureBufferDesc *input_picture_ptr,
-    EbPictureBufferDesc *denoised_picture_ptr,
-    uint32_t             sb_origin_y,
-    uint32_t             sb_origin_x);
+void eb_vp9_noise_extract_luma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
+                                                  EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                                  uint32_t sb_origin_x);
 
 #ifdef __cplusplus
 }

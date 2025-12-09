@@ -23,11 +23,11 @@ extern "C" {
 #define VPXMAX(x, y) (((x) > (y)) ? (x) : (y))
 
 #define VPX_SWAP(type, a, b) \
-  do {                       \
-    type c = (b);            \
-    b = a;                   \
-    a = c;                   \
-  } while (0)
+    do {                     \
+        type c = (b);        \
+        b      = a;          \
+        a      = c;          \
+    } while (0)
 
 #if CONFIG_VP9_HIGHBITDEPTH
 // Note:
@@ -41,20 +41,16 @@ typedef int32_t tran_low_t;
 // tran_high_t is the datatype used for intermediate transform stages.
 typedef int32_t tran_high_t;
 typedef int16_t tran_low_t;
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 typedef int16_t tran_coef_t;
 
-static INLINE int clip_pixel(int val) {
-  return (uint8_t)((val > 255) ? 255 : (val < 0) ? 0 : val);
-}
+static INLINE int clip_pixel(int val) { return (uint8_t)((val > 255) ? 255 : (val < 0) ? 0 : val); }
 
-static INLINE int clamp(int value, int low, int high) {
-  return value < low ? low : (value > high ? high : value);
-}
+static INLINE int clamp(int value, int low, int high) { return value < low ? low : (value > high ? high : value); }
 
 static INLINE double fclamp(double value, double low, double high) {
-  return value < low ? low : (value > high ? high : value);
+    return value < low ? low : (value > high ? high : value);
 }
 #if 0
 static INLINE uint16_t clip_pixel_highbd(int val, int bd) {
@@ -67,7 +63,7 @@ static INLINE uint16_t clip_pixel_highbd(int val, int bd) {
 }
 #endif
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VPX_DSP_VPX_DSP_COMMON_H_
+#endif // VPX_VPX_DSP_VPX_DSP_COMMON_H_

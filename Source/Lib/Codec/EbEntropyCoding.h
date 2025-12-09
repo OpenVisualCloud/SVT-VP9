@@ -25,8 +25,7 @@ extern "C" {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_reset_bitstream(
-    EbPtr bitstream_ptr);
+extern EbErrorType eb_vp9_reset_bitstream(EbPtr bitstream_ptr);
 
 #ifdef __cplusplus
 }

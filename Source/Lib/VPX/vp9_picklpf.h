@@ -24,11 +24,10 @@ void eb_vp9_pick_filter_level(
 #if 0
     const struct yv12_buffer_config *sd,
 #endif
-    struct VP9_COMP *cpi,
-    LPF_PICK_METHOD method);
+    struct VP9_COMP *cpi, LPF_PICK_METHOD method);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_PICKLPF_H_
+#endif // VPX_VP9_ENCODER_VP9_PICKLPF_H_

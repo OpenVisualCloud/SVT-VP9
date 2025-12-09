@@ -27,7 +27,7 @@ extern "C" {
 typedef int16_t InterpKernel[SUBPEL_TAPS];
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VPX_DSP_VPX_FILTER_H_
+#endif // VPX_VPX_DSP_VPX_FILTER_H_

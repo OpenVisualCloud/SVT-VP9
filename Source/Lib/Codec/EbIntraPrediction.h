@@ -20,17 +20,9 @@
 extern "C" {
 #endif
 
-extern void intra_prediction(
-    struct EncDecContext *context_ptr,
-    EbByte                pred_buffer,
-    uint16_t              pred_stride,
-    int                   plane);
+extern void intra_prediction(struct EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, int plane);
 
-extern void inter_prediction(
-    struct EncDecContext *context_ptr,
-    EbByte                pred_buffer,
-    uint16_t              pred_stride,
-    int                   plane);
+extern void inter_prediction(struct EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, int plane);
 
 #ifdef __cplusplus
 }

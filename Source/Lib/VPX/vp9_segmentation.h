@@ -23,10 +23,8 @@ void calc_segtree_probs(int *segcounts, vpx_prob *segment_tree_probs);
 void eb_vp9_enable_segmentation(struct segmentation *seg);
 void eb_vp9_disable_segmentation(struct segmentation *seg);
 
-void eb_vp9_disable_segfeature(struct segmentation *seg, int segment_id,
-                            SEG_LVL_FEATURES feature_id);
-void eb_vp9_clear_segdata(struct segmentation *seg, int segment_id,
-                       SEG_LVL_FEATURES feature_id);
+void eb_vp9_disable_segfeature(struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id);
+void eb_vp9_clear_segdata(struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id);
 
 // The values given for each segment can be either deltas (from the default
 // value chosen for the frame) or absolute values.
@@ -38,15 +36,14 @@ void eb_vp9_clear_segdata(struct segmentation *seg, int segment_id,
 //
 // abs_delta = SEGMENT_DELTADATA (deltas) abs_delta = SEGMENT_ABSDATA (use
 // the absolute values given).
-void eb_vp9_set_segment_data(struct segmentation *seg, signed char *feature_data,
-                          unsigned char abs_delta);
+void eb_vp9_set_segment_data(struct segmentation *seg, signed char *feature_data, unsigned char abs_delta);
 
 void vp9_choose_segmap_coding_method(VP9_COMMON *cm, MACROBLOCKD *xd);
 
 void eb_vp9_reset_segment_features(struct segmentation *seg);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_SEGMENTATION_H_
+#endif // VPX_VP9_ENCODER_VP9_SEGMENTATION_H_

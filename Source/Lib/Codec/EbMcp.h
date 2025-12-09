@@ -19,29 +19,15 @@
 extern "C" {
 #endif
 
-extern void eb_vp9_generate_padding(
-    EbByte   src_pic,
-    uint32_t src_stride,
-    uint32_t original_src_width,
-    uint32_t original_src_height,
-    uint32_t padding_width,
-    uint32_t padding_height);
+extern void eb_vp9_generate_padding(EbByte src_pic, uint32_t src_stride, uint32_t original_src_width,
+                                    uint32_t original_src_height, uint32_t padding_width, uint32_t padding_height);
 
-extern void eb_vp9_generate_padding_16bit(
-    EbByte   src_pic,
-    uint32_t src_stride,
-    uint32_t original_src_width,
-    uint32_t original_src_height,
-    uint32_t padding_width,
-    uint32_t padding_height);
+extern void eb_vp9_generate_padding_16bit(EbByte src_pic, uint32_t src_stride, uint32_t original_src_width,
+                                          uint32_t original_src_height, uint32_t padding_width,
+                                          uint32_t padding_height);
 
-extern void eb_vp9_pad_input_picture(
-    EbByte   src_pic,
-    uint32_t src_stride,
-    uint32_t original_src_width,
-    uint32_t original_src_height,
-    uint32_t pad_right,
-    uint32_t pad_bottom);
+extern void eb_vp9_pad_input_picture(EbByte src_pic, uint32_t src_stride, uint32_t original_src_width,
+                                     uint32_t original_src_height, uint32_t pad_right, uint32_t pad_bottom);
 
 #ifdef __cplusplus
 }

@@ -51,27 +51,27 @@
  */
 static LONG once_state;
 static void once(void (*func)(void)) {
-  /* Try to advance once_state from its initial value of 0 to 1.
+    /* Try to advance once_state from its initial value of 0 to 1.
    * Only one thread can succeed in doing so.
    */
-  if (InterlockedCompareExchange(&once_state, 1, 0) == 0) {
-    /* We're the winning thread, having set once_state to 1.
+    if (InterlockedCompareExchange(&once_state, 1, 0) == 0) {
+        /* We're the winning thread, having set once_state to 1.
      * Call our function. */
-    func();
-    /* Now advance once_state to 2, unblocking any other threads. */
-    InterlockedIncrement(&once_state);
-    return;
-  }
+        func();
+        /* Now advance once_state to 2, unblocking any other threads. */
+        InterlockedIncrement(&once_state);
+        return;
+    }
 
-  /* We weren't the winning thread, but we want to block on
+    /* We weren't the winning thread, but we want to block on
    * the state variable so we don't return before func()
    * has finished executing elsewhere.
    *
    * Try to advance once_state from 2 to 2, which is only possible
    * after the winning thead advances it from 1 to 2.
    */
-  while (InterlockedCompareExchange(&once_state, 2, 2) != 2) {
-    /* State isn't yet 2. Try again.
+    while (InterlockedCompareExchange(&once_state, 2, 2) != 2) {
+        /* State isn't yet 2. Try again.
      *
      * We are used for singleton initialization functions,
      * which should complete quickly. Contention will likewise
@@ -81,46 +81,47 @@ static void once(void (*func)(void)) {
      *
      * We can at least yield our timeslice.
      */
-    Sleep(0);
-  }
+        Sleep(0);
+    }
 
-  /* We've seen once_state advance to 2, so we know func()
+    /* We've seen once_state advance to 2, so we know func()
    * has been called. And we've left once_state as we found it,
    * so other threads will have the same experience.
    *
    * It's safe to return now.
    */
-  return;
+    return;
 }
 
 #elif CONFIG_MULTITHREAD && defined(__OS2__)
 #define INCL_DOS
 #include <os2.h>
 static void once(void (*func)(void)) {
-  static int done;
+    static int done;
 
-  /* If the initialization is complete, return early. */
-  if (done) return;
+    /* If the initialization is complete, return early. */
+    if (done)
+        return;
 
-  /* Causes all other threads in the process to block themselves
+    /* Causes all other threads in the process to block themselves
    * and give up their time slice.
    */
-  DosEnterCritSec();
+    DosEnterCritSec();
 
-  if (!done) {
-    func();
-    done = 1;
-  }
+    if (!done) {
+        func();
+        done = 1;
+    }
 
-  /* Restores normal thread dispatching for the current process. */
-  DosExitCritSec();
+    /* Restores normal thread dispatching for the current process. */
+    DosExitCritSec();
 }
 
 #elif CONFIG_MULTITHREAD && HAVE_PTHREAD_H
 #include <pthread.h>
 static void once(void (*func)(void)) {
-  static pthread_once_t lock = PTHREAD_ONCE_INIT;
-  pthread_once(&lock, func);
+    static pthread_once_t lock = PTHREAD_ONCE_INIT;
+    pthread_once(&lock, func);
 }
 
 #else
@@ -130,13 +131,13 @@ static void once(void (*func)(void)) {
  */
 
 static void once(void (*func)(void)) {
-  static int done;
+    static int done;
 
-  if (!done) {
-    func();
-    done = 1;
-  }
+    if (!done) {
+        func();
+        done = 1;
+    }
 }
 #endif
 
-#endif  // VPX_VPX_PORTS_VPX_ONCE_H_
+#endif // VPX_VPX_PORTS_VPX_ONCE_H_

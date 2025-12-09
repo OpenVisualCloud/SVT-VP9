@@ -75,7 +75,7 @@
 // HIGH_PRECISION is always chosen.
 #define HIGH_PRECISION_MV_QTHRESH 200
 
-#define FRAME_SIZE_FACTOR 128  // empirical params for context model threshold
+#define FRAME_SIZE_FACTOR 128 // empirical params for context model threshold
 #define FRAME_RATE_FACTOR 8
 
 #ifdef OUTPUT_YUV_DENOISED
@@ -1201,7 +1201,7 @@ static void configure_static_seg_features(VP9_COMP *cpi) {
     }
   }
 }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
 static void update_reference_segmentation_map(VP9_COMP *cpi) {
   VP9_COMMON *const cm = &cpi->common;
@@ -1483,69 +1483,76 @@ static void set_rc_buffer_sizes(RATE_CONTROL *rc,
 
 #if CONFIG_VP9_HIGHBITDEPTH
 #define HIGHBD_BFP(BT, SDF, SDAF, VF, SVF, SVAF, SDX4DF) \
-  cpi->fn_ptr[BT].sdf = SDF;                             \
-  cpi->fn_ptr[BT].sdaf = SDAF;                           \
-  cpi->fn_ptr[BT].vf = VF;                               \
-  cpi->fn_ptr[BT].svf = SVF;                             \
-  cpi->fn_ptr[BT].svaf = SVAF;                           \
-  cpi->fn_ptr[BT].sdx4df = SDX4DF;
+    cpi->fn_ptr[BT].sdf    = SDF;                        \
+    cpi->fn_ptr[BT].sdaf   = SDAF;                       \
+    cpi->fn_ptr[BT].vf     = VF;                         \
+    cpi->fn_ptr[BT].svf    = SVF;                        \
+    cpi->fn_ptr[BT].svaf   = SVAF;                       \
+    cpi->fn_ptr[BT].sdx4df = SDX4DF;
 
-#define MAKE_BFP_SAD_WRAPPER(fnname)                                           \
-  static unsigned int fnname##_bits8(const uint8_t *src_ptr,                   \
-                                     int source_stride,                        \
-                                     const uint8_t *ref_ptr, int ref_stride) { \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride);                \
-  }                                                                            \
-  static unsigned int fnname##_bits10(                                         \
-      const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr,       \
-      int ref_stride) {                                                        \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride) >> 2;           \
-  }                                                                            \
-  static unsigned int fnname##_bits12(                                         \
-      const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr,       \
-      int ref_stride) {                                                        \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride) >> 4;           \
-  }
+#define MAKE_BFP_SAD_WRAPPER(fnname)                                                         \
+    static unsigned int fnname##_bits8(                                                      \
+        const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride) { \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride);                          \
+    }                                                                                        \
+    static unsigned int fnname##_bits10(                                                     \
+        const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride) { \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride) >> 2;                     \
+    }                                                                                        \
+    static unsigned int fnname##_bits12(                                                     \
+        const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride) { \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride) >> 4;                     \
+    }
 
-#define MAKE_BFP_SADAVG_WRAPPER(fnname)                                        \
-  static unsigned int fnname##_bits8(                                          \
-      const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr,       \
-      int ref_stride, const uint8_t *second_pred) {                            \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred);   \
-  }                                                                            \
-  static unsigned int fnname##_bits10(                                         \
-      const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr,       \
-      int ref_stride, const uint8_t *second_pred) {                            \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred) >> \
-           2;                                                                  \
-  }                                                                            \
-  static unsigned int fnname##_bits12(                                         \
-      const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr,       \
-      int ref_stride, const uint8_t *second_pred) {                            \
-    return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred) >> \
-           4;                                                                  \
-  }
+#define MAKE_BFP_SADAVG_WRAPPER(fnname)                                               \
+    static unsigned int fnname##_bits8(const uint8_t *src_ptr,                        \
+                                       int            source_stride,                  \
+                                       const uint8_t *ref_ptr,                        \
+                                       int            ref_stride,                     \
+                                       const uint8_t *second_pred) {                  \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred);      \
+    }                                                                                 \
+    static unsigned int fnname##_bits10(const uint8_t *src_ptr,                       \
+                                        int            source_stride,                 \
+                                        const uint8_t *ref_ptr,                       \
+                                        int            ref_stride,                    \
+                                        const uint8_t *second_pred) {                 \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred) >> 2; \
+    }                                                                                 \
+    static unsigned int fnname##_bits12(const uint8_t *src_ptr,                       \
+                                        int            source_stride,                 \
+                                        const uint8_t *ref_ptr,                       \
+                                        int            ref_stride,                    \
+                                        const uint8_t *second_pred) {                 \
+        return fnname(src_ptr, source_stride, ref_ptr, ref_stride, second_pred) >> 4; \
+    }
 
-#define MAKE_BFP_SAD4D_WRAPPER(fnname)                                        \
-  static void fnname##_bits8(const uint8_t *src_ptr, int source_stride,       \
-                             const uint8_t *const ref_ptr[], int ref_stride,  \
-                             unsigned int *sad_array) {                       \
-    fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array);           \
-  }                                                                           \
-  static void fnname##_bits10(const uint8_t *src_ptr, int source_stride,      \
-                              const uint8_t *const ref_ptr[], int ref_stride, \
-                              unsigned int *sad_array) {                      \
-    int i;                                                                    \
-    fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array);           \
-    for (i = 0; i < 4; i++) sad_array[i] >>= 2;                               \
-  }                                                                           \
-  static void fnname##_bits12(const uint8_t *src_ptr, int source_stride,      \
-                              const uint8_t *const ref_ptr[], int ref_stride, \
-                              unsigned int *sad_array) {                      \
-    int i;                                                                    \
-    fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array);           \
-    for (i = 0; i < 4; i++) sad_array[i] >>= 4;                               \
-  }
+#define MAKE_BFP_SAD4D_WRAPPER(fnname)                                  \
+    static void fnname##_bits8(const uint8_t       *src_ptr,            \
+                               int                  source_stride,      \
+                               const uint8_t *const ref_ptr[],          \
+                               int                  ref_stride,         \
+                               unsigned int        *sad_array) {               \
+        fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array); \
+    }                                                                   \
+    static void fnname##_bits10(const uint8_t       *src_ptr,           \
+                                int                  source_stride,     \
+                                const uint8_t *const ref_ptr[],         \
+                                int                  ref_stride,        \
+                                unsigned int        *sad_array) {              \
+        int i;                                                          \
+        fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array); \
+        for (i = 0; i < 4; i++) sad_array[i] >>= 2;                     \
+    }                                                                   \
+    static void fnname##_bits12(const uint8_t       *src_ptr,           \
+                                int                  source_stride,     \
+                                const uint8_t *const ref_ptr[],         \
+                                int                  ref_stride,        \
+                                unsigned int        *sad_array) {              \
+        int i;                                                          \
+        fnname(src_ptr, source_stride, ref_ptr, ref_stride, sad_array); \
+        for (i = 0; i < 4; i++) sad_array[i] >>= 4;                     \
+    }
 
 MAKE_BFP_SAD_WRAPPER(vpx_highbd_sad32x16)
 MAKE_BFP_SADAVG_WRAPPER(vpx_highbd_sad32x16_avg)
@@ -1830,7 +1837,7 @@ static void highbd_set_var_fns(VP9_COMP *const cpi) {
     }
   }
 }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 static void realloc_segmentation_maps(VP9_COMP *cpi) {
   VP9_COMMON *const cm = &cpi->common;
@@ -1909,7 +1916,7 @@ void vp9_change_config(struct VP9_COMP *cpi, const VP9EncoderConfig *oxcf) {
   cpi->oxcf = *oxcf;
 #if CONFIG_VP9_HIGHBITDEPTH
   cpi->td.mb.e_mbd.bd = (int)cm->bit_depth;
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
   if ((oxcf->pass == 0) && (oxcf->rc_mode == VPX_Q)) {
     rc->baseline_gf_interval = FIXED_GF_INTERVAL;
@@ -2064,46 +2071,46 @@ void vp9_change_config(struct VP9_COMP *cpi, const VP9EncoderConfig *oxcf) {
  ***********************************************************************/
 
 void cal_nmvjointsadcost(int *mvjointsadcost) {
-  /*********************************************************************
+    /*********************************************************************
    * Warning: Read the comments above before modifying this function   *
    *********************************************************************/
-  mvjointsadcost[0] = 600;
-  mvjointsadcost[1] = 300;
-  mvjointsadcost[2] = 300;
-  mvjointsadcost[3] = 300;
+    mvjointsadcost[0] = 600;
+    mvjointsadcost[1] = 300;
+    mvjointsadcost[2] = 300;
+    mvjointsadcost[3] = 300;
 }
 
 void cal_nmvsadcosts(int *mvsadcost[2]) {
-  /*********************************************************************
+    /*********************************************************************
    * Warning: Read the comments above before modifying this function   *
    *********************************************************************/
-  int i = 1;
+    int i = 1;
 
-  mvsadcost[0][0] = 0;
-  mvsadcost[1][0] = 0;
+    mvsadcost[0][0] = 0;
+    mvsadcost[1][0] = 0;
 
-  do {
-    double z = 256 * (2 * (log2f(8 * i) + .6));
-    mvsadcost[0][i] = (int)z;
-    mvsadcost[1][i] = (int)z;
-    mvsadcost[0][-i] = (int)z;
-    mvsadcost[1][-i] = (int)z;
-  } while (++i <= MV_MAX);
+    do {
+        double z         = 256 * (2 * (log2f(8 * i) + .6));
+        mvsadcost[0][i]  = (int)z;
+        mvsadcost[1][i]  = (int)z;
+        mvsadcost[0][-i] = (int)z;
+        mvsadcost[1][-i] = (int)z;
+    } while (++i <= MV_MAX);
 }
 
 void cal_nmvsadcosts_hp(int *mvsadcost[2]) {
-  int i = 1;
+    int i = 1;
 
-  mvsadcost[0][0] = 0;
-  mvsadcost[1][0] = 0;
+    mvsadcost[0][0] = 0;
+    mvsadcost[1][0] = 0;
 
-  do {
-    double z = 256 * (2 * (log2f(8 * i) + .6));
-    mvsadcost[0][i] = (int)z;
-    mvsadcost[1][i] = (int)z;
-    mvsadcost[0][-i] = (int)z;
-    mvsadcost[1][-i] = (int)z;
-  } while (++i <= MV_MAX);
+    do {
+        double z         = 256 * (2 * (log2f(8 * i) + .6));
+        mvsadcost[0][i]  = (int)z;
+        mvsadcost[1][i]  = (int)z;
+        mvsadcost[0][-i] = (int)z;
+        mvsadcost[1][-i] = (int)z;
+    } while (++i <= MV_MAX);
 }
 #if 0
 VP9_COMP *vp9_create_compressor(VP9EncoderConfig *oxcf,
@@ -2354,7 +2361,7 @@ VP9_COMP *vp9_create_compressor(VP9EncoderConfig *oxcf,
       vp9_init_second_pass(cpi);
     }
   }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
   vp9_set_speed_features_framesize_independent(cpi);
   vp9_set_speed_features_framesize_dependent(cpi);
@@ -2382,12 +2389,12 @@ VP9_COMP *vp9_create_compressor(VP9EncoderConfig *oxcf,
   cpi->frames_till_next_var_check = 0;
 
 #define BFP(BT, SDF, SDAF, VF, SVF, SVAF, SDX4DF) \
-  cpi->fn_ptr[BT].sdf = SDF;                      \
-  cpi->fn_ptr[BT].sdaf = SDAF;                    \
-  cpi->fn_ptr[BT].vf = VF;                        \
-  cpi->fn_ptr[BT].svf = SVF;                      \
-  cpi->fn_ptr[BT].svaf = SVAF;                    \
-  cpi->fn_ptr[BT].sdx4df = SDX4DF;
+    cpi->fn_ptr[BT].sdf    = SDF;                 \
+    cpi->fn_ptr[BT].sdaf   = SDAF;                \
+    cpi->fn_ptr[BT].vf     = VF;                  \
+    cpi->fn_ptr[BT].svf    = SVF;                 \
+    cpi->fn_ptr[BT].svaf   = SVAF;                \
+    cpi->fn_ptr[BT].sdx4df = SDX4DF;
 
   BFP(BLOCK_32X16, vpx_sad32x16, vpx_sad32x16_avg, vpx_variance32x16,
       vpx_sub_pixel_variance32x16, vpx_sub_pixel_avg_variance32x16,
@@ -2458,9 +2465,8 @@ VP9_COMP *vp9_create_compressor(VP9EncoderConfig *oxcf,
 #if CONFIG_INTERNAL_STATS
 #define SNPRINT(H, T) snprintf((H) + strlen(H), sizeof(H) - strlen(H), (T))
 
-#define SNPRINT2(H, T, V) \
-  snprintf((H) + strlen(H), sizeof(H) - strlen(H), (T), (V))
-#endif  // CONFIG_INTERNAL_STATS
+#define SNPRINT2(H, T, V) snprintf((H) + strlen(H), sizeof(H) - strlen(H), (T), (V))
+#endif // CONFIG_INTERNAL_STATS
 
 void vp9_remove_compressor(VP9_COMP *cpi) {
   VP9_COMMON *cm;
@@ -2759,7 +2765,7 @@ void vp9_write_yuv_rec_frame(VP9_COMMON *cm) {
     fflush(yuv_rec_file);
     return;
   }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
   do {
     fwrite(src, s->y_width, 1, yuv_rec_file);
@@ -2793,7 +2799,7 @@ static void scale_and_extend_frame_nonnormative(const YV12_BUFFER_CONFIG *src,
 #else
 static void scale_and_extend_frame_nonnormative(const YV12_BUFFER_CONFIG *src,
                                                 YV12_BUFFER_CONFIG *dst) {
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
   // TODO(dkovalev): replace YV12_BUFFER_CONFIG with vpx_image_t
   int i;
   const uint8_t *const srcs[3] = { src->y_buffer, src->u_buffer,
@@ -2823,7 +2829,7 @@ static void scale_and_extend_frame_nonnormative(const YV12_BUFFER_CONFIG *src,
 #else
     vp9_resize_plane(srcs[i], src_heights[i], src_widths[i], src_strides[i],
                      dsts[i], dst_heights[i], dst_widths[i], dst_strides[i]);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
   }
   vpx_extend_frame_borders(dst);
 }
@@ -2875,7 +2881,7 @@ static void scale_and_extend_frame(const YV12_BUFFER_CONFIG *src,
 
   vpx_extend_frame_borders(dst);
 }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 static int scale_down(VP9_COMP *cpi, int q) {
   RATE_CONTROL *const rc = &cpi->rc;
@@ -3205,7 +3211,7 @@ void vp9_scale_references(VP9_COMP *cpi) {
           cpi->scaled_ref_idx[ref_frame - 1] = new_fb;
           alloc_frame_mvs(cm, new_fb);
         }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
       } else {
         int buf_idx;
         RefCntBuffer *buf = NULL;
@@ -3305,7 +3311,7 @@ static void output_frame_level_debug_stats(VP9_COMP *cpi) {
   }
 #else
   recon_err = eb_vp9_get_y_sse(cpi->Source, get_frame_new_buffer(cm));
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
   if (cpi->twopass.total_left_stats.coded_error != 0.0) {
     double dc_quant_devisor;
@@ -3462,7 +3468,7 @@ static void set_size_dependent_vars(VP9_COMP *cpi, int *q, int *bottom_index,
   // lagged coding, and if the relevant speed feature flag is set.
   if (cpi->oxcf.pass == 2 && cpi->sf.static_segmentation)
     configure_static_seg_features(cpi);
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
 #if CONFIG_VP9_POSTPROC && !(CONFIG_VP9_TEMPORAL_DENOISING)
   if (cpi->oxcf.noise_sensitivity > 0) {
@@ -3482,7 +3488,7 @@ static void set_size_dependent_vars(VP9_COMP *cpi, int *q, int *bottom_index,
     }
     vp9_denoise(cpi->Source, cpi->Source, l, cpi->common.postproc_state.limits);
   }
-#endif  // CONFIG_VP9_POSTPROC
+#endif // CONFIG_VP9_POSTPROC
 }
 
 #if CONFIG_VP9_TEMPORAL_DENOISING
@@ -3530,7 +3536,7 @@ static void set_frame_size(VP9_COMP *cpi) {
     vp9_set_size_literal(cpi, oxcf->scaled_frame_width,
                          oxcf->scaled_frame_height);
   }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
   if (oxcf->pass == 0 && oxcf->rc_mode == VPX_CBR && !cpi->use_svc &&
       oxcf->resize_mode == RESIZE_DYNAMIC && cpi->resize_pending != 0) {
@@ -3595,7 +3601,7 @@ static void set_frame_size(VP9_COMP *cpi) {
       eb_vp9_setup_scale_factors_for_frame(&ref_buf->sf, buf->y_crop_width,
                                         buf->y_crop_height, cm->width,
                                         cm->height);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
       if (vp9_is_scaled(&ref_buf->sf)) vpx_extend_frame_borders(buf);
     } else {
       ref_buf->buf = NULL;
@@ -4086,7 +4092,7 @@ static void encode_with_recode_loop(VP9_COMP *cpi, size_t *size,
         }
 #else
         kf_err = eb_vp9_get_y_sse(cpi->Source, get_frame_new_buffer(cm));
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
         // Prevent possible divide by zero error below for perfect KF
         kf_err += !kf_err;
@@ -4340,7 +4346,7 @@ YV12_BUFFER_CONFIG *vp9_svc_twostage_scale(
     eb_vp9_scale_and_extend_frame(unscaled, scaled_temp, filter_type2,
                                phase_scaler2);
     eb_vp9_scale_and_extend_frame(scaled_temp, scaled, filter_type, phase_scaler);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
     return scaled;
   } else {
     return unscaled;
@@ -4368,7 +4374,7 @@ YV12_BUFFER_CONFIG *vp9_scale_if_required(
       eb_vp9_scale_and_extend_frame(unscaled, scaled, filter_type, phase_scaler);
     else
       scale_and_extend_frame_nonnormative(unscaled, scaled);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
     return scaled;
   } else {
     return unscaled;
@@ -4520,7 +4526,7 @@ static void highbd_spatial_denoise_point(uint16_t *src_ptr, const int stride,
   // Update the source value with the new filtered value
   *src_ptr = (uint16_t)((sum_val + (sum_weight >> 1)) / sum_weight);
 }
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 // Apply thresholded spatial noise supression to a given buffer.
 static void spatial_denoise_buffer(VP9_COMP *cpi, uint8_t *buffer,
@@ -4541,7 +4547,7 @@ static void spatial_denoise_buffer(VP9_COMP *cpi, uint8_t *buffer,
         spatial_denoise_point(&src_ptr[col], stride, strength);
 #else
       spatial_denoise_point(&src_ptr[col], stride, strength);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
     }
     src_ptr += stride;
   }
@@ -4571,7 +4577,7 @@ static void spatial_denoise_frame(VP9_COMP *cpi) {
   spatial_denoise_buffer(cpi, src->v_buffer, src->uv_stride, src->uv_width,
                          src->uv_height, strength << 1);
 }
-#endif  // ENABLE_KF_DENOISE
+#endif // ENABLE_KF_DENOISE
 
 static void vp9_try_disable_lookahead_aq(VP9_COMP *cpi, size_t *size,
                                          uint8_t *dest) {
@@ -4758,7 +4764,7 @@ static void encode_frame_to_data_rate(VP9_COMP *cpi, size_t *size,
     }
 #else
     cpi->ambient_err = eb_vp9_get_y_sse(cpi->Source, get_frame_new_buffer(cm));
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
   }
 
   // If the encoder forced a KEY_FRAME decision
@@ -4896,7 +4902,7 @@ static void Pass2Encode(VP9_COMP *cpi, size_t *size, uint8_t *dest,
 
   vp9_twopass_postencode_update(cpi);
 }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
 static void init_ref_frame_bufs(VP9_COMMON *cm) {
   int i;
@@ -4955,7 +4961,7 @@ int vp9_receive_raw_frame(VP9_COMP *cpi, vpx_enc_frame_flags_t frame_flags,
   check_initial_width(cpi, use_highbitdepth, subsampling_x, subsampling_y);
 #else
   check_initial_width(cpi, subsampling_x, subsampling_y);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 #if CONFIG_VP9_HIGHBITDEPTH
   // Disable denoiser for high bit_depth since vp9_denoiser_filter only works for
@@ -4971,7 +4977,7 @@ int vp9_receive_raw_frame(VP9_COMP *cpi, vpx_enc_frame_flags_t frame_flags,
   if (vp9_lookahead_push(cpi->lookahead, sd, time_stamp, end_time,
 #if CONFIG_VP9_HIGHBITDEPTH
                          use_highbitdepth,
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
                          frame_flags))
     res = -1;
   vpx_usec_timer_mark(&timer);
@@ -5095,7 +5101,7 @@ static void adjust_image_stat(double y, double u, double v, double all,
   s->stat[ALL] += all;
   s->worst = VPXMIN(s->worst, all);
 }
-#endif  // CONFIG_INTERNAL_STATS
+#endif // CONFIG_INTERNAL_STATS
 
 // Adjust the maximum allowable frame size for the target level.
 static void level_rc_framerate(VP9_COMP *cpi, int arf_src_index) {
@@ -5898,7 +5904,7 @@ void mc_flow_dispenser(VP9_COMP *cpi, GF_PICTURE *gf_picture, int frame_idx,
   eb_vp9_setup_scale_factors_for_frame(
       &sf, this_frame->y_crop_width, this_frame->y_crop_height,
       this_frame->y_crop_width, this_frame->y_crop_height);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
   // Prepare reference frame pointers. If any reference frame slot is
   // unavailable, the pointer will be set to Null.
@@ -6012,8 +6018,8 @@ static void dump_tpl_stats(const VP9_COMP *cpi, int tpl_group_frames,
     }
   }
 }
-#endif  // DUMP_TPL_STATS
-#endif  // CONFIG_NON_GREEDY_MV
+#endif // DUMP_TPL_STATS
+#endif // CONFIG_NON_GREEDY_MV
 
 static void setup_tpl_stats(VP9_COMP *cpi) {
   GF_PICTURE gf_picture[MAX_LAG_BUFFERS];
@@ -6033,8 +6039,8 @@ static void setup_tpl_stats(VP9_COMP *cpi) {
 #if CONFIG_NON_GREEDY_MV
 #if DUMP_TPL_STATS
   dump_tpl_stats(cpi, tpl_group_frames, gf_picture, bsize);
-#endif  // DUMP_TPL_STATS
-#endif  // CONFIG_NON_GREEDY_MV
+#endif // DUMP_TPL_STATS
+#endif // CONFIG_NON_GREEDY_MV
 }
 
 int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
@@ -6189,7 +6195,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
       vp9_end_first_pass(cpi); /* get last stats packet */
       cpi->twopass.first_pass_done = 1;
     }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
     return -1;
   }
 
@@ -6237,7 +6243,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
   } else if (oxcf->pass == 1) {
     set_frame_size(cpi);
   }
-#endif  // !CONFIG_REALTIME_ONLY
+#endif // !CONFIG_REALTIME_ONLY
 
   if (oxcf->pass != 1 && cpi->level_constraint.level_index >= 0 &&
       cpi->level_constraint.fail_flag == 0)
@@ -6260,7 +6266,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
     // One pass encode
     Pass0Encode(cpi, size, dest, frame_flags);
   }
-#else  // !CONFIG_REALTIME_ONLY
+#else // !CONFIG_REALTIME_ONLY
   if (oxcf->pass == 1 && !cpi->use_svc) {
     const int lossless = is_lossless_requested(oxcf);
 #if CONFIG_VP9_HIGHBITDEPTH
@@ -6273,7 +6279,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
         lossless ? vp9_highbd_iwht4x4_add : vp9_highbd_idct4x4_add;
 #else
     cpi->td.mb.fwd_txfm4x4 = lossless ? eb_vp9_fwht4x4 : eb_vpx_fdct4x4;
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
     cpi->td.mb.inv_txfm_add = lossless ? eb_vp9_iwht4x4_add : eb_vp9_idct4x4_add;
     vp9_first_pass(cpi, source);
   } else if (oxcf->pass == 2 && !cpi->use_svc) {
@@ -6284,7 +6290,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
     // One pass encode
     Pass0Encode(cpi, size, dest, frame_flags);
   }
-#endif  // CONFIG_REALTIME_ONLY
+#endif // CONFIG_REALTIME_ONLY
 
   if (cm->show_frame) cm->cur_show_frame_fb_idx = cm->new_fb_idx;
 
@@ -6343,7 +6349,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
                              in_bit_depth);
 #else
         eb_vp9_calc_psnr(orig, recon, &psnr);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
         adjust_image_stat(psnr.psnr[1], psnr.psnr[2], psnr.psnr[3],
                           psnr.psnr[0], &cpi->psnr);
@@ -6381,7 +6387,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
                                cpi->oxcf.input_bit_depth);
 #else
           eb_vp9_calc_psnr(orig, pp, &psnr2);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
           cpi->totalp_sq_error += psnr2.sse[0];
           cpi->totalp_samples += psnr2.samples[0];
@@ -6397,7 +6403,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
           }
 #else
           frame_ssim2 = vpx_calc_ssim(orig, recon, &weight);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
           cpi->worst_ssim = VPXMIN(cpi->worst_ssim, frame_ssim2);
           cpi->summed_quality += frame_ssim2 * weight;
@@ -6412,7 +6418,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
           }
 #else
           frame_ssim2 = vpx_calc_ssim(orig, pp, &weight);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
           cpi->summedp_quality += frame_ssim2 * weight;
           cpi->summedp_weights += weight;
@@ -6516,7 +6522,7 @@ int vp9_get_preview_raw_frame(VP9_COMP *cpi, YV12_BUFFER_CONFIG *dest,
     } else {
       ret = -1;
     }
-#endif  // !CONFIG_VP9_POSTPROC
+#endif // !CONFIG_VP9_POSTPROC
     vpx_clear_system_state();
     return ret;
   }
@@ -6552,7 +6558,7 @@ int vp9_set_size_literal(VP9_COMP *cpi, unsigned int width,
   check_initial_width(cpi, cm->use_highbitdepth, 1, 1);
 #else
   check_initial_width(cpi, 1, 1);
-#endif  // CONFIG_VP9_HIGHBITDEPTH
+#endif // CONFIG_VP9_HIGHBITDEPTH
 
 #if CONFIG_VP9_TEMPORAL_DENOISING
   setup_denoiser_buffer(cpi);

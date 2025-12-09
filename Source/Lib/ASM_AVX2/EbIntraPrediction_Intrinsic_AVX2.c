@@ -16,19 +16,17 @@ static void _mm_storeh_epi64(__m128i * p, __m128i x)
 }
 #endif
 
-static INLINE __m256i avg3_avx2(const __m256i a, const __m256i b,
-    const __m256i c)
-{
+static INLINE __m256i avg3_avx2(const __m256i a, const __m256i b, const __m256i c) {
     const __m256i c1 = _mm256_set1_epi8(1);
-    __m256i t0, t1;
-    t0               = _mm256_xor_si256(a, c);   // a ^ c
-    t0               = _mm256_and_si256(t0, c1); // (a ^ c) & 1
-    t1               = _mm256_avg_epu8(a, c);    // (a + c + 1) >> 1
+    __m256i       t0, t1;
+    t0 = _mm256_xor_si256(a, c); // a ^ c
+    t0 = _mm256_and_si256(t0, c1); // (a ^ c) & 1
+    t1 = _mm256_avg_epu8(a, c); // (a + c + 1) >> 1
     // ((a + c + 1) >> 1) - ((a ^ c) & 1)
-    t1               = _mm256_sub_epi8(t1, t0);
+    t1 = _mm256_sub_epi8(t1, t0);
     // (((a + c + 1) >> 1) - ((a ^ c) & 1) + b + 1) >> 1
     //               = (a + 2 * b + c + 2) >> 2
-    t1               = _mm256_avg_epu8(t1, b);
+    t1 = _mm256_avg_epu8(t1, b);
     return t1;
 }
 
@@ -40,41 +38,30 @@ static INLINE __m256i d117_avg3(const uint8_t *const ref) {
     return avg3_avx2(r0, r1, r2);
 }
 
-static INLINE void d117_avg3_last(
-    const uint8_t *const ref,
-    __m256i *const       b0h,
-    __m256i *const       b)
-{
+static INLINE void d117_avg3_last(const uint8_t *const ref, __m256i *const b0h, __m256i *const b) {
     const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
     const __m256i r2 = _mm256_loadu_si256((const __m256i *)(ref + 2));
-    *b0h = _mm256_avg_epu8(r0, r1);
-    *b = avg3_avx2(r0, r1, r2);
+    *b0h             = _mm256_avg_epu8(r0, r1);
+    *b               = avg3_avx2(r0, r1, r2);
 }
 
-void eb_vp9_d117_predictor_32x32_avx2(
-    uint8_t       *dst,
-    ptrdiff_t      stride,
-    const uint8_t *above,
-    const uint8_t *left)
-{
+void eb_vp9_d117_predictor_32x32_avx2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
     // ref[] has an extra element to facilitate optimization.
     EB_ALIGN(32) uint8_t ref[65 + 1];
-    EB_ALIGN(32) uint8_t border0[64];  // for even rows
-    EB_ALIGN(32) uint8_t border1[64];  // for odd rows
+    EB_ALIGN(32) uint8_t border0[64]; // for even rows
+    EB_ALIGN(32) uint8_t border1[64]; // for odd rows
 
     // reverse left
     // copy above
     const __m256i c_rev = _mm256_setr_epi8(
-        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-    const __m256i l = _mm256_loadu_si256((const __m256i *)left);
-    const __m256i l_r = _mm256_shuffle_epi8(l, c_rev);
+        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+    const __m256i l     = _mm256_loadu_si256((const __m256i *)left);
+    const __m256i l_r   = _mm256_shuffle_epi8(l, c_rev);
     const __m256i l_rev = _mm256_inserti128_si256(
-        _mm256_castsi128_si256(_mm256_extracti128_si256(l_r, 1)),
-        _mm256_extracti128_si256(l_r, 0), 1);
+        _mm256_castsi128_si256(_mm256_extracti128_si256(l_r, 1)), _mm256_extracti128_si256(l_r, 0), 1);
     const __m256i a = _mm256_loadu_si256((const __m256i *)(above - 1));
-    __m256i b[2];
+    __m256i       b[2];
 
     _mm256_store_si256((__m256i *)(ref + 0x00), l_rev);
     _mm256_store_si256((__m256i *)(ref + 0x20), a);
@@ -87,15 +74,17 @@ void eb_vp9_d117_predictor_32x32_avx2(
     d117_avg3_last(ref + 32, &b0h, &b[1]);
 
     // shuffle
-    const __m256i b0l = _mm256_shuffle_epi8(b[0],
-        _mm256_setr_epi8(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 6, 8, 10, 12, 14,
-            0, 2, 4, 6, 8, 10, 12, 14, 0, 0, 0, 0, 0, 0, 0, 0));
-    const __m256i b1l = _mm256_shuffle_epi8(b[0],
-        _mm256_setr_epi8(0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 5, 7, 9, 11, 13, 15,
-            1, 3, 5, 7, 9, 11, 13, 15, 0, 0, 0, 0, 0, 0, 0, 0));
-    _mm256_store_si256 ((__m256i *)(border0 + 0x00), b0l);
+    const __m256i b0l = _mm256_shuffle_epi8(
+        b[0],
+        _mm256_setr_epi8(
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 6, 8, 10, 12, 14, 0, 2, 4, 6, 8, 10, 12, 14, 0, 0, 0, 0, 0, 0, 0, 0));
+    const __m256i b1l = _mm256_shuffle_epi8(
+        b[0],
+        _mm256_setr_epi8(
+            0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 5, 7, 9, 11, 13, 15, 1, 3, 5, 7, 9, 11, 13, 15, 0, 0, 0, 0, 0, 0, 0, 0));
+    _mm256_store_si256((__m256i *)(border0 + 0x00), b0l);
     _mm256_storeu_si256((__m256i *)(border0 + 0x18), b0h);
-    _mm256_store_si256 ((__m256i *)(border1 + 0x00), b1l);
+    _mm256_store_si256((__m256i *)(border1 + 0x00), b1l);
     _mm256_storeu_si256((__m256i *)(border1 + 0x18), b[1]);
 
     // store
@@ -134,35 +123,28 @@ void eb_vp9_d117_predictor_32x32_avx2(
 }
 
 static INLINE __m256i d135_avg3(const uint8_t *const ref) {
-    const __m256i r0 = _mm256_load_si256 ((const __m256i *)(ref + 0));
+    const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
     const __m256i r2 = _mm256_loadu_si256((const __m256i *)(ref + 2));
     return avg3_avx2(r0, r1, r2);
 }
 
-void eb_vp9_d135_predictor_32x32_avx2(
-    uint8_t       *dst,
-    ptrdiff_t      stride,
-    const uint8_t *above,
-    const uint8_t *left)
-{
+void eb_vp9_d135_predictor_32x32_avx2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
     // ref[] has an extra element to facilitate optimization.
     EB_ALIGN(32) uint8_t ref[65 + 1];
     // border[] has an extra element to facilitate optimization.
-    EB_ALIGN(32) uint8_t border[64];  // outer border from bottom-left to top-right
+    EB_ALIGN(32) uint8_t border[64]; // outer border from bottom-left to top-right
 
     // reverse left
     // copy above
     const __m256i c_rev = _mm256_setr_epi8(
-        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-    const __m256i l = _mm256_loadu_si256((const __m256i *)left);
-    const __m256i l_r = _mm256_shuffle_epi8(l, c_rev);
+        15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+    const __m256i l     = _mm256_loadu_si256((const __m256i *)left);
+    const __m256i l_r   = _mm256_shuffle_epi8(l, c_rev);
     const __m256i l_rev = _mm256_inserti128_si256(
-        _mm256_castsi128_si256(_mm256_extracti128_si256(l_r, 1)),
-        _mm256_extracti128_si256(l_r, 0), 1);
+        _mm256_castsi128_si256(_mm256_extracti128_si256(l_r, 1)), _mm256_extracti128_si256(l_r, 0), 1);
     const __m256i a = _mm256_loadu_si256((const __m256i *)(above - 1));
-    __m256i b[2];
+    __m256i       b[2];
 
     _mm256_store_si256((__m256i *)(ref + 0x00), l_rev);
     _mm256_store_si256((__m256i *)(ref + 0x20), a);

@@ -19,10 +19,9 @@ extern "C" {
 /************************************************
  * Input Queue Entry
  ************************************************/
-struct ReferenceQueueEntry;   //    empty struct definition
+struct ReferenceQueueEntry; //    empty struct definition
 
-typedef struct InputQueueEntry
-{
+typedef struct InputQueueEntry {
     EbObjectWrapper *input_object_ptr;
     uint32_t         dependent_count;
     uint32_t         reference_entry_index;
@@ -34,9 +33,7 @@ typedef struct InputQueueEntry
 /************************************************
  * Reference Queue Entry
  ************************************************/
-typedef struct ReferenceQueueEntry
-{
-
+typedef struct ReferenceQueueEntry {
     uint64_t         picture_number;
     uint64_t         decode_order;
     EbObjectWrapper *reference_object_ptr;
@@ -55,8 +52,7 @@ typedef struct ReferenceQueueEntry
  * Rate Control Input Queue Entry
  ************************************************/
 
-typedef struct RcInputQueueEntry
-{
+typedef struct RcInputQueueEntry {
     uint64_t         picture_number;
     EbObjectWrapper *input_object_ptr;
     EB_BOOL          release_enabled;
@@ -67,19 +63,16 @@ typedef struct RcInputQueueEntry
 /************************************************
  * Rate Control FeedBack  Queue Entry
  ************************************************/
-typedef struct RcFeedbackQueueEntry
-{
+typedef struct RcFeedbackQueueEntry {
     uint64_t picture_number;
     EB_BOOL  release_enabled;
     uint32_t gop_index;
 
 } RcFeedbackQueueEntry;
 
-extern EbErrorType eb_vp9_input_queue_entry_ctor(
-    InputQueueEntry **entry_dbl_ptr);
+extern EbErrorType eb_vp9_input_queue_entry_ctor(InputQueueEntry **entry_dbl_ptr);
 
-extern EbErrorType eb_vp9_reference_queue_entry_ctor(
-    ReferenceQueueEntry **entry_dbl_ptr);
+extern EbErrorType eb_vp9_reference_queue_entry_ctor(ReferenceQueueEntry **entry_dbl_ptr);
 
 #ifdef __cplusplus
 }

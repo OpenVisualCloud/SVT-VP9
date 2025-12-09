@@ -17,32 +17,30 @@ extern "C" {
 /************************************************
  * Packetization Reorder Queue Entry
  ************************************************/
-typedef struct PacketizationReorderEntry
-{
-    uint64_t          picture_number;
-    EbObjectWrapper  *output_stream_wrapper_ptr;
+typedef struct PacketizationReorderEntry {
+    uint64_t         picture_number;
+    EbObjectWrapper *output_stream_wrapper_ptr;
 
-    uint64_t          start_time_seconds;
-    uint64_t          start_timeu_seconds;
+    uint64_t start_time_seconds;
+    uint64_t start_timeu_seconds;
 
-    FRAME_TYPE        frame_type;
-    uint8_t           intra_only;
-    uint64_t          poc;
-    uint64_t          total_num_bits;
+    FRAME_TYPE frame_type;
+    uint8_t    intra_only;
+    uint64_t   poc;
+    uint64_t   total_num_bits;
 
-    uint8_t           slice_type;
-    uint64_t          ref_poc_list0;
-    uint64_t          ref_poc_list1;
-    RpsNode           ref_signal;
-    EB_BOOL           show_frame;
-    int               show_existing_frame;
-    uint8_t           show_existing_frame_index_array[4];
-    uint64_t          actual_bits;
+    uint8_t  slice_type;
+    uint64_t ref_poc_list0;
+    uint64_t ref_poc_list1;
+    RpsNode  ref_signal;
+    EB_BOOL  show_frame;
+    int      show_existing_frame;
+    uint8_t  show_existing_frame_index_array[4];
+    uint64_t actual_bits;
 } PacketizationReorderEntry;
 
-extern EbErrorType eb_vp9_packetization_reorder_entry_ctor(
-    PacketizationReorderEntry **entry_dbl_ptr,
-    uint32_t                    picture_number);
+extern EbErrorType eb_vp9_packetization_reorder_entry_ctor(PacketizationReorderEntry **entry_dbl_ptr,
+                                                           uint32_t                    picture_number);
 
 #ifdef __cplusplus
 }

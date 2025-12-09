@@ -26,9 +26,7 @@ typedef struct RateControlResultsInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_rate_control_results_ctor(
-    EbPtr *object_dbl_ptr,
-    EbPtr  object_init_data_ptr);
+extern EbErrorType eb_vp9_rate_control_results_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #ifdef __cplusplus
 }

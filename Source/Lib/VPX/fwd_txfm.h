@@ -15,12 +15,12 @@
 #include "mem.h"
 
 static INLINE tran_high_t fdct_round_shift(tran_high_t input) {
-  tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
-  // TODO(debargha, peter.derivaz): Find new bounds for this assert
-  // and make the bounds consts.
-  // assert(INT16_MIN <= rv && rv <= INT16_MAX);
-  return rv;
+    tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
+    // TODO(debargha, peter.derivaz): Find new bounds for this assert
+    // and make the bounds consts.
+    // assert(INT16_MIN <= rv && rv <= INT16_MAX);
+    return rv;
 }
 
 void eb_vp9_fdct32(const tran_high_t *input, tran_high_t *output, int round);
-#endif  // VPX_VPX_DSP_FWD_TXFM_H_
+#endif // VPX_VPX_DSP_FWD_TXFM_H_

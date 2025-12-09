@@ -63,7 +63,7 @@ extern "C" {
  */
 #define VPX_CODEC_INTERNAL_ABI_VERSION (5) /**<\hideinitializer*/
 
-typedef struct vpx_codec_alg_priv vpx_codec_alg_priv_t;
+typedef struct vpx_codec_alg_priv        vpx_codec_alg_priv_t;
 typedef struct vpx_codec_priv_enc_mr_cfg vpx_codec_priv_enc_mr_cfg_t;
 #if 0
 /*!\brief init function pointer prototype
@@ -367,11 +367,11 @@ struct vpx_codec_priv_enc_mr_cfg {
 
 #undef VPX_CTRL_USE_TYPE
 #define VPX_CTRL_USE_TYPE(id, typ) \
-  static VPX_INLINE typ id##__value(va_list args) { return va_arg(args, typ); }
+    static VPX_INLINE typ id##__value(va_list args) { return va_arg(args, typ); }
 
 #undef VPX_CTRL_USE_TYPE_DEPRECATED
 #define VPX_CTRL_USE_TYPE_DEPRECATED(id, typ) \
-  static VPX_INLINE typ id##__value(va_list args) { return va_arg(args, typ); }
+    static VPX_INLINE typ id##__value(va_list args) { return va_arg(args, typ); }
 
 #define CAST(id, arg) id##__value(arg)
 
@@ -384,9 +384,9 @@ struct vpx_codec_priv_enc_mr_cfg {
  * the same name as the struct, less the _algo suffix. The CODEC_INTERFACE
  * macro is provided to define this getter function automatically.
  */
-#define CODEC_INTERFACE(id)                          \
-  vpx_codec_iface_t *id(void) { return &id##_algo; } \
-  vpx_codec_iface_t id##_algo
+#define CODEC_INTERFACE(id)                            \
+    vpx_codec_iface_t *id(void) { return &id##_algo; } \
+    vpx_codec_iface_t  id##_algo
 
 /* Internal Utility Functions
  *
@@ -399,18 +399,17 @@ struct vpx_codec_pkt_list {
   struct vpx_codec_cx_pkt pkts[1];
 };
 
-#define vpx_codec_pkt_list_decl(n)     \
-  union {                              \
-    struct vpx_codec_pkt_list head;    \
-    struct {                           \
-      struct vpx_codec_pkt_list head;  \
-      struct vpx_codec_cx_pkt pkts[n]; \
-    } alloc;                           \
-  }
+#define vpx_codec_pkt_list_decl(n)             \
+    union {                                    \
+        struct vpx_codec_pkt_list head;        \
+        struct {                               \
+            struct vpx_codec_pkt_list head;    \
+            struct vpx_codec_cx_pkt   pkts[n]; \
+        } alloc;                               \
+    }
 
 #define vpx_codec_pkt_list_init(m) \
-  (m)->alloc.head.cnt = 0,         \
-  (m)->alloc.head.max = sizeof((m)->alloc.pkts) / sizeof((m)->alloc.pkts[0])
+    (m)->alloc.head.cnt = 0, (m)->alloc.head.max = sizeof((m)->alloc.pkts) / sizeof((m)->alloc.pkts[0])
 
 int vpx_codec_pkt_list_add(struct vpx_codec_pkt_list *,
                            const struct vpx_codec_cx_pkt *);
@@ -443,7 +442,7 @@ void vpx_internal_error(struct vpx_internal_error_info *info,
                         ...) CLANG_ANALYZER_NORETURN;
 #endif
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VPX_INTERNAL_VPX_CODEC_INTERNAL_H_
+#endif // VPX_VPX_INTERNAL_VPX_CODEC_INTERNAL_H_

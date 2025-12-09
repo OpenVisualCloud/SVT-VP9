@@ -100,7 +100,7 @@ void vp9_setup_pc_tree(struct VP9Common *cm, struct ThreadData *td);
 void vp9_free_pc_tree(struct ThreadData *td);
 #endif
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_CONTEXT_TREE_H_
+#endif // VPX_VP9_ENCODER_VP9_CONTEXT_TREE_H_

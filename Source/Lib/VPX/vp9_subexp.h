@@ -21,22 +21,17 @@ extern "C" {
 
 struct VpxWriter;
 
-void eb_vp9_write_prob_diff_update(struct VpxWriter *w, vpx_prob newp,
-                                vpx_prob oldp);
+void eb_vp9_write_prob_diff_update(struct VpxWriter *w, vpx_prob newp, vpx_prob oldp);
 
-void eb_vp9_cond_prob_diff_update(struct VpxWriter *w, vpx_prob *oldp,
-                               const unsigned int ct[2]);
+void eb_vp9_cond_prob_diff_update(struct VpxWriter *w, vpx_prob *oldp, const unsigned int ct[2]);
 
-int eb_vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp,
-                                        vpx_prob *bestp, vpx_prob upd);
+int eb_vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp, vpx_prob *bestp, vpx_prob upd);
 
-int eb_vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
-                                              const vpx_prob oldp,
-                                              vpx_prob *bestp, vpx_prob upd,
-                                              int stepsize);
+int eb_vp9_prob_diff_update_savings_search_model(const unsigned int *ct, const vpx_prob oldp, vpx_prob *bestp,
+                                                 vpx_prob upd, int stepsize);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_SUBEXP_H_
+#endif // VPX_VP9_ENCODER_VP9_SUBEXP_H_

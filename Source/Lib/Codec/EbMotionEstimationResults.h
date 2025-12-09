@@ -14,8 +14,7 @@ extern "C" {
 /**************************************
  * Process Results
  **************************************/
-typedef struct MotionEstimationResults
-{
+typedef struct MotionEstimationResults {
     EbObjectWrapper *picture_control_set_wrapper_ptr;
     uint32_t         segment_index;
 } MotionEstimationResults;
@@ -27,9 +26,7 @@ typedef struct MotionEstimationResultsInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_motion_estimation_results_ctor(
-    EbPtr *object_dbl_ptr,
-    EbPtr  object_init_data_ptr);
+extern EbErrorType eb_vp9_motion_estimation_results_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #ifdef __cplusplus
 }

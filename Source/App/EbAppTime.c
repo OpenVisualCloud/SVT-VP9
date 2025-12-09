@@ -19,19 +19,17 @@
 #include "EbAppTime.h"
 
 void app_svt_vp9_sleep(const unsigned milliseconds) {
-    if (!milliseconds) return;
+    if (!milliseconds)
+        return;
 #ifdef _WIN32
     Sleep(milliseconds);
 #else
-    nanosleep(&(struct timespec){milliseconds / 1000,
-                                 (milliseconds % 1000) * 1000000},
-              NULL);
+    nanosleep(&(struct timespec){milliseconds / 1000, (milliseconds % 1000) * 1000000}, NULL);
 #endif
 }
 
-double app_svt_vp9_compute_overall_elapsed_time(
-    const uint64_t start_seconds, const uint64_t start_useconds,
-    const uint64_t finish_seconds, const uint64_t finish_useconds) {
+double app_svt_vp9_compute_overall_elapsed_time(const uint64_t start_seconds, const uint64_t start_useconds,
+                                                const uint64_t finish_seconds, const uint64_t finish_useconds) {
     const int64_t s_diff = (int64_t)finish_seconds - (int64_t)start_seconds,
                   u_diff = (int64_t)finish_useconds - (int64_t)start_useconds;
     return ((double)s_diff * 1000.0 + (double)u_diff / 1000.0 + 0.5) / 1000.0;
@@ -41,17 +39,17 @@ void app_svt_vp9_get_time(uint64_t *const seconds, uint64_t *const useconds) {
 #ifdef _WIN32
     struct _timeb curr_time;
     _ftime_s(&curr_time);
-    *seconds = curr_time.time;
+    *seconds  = curr_time.time;
     *useconds = curr_time.millitm;
 #elif defined(CLOCK_MONOTONIC)
     struct timespec curr_time;
     clock_gettime(CLOCK_MONOTONIC, &curr_time);
-    *seconds = (uint64_t)curr_time.tv_sec;
+    *seconds  = (uint64_t)curr_time.tv_sec;
     *useconds = (uint64_t)curr_time.tv_nsec / 1000UL;
 #else
     struct timeval curr_time;
     gettimeofday(&curr_time, NULL);
-    *seconds = curr_time.tv_sec;
+    *seconds  = curr_time.tv_sec;
     *useconds = curr_time.tv_usec;
 #endif
 }

@@ -11,19 +11,20 @@
 #include "./bitwriter.h"
 
 void eb_vp9_start_encode(VpxWriter *br, uint8_t *source) {
-  br->lowvalue = 0;
-  br->range = 255;
-  br->count = -24;
-  br->buffer = source;
-  br->pos = 0;
-  vpx_write_bit(br, 0);
+    br->lowvalue = 0;
+    br->range    = 255;
+    br->count    = -24;
+    br->buffer   = source;
+    br->pos      = 0;
+    vpx_write_bit(br, 0);
 }
 
 void eb_vp9_stop_encode(VpxWriter *br) {
-  int i;
+    int i;
 
-  for (i = 0; i < 32; i++) vpx_write_bit(br, 0);
+    for (i = 0; i < 32; i++) vpx_write_bit(br, 0);
 
-  // Ensure there's no ambigous collision with any index marker bytes
-  if ((br->buffer[br->pos - 1] & 0xe0) == 0xc0) br->buffer[br->pos++] = 0;
+    // Ensure there's no ambigous collision with any index marker bytes
+    if ((br->buffer[br->pos - 1] & 0xe0) == 0xc0)
+        br->buffer[br->pos++] = 0;
 }

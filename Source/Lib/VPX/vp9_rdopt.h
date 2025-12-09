@@ -27,10 +27,8 @@ struct RD_COST;
 
 #if INTER_INTRA_BIAS
 #define NEW_MV_DISCOUNT_FACTOR 8
-int discount_newmv_test(const VP9_COMP *cpi, int this_mode,
-    int_mv this_mv,
-    int_mv(*mode_mv)[MAX_REF_FRAMES],
-    int ref_frame);
+int discount_newmv_test(const VP9_COMP *cpi, int this_mode, int_mv this_mv, int_mv (*mode_mv)[MAX_REF_FRAMES],
+                        int ref_frame);
 #endif
 #if 0
 void vp9_rd_pick_intra_mode_sb(struct VP9_COMP *cpi, struct macroblock *x,
@@ -61,25 +59,21 @@ void vp9_rd_pick_inter_mode_sub8x8(struct VP9_COMP *cpi,
                                    int64_t best_rd_so_far);
 #endif
 
-extern void estimate_ref_frame_costs(const VP9_COMMON *cm,
-    const MACROBLOCKD *xd, int segment_id,
-    unsigned int *ref_costs_single,
-    unsigned int *ref_costs_comp,
-    vpx_prob *comp_mode_p);
+extern void estimate_ref_frame_costs(const VP9_COMMON *cm, const MACROBLOCKD *xd, int segment_id,
+                                     unsigned int *ref_costs_single, unsigned int *ref_costs_comp,
+                                     vpx_prob *comp_mode_p);
 
-int cost_mv_ref(const VP9_COMP *cpi, PREDICTION_MODE mode,
-    int mode_context);
+int cost_mv_ref(const VP9_COMP *cpi, PREDICTION_MODE mode, int mode_context);
 
 #if 0
 int rate_block(int plane, int block, TX_SIZE tx_size, int coeff_ctx,
     struct rdcost_block_args *args);
 #endif
 
-int cost_coeffs(MACROBLOCK *x, int plane, int block, TX_SIZE tx_size,
-    int pt, const int16_t *scan, const int16_t *nb,
-    int use_fast_coef_costing);
+int cost_coeffs(MACROBLOCK *x, int plane, int block, TX_SIZE tx_size, int pt, const int16_t *scan, const int16_t *nb,
+                int use_fast_coef_costing);
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_RDOPT_H_
+#endif // VPX_VP9_ENCODER_VP9_RDOPT_H_

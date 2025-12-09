@@ -12,8 +12,7 @@
 /**************************************
  * Process Results
  **************************************/
-typedef struct PictureDecisionResults
-{
+typedef struct PictureDecisionResults {
     EbObjectWrapper *picture_control_set_wrapper_ptr;
     uint32_t         segment_index;
 
@@ -26,8 +25,6 @@ typedef struct PictureDecisionResultInitData {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_picture_decision_result_ctor(
-    EbPtr *object_dbl_ptr,
-    EbPtr  object_init_data_ptr);
+extern EbErrorType eb_vp9_picture_decision_result_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #endif //EbPictureDecisionResults_h

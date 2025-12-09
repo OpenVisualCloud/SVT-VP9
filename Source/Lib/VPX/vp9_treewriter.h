@@ -19,35 +19,32 @@
 extern "C" {
 #endif
 
-void eb_vp9_tree_probs_from_distribution(vpx_tree tree,
-                                      unsigned int branch_ct[/* n - 1 */][2],
-                                      const unsigned int num_events[/* n */]);
+void eb_vp9_tree_probs_from_distribution(vpx_tree tree, unsigned int branch_ct[/* n - 1 */][2],
+                                         const unsigned int num_events[/* n */]);
 
 struct vp9_token {
-  int value;
-  int len;
+    int value;
+    int len;
 };
 
 void eb_vp9_tokens_from_tree(struct vp9_token *, const vpx_tree_index *);
 
-static INLINE void vp9_write_tree(VpxWriter *w, const vpx_tree_index *tree,
-                                  const vpx_prob *probs, int bits, int len,
+static INLINE void vp9_write_tree(VpxWriter *w, const vpx_tree_index *tree, const vpx_prob *probs, int bits, int len,
                                   vpx_tree_index i) {
-  do {
-    const int bit = (bits >> --len) & 1;
-    vpx_write(w, bit, probs[i >> 1]);
-    i = tree[i + bit];
-  } while (len);
+    do {
+        const int bit = (bits >> --len) & 1;
+        vpx_write(w, bit, probs[i >> 1]);
+        i = tree[i + bit];
+    } while (len);
 }
 
-static INLINE void vp9_write_token(VpxWriter *w, const vpx_tree_index *tree,
-                                   const vpx_prob *probs,
+static INLINE void vp9_write_token(VpxWriter *w, const vpx_tree_index *tree, const vpx_prob *probs,
                                    const struct vp9_token *token) {
-  vp9_write_tree(w, tree, probs, token->value, token->len, 0);
+    vp9_write_tree(w, tree, probs, token->value, token->len, 0);
 }
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // VPX_VP9_ENCODER_VP9_TREEWRITER_H_
+#endif // VPX_VP9_ENCODER_VP9_TREEWRITER_H_
