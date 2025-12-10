@@ -16,7 +16,7 @@
 //#include "vpx_config.h"
 #include "vpx_dsp_rtcd.h"
 
-static INLINE __m128i transpose_8bit_4x4(const __m128i *const in) {
+static inline __m128i transpose_8bit_4x4(const __m128i *const in) {
     // Unpack 16 bit elements. Goes from:
     // in[0]: 00 01 02 03
     // in[1]: 10 11 12 13
@@ -33,7 +33,7 @@ static INLINE __m128i transpose_8bit_4x4(const __m128i *const in) {
     return _mm_unpacklo_epi16(a0, a1);
 }
 
-static INLINE void transpose_8bit_8x8(const __m128i *const in, __m128i *const out) {
+static inline void transpose_8bit_8x8(const __m128i *const in, __m128i *const out) {
     // Unpack 8 bit elements. Goes from:
     // in[0]: 00 01 02 03 04 05 06 07
     // in[1]: 10 11 12 13 14 15 16 17
@@ -92,7 +92,7 @@ static INLINE void transpose_8bit_8x8(const __m128i *const in, __m128i *const ou
     out[7] = _mm_unpackhi_epi64(c3, c3);
 }
 
-static INLINE void transpose_16bit_4x4(const __m128i *const in, __m128i *const out) {
+static inline void transpose_16bit_4x4(const __m128i *const in, __m128i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[0]: 00 01 02 03  XX XX XX XX
     // in[1]: 10 11 12 13  XX XX XX XX
@@ -111,7 +111,7 @@ static INLINE void transpose_16bit_4x4(const __m128i *const in, __m128i *const o
     out[1] = _mm_unpackhi_epi32(a0, a1);
 }
 
-static INLINE void transpose_16bit_4x8(const __m128i *const in, __m128i *const out) {
+static inline void transpose_16bit_4x8(const __m128i *const in, __m128i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[0]: 00 01 02 03  XX XX XX XX
     // in[1]: 10 11 12 13  XX XX XX XX
@@ -152,7 +152,7 @@ static INLINE void transpose_16bit_4x8(const __m128i *const in, __m128i *const o
     out[3] = _mm_unpackhi_epi64(b2, b3);
 }
 
-static INLINE void transpose_16bit_8x8(const __m128i *const in, __m128i *const out) {
+static inline void transpose_16bit_8x8(const __m128i *const in, __m128i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[0]: 00 01 02 03  04 05 06 07
     // in[1]: 10 11 12 13  14 15 16 17
@@ -218,7 +218,7 @@ static INLINE void transpose_16bit_8x8(const __m128i *const in, __m128i *const o
 }
 
 // Transpose in-place
-static INLINE void transpose_16bit_16x16(__m128i *const left, __m128i *const right) {
+static inline void transpose_16bit_16x16(__m128i *const left, __m128i *const right) {
     __m128i tbuf[8];
     transpose_16bit_8x8(left, left);
     transpose_16bit_8x8(right, tbuf);
@@ -235,7 +235,7 @@ static INLINE void transpose_16bit_16x16(__m128i *const left, __m128i *const rig
     left[15] = tbuf[7];
 }
 
-static INLINE void transpose_32bit_4x4(const __m128i *const in, __m128i *const out) {
+static inline void transpose_32bit_4x4(const __m128i *const in, __m128i *const out) {
     // Unpack 32 bit elements. Goes from:
     // in[0]: 00 01 02 03
     // in[1]: 10 11 12 13
@@ -263,7 +263,7 @@ static INLINE void transpose_32bit_4x4(const __m128i *const in, __m128i *const o
     out[3] = _mm_unpackhi_epi64(a2, a3);
 }
 
-static INLINE void transpose_32bit_4x4x2(const __m128i *const in, __m128i *const out) {
+static inline void transpose_32bit_4x4x2(const __m128i *const in, __m128i *const out) {
     // Unpack 32 bit elements. Goes from:
     // in[0]: 00 01 02 03
     // in[1]: 10 11 12 13
@@ -310,7 +310,7 @@ static INLINE void transpose_32bit_4x4x2(const __m128i *const in, __m128i *const
     out[7] = _mm_unpackhi_epi64(a6, a7);
 }
 
-static INLINE void transpose_32bit_8x4(const __m128i *const in, __m128i *const out) {
+static inline void transpose_32bit_8x4(const __m128i *const in, __m128i *const out) {
     // Unpack 32 bit elements. Goes from:
     // in[0]: 00 01 02 03
     // in[1]: 04 05 06 07

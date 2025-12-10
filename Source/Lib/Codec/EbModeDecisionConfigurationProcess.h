@@ -69,9 +69,6 @@ typedef struct MdcpLocalCodingUnit {
     EB_BOOL  early_split_flag;
     EB_BOOL  slected_cu;
     EB_BOOL  stop_split;
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-    int                             partition_context;
-#endif
 
 } MdcpLocalCodingUnit;
 
@@ -113,10 +110,7 @@ typedef struct ModeDecisionConfigurationContext {
     vpx_prob               comp_mode_p;
     ModeDecisionCandidate *candidate_ptr;
     MACROBLOCKD           *e_mbd;
-#if SEG_SUPPORT
-    int qindex_delta[MAX_SEGMENTS];
-#endif
-    int rd_mult_sad;
+    int                    rd_mult_sad;
 
 } ModeDecisionConfigurationContext;
 

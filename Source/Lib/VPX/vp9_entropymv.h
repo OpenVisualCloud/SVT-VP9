@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_ENTROPYMV_H_
 #define VPX_VP9_COMMON_VP9_ENTROPYMV_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -29,7 +27,7 @@ void eb_vp9_init_mv_probs(struct VP9Common *cm);
 
 void eb_vp9_adapt_mv_probs(struct VP9Common *cm, int usehp);
 
-static INLINE int use_mv_hp(const MV *ref) {
+static inline int use_mv_hp(const MV *ref) {
     const int kMvRefThresh = 64; // threshold for use of high-precision 1/8 mv
     return abs(ref->row) < kMvRefThresh && abs(ref->col) < kMvRefThresh;
 }
@@ -45,9 +43,9 @@ typedef enum {
     MV_JOINT_HNZVNZ = 3, /* Both components nonzero */
 } MV_JOINT_TYPE;
 
-static INLINE int mv_joint_vertical(MV_JOINT_TYPE type) { return type == MV_JOINT_HZVNZ || type == MV_JOINT_HNZVNZ; }
+static inline int mv_joint_vertical(MV_JOINT_TYPE type) { return type == MV_JOINT_HZVNZ || type == MV_JOINT_HNZVNZ; }
 
-static INLINE int mv_joint_horizontal(MV_JOINT_TYPE type) { return type == MV_JOINT_HNZVZ || type == MV_JOINT_HNZVNZ; }
+static inline int mv_joint_horizontal(MV_JOINT_TYPE type) { return type == MV_JOINT_HNZVZ || type == MV_JOINT_HNZVNZ; }
 
 /* Symbols for coding magnitude class of nonzero components */
 #define MV_CLASSES 11
@@ -99,7 +97,7 @@ typedef struct {
     nmv_component comps[2];
 } nmv_context;
 
-static INLINE MV_JOINT_TYPE vp9_get_mv_joint(const MV *mv) {
+static inline MV_JOINT_TYPE vp9_get_mv_joint(const MV *mv) {
     if (mv->row == 0) {
         return mv->col == 0 ? MV_JOINT_ZERO : MV_JOINT_HNZVZ;
     } else {

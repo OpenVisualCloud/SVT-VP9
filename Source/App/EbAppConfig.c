@@ -791,8 +791,8 @@ int32_t compute_frames_to_be_encoded(EbConfig *config) {
     uint64_t file_size   = 0;
     int32_t  frame_count = 0;
     if (config->input_file) {
-        fseeko64(config->input_file, 0L, SEEK_END);
-        file_size = ftello64(config->input_file);
+        fseeko(config->input_file, 0L, SEEK_END);
+        file_size = ftello(config->input_file);
     }
 
     uint32_t frame_size = SIZE_OF_ONE_FRAME_IN_BYTES(

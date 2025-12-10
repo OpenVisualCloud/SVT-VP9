@@ -3762,20 +3762,14 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
 
 {
     EbErrorType return_error = EB_ErrorNone;
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
-    uint32_t search_region_index, zero_mv_sad, hme_mv_sad;
-#else
-    uint32_t search_region_index, zero_mv_sad, hme_mv_sad, hme_mvd_rate;
-#endif
-    uint64_t hme_mv_cost, zero_mv_cost, search_center_cost;
-    int16_t  origin_x      = (int16_t)sb_origin_x;
-    int16_t  origin_y      = (int16_t)sb_origin_y;
-    uint32_t subsample_sad = 1;
-#if HME_ENHANCED_CENTER_SEARCH
-    int16_t pad_width  = (int16_t)MAX_SB_SIZE - 1;
-    int16_t pad_height = (int16_t)MAX_SB_SIZE - 1;
-#endif
-    search_region_index = (int16_t)ref_pic_ptr->origin_x + origin_x +
+    uint32_t    search_region_index, zero_mv_sad, hme_mv_sad;
+    uint64_t    hme_mv_cost, zero_mv_cost, search_center_cost;
+    int16_t     origin_x      = (int16_t)sb_origin_x;
+    int16_t     origin_y      = (int16_t)sb_origin_y;
+    uint32_t    subsample_sad = 1;
+    int16_t     pad_width     = (int16_t)MAX_SB_SIZE - 1;
+    int16_t     pad_height    = (int16_t)MAX_SB_SIZE - 1;
+    search_region_index       = (int16_t)ref_pic_ptr->origin_x + origin_x +
         ((int16_t)ref_pic_ptr->origin_y + origin_y) * ref_pic_ptr->stride_y;
 
     zero_mv_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][sb_width >> 3](
@@ -3787,7 +3781,6 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
         sb_width);
 
     zero_mv_sad = zero_mv_sad << subsample_sad;
-#if HME_ENHANCED_CENTER_SEARCH
     // FIX
     // Correct the left edge of the Search Area if it is not on the reference Picture
     *x_search_center = ((origin_x + *x_search_center) < -pad_width) ? -pad_width - origin_x : *x_search_center;
@@ -3798,15 +3791,10 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
     // Correct the top edge of the Search Area if it is not on the reference Picture
     *y_search_center = ((origin_y + *y_search_center) < -pad_height) ? -pad_height - origin_y : *y_search_center;
     // Correct the bottom edge of the Search Area if its not on the reference Picture
-    *y_search_center = ((origin_y + *y_search_center) > (int16_t)ref_pic_ptr->height - 1)
-        ? *y_search_center - ((origin_y + *y_search_center) - ((int16_t)ref_pic_ptr->height - 1))
-        : *y_search_center;
-#endif
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
-    zero_mv_cost = zero_mv_sad;
-#else
-    zero_mv_cost = zero_mv_sad << COST_PRECISION;
-#endif
+    *y_search_center    = ((origin_y + *y_search_center) > (int16_t)ref_pic_ptr->height - 1)
+           ? *y_search_center - ((origin_y + *y_search_center) - ((int16_t)ref_pic_ptr->height - 1))
+           : *y_search_center;
+    zero_mv_cost        = zero_mv_sad;
     search_region_index = (int16_t)(ref_pic_ptr->origin_x + origin_x) + *x_search_center +
         ((int16_t)(ref_pic_ptr->origin_y + origin_y) + *y_search_center) * ref_pic_ptr->stride_y;
 
@@ -3820,15 +3808,7 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
 
     hme_mv_sad = hme_mv_sad << subsample_sad;
 
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
-    hme_mv_cost = hme_mv_sad;
-#else
-    hme_mvd_rate = 0;
-    MeGetMvdFractionBits(
-        ABS(*x_search_center << 2), ABS(*y_search_center << 2), context_ptr->mvdBitsArray, &hme_mvd_rate);
-
-    hme_mv_cost = (hme_mv_sad << COST_PRECISION) + (((context_ptr->lambda * hme_mvd_rate) + MD_OFFSET) >> MD_SHIFT);
-#endif
+    hme_mv_cost        = hme_mv_sad;
     search_center_cost = MIN(zero_mv_cost, hme_mv_cost);
 
     *x_search_center = (search_center_cost == zero_mv_cost) ? 0 : *x_search_center;
@@ -4293,12 +4273,8 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
         sb_height >> subsample_sad,
         sb_width);
 
-    zero_mv_sad = zero_mv_sad << subsample_sad;
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
+    zero_mv_sad           = zero_mv_sad << subsample_sad;
     uint64_t zero_mv_cost = zero_mv_sad;
-#else
-    uint64_t zero_mv_cost = zero_mv_sad << COST_PRECISION;
-#endif
     //A pos
     x_search_center = 0 - (context_ptr->hme_level0_total_search_area_width * sparce_scale);
     y_search_center = 0;
@@ -4325,15 +4301,8 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
         sb_height >> subsample_sad,
         sb_width);
 
-    mv_a_sad = mv_a_sad << subsample_sad;
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
+    mv_a_sad           = mv_a_sad << subsample_sad;
     uint64_t mv_a_cost = mv_a_sad;
-#else
-    uint32_t MvAdRate = 0;
-    MeGetMvdFractionBits(ABS(x_search_center << 2), ABS(y_search_center << 2), context_ptr->mvdBitsArray, &MvAdRate);
-
-    uint64_t mv_a_cost = (mv_a_sad << COST_PRECISION) + (MD_OFFSET >> MD_SHIFT);
-#endif
 
     //B pos
     x_search_center = (context_ptr->hme_level0_total_search_area_width * sparce_scale);
@@ -4365,14 +4334,7 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
 
     mv_b_sad = mv_b_sad << subsample_sad;
 
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
     uint64_t mv_b_cost = mv_b_sad;
-#else
-    uint32_t MvBdRate = 0;
-    MeGetMvdFractionBits(ABS(x_search_center << 2), ABS(y_search_center << 2), context_ptr->mvdBitsArray, &MvBdRate);
-
-    uint64_t mv_b_cost = (mv_b_sad << COST_PRECISION) + (MD_OFFSET >> MD_SHIFT);
-#endif
     //C pos
     x_search_center = 0;
     y_search_center = 0 - (context_ptr->hme_level0_total_search_area_height * sparce_scale);
@@ -4406,14 +4368,7 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
 
     mv_c_sad = mv_c_sad << subsample_sad;
 
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
     uint64_t mv_c_cost = mv_c_sad;
-#else
-    uint32_t MvCdRate = 0;
-    MeGetMvdFractionBits(ABS(x_search_center << 2), ABS(y_search_center << 2), context_ptr->mvdBitsArray, &MvCdRate);
-
-    uint64_t mv_c_cost = (mv_c_sad << COST_PRECISION) + (MD_OFFSET >> MD_SHIFT);
-#endif
     //D pos
     x_search_center = 0;
     y_search_center = (context_ptr->hme_level0_total_search_area_height * sparce_scale);
@@ -4438,15 +4393,8 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
         ref_pic_ptr->stride_y << subsample_sad,
         sb_height >> subsample_sad,
         sb_width);
-    mv_d_sad = mv_d_sad << subsample_sad;
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
+    mv_d_sad           = mv_d_sad << subsample_sad;
     uint64_t mv_d_cost = mv_d_sad;
-#else
-    uint32_t MvDdRate = 0;
-    MeGetMvdFractionBits(ABS(x_search_center << 2), ABS(y_search_center << 2), context_ptr->mvdBitsArray, &MvDdRate);
-
-    uint64_t mv_d_cost = (mv_d_sad << COST_PRECISION) + (MD_OFFSET >> MD_SHIFT);
-#endif
     if (list_index == 1) {
         x_search_center = list_index ? 0 - (_MVXT(context_ptr->p_sb_best_mv[0][0][0]) >> 2) : 0;
         y_search_center = list_index ? 0 - (_MVYT(context_ptr->p_sb_best_mv[0][0][0]) >> 2) : 0;
@@ -4477,15 +4425,7 @@ static void test_search_area_bounds(EbPictureBufferDesc *ref_pic_ptr, MeContext 
 
         direct_mv_sad = direct_mv_sad << subsample_sad;
 
-#if 1 // Amir-Hsan: to fix rate estimation or to use SAD only
         direct_mv_cost = direct_mv_sad;
-#else
-        uint32_t direcMvdRate = 0;
-        MeGetMvdFractionBits(
-            ABS(x_search_center << 2), ABS(y_search_center << 2), context_ptr->mvdBitsArray, &direcMvdRate);
-
-        direct_mv_cost = (direct_mv_sad << COST_PRECISION) + (MD_OFFSET >> MD_SHIFT);
-#endif
     }
 
     best_cost = MIN(zero_mv_cost, MIN(mv_a_cost, MIN(mv_b_cost, MIN(mv_c_cost, MIN(mv_d_cost, direct_mv_cost)))));
@@ -4645,7 +4585,6 @@ EbErrorType motion_estimate_sb(
             if (picture_control_set_ptr->temporal_layer_index > 0 || list_index == 0) {
                 // A - The MV center for Tier0 search could be either (0,0), or HME
                 // A - Set HME MV Center
-#if HME_ENHANCED_CENTER_SEARCH // TEST1
                 test_search_area_bounds(ref_pic_ptr,
                                         context_ptr,
                                         &x_search_center,
@@ -4656,10 +4595,6 @@ EbErrorType motion_estimate_sb(
                                         sb_width,
                                         sb_height);
 
-#else
-                x_search_center = 0;
-                y_search_center = 0;
-#endif
                 // B - NO HME in boundaries
                 // C - Skip HME
 
@@ -4668,7 +4603,6 @@ EbErrorType motion_estimate_sb(
 
                     while (search_region_number_in_height < context_ptr->number_hme_search_region_in_height) {
                         while (search_region_number_in_width < context_ptr->number_hme_search_region_in_width) {
-#if HME_ENHANCED_CENTER_SEARCH
                             x_hme_level0_search_center[search_region_number_in_width][search_region_number_in_height] =
                                 x_search_center >> 2;
                             y_hme_level0_search_center[search_region_number_in_width][search_region_number_in_height] =
@@ -4679,17 +4613,6 @@ EbErrorType motion_estimate_sb(
                             y_hme_level1_search_center[search_region_number_in_width][search_region_number_in_height] =
                                 y_search_center >> 1;
 
-#else
-                            x_hme_level0_search_center[search_region_number_in_width][search_region_number_in_height] =
-                                x_search_center;
-                            y_hme_level0_search_center[search_region_number_in_width][search_region_number_in_height] =
-                                y_search_center;
-
-                            x_hme_level1_search_center[search_region_number_in_width][search_region_number_in_height] =
-                                x_search_center;
-                            y_hme_level1_search_center[search_region_number_in_width][search_region_number_in_height] =
-                                y_search_center;
-#endif
                             x_hme_level2_search_center[search_region_number_in_width][search_region_number_in_height] =
                                 x_search_center;
                             y_hme_level2_search_center[search_region_number_in_width][search_region_number_in_height] =

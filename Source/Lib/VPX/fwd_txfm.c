@@ -369,7 +369,7 @@ void eb_vp9_fdct16x16_1_c(const int16_t *input, tran_low_t *output, int stride) 
     output[0] = (tran_low_t)(sum >> 1);
 }
 
-static INLINE tran_high_t dct_32_round(tran_high_t input) {
+static inline tran_high_t dct_32_round(tran_high_t input) {
     tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
     // TODO(debargha, peter.derivaz): Find new bounds for this assert,
     // and make the bounds consts.
@@ -377,7 +377,7 @@ static INLINE tran_high_t dct_32_round(tran_high_t input) {
     return rv;
 }
 
-static INLINE tran_high_t half_round_shift(tran_high_t input) {
+static inline tran_high_t half_round_shift(tran_high_t input) {
     tran_high_t rv = (input + 1 + (input < 0)) >> 2;
     return rv;
 }
@@ -1108,37 +1108,3 @@ void eb_vp9_fdct32x32_1_c(const int16_t *input, tran_low_t *output, int stride) 
 
     output[0] = (tran_low_t)(sum >> 3);
 }
-
-#if CONFIG_VP9_HIGHBITDEPTH
-void vpx_highbd_fdct4x4_c(const int16_t *input, tran_low_t *output, int stride) {
-    eb_vp9_fdct4x4_c(input, output, stride);
-}
-
-void vpx_highbd_fdct8x8_c(const int16_t *input, tran_low_t *final_output, int stride) {
-    eb_vp9_fdct8x8_c(input, final_output, stride);
-}
-
-void vpx_highbd_fdct8x8_1_c(const int16_t *input, tran_low_t *final_output, int stride) {
-    eb_vp9_fdct8x8_1_c(input, final_output, stride);
-}
-
-void vpx_highbd_fdct16x16_c(const int16_t *input, tran_low_t *output, int stride) {
-    eb_vp9_fdct16x16_c(input, output, stride);
-}
-
-void vpx_highbd_fdct16x16_1_c(const int16_t *input, tran_low_t *output, int stride) {
-    eb_vp9_fdct16x16_1_c(input, output, stride);
-}
-
-void vpx_highbd_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
-    eb_vp9_fdct32x32_c(input, out, stride);
-}
-
-void vpx_highbd_fdct32x32_rd_c(const int16_t *input, tran_low_t *out, int stride) {
-    eb_vp9_fdct32x32_rd_c(input, out, stride);
-}
-
-void vpx_highbd_fdct32x32_1_c(const int16_t *input, tran_low_t *out, int stride) {
-    eb_vp9_fdct32x32_1_c(input, out, stride);
-}
-#endif // CONFIG_VP9_HIGHBITDEPTH

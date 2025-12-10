@@ -8,8 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#define INLINE __inline
-
 #include <assert.h>
 #include <stdint.h>
 #include "vp9_entropy.h"
@@ -38,10 +36,6 @@ const vpx_prob eb_vp9_cat3_prob[] = {173, 148, 140};
 const vpx_prob eb_vp9_cat4_prob[] = {176, 155, 140, 135};
 const vpx_prob eb_vp9_cat5_prob[] = {180, 157, 141, 134, 130};
 const vpx_prob eb_vp9_cat6_prob[] = {254, 254, 254, 252, 249, 243, 230, 196, 177, 153, 140, 133, 130, 129};
-#if CONFIG_VP9_HIGHBITDEPTH
-const vpx_prob eb_vp9_cat6_prob_high12[] = {
-    255, 255, 255, 255, 254, 254, 254, 252, 249, 243, 230, 196, 177, 153, 140, 133, 130, 129};
-#endif
 
 /* clang-format off */
 const uint8_t eb_vp9_coefband_trans_8x8plus[1024] = {

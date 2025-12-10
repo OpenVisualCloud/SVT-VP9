@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_COMMON_DATA_H_
 #define VPX_VP9_COMMON_VP9_COMMON_DATA_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_enums.h"
 
@@ -36,9 +34,6 @@ extern const BLOCK_SIZE     eb_vp9_txsize_to_bsize[TX_SIZES];
 extern const TX_SIZE        eb_vp9_tx_mode_to_biggest_tx_size[TX_MODES];
 extern const BLOCK_SIZE     eb_vp9_ss_size_lookup[BLOCK_SIZES][2][2];
 extern const TX_SIZE        eb_vp9_uv_txsize_lookup[BLOCK_SIZES][TX_SIZES][2][2];
-#if CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH
-extern const uint8_t need_top_left[INTRA_MODES];
-#endif // CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH
 
 #ifdef __cplusplus
 } // extern "C"

@@ -17,7 +17,7 @@ extern "C" {
 
 #define pair_set_epi32(a, b) _mm_set_epi32((int)(b), (int)(a), (int)(b), (int)(a))
 
-static INLINE __m128i k_madd_epi32(__m128i a, __m128i b) {
+static inline __m128i k_madd_epi32(__m128i a, __m128i b) {
     __m128i buf0, buf1;
     buf0 = _mm_mul_epu32(a, b);
     a    = _mm_srli_epi64(a, 32);
@@ -26,13 +26,13 @@ static INLINE __m128i k_madd_epi32(__m128i a, __m128i b) {
     return _mm_add_epi64(buf0, buf1);
 }
 
-static INLINE __m128i k_packs_epi64(__m128i a, __m128i b) {
+static inline __m128i k_packs_epi64(__m128i a, __m128i b) {
     __m128i buf0 = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 2, 0));
     __m128i buf1 = _mm_shuffle_epi32(b, _MM_SHUFFLE(0, 0, 2, 0));
     return _mm_unpacklo_epi64(buf0, buf1);
 }
 
-static INLINE int check_epi16_overflow_x2(const __m128i *preg0, const __m128i *preg1) {
+static inline int check_epi16_overflow_x2(const __m128i *preg0, const __m128i *preg1) {
     const __m128i max_overflow = _mm_set1_epi16(0x7fff);
     const __m128i min_overflow = _mm_set1_epi16((short)0x8000);
     __m128i       cmp0 = _mm_or_si128(_mm_cmpeq_epi16(*preg0, max_overflow), _mm_cmpeq_epi16(*preg0, min_overflow));
@@ -41,7 +41,7 @@ static INLINE int check_epi16_overflow_x2(const __m128i *preg0, const __m128i *p
     return _mm_movemask_epi8(cmp0);
 }
 
-static INLINE int check_epi16_overflow_x4(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int check_epi16_overflow_x4(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                           const __m128i *preg3) {
     const __m128i max_overflow = _mm_set1_epi16(0x7fff);
     const __m128i min_overflow = _mm_set1_epi16((short)0x8000);
@@ -53,14 +53,14 @@ static INLINE int check_epi16_overflow_x4(const __m128i *preg0, const __m128i *p
     return _mm_movemask_epi8(cmp0);
 }
 
-static INLINE int check_epi16_overflow_x8(const __m128i *const preg) {
+static inline int check_epi16_overflow_x8(const __m128i *const preg) {
     int res0, res1;
     res0 = check_epi16_overflow_x4(&preg[0], &preg[1], &preg[2], &preg[3]);
     res1 = check_epi16_overflow_x4(&preg[4], &preg[5], &preg[6], &preg[7]);
     return res0 + res1;
 }
 
-static INLINE int check_epi16_overflow_x12(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int check_epi16_overflow_x12(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                            const __m128i *preg3, const __m128i *preg4, const __m128i *preg5,
                                            const __m128i *preg6, const __m128i *preg7, const __m128i *preg8,
                                            const __m128i *preg9, const __m128i *preg10, const __m128i *preg11) {
@@ -72,7 +72,7 @@ static INLINE int check_epi16_overflow_x12(const __m128i *preg0, const __m128i *
     return res0 + res1;
 }
 
-static INLINE int check_epi16_overflow_x16(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int check_epi16_overflow_x16(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                            const __m128i *preg3, const __m128i *preg4, const __m128i *preg5,
                                            const __m128i *preg6, const __m128i *preg7, const __m128i *preg8,
                                            const __m128i *preg9, const __m128i *preg10, const __m128i *preg11,
@@ -89,7 +89,7 @@ static INLINE int check_epi16_overflow_x16(const __m128i *preg0, const __m128i *
     return res0 + res1;
 }
 
-static INLINE int check_epi16_overflow_x32(
+static inline int check_epi16_overflow_x32(
     const __m128i *preg0, const __m128i *preg1, const __m128i *preg2, const __m128i *preg3, const __m128i *preg4,
     const __m128i *preg5, const __m128i *preg6, const __m128i *preg7, const __m128i *preg8, const __m128i *preg9,
     const __m128i *preg10, const __m128i *preg11, const __m128i *preg12, const __m128i *preg13, const __m128i *preg14,
@@ -120,7 +120,7 @@ static INLINE int check_epi16_overflow_x32(
     return res0 + res1;
 }
 
-static INLINE int k_check_epi32_overflow_4(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int k_check_epi32_overflow_4(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                            const __m128i *preg3, const __m128i *zero) {
     __m128i minus_one = _mm_set1_epi32(-1);
     // Check for overflows
@@ -143,7 +143,7 @@ static INLINE int k_check_epi32_overflow_4(const __m128i *preg0, const __m128i *
     return (overflow_01 + overflow_23);
 }
 
-static INLINE int k_check_epi32_overflow_8(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int k_check_epi32_overflow_8(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                            const __m128i *preg3, const __m128i *preg4, const __m128i *preg5,
                                            const __m128i *preg6, const __m128i *preg7, const __m128i *zero) {
     int overflow = k_check_epi32_overflow_4(preg0, preg1, preg2, preg3, zero);
@@ -153,7 +153,7 @@ static INLINE int k_check_epi32_overflow_8(const __m128i *preg0, const __m128i *
     return overflow;
 }
 
-static INLINE int k_check_epi32_overflow_16(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
+static inline int k_check_epi32_overflow_16(const __m128i *preg0, const __m128i *preg1, const __m128i *preg2,
                                             const __m128i *preg3, const __m128i *preg4, const __m128i *preg5,
                                             const __m128i *preg6, const __m128i *preg7, const __m128i *preg8,
                                             const __m128i *preg9, const __m128i *preg10, const __m128i *preg11,
@@ -172,7 +172,7 @@ static INLINE int k_check_epi32_overflow_16(const __m128i *preg0, const __m128i 
     return overflow;
 }
 
-static INLINE int k_check_epi32_overflow_32(
+static inline int k_check_epi32_overflow_32(
     const __m128i *preg0, const __m128i *preg1, const __m128i *preg2, const __m128i *preg3, const __m128i *preg4,
     const __m128i *preg5, const __m128i *preg6, const __m128i *preg7, const __m128i *preg8, const __m128i *preg9,
     const __m128i *preg10, const __m128i *preg11, const __m128i *preg12, const __m128i *preg13, const __m128i *preg14,
@@ -205,33 +205,15 @@ static INLINE int k_check_epi32_overflow_32(
     return overflow;
 }
 
-static INLINE void store_output(const __m128i output, tran_low_t *dst_ptr) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i zero      = _mm_setzero_si128();
-    const __m128i sign_bits = _mm_cmplt_epi16(output, zero);
-    __m128i       out0      = _mm_unpacklo_epi16(output, sign_bits);
-    __m128i       out1      = _mm_unpackhi_epi16(output, sign_bits);
-    _mm_store_si128((__m128i *)(dst_ptr), out0);
-    _mm_store_si128((__m128i *)(dst_ptr + 4), out1);
-#else
+static inline void store_output(const __m128i output, tran_low_t *dst_ptr) {
     _mm_store_si128((__m128i *)(dst_ptr), output);
-#endif // CONFIG_VP9_HIGHBITDEPTH
 }
 
-static INLINE void storeu_output(const __m128i output, tran_low_t *dst_ptr) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i zero      = _mm_setzero_si128();
-    const __m128i sign_bits = _mm_cmplt_epi16(output, zero);
-    __m128i       out0      = _mm_unpacklo_epi16(output, sign_bits);
-    __m128i       out1      = _mm_unpackhi_epi16(output, sign_bits);
-    _mm_storeu_si128((__m128i *)(dst_ptr), out0);
-    _mm_storeu_si128((__m128i *)(dst_ptr + 4), out1);
-#else
+static inline void storeu_output(const __m128i output, tran_low_t *dst_ptr) {
     _mm_storeu_si128((__m128i *)(dst_ptr), output);
-#endif // CONFIG_VP9_HIGHBITDEPTH
 }
 
-static INLINE __m128i mult_round_shift(const __m128i *pin0, const __m128i *pin1, const __m128i *pmultiplier,
+static inline __m128i mult_round_shift(const __m128i *pin0, const __m128i *pin1, const __m128i *pmultiplier,
                                        const __m128i *prounding, const int shift) {
     const __m128i u0 = _mm_madd_epi16(*pin0, *pmultiplier);
     const __m128i u1 = _mm_madd_epi16(*pin1, *pmultiplier);

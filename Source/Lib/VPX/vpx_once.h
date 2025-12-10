@@ -11,7 +11,6 @@
 #ifndef VPX_VPX_PORTS_VPX_ONCE_H_
 #define VPX_VPX_PORTS_VPX_ONCE_H_
 
-#define INLINE __inline
 #include <stdint.h>
 #include <stdio.h>
 

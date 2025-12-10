@@ -13,8 +13,6 @@
 
 #include <assert.h>
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "mem.h"
 #include "vpx_dsp_common.h"
@@ -47,7 +45,7 @@ typedef int8_t vpx_tree_index;
 
 typedef const vpx_tree_index vpx_tree[];
 
-static INLINE vpx_prob get_prob(unsigned int num, unsigned int den) {
+static inline vpx_prob get_prob(unsigned int num, unsigned int den) {
     assert(den != 0);
     {
         const int p = (int)(((uint64_t)num * 256 + (den >> 1)) / den);
@@ -57,7 +55,7 @@ static INLINE vpx_prob get_prob(unsigned int num, unsigned int den) {
     }
 }
 
-static INLINE vpx_prob get_binary_prob(unsigned int n0, unsigned int n1) {
+static inline vpx_prob get_binary_prob(unsigned int n0, unsigned int n1) {
     const unsigned int den = n0 + n1;
     if (den == 0)
         return 128u;
@@ -65,11 +63,11 @@ static INLINE vpx_prob get_binary_prob(unsigned int n0, unsigned int n1) {
 }
 
 /* This function assumes prob1 and prob2 are already within [1,255] range. */
-static INLINE vpx_prob weighted_prob(int prob1, int prob2, int factor) {
+static inline vpx_prob weighted_prob(int prob1, int prob2, int factor) {
     return (vpx_prob)(ROUND_POWER_OF_TWO(prob1 * (256 - factor) + prob2 * factor, 8));
 }
 
-static INLINE vpx_prob merge_probs(vpx_prob pre_prob, const unsigned int ct[2], unsigned int count_sat,
+static inline vpx_prob merge_probs(vpx_prob pre_prob, const unsigned int ct[2], unsigned int count_sat,
                                    unsigned int max_update_factor) {
     const vpx_prob     prob   = get_binary_prob(ct[0], ct[1]);
     const unsigned int count  = VPXMIN(ct[0] + ct[1], count_sat);
@@ -81,7 +79,7 @@ static INLINE vpx_prob merge_probs(vpx_prob pre_prob, const unsigned int ct[2], 
 static const int count_to_update_factor[MODE_MV_COUNT_SAT + 1] = {0,  6,  12, 19, 25, 32,  38,  44,  51,  57, 64,
                                                                   70, 76, 83, 89, 96, 102, 108, 115, 121, 128};
 
-static INLINE vpx_prob mode_mv_merge_probs(vpx_prob pre_prob, const unsigned int ct[2]) {
+static inline vpx_prob mode_mv_merge_probs(vpx_prob pre_prob, const unsigned int ct[2]) {
     const unsigned int den = ct[0] + ct[1];
     if (den == 0) {
         return pre_prob;

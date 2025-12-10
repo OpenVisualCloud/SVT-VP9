@@ -33,7 +33,7 @@ uint32_t eb_vp9_combined_averaging8x_msad_avx2_intrin(uint8_t *src, uint32_t src
     return _mm_cvtsi128_si32(sad);
 }
 
-static INLINE __m256i CombinedAveragingSad16x2_AVX2(const uint8_t *const src, const uint32_t src_stride,
+static inline __m256i CombinedAveragingSad16x2_AVX2(const uint8_t *const src, const uint32_t src_stride,
                                                     const uint8_t *const ref1, const uint32_t ref1_stride,
                                                     const uint8_t *const ref2, const uint32_t ref2_stride,
                                                     const __m256i sum) {
@@ -66,7 +66,7 @@ uint32_t eb_vp9_combined_averaging16x_msad_avx2_intrin(uint8_t *src, uint32_t sr
     return _mm_cvtsi128_si32(sad);
 }
 
-static INLINE __m256i CombinedAveragingSad24_AVX2(const uint8_t *const src, const uint8_t *const ref1,
+static inline __m256i CombinedAveragingSad24_AVX2(const uint8_t *const src, const uint8_t *const ref1,
                                                   const uint8_t *const ref2, const __m256i sum) {
     const __m256i s   = _mm256_loadu_si256((__m256i *)src);
     const __m256i r1  = _mm256_loadu_si256((__m256i *)ref1);
@@ -98,7 +98,7 @@ uint32_t eb_vp9_combined_averaging24x_msad_avx2_intrin(uint8_t *src, uint32_t sr
     return _mm_cvtsi128_si32(sad);
 }
 
-static INLINE __m256i CombinedAveragingSad32_AVX2(const uint8_t *const src, const uint8_t *const ref1,
+static inline __m256i CombinedAveragingSad32_AVX2(const uint8_t *const src, const uint8_t *const ref1,
                                                   const uint8_t *const ref2, const __m256i sum) {
     const __m256i s   = _mm256_loadu_si256((__m256i *)src);
     const __m256i r1  = _mm256_loadu_si256((__m256i *)ref1);

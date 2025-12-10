@@ -24,7 +24,7 @@
 // functions in the C implementation file.
 #define ADD_EPI16 _mm_add_epi16
 #define SUB_EPI16 _mm_sub_epi16
-static INLINE void load_buffer_4x4(const int16_t *input, __m128i *in, int stride) {
+static inline void load_buffer_4x4(const int16_t *input, __m128i *in, int stride) {
     const __m128i k__nonzero_bias_a = _mm_setr_epi16(0, 1, 1, 1, 1, 1, 1, 1);
     const __m128i k__nonzero_bias_b = _mm_setr_epi16(1, 0, 0, 0, 0, 0, 0, 0);
     __m128i       mask;
@@ -44,7 +44,7 @@ static INLINE void load_buffer_4x4(const int16_t *input, __m128i *in, int stride
     in[0] = _mm_add_epi16(in[0], k__nonzero_bias_b);
 }
 
-static INLINE void write_buffer_4x4(tran_low_t *output, __m128i *res) {
+static inline void write_buffer_4x4(tran_low_t *output, __m128i *res) {
     const __m128i kOne  = _mm_set1_epi16(1);
     __m128i       in01  = _mm_unpacklo_epi64(res[0], res[1]);
     __m128i       in23  = _mm_unpacklo_epi64(res[2], res[3]);
@@ -56,7 +56,7 @@ static INLINE void write_buffer_4x4(tran_low_t *output, __m128i *res) {
     store_output(out23, output + 1 * 8);
 }
 
-static INLINE void transpose_4x4(__m128i *res) {
+static inline void transpose_4x4(__m128i *res) {
     // Combine and transpose
     // 00 01 02 03 20 21 22 23
     // 10 11 12 13 30 31 32 33

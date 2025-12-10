@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_LOOPFILTER_H_
 #define VPX_VP9_COMMON_VP9_LOOPFILTER_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_blockd.h"
 #include "mem.h"
@@ -106,11 +104,6 @@ void eb_vp9_filter_block_plane_ss00(struct VP9Common *const cm, struct macrobloc
 
 void eb_vp9_filter_block_plane_ss11(struct VP9Common *const cm, struct macroblockd_plane *const plane, int mi_row,
                                     LOOP_FILTER_MASK *lfm);
-#if 0
-void vp9_filter_block_plane_non420(struct VP9Common *cm,
-                                   struct macroblockd_plane *plane,
-                                   ModeInfo **mi_8x8, int mi_row, int mi_col);
-#endif
 void eb_vp9_loop_filter_init(struct VP9Common *cm);
 
 // Update the loop filter for the current frame.
@@ -118,14 +111,11 @@ void eb_vp9_loop_filter_init(struct VP9Common *cm);
 // calls this function directly.
 void eb_vp9_loop_filter_frame_init(struct VP9Common *cm, int default_filt_lvl);
 
-void eb_vp9_loop_filter_frame(
-#if 0
-    YV12_BUFFER_CONFIG *frame,
-#endif
-    struct VP9Common *cm, struct macroblockd *mbd, int filter_level, int y_only, int partial_frame);
+void eb_vp9_loop_filter_frame(struct VP9Common *cm, struct macroblockd *mbd, int filter_level, int y_only,
+                              int partial_frame);
 
 // Get the superblock lfm for a given mi_row, mi_col.
-static INLINE LOOP_FILTER_MASK *get_lfm(const struct loop_filter *lf, const int mi_row, const int mi_col) {
+static inline LOOP_FILTER_MASK *get_lfm(const struct loop_filter *lf, const int mi_row, const int mi_col) {
     return &lf->lfm[(mi_col >> 3) + ((mi_row >> 3) * lf->lfm_stride)];
 }
 

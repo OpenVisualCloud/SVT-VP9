@@ -157,16 +157,6 @@ static void setup_rtcd_internal_vp9(uint32_t asm_type) {
         flags |= HAS_MMX;
     }
 
-#if 0
-        eb_vp9_block_error = eb_vp9_block_error_c;
-        if (flags & HAS_AVX2) eb_vp9_block_error = eb_vp9_block_error_avx2;
-        eb_vp9_block_error_fp = eb_vp9_block_error_fp_c;
-        if (flags & HAS_AVX2) eb_vp9_block_error_fp = eb_vp9_block_error_fp_avx2;
-        eb_vp9_diamond_search_sad = eb_vp9_diamond_search_sad_c;
-        if (flags & HAS_AVX) eb_vp9_diamond_search_sad = eb_vp9_diamond_search_sad_avx;
-        eb_vp9_fdct8x8_quant = eb_vp9_fdct8x8_quant_c;
-        if (flags & HAS_SSSE3) eb_vp9_fdct8x8_quant = eb_vp9_fdct8x8_quant_ssse3;
-#endif
     eb_vp9_fht16x16 = eb_vp9_fht16x16_c;
     if (flags & HAS_AVX2)
         eb_vp9_fht16x16 = eb_vp9_fht16x16_avx2;
@@ -176,10 +166,6 @@ static void setup_rtcd_internal_vp9(uint32_t asm_type) {
     eb_vp9_fht8x8 = eb_vp9_fht8x8_c;
     if (flags & HAS_AVX2)
         eb_vp9_fht8x8 = eb_vp9_fht8x8_avx2;
-#if 0
-        eb_vp9_fwht4x4 = eb_vp9_fwht4x4_c;
-        if (flags & HAS_SSE2) eb_vp9_fwht4x4 = eb_vp9_fwht4x4_sse2;
-#endif
     eb_vp9_iht16x16_256_add = eb_vp9_iht16x16_256_add_c;
     if (flags & HAS_AVX2)
         eb_vp9_iht16x16_256_add = eb_vp9_iht16x16_256_add_avx2;
@@ -189,15 +175,6 @@ static void setup_rtcd_internal_vp9(uint32_t asm_type) {
     eb_vp9_iht8x8_64_add = eb_vp9_iht8x8_64_add_c;
     if (flags & HAS_SSE2)
         eb_vp9_iht8x8_64_add = eb_vp9_iht8x8_64_add_sse2;
-#if 0
-        eb_vp9_quantize_fp = eb_vp9_quantize_fp_c;
-        if (flags & HAS_AVX2) eb_vp9_quantize_fp = eb_vp9_quantize_fp_avx2;
-        eb_vp9_quantize_fp_32x32 = eb_vp9_quantize_fp_32x32_c;
-        eb_vp9_scale_and_extend_frame = eb_vp9_scale_and_extend_frame_c;
-        if (flags & HAS_SSSE3) eb_vp9_scale_and_extend_frame = eb_vp9_scale_and_extend_frame_ssse3;
-        eb_vp9_temporal_filter_apply = eb_vp9_temporal_filter_apply_c;
-        if (flags & HAS_SSE4_1) eb_vp9_temporal_filter_apply = eb_vp9_temporal_filter_apply_sse4_1;
-#endif
 }
 
 #endif

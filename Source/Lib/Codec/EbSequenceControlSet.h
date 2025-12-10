@@ -131,18 +131,6 @@ typedef struct SequenceControlSet {
     uint8_t max_enc_mode;
     uint8_t hierarchical_levels;
 
-#if ADP_STATS_PER_LAYER
-    uint64_t total_count[4];
-    uint64_t fs_count[4];
-    uint64_t f_bdp_count[4];
-    uint64_t l_bdp_count[4];
-    uint64_t f_mdc_count[4];
-    uint64_t l_mdc_count[4];
-    uint64_t avc_count[4];
-    uint64_t pred_count[4];
-    uint64_t pred1_nfl_count[4];
-#endif
-
 } SequenceControlSet;
 
 typedef struct EbSequenceControlSetInitData {

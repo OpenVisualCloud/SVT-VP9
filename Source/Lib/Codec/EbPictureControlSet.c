@@ -328,12 +328,6 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts[1], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts_hp[0], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts_hp[1], sizeof(int) * MV_VALS, EB_N_PTR);
-#if SEG_SUPPORT
-    EB_MALLOC(uint8_t *,
-              object_ptr->cpi->segmentation_map,
-              sizeof(uint8_t) * object_ptr->cpi->common.mi_cols * object_ptr->cpi->common.mi_rows,
-              EB_N_PTR);
-#endif
     EB_MALLOC(PARTITION_CONTEXT *,
               object_ptr->cpi->common.above_seg_context,
               sizeof(PARTITION_CONTEXT) * mi_cols_aligned_to_sb(object_ptr->cpi->common.mi_cols),
@@ -418,39 +412,6 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
             }
         }
     }
-#if 0 // Hsan: will be used when adding ois
-    uint32_t maxOisCand;
-    uint32_t maxOisCand = MAX(MAX_OIS_0, MAX_OIS_2);
-
-    EB_MALLOC(OisCu32Cu16Results_t**, object_ptr->oisCu32Cu16Results, sizeof(OisCu32Cu16Results_t*) * object_ptr->sb_total_count, EB_N_PTR);
-
-    for (sb_index = 0; sb_index < object_ptr->sb_total_count; ++sb_index){
-
-        EB_MALLOC(OisCu32Cu16Results_t*, object_ptr->oisCu32Cu16Results[sb_index], sizeof(OisCu32Cu16Results_t), EB_N_PTR);
-
-        OisCandidate_t* contigousCand;
-        EB_MALLOC(OisCandidate_t*, contigousCand, sizeof(OisCandidate_t) * maxOisCand * 21, EB_N_PTR);
-
-        uint32_t cuIdx;
-        for (cuIdx = 0; cuIdx < 21; ++cuIdx){
-            object_ptr->oisCu32Cu16Results[sb_index]->sortedOisCandidate[cuIdx] = &contigousCand[cuIdx*maxOisCand];
-        }
-    }
-
-    EB_MALLOC(OisCu8Results_t**, object_ptr->oisCu8Results, sizeof(OisCu8Results_t*) * object_ptr->sb_total_count, EB_N_PTR);
-    for (sb_index = 0; sb_index < object_ptr->sb_total_count; ++sb_index){
-
-        EB_MALLOC(OisCu8Results_t*, object_ptr->oisCu8Results[sb_index], sizeof(OisCu8Results_t), EB_N_PTR);
-
-        OisCandidate_t* contigousCand;
-        EB_MALLOC(OisCandidate_t*, contigousCand, sizeof(OisCandidate_t) * maxOisCand * 64, EB_N_PTR);
-
-        uint32_t cuIdx;
-        for (cuIdx = 0; cuIdx < 64; ++cuIdx){
-            object_ptr->oisCu8Results[sb_index]->sortedOisCandidate[cuIdx] = &contigousCand[cuIdx*maxOisCand];
-        }
-    }
-#endif
 
     // Motion Estimation Results
     object_ptr->max_number_of_pus_per_sb           = SQUARE_PU_COUNT;

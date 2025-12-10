@@ -16,25 +16,25 @@
 extern "C" {
 #endif
 
-static INLINE __m256i dct_const_round_shift_avx2(const __m256i in) {
+static inline __m256i dct_const_round_shift_avx2(const __m256i in) {
     const __m256i t = _mm256_add_epi32(in, _mm256_set1_epi32(DCT_CONST_ROUNDING));
     return _mm256_srai_epi32(t, DCT_CONST_BITS);
 }
 
-static INLINE __m256i idct_madd_round_shift_avx2(const __m256i in, const __m256i cospi) {
+static inline __m256i idct_madd_round_shift_avx2(const __m256i in, const __m256i cospi) {
     const __m256i t = _mm256_madd_epi16(in, cospi);
     return dct_const_round_shift_avx2(t);
 }
 
 // Calculate the dot product between in0/1 and x and wrap to short.
-static INLINE __m256i idct_calc_wraplow_avx2(const __m256i in0, const __m256i in1, const __m256i x) {
+static inline __m256i idct_calc_wraplow_avx2(const __m256i in0, const __m256i in1, const __m256i x) {
     const __m256i t0 = idct_madd_round_shift_avx2(in0, x);
     const __m256i t1 = idct_madd_round_shift_avx2(in1, x);
     return _mm256_packs_epi32(t0, t1);
 }
 
 // Multiply elements by constants and add them together.
-static INLINE void butterfly_avx2(const __m256i in0, const __m256i in1, const int c0, const int c1, __m256i *const out0,
+static inline void butterfly_avx2(const __m256i in0, const __m256i in1, const int c0, const int c1, __m256i *const out0,
                                   __m256i *const out1) {
     const __m256i cst0 = pair_set_epi16_avx2(c0, -c1);
     const __m256i cst1 = pair_set_epi16_avx2(c1, c0);

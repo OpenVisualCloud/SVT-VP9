@@ -324,48 +324,48 @@ DECLARE_ALIGNED(32, static const uint8_t, filt_loopfilter_avx2[32]) = {
     0, 128, 1, 128, 2,  128, 3,  128, 4,  128, 5,  128, 6,  128, 7,  128,
     8, 128, 9, 128, 10, 128, 11, 128, 12, 128, 13, 128, 14, 128, 15, 128};
 
-static INLINE __m128i abs_diff(__m128i a, __m128i b) { return _mm_or_si128(_mm_subs_epu8(a, b), _mm_subs_epu8(b, a)); }
+static inline __m128i abs_diff(__m128i a, __m128i b) { return _mm_or_si128(_mm_subs_epu8(a, b), _mm_subs_epu8(b, a)); }
 
-static INLINE __m256i filter_add2_sub2_avx2(const __m256i total, const __m256i a1, const __m256i a2, const __m256i s1,
+static inline __m256i filter_add2_sub2_avx2(const __m256i total, const __m256i a1, const __m256i a2, const __m256i s1,
                                             const __m256i s2) {
     __m256i x = _mm256_add_epi16(a1, total);
     x         = _mm256_add_epi16(_mm256_sub_epi16(x, _mm256_add_epi16(s1, s2)), a2);
     return x;
 }
 
-static INLINE __m256i unpack_8bit_avx2(const __m128i in) {
+static inline __m256i unpack_8bit_avx2(const __m128i in) {
     const __m256i mask = _mm256_load_si256((__m256i const *)filt_loopfilter_avx2);
     const __m256i d    = _mm256_inserti128_si256(_mm256_castsi128_si256(in), in, 1);
     return _mm256_shuffle_epi8(d, mask);
 }
 
-static INLINE __m128i filter8_mask_avx2(const __m128i flat, const __m128i other_filt, const __m256i f) {
+static inline __m128i filter8_mask_avx2(const __m128i flat, const __m128i other_filt, const __m256i f) {
     const __m256i ff     = _mm256_srli_epi16(f, 3);
     const __m128i f8     = _mm_packus_epi16(_mm256_extracti128_si256(ff, 0), _mm256_extracti128_si256(ff, 1));
     const __m128i result = _mm_and_si128(flat, f8);
     return _mm_or_si128(_mm_andnot_si128(flat, other_filt), result);
 }
 
-static INLINE __m128i filter16_mask_avx2(const __m128i flat, const __m128i other_filt, const __m256i f) {
+static inline __m128i filter16_mask_avx2(const __m128i flat, const __m128i other_filt, const __m256i f) {
     const __m256i ff     = _mm256_srli_epi16(f, 4);
     const __m128i f16    = _mm_packus_epi16(_mm256_extracti128_si256(ff, 0), _mm256_extracti128_si256(ff, 1));
     const __m128i result = _mm_and_si128(flat, f16);
     return _mm_or_si128(_mm_andnot_si128(flat, other_filt), result);
 }
 
-static INLINE __m128i lpf_filter8_avx2(const __m128i o, const __m128i flat2, const __m256i a0, const __m256i a1,
+static inline __m128i lpf_filter8_avx2(const __m128i o, const __m128i flat2, const __m256i a0, const __m256i a1,
                                        const __m256i s0, const __m256i s1, __m256i *const total) {
     *total = filter_add2_sub2_avx2(*total, a0, a1, s0, s1);
     return filter8_mask_avx2(flat2, o, *total);
 }
 
-static INLINE __m128i lpf_filter16_avx2(const __m128i o, const __m128i flat2, const __m256i a0, const __m256i a1,
+static inline __m128i lpf_filter16_avx2(const __m128i o, const __m128i flat2, const __m256i a0, const __m256i a1,
                                         const __m256i s0, const __m256i s1, __m256i *const total) {
     *total = filter_add2_sub2_avx2(*total, a0, a1, s0, s1);
     return filter16_mask_avx2(flat2, o, *total);
 }
 
-static INLINE void lpf_horizontal_16_dual_avx2(const unsigned char *_blimit, const unsigned char *_limit,
+static inline void lpf_horizontal_16_dual_avx2(const unsigned char *_blimit, const unsigned char *_limit,
                                                const unsigned char *_thresh, __m128i *const io) {
     const __m128i zero   = _mm_setzero_si128();
     const __m128i one    = _mm_set1_epi8(1);
@@ -523,7 +523,6 @@ static INLINE void lpf_horizontal_16_dual_avx2(const unsigned char *_blimit, con
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // filter8
-#if 1
         {
             const __m256i four = _mm256_set1_epi16(4);
             __m256i       f8;
@@ -569,69 +568,6 @@ static INLINE void lpf_horizontal_16_dual_avx2(const unsigned char *_blimit, con
         }
         // wide flat
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#else
-        // Note: this is even slower. Keep the code so don't try the same idea.
-        __m256i op2_op1, op0_oq0, oq1_oq2;
-        {
-            const __m256i four  = _mm256_set1_epi16(4);
-            const __m256i flatx = _mm256_setr_m128i(flat, flat);
-            __m256i       f0, f1;
-
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p3, four), _mm256_add_epi16(p3, p2));
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p3, f0), _mm256_add_epi16(p2, p1));
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p0, q0), f0);
-
-            f1      = filter_add2_sub2_avx2(f0, q1, p1, p2, p3);
-            op2_op1 = dual_filter8_mask_avx2(flatx, _mm256_setr_m128i(p[2], op1), f0, f1);
-            op0_oq0 = dual_filter8_avx2(q2, p0, p1, p3, q3, q0, p0, p3, flatx, _mm256_setr_m128i(op0, oq0), &f1);
-            oq1_oq2 = dual_filter8_avx2(q3, q1, q0, p2, q3, q2, q1, p1, flatx, _mm256_setr_m128i(oq1, q[2]), &f1);
-        }
-
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // wide flat calculations
-        {
-            const __m256i eight  = _mm256_set1_epi16(8);
-            const __m256i flat2x = _mm256_setr_m128i(flat2, flat2);
-            __m256i       f0, f1, xx;
-
-            f0 = _mm256_sub_epi16(_mm256_slli_epi16(p7, 3), p7); // p7 * 7
-            f0 = _mm256_add_epi16(_mm256_slli_epi16(p6, 1), _mm256_add_epi16(p4, f0));
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p3, f0), _mm256_add_epi16(p2, p1));
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p0, q0), f0);
-            f0 = _mm256_add_epi16(_mm256_add_epi16(p5, eight), f0);
-
-            f1    = filter_add2_sub2_avx2(f0, q1, p5, p6, p7);
-            xx    = dual_filter16_mask_avx2(flat2x, _mm256_setr_m128i(p[6], p[5]), f0, f1);
-            io[1] = _mm256_extracti128_si256(xx, 0);
-            io[2] = _mm256_extracti128_si256(xx, 1);
-
-            xx    = dual_filter16_avx2(q2, p4, p5, p7, q3, p3, p4, p7, flat2x, _mm256_setr_m128i(p[4], p[3]), &f1);
-            io[3] = _mm256_extracti128_si256(xx, 0);
-            io[4] = _mm256_extracti128_si256(xx, 1);
-
-            xx    = dual_filter16_avx2(q4, p2, p3, p7, q5, p1, p2, p7, flat2x, op2_op1, &f1);
-            io[5] = _mm256_extracti128_si256(xx, 0);
-            io[6] = _mm256_extracti128_si256(xx, 1);
-
-            xx    = dual_filter16_avx2(q6, p0, p1, p7, q7, q0, p0, p7, flat2x, op0_oq0, &f1);
-            io[7] = _mm256_extracti128_si256(xx, 0);
-            io[8] = _mm256_extracti128_si256(xx, 1);
-
-            xx     = dual_filter16_avx2(q7, q1, p6, q0, q7, q2, p5, q1, flat2x, oq1_oq2, &f1);
-            io[9]  = _mm256_extracti128_si256(xx, 0);
-            io[10] = _mm256_extracti128_si256(xx, 1);
-
-            xx     = dual_filter16_avx2(q7, q3, p4, q2, q7, q4, p3, q3, flat2x, _mm256_setr_m128i(q[3], q[4]), &f1);
-            io[11] = _mm256_extracti128_si256(xx, 0);
-            io[12] = _mm256_extracti128_si256(xx, 1);
-
-            xx     = dual_filter16_avx2(q7, q5, p2, q4, q7, q6, p1, q5, flat2x, _mm256_setr_m128i(q[5], q[6]), &f1);
-            io[13] = _mm256_extracti128_si256(xx, 0);
-            io[14] = _mm256_extracti128_si256(xx, 1);
-        }
-        // wide flat
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif
     }
 }
 void eb_vp9_lpf_horizontal_16_dual_avx2(unsigned char *s, int p, const unsigned char *_blimit,

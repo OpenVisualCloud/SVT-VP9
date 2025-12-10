@@ -57,7 +57,6 @@ void ivf_write_frame_header(EbByte write_byte_ptr, uint32_t *write_location, siz
     *output_buffer_index += 12;
 }
 
-#if VP9_RC
 void eb_vp9_update_rc_rate_tables(PictureControlSet  *picture_control_set_ptr,
                                   SequenceControlSet *sequence_control_set_ptr) {
     EncodeContext *encode_context_ptr = (EncodeContext *)sequence_control_set_ptr->encode_context_ptr;
@@ -292,7 +291,6 @@ void eb_vp9_update_rc_rate_tables(PictureControlSet  *picture_control_set_ptr,
         }
     }
 }
-#endif
 
 void *eb_vp9_packetization_kernel(void *input_ptr) {
     // Context
@@ -457,10 +455,8 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         queue_entry_ptr->actual_bits    = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
         queue_entry_ptr->total_num_bits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
 
-#if VP9_RC
         // update the rate tables used in RC based on the encoded bits of each sb
         eb_vp9_update_rc_rate_tables(picture_control_set_ptr, sequence_control_set_ptr);
-#endif
 
         queue_entry_ptr->frame_type = picture_control_set_ptr->parent_pcs_ptr->cpi->common.frame_type;
         queue_entry_ptr->intra_only = picture_control_set_ptr->parent_pcs_ptr->cpi->common.intra_only;
@@ -511,47 +507,6 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         while (queue_entry_ptr->output_stream_wrapper_ptr != NULL) {
             output_stream_wrapper_ptr = queue_entry_ptr->output_stream_wrapper_ptr;
             output_stream_ptr         = (EbBufferHeaderType *)output_stream_wrapper_ptr->object_ptr;
-
-#if VP9_RC_PRINTS
-            // SVT_LOG("%d\t%d%%\n",queue_entry_ptr->picture_number, encode_context_ptr->vbv_level*100/ sequence_control_set_ptr->static_config.vbv_buf_size);
-#endif
-#if ADP_STATS_PER_LAYER
-            if (queue_entry_ptr->picture_number == sequence_control_set_ptr->static_config.frames_to_be_encoded - 1) {
-                uint8_t layerIndex;
-                SVT_LOG("\nFS\tAVC\tF_BDP\tL_BDP\tF_MDC\tL_MDC\tP_MDC\tP_MDC_1_NFL");
-                for (layerIndex = 0; layerIndex < 4; layerIndex++) {
-                    SVT_LOG("\n/***************************Layer %d Stats ********************************/\n",
-                            layerIndex);
-                    if (sequence_control_set_ptr->total_count[layerIndex]) {
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->fs_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->avc_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->f_bdp_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->l_bdp_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->f_mdc_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->l_mdc_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->pred_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                        SVT_LOG("%d\t",
-                                (sequence_control_set_ptr->pred1_nfl_count[layerIndex] * 100) /
-                                    sequence_control_set_ptr->total_count[layerIndex]);
-                    }
-                }
-                SVT_LOG("\n");
-            }
-#endif
 
             {
                 int32_t i;
@@ -610,14 +565,6 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
                             context_ptr->dpb_disp_order[i] = queue_entry_ptr->poc;
                         }
                     }
-#if 0
-                    SVT_LOG("DPB:\t");
-                    for (i = 0; i < 8; i++)
-                    {
-                       SVT_LOG("%i | ", (int)context_ptr->dpb_disp_order[i]);
-                    }
-                    SVT_LOG("\n");
-#endif
 #if !VP9_RC_PRINTS && PKT_PRINT
                     if (queue_entry_ptr->frame_type == INTER_FRAME && queue_entry_ptr->intra_only == EB_FALSE) {
                         if (queue_entry_ptr->show_existing_frame)

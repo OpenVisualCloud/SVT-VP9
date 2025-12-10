@@ -88,12 +88,12 @@ void process_input_field_buffering_mode(uint64_t processed_frame_count, int *fil
     eb_input_ptr = luma_input_ptr;
     // Skip 1 luma row if bottom field (point to the bottom field)
     if (processed_frame_count % 2 != 0)
-        fseeko64(input_file, (long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_luma_row_size, SEEK_CUR);
 
     for (input_row_index = 0; input_row_index < input_padded_height; input_row_index++) {
         *filled_len += (uint32_t)fread(eb_input_ptr, 1, source_luma_row_size, input_file);
         // Skip 1 luma row (only fields)
-        fseeko64(input_file, (long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_luma_row_size, SEEK_CUR);
         eb_input_ptr += source_luma_row_size;
     }
 
@@ -101,14 +101,14 @@ void process_input_field_buffering_mode(uint64_t processed_frame_count, int *fil
     eb_input_ptr = cb_input_ptr;
     // Step back 1 luma row if bottom field (undo the previous jump), and skip 1 chroma row if bottom field (point to the bottom field)
     if (processed_frame_count % 2 != 0) {
-        fseeko64(input_file, -(long)source_luma_row_size, SEEK_CUR);
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, -(long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
     }
 
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
         *filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
         // Skip 1 chroma row (only fields)
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
         eb_input_ptr += source_chroma_row_size;
     }
 
@@ -120,13 +120,13 @@ void process_input_field_buffering_mode(uint64_t processed_frame_count, int *fil
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
         *filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
         // Skip 1 chroma row (only fields)
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
         eb_input_ptr += source_chroma_row_size;
     }
 
     // Step back 1 chroma row if bottom field (undo the previous jump)
     if (processed_frame_count % 2 != 0) {
-        fseeko64(input_file, -(long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, -(long)source_chroma_row_size, SEEK_CUR);
     }
 }
 

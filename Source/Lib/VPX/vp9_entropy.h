@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_ENTROPY_H_
 #define VPX_VP9_COMMON_VP9_ENTROPY_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "mem.h"
 #include "vp9_enums.h"
@@ -59,28 +57,9 @@ DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob[4]);
 DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob[5]);
 DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob[14]);
 
-#if CONFIG_VP9_HIGHBITDEPTH
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat1_prob_high10[1]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat2_prob_high10[2]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat3_prob_high10[3]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob_high10[4]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob_high10[5]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob_high10[16]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat1_prob_high12[1]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat2_prob_high12[2]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat3_prob_high12[3]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat4_prob_high12[4]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat5_prob_high12[5]);
-DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_cat6_prob_high12[18]);
-#endif // CONFIG_VP9_HIGHBITDEPTH
-
 #define EOB_MODEL_TOKEN 3
 
 #define DCT_MAX_VALUE 16384
-#if CONFIG_VP9_HIGHBITDEPTH
-#define DCT_MAX_VALUE_HIGH10 65536
-#define DCT_MAX_VALUE_HIGH12 262144
-#endif // CONFIG_VP9_HIGHBITDEPTH
 
 /* Coefficients are predicted via a 3-dimensional probability table. */
 
@@ -128,7 +107,7 @@ void eb_vp9_adapt_coef_probs(struct VP9Common *cm);
 DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_coefband_trans_8x8plus[1024]);
 DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_coefband_trans_4x4[16]);
 
-static INLINE const uint8_t *get_band_translate(TX_SIZE tx_size) {
+static inline const uint8_t *get_band_translate(TX_SIZE tx_size) {
     return tx_size == TX_4X4 ? eb_vp9_coefband_trans_4x4 : eb_vp9_coefband_trans_8x8plus;
 }
 
@@ -153,9 +132,9 @@ void eb_vp9_model_to_full_probs(const vpx_prob *model, vpx_prob *full);
 
 typedef char ENTROPY_CONTEXT;
 
-static INLINE int combine_entropy_contexts(ENTROPY_CONTEXT a, ENTROPY_CONTEXT b) { return (a != 0) + (b != 0); }
+static inline int combine_entropy_contexts(ENTROPY_CONTEXT a, ENTROPY_CONTEXT b) { return (a != 0) + (b != 0); }
 
-static INLINE int get_entropy_context(TX_SIZE tx_size, const ENTROPY_CONTEXT *a, const ENTROPY_CONTEXT *l) {
+static inline int get_entropy_context(TX_SIZE tx_size, const ENTROPY_CONTEXT *a, const ENTROPY_CONTEXT *l) {
     ENTROPY_CONTEXT above_ec = 0, left_ec = 0;
 
     switch (tx_size) {

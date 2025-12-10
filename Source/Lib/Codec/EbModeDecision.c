@@ -210,11 +210,8 @@ void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, Enc
         }
     }
 
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEWMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode         = NEWMV;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -230,10 +227,6 @@ void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, Enc
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.col = me_pu_result->x_mv_l1 << 1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.row = me_pu_result->y_mv_l1 << 1;
     }
-
-#if 0 // Hsan: switchable interp_filter not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
 
     // Update the total number of candidates injected
     (*can_total_cnt)++;
@@ -263,11 +256,8 @@ void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_contro
         }
     }
 
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEWMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode         = NEWMV;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -284,10 +274,6 @@ void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_contro
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.row = me_pu_result->y_mv_l1 << 1;
     }
 
-#if 0 // Hsan: switchable interp_filter not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
-
     // Update the total number of candidates injected
     (*can_total_cnt)++;
 
@@ -298,12 +284,9 @@ void nearest_mv_candidates_injection(PictureControlSet *picture_control_set_ptr,
                                      MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
                                      uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
-    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEARESTMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
+    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode         = NEARESTMV;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -328,9 +311,6 @@ void nearest_mv_candidates_injection(PictureControlSet *picture_control_set_ptr,
             context_ptr->block_ptr->mbmi_ext->ref_mvs[ref_frame_0][0].as_mv.row;
     }
 
-#if 0 // Hsan: switchable interp_filter not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
     // Update the total number of candidates injected
     (*can_total_cnt)++;
 
@@ -342,12 +322,9 @@ void near_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
                                   uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
 
-    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEARMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
+    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode         = NEARMV;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -372,9 +349,6 @@ void near_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
             context_ptr->block_ptr->mbmi_ext->ref_mvs[ref_frame_0][1].as_mv.row;
     }
 
-#if 0 // Hsan: switchable interp_filter not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
     // Update the total number of candidates injected
     (*can_total_cnt)++;
 
@@ -385,12 +359,9 @@ void zero_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
                                   MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
                                   uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
-    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = ZEROMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
+    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
+    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode         = ZEROMV;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -407,9 +378,6 @@ void zero_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.row = 0;
     }
 
-#if 0 // Hsan: switchable interp_filter not supported
-    context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
     // Update the total number of candidates injected
     (*can_total_cnt)++;
 }
@@ -428,9 +396,6 @@ void new_mv_unipred3x3_candidates_injection(PictureControlSet *picture_control_s
         context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEWMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
 
@@ -446,9 +411,6 @@ void new_mv_unipred3x3_candidates_injection(PictureControlSet *picture_control_s
                 (me_pu_result->y_mv_l1 + newmv_3x3_y_pos[position]) << 1;
         }
 
-#if 0 // Hsan: switchable interp_filter not supported''
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
         // Update the total number of candidates injected
         (*can_total_cnt)++;
     }
@@ -465,9 +427,6 @@ void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_se
         context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEWMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0]    = ref_frame_0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1]    = ref_frame_1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.col = me_pu_result->x_mv_l0 << 1;
@@ -476,9 +435,6 @@ void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_se
             (me_pu_result->x_mv_l1 + newmv_3x3_x_pos[position]) << 1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[1].as_mv.row =
             (me_pu_result->y_mv_l1 + newmv_3x3_y_pos[position]) << 1;
-#if 0 // Hsan: switchable interp_filter not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
         // Update the total number of candidates injected
         (*can_total_cnt)++;
     }
@@ -486,9 +442,6 @@ void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_se
         context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready   = 0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = NEWMV;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = ref_frame_0;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = ref_frame_1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[0].as_mv.col =
@@ -497,9 +450,6 @@ void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_se
             (me_pu_result->y_mv_l0 + newmv_3x3_y_pos[position]) << 1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[1].as_mv.col = me_pu_result->x_mv_l1 << 1;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mv[1].as_mv.row = me_pu_result->y_mv_l1 << 1;
-#if 0 // Hsan: switchable interp_filter not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->interp_filter = 0;
-#endif
         // Update the total number of candidates injected
         (*can_total_cnt)++;
     }
@@ -581,13 +531,10 @@ void intra_candidates_injection_mi(PictureControlSet *picture_control_set_ptr, E
     for (mode = DC_PRED; mode <= TM_PRED; mode++, (*can_total_cnt)++) {
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = mode;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->uv_mode      = (context_ptr->chroma_level ==
+        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->uv_mode = (context_ptr->chroma_level ==
                                                                                 CHROMA_LEVEL_0)
-                 ? context_ptr->best_uv_mode[mode]
-                 : mode;
+            ? context_ptr->best_uv_mode[mode]
+            : mode;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = INTRA_FRAME;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = INTRA_FRAME;
         ;
@@ -608,13 +555,10 @@ void intra_candidates_injection_bmi(PictureControlSet *picture_control_set_ptr, 
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->mode    = mode;
         context_ptr->fast_candidate_array[*can_total_cnt].mode_info->bmi[context_ptr->bmi_index].as_mode = mode;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->segment_id = context_ptr->segment_id;
-#endif
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->uv_mode      = mode;
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0] = INTRA_FRAME;
-        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1] = INTRA_FRAME;
-        context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
+        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->uv_mode                             = mode;
+        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[0]                        = INTRA_FRAME;
+        context_ptr->fast_candidate_array[*can_total_cnt].mode_info->ref_frame[1]                        = INTRA_FRAME;
+        context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready                               = 0;
     }
 }
 

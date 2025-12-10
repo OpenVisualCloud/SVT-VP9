@@ -8,8 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#define INLINE __inline
-
 #include <string.h>
 #include "prob.h"
 #include "vp9_enums.h"
@@ -310,11 +308,7 @@ static const vpx_prob default_switchable_interp_prob[SWITCHABLE_FILTER_CONTEXTS]
     {34, 3},
     {149, 144},
 };
-#if 1
 void eb_vp9_init_mode_probs(FRAME_CONTEXT *fc) {
-#else
-static void eb_vp9_init_mode_probs(FRAME_CONTEXT *fc) {
-#endif
     vp9_copy(fc->uv_mode_prob, default_if_uv_probs);
     vp9_copy(fc->y_mode_prob, default_if_y_probs);
     vp9_copy(fc->switchable_interp_prob, default_switchable_interp_prob);
@@ -361,14 +355,6 @@ void eb_vp9_adapt_mode_probs(VP9_COMMON *cm) {
     for (i = 0; i < PARTITION_CONTEXTS; i++)
         eb_vp9_tree_merge_probs(
             eb_vp9_partition_tree, pre_fc->partition_prob[i], counts->partition[i], fc->partition_prob[i]);
-#if 0 // Hsan: switchable interp_filter not supported
-  if (cm->interp_filter == SWITCHABLE) {
-    for (i = 0; i < SWITCHABLE_FILTER_CONTEXTS; i++)
-      eb_vp9_tree_merge_probs(
-          eb_vp9_switchable_interp_tree, pre_fc->switchable_interp_prob[i],
-          counts->switchable_interp[i], fc->switchable_interp_prob[i]);
-  }
-#endif
     if (cm->tx_mode == TX_MODE_SELECT) {
         unsigned int branch_ct_8x8p[TX_SIZES - 3][2];
         unsigned int branch_ct_16x16p[TX_SIZES - 2][2];

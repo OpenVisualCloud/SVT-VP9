@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_PRED_COMMON_H_
 #define VPX_VP9_COMMON_VP9_PRED_COMMON_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_blockd.h"
 #include "vp9_onyxc_int.h"
@@ -22,7 +20,7 @@
 extern "C" {
 #endif
 
-static INLINE int get_segment_id(const VP9_COMMON *cm, const uint8_t *segment_ids, BLOCK_SIZE bsize, int mi_row,
+static inline int get_segment_id(const VP9_COMMON *cm, const uint8_t *segment_ids, BLOCK_SIZE bsize, int mi_row,
                                  int mi_col) {
     const int mi_offset = mi_row * cm->mi_cols + mi_col;
     const int bw        = eb_vp9_num_8x8_blocks_wide_lookup[bsize];
@@ -37,22 +35,7 @@ static INLINE int get_segment_id(const VP9_COMMON *cm, const uint8_t *segment_id
     assert(segment_id >= 0 && segment_id < MAX_SEGMENTS);
     return segment_id;
 }
-#if 0 // Hsan: temporal_update not supported
-static INLINE int vp9_get_pred_context_seg_id(const MACROBLOCKD *xd) {
-  const ModeInfo *const above_mi = xd->above_mi;
-  const ModeInfo *const left_mi = xd->left_mi;
-  const int above_sip = (above_mi != NULL) ? above_mi->seg_id_predicted : 0;
-  const int left_sip = (left_mi != NULL) ? left_mi->seg_id_predicted : 0;
-
-  return above_sip + left_sip;
-}
-
-static INLINE vpx_prob vp9_get_pred_prob_seg_id(const struct segmentation *seg,
-                                                const MACROBLOCKD *xd) {
-  return seg->pred_probs[vp9_get_pred_context_seg_id(xd)];
-}
-#endif
-static INLINE int vp9_get_skip_context(const MACROBLOCKD *xd) {
+static inline int vp9_get_skip_context(const MACROBLOCKD *xd) {
     const ModeInfo *const above_mi   = xd->above_mi;
     const ModeInfo *const left_mi    = xd->left_mi;
     const int             above_skip = (above_mi != NULL) ? above_mi->skip : 0;
@@ -60,32 +43,9 @@ static INLINE int vp9_get_skip_context(const MACROBLOCKD *xd) {
     return above_skip + left_skip;
 }
 
-static INLINE vpx_prob vp9_get_skip_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_skip_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     return cm->fc->skip_probs[vp9_get_skip_context(xd)];
 }
-#if 0 // Hsan: switchable interp_filter not supported
-// Returns a context number for the given MB prediction signal
-static INLINE int get_pred_context_switchable_interp(const MACROBLOCKD *xd) {
-  // Note:
-  // The mode info data structure has a one element border above and to the
-  // left of the entries corresponding to real macroblocks.
-  // The prediction flags in these dummy entries are initialized to 0.
-  const ModeInfo *const left_mi = xd->left_mi;
-  const int left_type = left_mi ? left_mi->interp_filter : SWITCHABLE_FILTERS;
-  const ModeInfo *const above_mi = xd->above_mi;
-  const int above_type =
-      above_mi ? above_mi->interp_filter : SWITCHABLE_FILTERS;
-
-  if (left_type == above_type)
-    return left_type;
-  else if (left_type == SWITCHABLE_FILTERS)
-    return above_type;
-  else if (above_type == SWITCHABLE_FILTERS)
-    return left_type;
-  else
-    return SWITCHABLE_FILTERS;
-}
-#endif
 // The mode info data structure has a one element border above and to the
 // left of the entries corresponding to real macroblocks.
 // The prediction flags in these dummy entries are initialized to 0.
@@ -93,7 +53,7 @@ static INLINE int get_pred_context_switchable_interp(const MACROBLOCKD *xd) {
 // 1 - intra/inter, inter/intra
 // 2 - intra/--, --/intra
 // 3 - intra/intra
-static INLINE int get_intra_inter_context(const MACROBLOCKD *xd) {
+static inline int get_intra_inter_context(const MACROBLOCKD *xd) {
     const ModeInfo *const above_mi  = xd->above_mi;
     const ModeInfo *const left_mi   = xd->left_mi;
     const int             has_above = !!above_mi;
@@ -109,32 +69,32 @@ static INLINE int get_intra_inter_context(const MACROBLOCKD *xd) {
     return 0;
 }
 
-static INLINE vpx_prob vp9_get_intra_inter_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_intra_inter_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     return cm->fc->intra_inter_prob[get_intra_inter_context(xd)];
 }
 
 int eb_vp9_get_reference_mode_context(const VP9_COMMON *cm, const MACROBLOCKD *xd);
 
-static INLINE vpx_prob vp9_get_reference_mode_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_reference_mode_prob(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     return cm->fc->comp_inter_prob[eb_vp9_get_reference_mode_context(cm, xd)];
 }
 
 int eb_vp9_get_pred_context_comp_ref_p(const VP9_COMMON *cm, const MACROBLOCKD *xd);
 
-static INLINE vpx_prob vp9_get_pred_prob_comp_ref_p(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_pred_prob_comp_ref_p(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     const int pred_context = eb_vp9_get_pred_context_comp_ref_p(cm, xd);
     return cm->fc->comp_ref_prob[pred_context];
 }
 
 int eb_vp9_get_pred_context_single_ref_p1(const MACROBLOCKD *xd);
 
-static INLINE vpx_prob vp9_get_pred_prob_single_ref_p1(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_pred_prob_single_ref_p1(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     return cm->fc->single_ref_prob[eb_vp9_get_pred_context_single_ref_p1(xd)][0];
 }
 
 int eb_vp9_get_pred_context_single_ref_p2(const MACROBLOCKD *xd);
 
-static INLINE vpx_prob vp9_get_pred_prob_single_ref_p2(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
+static inline vpx_prob vp9_get_pred_prob_single_ref_p2(const VP9_COMMON *cm, const MACROBLOCKD *xd) {
     return cm->fc->single_ref_prob[eb_vp9_get_pred_context_single_ref_p2(xd)][1];
 }
 
@@ -146,7 +106,7 @@ void eb_vp9_setup_compound_reference_mode(VP9_COMMON *cm);
 // The mode info data structure has a one element border above and to the
 // left of the entries corresponding to real blocks.
 // The prediction flags in these dummy entries are initialized to 0.
-static INLINE int get_tx_size_context(const MACROBLOCKD *xd) {
+static inline int get_tx_size_context(const MACROBLOCKD *xd) {
     const int             max_tx_size = eb_vp9_max_txsize_lookup[xd->mi[0]->sb_type];
     const ModeInfo *const above_mi    = xd->above_mi;
     const ModeInfo *const left_mi     = xd->left_mi;
@@ -163,7 +123,7 @@ static INLINE int get_tx_size_context(const MACROBLOCKD *xd) {
     return (above_ctx + left_ctx) > max_tx_size;
 }
 
-static INLINE const vpx_prob *get_tx_probs(TX_SIZE max_tx_size, int ctx, const struct tx_probs *tx_probs) {
+static inline const vpx_prob *get_tx_probs(TX_SIZE max_tx_size, int ctx, const struct tx_probs *tx_probs) {
     switch (max_tx_size) {
     case TX_8X8: return tx_probs->p8x8[ctx];
     case TX_16X16: return tx_probs->p16x16[ctx];
@@ -172,7 +132,7 @@ static INLINE const vpx_prob *get_tx_probs(TX_SIZE max_tx_size, int ctx, const s
     }
 }
 
-static INLINE unsigned int *get_tx_counts(TX_SIZE max_tx_size, int ctx, struct tx_counts *tx_counts) {
+static inline unsigned int *get_tx_counts(TX_SIZE max_tx_size, int ctx, struct tx_counts *tx_counts) {
     switch (max_tx_size) {
     case TX_8X8: return tx_counts->p8x8[ctx];
     case TX_16X16: return tx_counts->p16x16[ctx];

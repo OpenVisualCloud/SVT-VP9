@@ -83,13 +83,9 @@ int coeff_rate_estimate( //cost_coeffs
     const int16_t          *band_count                             = &band_counts[tx_size][1];
     const tran_low_t *const qcoeff                                 = trans_coeff_buffer;
     unsigned int (*token_costs)[2][COEFF_CONTEXTS][ENTROPY_TOKENS] = x->token_costs[tx_size][type][is_inter_block(mi)];
-    uint8_t token_cache[32 * 32];
-    int     cost;
-#if CONFIG_VP9_HIGHBITDEPTH
-    const uint16_t *cat6_high_cost = vp9_get_high_cost_table(xd->bd);
-#else
+    uint8_t         token_cache[32 * 32];
+    int             cost;
     const uint16_t *cat6_high_cost = vp9_get_high_cost_table(8);
-#endif
     if (eob == 0) {
         // single eob token
         cost = token_costs[0][0][pt][EOB_TOKEN];
@@ -170,7 +166,7 @@ int coeff_rate_estimate( //cost_coeffs
 }
 
 // FROM vp9_mcomp.c
-static INLINE int mv_cost(const MV *mv, const int *joint_cost, int *const comp_cost[2]) {
+static inline int mv_cost(const MV *mv, const int *joint_cost, int *const comp_cost[2]) {
     assert(mv->row >= -MV_MAX && mv->row < MV_MAX);
     assert(mv->col >= -MV_MAX && mv->col < MV_MAX);
     return joint_cost[vp9_get_mv_joint(mv)] + comp_cost[0][mv->row] + comp_cost[1][mv->col];
@@ -300,48 +296,10 @@ int64_t inter_fast_cost(PictureControlSet *picture_control_set_ptr, int has_uv, 
                                          x->nmvjointcost,
                                          x->mvcost,
                                          MV_COST_WEIGHT);
-#if INTER_INTRA_BIAS
-            // Estimate the rate implications of a new mv but discount this
-            // under certain circumstances where we want to help initiate a weak
-            // motion field, where the distortion gain for a single block may not
-            // be enough to overcome the cost of a new mv.
-            //ref_mvs[ref_frame_0][1].as_mv.col
-            int discount_newmv = (/*!cpi->rc.is_src_frame_alt_ref && */ (this_mode == NEWMV) &&
-                                  (candidate_ptr->mode_info->mv[0].as_int != 0) &&
-                                  ((mbmi_ext->ref_mvs[refs[0]][0].as_int == 0) ||
-                                   (mbmi_ext->ref_mvs[refs[0]][0].as_int == INVALID_MV)) &&
-                                  ((mbmi_ext->ref_mvs[refs[0]][1].as_int == 0) ||
-                                   (mbmi_ext->ref_mvs[refs[0]][1].as_int == INVALID_MV)));
-
-            if (discount_newmv /*discount_newmv_test(cpi, this_mode, candidate_ptr->mode_info->mv[0], mode_mv, refs[0])*/) {
-                rate_mv = VPXMAX(rate_mv / NEW_MV_DISCOUNT_FACTOR, 1);
-            }
-#endif
         }
     }
 
-#if INTER_INTRA_BIAS
-    // We don't include the cost of the second reference here, because there
-    // are only two options: Last/ARF or Golden/ARF; The second one is always
-    // known, which is ARF.
-    //
-    // Under some circumstances we discount the cost of new mv mode to encourage
-    // initiation of a motion field.
-    int discount_newmv =
-        (/*!cpi->rc.is_src_frame_alt_ref && */ (this_mode == NEWMV) && (candidate_ptr->mode_info->mv[0].as_int != 0) &&
-         ((mbmi_ext->ref_mvs[refs[0]][0].as_int == 0) || (mbmi_ext->ref_mvs[refs[0]][0].as_int == INVALID_MV)) &&
-         ((mbmi_ext->ref_mvs[refs[0]][1].as_int == 0) || (mbmi_ext->ref_mvs[refs[0]][1].as_int == INVALID_MV)));
-
-    if (discount_newmv) {
-        rate_inter_mode = VPXMIN(cost_mv_ref(cpi, (PREDICTION_MODE)this_mode, mbmi_ext->mode_context[refs[0]]),
-                                 cost_mv_ref(cpi, (PREDICTION_MODE)NEARESTMV, mbmi_ext->mode_context[refs[0]]));
-    } else {
-        rate_inter_mode = cost_mv_ref(cpi, (PREDICTION_MODE)this_mode, mbmi_ext->mode_context[refs[0]]);
-    }
-#else
-
     rate_inter_mode = cost_mv_ref(cpi, (PREDICTION_MODE)this_mode, mbmi_ext->mode_context[refs[0]]);
-#endif
 
     this_distortion = (int64_t)(luma_distortion + chroma_distortion);
 

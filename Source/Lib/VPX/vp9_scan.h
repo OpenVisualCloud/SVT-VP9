@@ -31,11 +31,11 @@ typedef struct {
 extern const scan_order eb_vp9_default_scan_orders[TX_SIZES];
 extern const scan_order eb_vp9_scan_orders[TX_SIZES][TX_TYPES];
 
-static INLINE int get_coef_context(const int16_t *neighbors, const uint8_t *token_cache, int c) {
+static inline int get_coef_context(const int16_t *neighbors, const uint8_t *token_cache, int c) {
     return (1 + token_cache[neighbors[MAX_NEIGHBORS * c + 0]] + token_cache[neighbors[MAX_NEIGHBORS * c + 1]]) >> 1;
 }
 
-static INLINE const scan_order *get_scan(const MACROBLOCKD *xd, TX_SIZE tx_size, PLANE_TYPE type, int block_idx) {
+static inline const scan_order *get_scan(const MACROBLOCKD *xd, TX_SIZE tx_size, PLANE_TYPE type, int block_idx) {
     const ModeInfo *const mi = xd->mi[0];
 
     if (is_inter_block(mi) || type != PLANE_TYPE_Y || xd->lossless) {

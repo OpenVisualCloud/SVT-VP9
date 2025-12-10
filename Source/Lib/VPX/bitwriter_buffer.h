@@ -11,8 +11,6 @@
 #ifndef VPX_VPX_DSP_BITWRITER_BUFFER_H_
 #define VPX_VPX_DSP_BITWRITER_BUFFER_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "stddef.h"
 

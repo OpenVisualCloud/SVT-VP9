@@ -211,9 +211,7 @@ extern uint64_t eb_vp9_log2f_high_precision(uint64_t x, uint8_t precision);
 #define MINI_GOP_WINDOW_MAX_COUNT 8 // widow subdivision: 8 x 3L
 
 #define MIN_HIERARCHICAL_LEVEL 2
-#if NEW_PRED_STRUCT
 static const uint32_t mini_gop_offset[4] = {1, 3, 7, 31};
-#endif
 typedef struct MiniGopStats {
     uint32_t hierarchical_levels;
     uint32_t start_index;

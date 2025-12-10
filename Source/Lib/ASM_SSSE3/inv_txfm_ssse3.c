@@ -16,7 +16,7 @@
 //#include "vpx_dsp/x86/transpose_sse2.h"
 //#include "vpx_dsp/x86/txfm_common_sse2.h"
 
-static INLINE void partial_butterfly_ssse3(const __m128i in, const int c0, const int c1, __m128i *const out0,
+static inline void partial_butterfly_ssse3(const __m128i in, const int c0, const int c1, __m128i *const out0,
                                            __m128i *const out1) {
     const __m128i cst0 = _mm_set1_epi16(2 * c0);
     const __m128i cst1 = _mm_set1_epi16(2 * c1);
@@ -24,7 +24,7 @@ static INLINE void partial_butterfly_ssse3(const __m128i in, const int c0, const
     *out1              = _mm_mulhrs_epi16(in, cst1);
 }
 
-static INLINE __m128i partial_butterfly_cospi16_ssse3(const __m128i in) {
+static inline __m128i partial_butterfly_cospi16_ssse3(const __m128i in) {
     const __m128i coef_pair = _mm_set1_epi16(2 * cospi_16_64);
     return _mm_mulhrs_epi16(in, coef_pair);
 }
@@ -50,7 +50,7 @@ void eb_vp9_idct8x8_12_add_ssse3(const tran_low_t *input, uint8_t *dest, int str
 // For each 8x32 block __m128i in[32],
 // Input with index, 0, 4
 // output pixels: 0-7 in __m128i out[32]
-static INLINE void idct32_34_8x32_quarter_1(const __m128i *const in /*in[32]*/, __m128i *const out /*out[8]*/) {
+static inline void idct32_34_8x32_quarter_1(const __m128i *const in /*in[32]*/, __m128i *const out /*out[8]*/) {
     __m128i step1[8], step2[8];
 
     // stage 3
@@ -86,7 +86,7 @@ static INLINE void idct32_34_8x32_quarter_1(const __m128i *const in /*in[32]*/, 
 // For each 8x32 block __m128i in[32],
 // Input with index, 2, 6
 // output pixels: 8-15 in __m128i out[32]
-static INLINE void idct32_34_8x32_quarter_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[16]*/) {
+static inline void idct32_34_8x32_quarter_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[16]*/) {
     __m128i step1[16], step2[16];
 
     // stage 2
@@ -106,7 +106,7 @@ static INLINE void idct32_34_8x32_quarter_2(const __m128i *const in /*in[32]*/, 
     idct32_8x32_quarter_2_stage_4_to_6(step1, out);
 }
 
-static INLINE void idct32_34_8x32_quarter_1_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
+static inline void idct32_34_8x32_quarter_1_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i temp[16];
     idct32_34_8x32_quarter_1(in, temp);
     idct32_34_8x32_quarter_2(in, temp);
@@ -117,7 +117,7 @@ static INLINE void idct32_34_8x32_quarter_1_2(const __m128i *const in /*in[32]*/
 // For each 8x32 block __m128i in[32],
 // Input with odd index, 1, 3, 5, 7
 // output pixels: 16-23, 24-31 in __m128i out[32]
-static INLINE void idct32_34_8x32_quarter_3_4(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
+static inline void idct32_34_8x32_quarter_3_4(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i step1[32];
 
     // stage 1
@@ -147,7 +147,7 @@ void eb_vp9_idct32_34_8x32_ssse3(const __m128i *const in /*in[32]*/, __m128i *co
 // For each 8x32 block __m128i in[32],
 // Input with index, 0, 4, 8, 12
 // output pixels: 0-7 in __m128i out[32]
-static INLINE void idct32_135_8x32_quarter_1(const __m128i *const in /*in[32]*/, __m128i *const out /*out[8]*/) {
+static inline void idct32_135_8x32_quarter_1(const __m128i *const in /*in[32]*/, __m128i *const out /*out[8]*/) {
     __m128i step1[8], step2[8];
 
     // stage 3
@@ -185,7 +185,7 @@ static INLINE void idct32_135_8x32_quarter_1(const __m128i *const in /*in[32]*/,
 // For each 8x32 block __m128i in[32],
 // Input with index, 2, 6, 10, 14
 // output pixels: 8-15 in __m128i out[32]
-static INLINE void idct32_135_8x32_quarter_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[16]*/) {
+static inline void idct32_135_8x32_quarter_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[16]*/) {
     __m128i step1[16], step2[16];
 
     // stage 2
@@ -207,7 +207,7 @@ static INLINE void idct32_135_8x32_quarter_2(const __m128i *const in /*in[32]*/,
     idct32_8x32_quarter_2_stage_4_to_6(step1, out);
 }
 
-static INLINE void idct32_135_8x32_quarter_1_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
+static inline void idct32_135_8x32_quarter_1_2(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i temp[16];
     idct32_135_8x32_quarter_1(in, temp);
     idct32_135_8x32_quarter_2(in, temp);
@@ -219,7 +219,7 @@ static INLINE void idct32_135_8x32_quarter_1_2(const __m128i *const in /*in[32]*
 // Input with odd index,
 // 1, 3, 5, 7, 9, 11, 13, 15
 // output pixels: 16-23, 24-31 in __m128i out[32]
-static INLINE void idct32_135_8x32_quarter_3_4(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
+static inline void idct32_135_8x32_quarter_3_4(const __m128i *const in /*in[32]*/, __m128i *const out /*out[32]*/) {
     __m128i step1[32], step2[32];
 
     // stage 1

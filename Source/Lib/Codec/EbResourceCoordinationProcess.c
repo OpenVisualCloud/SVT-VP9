@@ -312,13 +312,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(SequenceControlSet      *se
     } else {
         picture_control_set_ptr->noise_detection_method = NOISE_DETECT_FULL_PRECISION;
     }
-#if TURN_OFF_PRE_PROCESSING
     picture_control_set_ptr->enable_denoise_src_flag = EB_FALSE;
-#else
-    picture_control_set_ptr->enable_denoise_src_flag = picture_control_set_ptr->enc_mode <= ENC_MODE_11
-        ? sequence_control_set_ptr->enable_denoise_flag
-        : EB_FALSE;
-#endif
 
     // Derive Noise Detection Threshold
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_8) {
@@ -609,9 +603,6 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         picture_control_set_ptr->cpi->common.reset_frame_context     = 0;
         picture_control_set_ptr->cpi->max_mv_magnitude               = 0;
         picture_control_set_ptr->cpi->common.allow_high_precision_mv = 0;
-#if 0 // Hsan: switchable interp_filter not supported
-        picture_control_set_ptr->cpi->common.interp_filter = 0;
-#endif
         memset(picture_control_set_ptr->cpi->interp_filter_selected,
                0,
                sizeof(picture_control_set_ptr->cpi->interp_filter_selected[0][0]) * SWITCHABLE);
@@ -671,9 +662,6 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         eb_vp9_init_quantizer(picture_control_set_ptr->cpi);
 
         eb_vp9_rc_init_minq_luts();
-#if SEG_SUPPORT
-        eb_vp9_reset_segment_features(&picture_control_set_ptr->cpi->common.seg);
-#endif
         // Set the Encoder mode
         picture_control_set_ptr->enc_mode = sequence_control_set_ptr->static_config.enc_mode;
 

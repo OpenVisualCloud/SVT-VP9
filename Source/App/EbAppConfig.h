@@ -10,26 +10,6 @@
 
 #include "EbSvtVp9Enc.h"
 
-// Define Cross-Platform 64-bit fseek() and ftell()
-#ifdef _WIN32
-typedef __int64 Off64;
-#define fseeko64 _fseeki64
-#define ftello64 _ftelli64
-#elif defined(__GNUC__)
-#define fseeko64 fseek
-#define ftello64 ftell
-#endif
-
-#ifndef _RSIZE_T_DEFINED
-typedef size_t rsize_t;
-#define _RSIZE_T_DEFINED
-#endif /* _RSIZE_T_DEFINED */
-
-#ifndef _ERRNO_T_DEFINED
-#define _ERRNO_T_DEFINED
-typedef int32_t errno_t;
-#endif /* _ERRNO_T_DEFINED */
-
 /** The AppExitConditionType type is used to define the App main loop exit
 conditions.
 */

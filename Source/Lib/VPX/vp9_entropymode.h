@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_ENTROPYMODE_H_
 #define VPX_VP9_COMMON_VP9_ENTROPYMODE_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_enums.h"
 #include "vp9_entropy.h"

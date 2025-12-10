@@ -10,8 +10,6 @@
 
 #include <math.h>
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include <stdlib.h>
 #include "assert.h"
@@ -224,27 +222,3 @@ void eb_vp9_build_nmv_cost_table(int *mvjoint, int *mvcost[2], const nmv_context
     build_nmv_component_cost_table(mvcost[0], &ctx->comps[0], usehp);
     build_nmv_component_cost_table(mvcost[1], &ctx->comps[1], usehp);
 }
-
-#if 0
-void vp9_update_mv_count(ThreadData *td) {
-  const MACROBLOCKD *xd = &td->mb.e_mbd;
-  const ModeInfo *mi = xd->mi[0];
-  const MbModeInfoExt *mbmi_ext = td->mb.mbmi_ext;
-
-  if (mi->sb_type < BLOCK_8X8) {
-    const int num_4x4_w = eb_vp9_num_4x4_blocks_wide_lookup[mi->sb_type];
-    const int num_4x4_h = eb_vp9_num_4x4_blocks_high_lookup[mi->sb_type];
-    int idx, idy;
-
-    for (idy = 0; idy < 2; idy += num_4x4_h) {
-      for (idx = 0; idx < 2; idx += num_4x4_w) {
-        const int i = idy * 2 + idx;
-        if (mi->bmi[i].as_mode == NEWMV)
-          inc_mvs(mi, mbmi_ext, mi->bmi[i].as_mv, &td->counts->mv);
-      }
-    }
-  } else {
-    if (mi->mode == NEWMV) inc_mvs(mi, mbmi_ext, mi->mv, &td->counts->mv);
-  }
-}
-#endif

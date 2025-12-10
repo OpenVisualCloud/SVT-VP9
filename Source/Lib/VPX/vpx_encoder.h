@@ -29,7 +29,6 @@
 extern "C" {
 #endif
 
-#define INLINE __inline
 #include <stdint.h>
 #include "vpx_codec.h"
 

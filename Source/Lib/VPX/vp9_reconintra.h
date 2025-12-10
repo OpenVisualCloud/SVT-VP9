@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_RECONINTRA_H_
 #define VPX_VP9_COMMON_VP9_RECONINTRA_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_blockd.h"
 #include "EbSequenceControlSet.h"
@@ -24,20 +22,8 @@ extern "C" {
 
 void eb_vp9_init_intra_predictors(void);
 
-void eb_vp9_predict_intra_block(EncDecContext *context_ptr,
-#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
-                             const MACROBLOCKD *xd,
-#endif
-                                TX_SIZE tx_size, PREDICTION_MODE mode,
-#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
-                             const uint8_t *ref,
-                             int ref_stride,
-#endif
-                                uint8_t *dst, int dst_stride,
-#if 0
-                             int aoff, int loff,
-#endif
-                                int plane);
+void eb_vp9_predict_intra_block(EncDecContext *context_ptr, TX_SIZE tx_size, PREDICTION_MODE mode, uint8_t *dst,
+                                int dst_stride, int plane);
 #ifdef __cplusplus
 } // extern "C"
 #endif

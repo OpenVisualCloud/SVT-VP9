@@ -9,8 +9,6 @@
  */
 #include <assert.h>
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_cost.h"
 

@@ -7,7 +7,6 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#define INLINE __inline
 
 #include <stdint.h>
 
@@ -82,7 +81,7 @@ static const uint8_t log_in_base_2[] = {
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10};
 
-static INLINE int mv_class_base(MV_CLASS_TYPE c) { return c ? CLASS0_SIZE << (c + 2) : 0; }
+static inline int mv_class_base(MV_CLASS_TYPE c) { return c ? CLASS0_SIZE << (c + 2) : 0; }
 
 MV_CLASS_TYPE eb_vp9_get_mv_class(int z, int *offset) {
     const MV_CLASS_TYPE c = (z >= CLASS0_SIZE * 4096) ? MV_CLASS_10 : (MV_CLASS_TYPE)log_in_base_2[z >> 3];

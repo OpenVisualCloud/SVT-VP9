@@ -755,21 +755,3 @@ void eb_vp9_fht16x16_c(const int16_t *input, tran_low_t *output, int stride, int
         }
     }
 }
-
-#if CONFIG_VP9_HIGHBITDEPTH
-void vp9_highbd_fht4x4_c(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
-    eb_vp9_fht4x4_c(input, output, stride, tx_type);
-}
-
-void vp9_highbd_fht8x8_c(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
-    eb_vp9_fht8x8_c(input, output, stride, tx_type);
-}
-
-void vp9_highbd_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride) {
-    eb_vp9_fwht4x4_c(input, output, stride);
-}
-
-void vp9_highbd_fht16x16_c(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
-    eb_vp9_fht16x16_c(input, output, stride, tx_type);
-}
-#endif // CONFIG_VP9_HIGHBITDEPTH

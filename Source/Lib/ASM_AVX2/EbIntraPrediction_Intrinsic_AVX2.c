@@ -9,14 +9,7 @@
 #include "immintrin.h"
 #include "vpx_dsp_rtcd.h"
 
-#if 0
-static void _mm_storeh_epi64(__m128i * p, __m128i x)
-{
-  _mm_storeh_pd((double *)p, _mm_castsi128_pd(x));
-}
-#endif
-
-static INLINE __m256i avg3_avx2(const __m256i a, const __m256i b, const __m256i c) {
+static inline __m256i avg3_avx2(const __m256i a, const __m256i b, const __m256i c) {
     const __m256i c1 = _mm256_set1_epi8(1);
     __m256i       t0, t1;
     t0 = _mm256_xor_si256(a, c); // a ^ c
@@ -31,14 +24,14 @@ static INLINE __m256i avg3_avx2(const __m256i a, const __m256i b, const __m256i 
 }
 
 // D117
-static INLINE __m256i d117_avg3(const uint8_t *const ref) {
+static inline __m256i d117_avg3(const uint8_t *const ref) {
     const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
     const __m256i r2 = _mm256_loadu_si256((const __m256i *)(ref + 2));
     return avg3_avx2(r0, r1, r2);
 }
 
-static INLINE void d117_avg3_last(const uint8_t *const ref, __m256i *const b0h, __m256i *const b) {
+static inline void d117_avg3_last(const uint8_t *const ref, __m256i *const b0h, __m256i *const b) {
     const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
     const __m256i r2 = _mm256_loadu_si256((const __m256i *)(ref + 2));
@@ -122,7 +115,7 @@ void eb_vp9_d117_predictor_32x32_avx2(uint8_t *dst, ptrdiff_t stride, const uint
     _mm256_store_si256((__m256i *)(dst + 31 * stride), _mm256_loadu_si256((const __m256i *)(border1 + 8)));
 }
 
-static INLINE __m256i d135_avg3(const uint8_t *const ref) {
+static inline __m256i d135_avg3(const uint8_t *const ref) {
     const __m256i r0 = _mm256_load_si256((const __m256i *)(ref + 0));
     const __m256i r1 = _mm256_loadu_si256((const __m256i *)(ref + 1));
     const __m256i r2 = _mm256_loadu_si256((const __m256i *)(ref + 2));

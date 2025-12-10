@@ -18,7 +18,7 @@
 //#include "vpx_dsp/x86/transpose_sse2.h"
 //#include "vpx_dsp/x86/txfm_common_sse2.h"
 
-static INLINE void idct8x8_12_add_kernel_ssse3(__m128i *const io /* io[8] */) {
+static inline void idct8x8_12_add_kernel_ssse3(__m128i *const io /* io[8] */) {
     const __m128i cp_28d_4d     = dual_set_epi16(2 * cospi_28_64, 2 * cospi_4_64);
     const __m128i cp_n20d_12d   = dual_set_epi16(-2 * cospi_20_64, 2 * cospi_12_64);
     const __m128i cp_8d_24d     = dual_set_epi16(2 * cospi_8_64, 2 * cospi_24_64);

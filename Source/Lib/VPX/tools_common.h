@@ -12,49 +12,10 @@
 
 #include <stdio.h>
 
-#define INLINE __inline
 #include "vpx_codec.h"
 #include <stdint.h>
 
-#if CONFIG_ENCODERS
-#include "./y4minput.h"
-#endif
-
-#if defined(_MSC_VER)
-/* MSVS uses _f{seek,tell}i64. */
-#define fseeko _fseeki64
-#define ftello _ftelli64
-typedef int64_t FileOffset;
-#elif defined(_WIN32)
-/* MinGW uses f{seek,tell}o64 for large files. */
-#define fseeko fseeko64
-#define ftello ftello64
-typedef Off64 FileOffset;
-#elif CONFIG_OS_SUPPORT
-typedef off_t FileOffset;
-/* Use 32-bit file operations in WebM file format when building ARM
- * executables (.axf) with RVCT. */
-#else
-#define fseeko fseek
-#define ftello ftell
-typedef long FileOffset; /* NOLINT */
-#endif /* CONFIG_OS_SUPPORT */
-
-#if CONFIG_OS_SUPPORT
-#ifdef _WIN32
-#include <io.h> /* NOLINT */
-#define isatty _isatty
-#define fileno _fileno
-#else
-#include <unistd.h> /* NOLINT */
-#endif /* _MSC_VER */
-#endif /* CONFIG_OS_SUPPORT */
-
 #define LITERALU64(hi, lo) ((((uint64_t)hi) << 32) | lo)
-
-#ifndef PATH_MAX
-#define PATH_MAX 512
-#endif
 
 #define IVF_FRAME_HDR_SZ (4 + 8) /* 4 byte size + 8 byte timestamp */
 #define IVF_FILE_HDR_SZ 32
@@ -145,12 +106,6 @@ void vpx_img_write(const vpx_image_t *img, FILE *file);
 int  vpx_img_read(vpx_image_t *img, FILE *file);
 
 double sse_to_psnr(double samples, double peak, double mse);
-
-#if CONFIG_VP9_HIGHBITDEPTH
-void vpx_img_upshift(vpx_image_t *dst, vpx_image_t *src, int input_shift);
-void vpx_img_downshift(vpx_image_t *dst, vpx_image_t *src, int down_shift);
-void vpx_img_truncate_16_to_8(vpx_image_t *dst, vpx_image_t *src);
-#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

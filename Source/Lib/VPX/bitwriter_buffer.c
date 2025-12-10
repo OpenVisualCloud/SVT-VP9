@@ -11,8 +11,6 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "bitwriter_buffer.h"
 

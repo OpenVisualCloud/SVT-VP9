@@ -7,13 +7,6 @@
 #include <emmintrin.h>
 #include "EbDefinitions.h"
 
-#if 0
-static __m128i _mm_loadh_epi64(__m128i x, __m128i *p)
-{
-  return _mm_castpd_si128(_mm_loadh_pd(_mm_castsi128_pd(x), (double *)p));
-}
-#endif
-
 // Note: maximum energy within 1 TU considered to be 2^30-e
 // All functions can accumulate up to 4 TUs to stay within 32-bit unsigned range
 

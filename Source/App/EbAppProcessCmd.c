@@ -126,12 +126,12 @@ void process_input_field_standard_mode(EbConfig *config, EbBufferHeaderType *hea
     eb_input_ptr = luma_input_ptr;
     // Skip 1 luma row if bottom field (point to the bottom field)
     if (config->processed_frame_count % 2 != 0)
-        fseeko64(input_file, (long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_luma_row_size, SEEK_CUR);
 
     for (input_row_index = 0; input_row_index < input_padded_height; input_row_index++) {
         header_ptr->n_filled_len += (uint32_t)fread(eb_input_ptr, 1, source_luma_row_size, input_file);
         // Skip 1 luma row (only fields)
-        fseeko64(input_file, (long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_luma_row_size, SEEK_CUR);
         eb_input_ptr += source_luma_row_size;
     }
 
@@ -139,14 +139,14 @@ void process_input_field_standard_mode(EbConfig *config, EbBufferHeaderType *hea
     eb_input_ptr = cb_input_ptr;
     // Step back 1 luma row if bottom field (undo the previous jump), and skip 1 chroma row if bottom field (point to the bottom field)
     if (config->processed_frame_count % 2 != 0) {
-        fseeko64(input_file, -(long)source_luma_row_size, SEEK_CUR);
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, -(long)source_luma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
     }
 
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
         header_ptr->n_filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
         // Skip 1 chroma row (only fields)
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
         eb_input_ptr += source_chroma_row_size;
     }
 
@@ -158,13 +158,13 @@ void process_input_field_standard_mode(EbConfig *config, EbBufferHeaderType *hea
     for (input_row_index = 0; input_row_index < input_padded_height >> 1; input_row_index++) {
         header_ptr->n_filled_len += (uint32_t)fread(eb_input_ptr, 1, source_chroma_row_size, input_file);
         // Skip 1 chroma row (only fields)
-        fseeko64(input_file, (long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, (long)source_chroma_row_size, SEEK_CUR);
         eb_input_ptr += source_chroma_row_size;
     }
 
     // Step back 1 chroma row if bottom field (undo the previous jump)
     if (config->processed_frame_count % 2 != 0) {
-        fseeko64(input_file, -(long)source_chroma_row_size, SEEK_CUR);
+        fseeko(input_file, -(long)source_chroma_row_size, SEEK_CUR);
     }
 }
 
@@ -700,10 +700,10 @@ AppExitConditionType process_output_recon_buffer(EbConfig *config, EbAppContext 
         rewind(config->recon_file);
         uint64_t frameNum = header_ptr->pts;
         while (frameNum > 0) {
-            fseek_return_val = fseeko64(config->recon_file, header_ptr->n_filled_len, SEEK_CUR);
+            fseek_return_val = fseeko(config->recon_file, header_ptr->n_filled_len, SEEK_CUR);
 
             if (fseek_return_val != 0) {
-                printf("Error in fseeko64  returnVal %i\n", fseek_return_val);
+                printf("Error in fseeko  returnVal %i\n", fseek_return_val);
                 return APP_ExitConditionError;
             }
             frameNum = frameNum - 1;

@@ -119,7 +119,7 @@ static const int idx_n_column_to_subblock[4][2] = {{1, 2}, {1, 3}, {3, 2}, {3, 3
 // clamp_mv_ref
 #define MV_BORDER (16 << 3) // Allow 16 pels in 1/8th pel units
 
-static INLINE void clamp_mv_ref(MV *mv, const MACROBLOCKD *xd) {
+static inline void clamp_mv_ref(MV *mv, const MACROBLOCKD *xd) {
     clamp_mv(mv,
              xd->mb_to_left_edge - MV_BORDER,
              xd->mb_to_right_edge + MV_BORDER,
@@ -129,14 +129,14 @@ static INLINE void clamp_mv_ref(MV *mv, const MACROBLOCKD *xd) {
 
 // This function returns either the appropriate sub block or block's mv
 // on whether the block_size < 8x8 and we have check_sub_blocks set.
-static INLINE int_mv get_sub_block_mv(const ModeInfo *candidate, int which_mv, int search_col, int block_idx) {
+static inline int_mv get_sub_block_mv(const ModeInfo *candidate, int which_mv, int search_col, int block_idx) {
     return block_idx >= 0 && candidate->sb_type < BLOCK_8X8
         ? candidate->bmi[idx_n_column_to_subblock[block_idx][search_col == 0]].as_mv[which_mv]
         : candidate->mv[which_mv];
 }
 
 // Performs mv sign inversion if indicated by the reference frame combination.
-static INLINE int_mv scale_mv(const ModeInfo *mi, int ref, const MV_REFERENCE_FRAME this_ref_frame,
+static inline int_mv scale_mv(const ModeInfo *mi, int ref, const MV_REFERENCE_FRAME this_ref_frame,
                               const int *ref_sign_bias) {
     int_mv mv = mi->mv[ref];
     if (ref_sign_bias[mi->ref_frame[ref]] != ref_sign_bias[this_ref_frame]) {
@@ -176,13 +176,13 @@ static INLINE int_mv scale_mv(const ModeInfo *mi, int ref, const MV_REFERENCE_FR
 
 // Checks that the given mi_row, mi_col and search point
 // are inside the borders of the tile.
-static INLINE int is_inside(const TileInfo *const tile, int mi_col, int mi_row, int mi_rows, const POSITION *mi_pos) {
+static inline int is_inside(const TileInfo *const tile, int mi_col, int mi_row, int mi_rows, const POSITION *mi_pos) {
     return !(mi_row + mi_pos->row < 0 || mi_col + mi_pos->col < tile->mi_col_start || mi_row + mi_pos->row >= mi_rows ||
              mi_col + mi_pos->col >= tile->mi_col_end);
 }
 
 // TODO(jingning): this mv clamping function should be block size dependent.
-static INLINE void clamp_mv2(MV *mv, const MACROBLOCKD *xd) {
+static inline void clamp_mv2(MV *mv, const MACROBLOCKD *xd) {
     clamp_mv(mv,
              xd->mb_to_left_edge - LEFT_TOP_MARGIN,
              xd->mb_to_right_edge + RIGHT_BOTTOM_MARGIN,
@@ -190,7 +190,7 @@ static INLINE void clamp_mv2(MV *mv, const MACROBLOCKD *xd) {
              xd->mb_to_bottom_edge + RIGHT_BOTTOM_MARGIN);
 }
 
-static INLINE void lower_mv_precision(MV *mv, int allow_hp) {
+static inline void lower_mv_precision(MV *mv, int allow_hp) {
     const int use_hp = allow_hp && use_mv_hp(mv);
     if (!use_hp) {
         if (mv->row & 1)
@@ -201,12 +201,8 @@ static INLINE void lower_mv_precision(MV *mv, int allow_hp) {
 }
 
 typedef void (*find_mv_refs_sync)(void *const data, int mi_row);
-#if 1
-int eb_vp9_find_mv_refs(EncDecContext *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
-#else
-void eb_vp9_find_mv_refs(EncDecContext *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd,
-#endif
-                        ModeInfo *mi, MV_REFERENCE_FRAME ref_frame, int_mv *mv_ref_list, int mi_row, int mi_col,
+int eb_vp9_find_mv_refs(EncDecContext *context_ptr, const VP9_COMMON *cm, const MACROBLOCKD *xd, ModeInfo *mi,
+                        MV_REFERENCE_FRAME ref_frame, int_mv *mv_ref_list, int mi_row, int mi_col,
                         uint8_t *mode_context);
 
 // check a list of motion vectors by sad score using a number rows of pixels

@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_ENCODER_VP9_BLOCK_H_
 #define VPX_VP9_ENCODER_VP9_BLOCK_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_blockd.h"
 
@@ -31,9 +29,6 @@ struct macroblock_plane {
     tran_low_t *qcoeff;
     tran_low_t *coeff;
     uint16_t   *eobs;
-#if 0
-  struct buf_2d src;
-#endif
     // Quantizer setings
     int16_t *quant_fp;
     int16_t *round_fp;
@@ -203,9 +198,6 @@ struct macroblock {
 
     void (*fwd_txfm4x4)(const int16_t *input, tran_low_t *output, int stride);
     void (*inv_txfm_add)(const tran_low_t *input, uint8_t *dest, int stride, int eob);
-#if CONFIG_VP9_HIGHBITDEPTH
-    void (*highbd_inv_txfm_add)(const tran_low_t *input, uint16_t *dest, int stride, int eob, int bd);
-#endif
 };
 
 #ifdef __cplusplus

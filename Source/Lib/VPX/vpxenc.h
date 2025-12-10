@@ -10,7 +10,6 @@
 #ifndef VPX_VPXENC_H_
 #define VPX_VPXENC_H_
 
-#define INLINE __inline
 #include <stdint.h>
 #include <stdio.h>
 #include "vpx_encoder.h"

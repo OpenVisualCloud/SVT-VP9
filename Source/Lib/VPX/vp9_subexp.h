@@ -15,8 +15,6 @@
 extern "C" {
 #endif
 
-#define INLINE __inline
-
 #include <stdint.h>
 
 struct VpxWriter;

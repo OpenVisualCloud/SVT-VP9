@@ -10,8 +10,6 @@
 
 #include <assert.h>
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_tokenize.h"
 #include "vp9_entropy.h"
@@ -100,91 +98,6 @@ const uint16_t eb_vp9_cat6_high_cost[64] = {
     3666, 5829, 6305, 8468,  6726,  8889,  9365,  11528, 7244,  9407,  9883,  12046, 10304, 12467, 12943, 15106,
     7244, 9407, 9883, 12046, 10304, 12467, 12943, 15106, 10822, 12985, 13461, 15624, 13882, 16045, 16521, 18684};
 
-#if CONFIG_VP9_HIGHBITDEPTH
-const uint16_t vp9_cat6_high10_high_cost[256] = {
-    94,    2257,  2733,  4896,  3154,  5317,  5793,  7956,  3672,  5835,  6311,  8474,  6732,  8895,  9371,  11534,
-    3672,  5835,  6311,  8474,  6732,  8895,  9371,  11534, 7250,  9413,  9889,  12052, 10310, 12473, 12949, 15112,
-    3672,  5835,  6311,  8474,  6732,  8895,  9371,  11534, 7250,  9413,  9889,  12052, 10310, 12473, 12949, 15112,
-    7250,  9413,  9889,  12052, 10310, 12473, 12949, 15112, 10828, 12991, 13467, 15630, 13888, 16051, 16527, 18690,
-    4187,  6350,  6826,  8989,  7247,  9410,  9886,  12049, 7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627,
-    7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627, 11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205,
-    7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627, 11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205,
-    11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205, 14921, 17084, 17560, 19723, 17981, 20144, 20620, 22783,
-    4187,  6350,  6826,  8989,  7247,  9410,  9886,  12049, 7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627,
-    7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627, 11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205,
-    7765,  9928,  10404, 12567, 10825, 12988, 13464, 15627, 11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205,
-    11343, 13506, 13982, 16145, 14403, 16566, 17042, 19205, 14921, 17084, 17560, 19723, 17981, 20144, 20620, 22783,
-    8280,  10443, 10919, 13082, 11340, 13503, 13979, 16142, 11858, 14021, 14497, 16660, 14918, 17081, 17557, 19720,
-    11858, 14021, 14497, 16660, 14918, 17081, 17557, 19720, 15436, 17599, 18075, 20238, 18496, 20659, 21135, 23298,
-    11858, 14021, 14497, 16660, 14918, 17081, 17557, 19720, 15436, 17599, 18075, 20238, 18496, 20659, 21135, 23298,
-    15436, 17599, 18075, 20238, 18496, 20659, 21135, 23298, 19014, 21177, 21653, 23816, 22074, 24237, 24713, 26876};
-const uint16_t vp9_cat6_high12_high_cost[1024] = {
-    100,   2263,  2739,  4902,  3160,  5323,  5799,  7962,  3678,  5841,  6317,  8480,  6738,  8901,  9377,  11540,
-    3678,  5841,  6317,  8480,  6738,  8901,  9377,  11540, 7256,  9419,  9895,  12058, 10316, 12479, 12955, 15118,
-    3678,  5841,  6317,  8480,  6738,  8901,  9377,  11540, 7256,  9419,  9895,  12058, 10316, 12479, 12955, 15118,
-    7256,  9419,  9895,  12058, 10316, 12479, 12955, 15118, 10834, 12997, 13473, 15636, 13894, 16057, 16533, 18696,
-    4193,  6356,  6832,  8995,  7253,  9416,  9892,  12055, 7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211, 14927, 17090, 17566, 19729, 17987, 20150, 20626, 22789,
-    4193,  6356,  6832,  8995,  7253,  9416,  9892,  12055, 7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211, 14927, 17090, 17566, 19729, 17987, 20150, 20626, 22789,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    4193,  6356,  6832,  8995,  7253,  9416,  9892,  12055, 7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211, 14927, 17090, 17566, 19729, 17987, 20150, 20626, 22789,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    12379, 14542, 15018, 17181, 15439, 17602, 18078, 20241, 15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397, 23113, 25276, 25752, 27915, 26173, 28336, 28812, 30975,
-    4193,  6356,  6832,  8995,  7253,  9416,  9892,  12055, 7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    7771,  9934,  10410, 12573, 10831, 12994, 13470, 15633, 11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211,
-    11349, 13512, 13988, 16151, 14409, 16572, 17048, 19211, 14927, 17090, 17566, 19729, 17987, 20150, 20626, 22789,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    12379, 14542, 15018, 17181, 15439, 17602, 18078, 20241, 15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397, 23113, 25276, 25752, 27915, 26173, 28336, 28812, 30975,
-    8286,  10449, 10925, 13088, 11346, 13509, 13985, 16148, 11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    11864, 14027, 14503, 16666, 14924, 17087, 17563, 19726, 15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304,
-    15442, 17605, 18081, 20244, 18502, 20665, 21141, 23304, 19020, 21183, 21659, 23822, 22080, 24243, 24719, 26882,
-    12379, 14542, 15018, 17181, 15439, 17602, 18078, 20241, 15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397, 23113, 25276, 25752, 27915, 26173, 28336, 28812, 30975,
-    12379, 14542, 15018, 17181, 15439, 17602, 18078, 20241, 15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    15957, 18120, 18596, 20759, 19017, 21180, 21656, 23819, 19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397,
-    19535, 21698, 22174, 24337, 22595, 24758, 25234, 27397, 23113, 25276, 25752, 27915, 26173, 28336, 28812, 30975,
-    16472, 18635, 19111, 21274, 19532, 21695, 22171, 24334, 20050, 22213, 22689, 24852, 23110, 25273, 25749, 27912,
-    20050, 22213, 22689, 24852, 23110, 25273, 25749, 27912, 23628, 25791, 26267, 28430, 26688, 28851, 29327, 31490,
-    20050, 22213, 22689, 24852, 23110, 25273, 25749, 27912, 23628, 25791, 26267, 28430, 26688, 28851, 29327, 31490,
-    23628, 25791, 26267, 28430, 26688, 28851, 29327, 31490, 27206, 29369, 29845, 32008, 30266, 32429, 32905, 35068};
-#endif
-
 const vp9_extra_bit eb_vp9_extra_bits[ENTROPY_TOKENS] = {
     {0, 0, 0, zero_cost}, // ZERO_TOKEN
     {0, 0, 1, sign_cost}, // ONE_TOKEN
@@ -199,37 +112,6 @@ const vp9_extra_bit eb_vp9_extra_bits[ENTROPY_TOKENS] = {
     {eb_vp9_cat6_prob, 14, CAT6_MIN_VAL, 0}, // CATEGORY6_TOKEN
     {0, 0, 0, zero_cost} // EOB_TOKEN
 };
-
-#if CONFIG_VP9_HIGHBITDEPTH
-const vp9_extra_bit eb_vp9_extra_bits_high10[ENTROPY_TOKENS] = {
-    {0, 0, 0, zero_cost}, // ZERO
-    {0, 0, 1, sign_cost}, // ONE
-    {0, 0, 2, sign_cost}, // TWO
-    {0, 0, 3, sign_cost}, // THREE
-    {0, 0, 4, sign_cost}, // FOUR
-    {eb_vp9_cat1_prob, 1, CAT1_MIN_VAL, cat1_cost}, // CAT1
-    {eb_vp9_cat2_prob, 2, CAT2_MIN_VAL, cat2_cost}, // CAT2
-    {eb_vp9_cat3_prob, 3, CAT3_MIN_VAL, cat3_cost}, // CAT3
-    {eb_vp9_cat4_prob, 4, CAT4_MIN_VAL, cat4_cost}, // CAT4
-    {eb_vp9_cat5_prob, 5, CAT5_MIN_VAL, cat5_cost}, // CAT5
-    {eb_vp9_cat6_prob_high12 + 2, 16, CAT6_MIN_VAL, 0}, // CAT6
-    {0, 0, 0, zero_cost} // EOB
-};
-const vp9_extra_bit eb_vp9_extra_bits_high12[ENTROPY_TOKENS] = {
-    {0, 0, 0, zero_cost}, // ZERO
-    {0, 0, 1, sign_cost}, // ONE
-    {0, 0, 2, sign_cost}, // TWO
-    {0, 0, 3, sign_cost}, // THREE
-    {0, 0, 4, sign_cost}, // FOUR
-    {eb_vp9_cat1_prob, 1, CAT1_MIN_VAL, cat1_cost}, // CAT1
-    {eb_vp9_cat2_prob, 2, CAT2_MIN_VAL, cat2_cost}, // CAT2
-    {eb_vp9_cat3_prob, 3, CAT3_MIN_VAL, cat3_cost}, // CAT3
-    {eb_vp9_cat4_prob, 4, CAT4_MIN_VAL, cat4_cost}, // CAT4
-    {eb_vp9_cat5_prob, 5, CAT5_MIN_VAL, cat5_cost}, // CAT5
-    {eb_vp9_cat6_prob_high12, 18, CAT6_MIN_VAL, 0}, // CAT6
-    {0, 0, 0, zero_cost} // EOB
-};
-#endif
 
 const struct vp9_token eb_vp9_coef_encodings[ENTROPY_TOKENS] = {
     {2, 2}, {6, 3}, {28, 5}, {58, 6}, {59, 6}, {60, 6}, {61, 6}, {124, 7}, {125, 7}, {126, 7}, {127, 7}, {0, 1}};
@@ -246,16 +128,13 @@ static void set_entropy_context_b(MACROBLOCKD *const xd, int plane, int block, i
 
     ThreadData *const td = args->td;
     MACROBLOCK *const x  = &td->mb;
-#if 0
-  MACROBLOCKD *const xd = &x->e_mbd;
-#endif
 
     struct macroblock_plane  *p  = &x->plane[plane];
     struct macroblockd_plane *pd = &xd->plane[plane];
     eb_vp9_set_contexts(xd, pd, plane_bsize, tx_size, p->eobs[block] > 0, col, row);
 }
 
-static INLINE void add_token(TOKENEXTRA **t, const vpx_prob *context_tree, int16_t token, EXTRABIT extra,
+static inline void add_token(TOKENEXTRA **t, const vpx_prob *context_tree, int16_t token, EXTRABIT extra,
                              unsigned int *counts) {
     (*t)->context_tree = context_tree;
     (*t)->token        = token;
@@ -264,7 +143,7 @@ static INLINE void add_token(TOKENEXTRA **t, const vpx_prob *context_tree, int16
     ++counts[token];
 }
 
-static INLINE void add_token_no_extra(TOKENEXTRA **t, const vpx_prob *context_tree, int16_t token,
+static inline void add_token_no_extra(TOKENEXTRA **t, const vpx_prob *context_tree, int16_t token,
                                       unsigned int *counts) {
     (*t)->context_tree = context_tree;
     (*t)->token        = token;
@@ -278,30 +157,22 @@ static void tokenize_b(MACROBLOCKD *xd, int plane, int block, int row, int col, 
     VP9_COMP                     *cpi  = args->cpi;
     ThreadData *const             td   = args->td;
     MACROBLOCK *const             x    = &td->mb;
-#if 0
-  MACROBLOCKD *const xd = &x->e_mbd;
-#endif
-    TOKENEXTRA              **tp = args->tp;
-    uint8_t                   token_cache[32 * 32];
-    struct macroblock_plane  *p  = &x->plane[plane];
-    struct macroblockd_plane *pd = &xd->plane[plane];
-    ModeInfo                 *mi = xd->mi[0];
-    int                       pt; /* near block/prev token context index */
-    int                       c;
-    TOKENEXTRA               *t      = *tp; /* store tokens starting here */
-    int                       eob    = p->eobs[block];
-    const PLANE_TYPE          type   = get_plane_type(plane);
-    const tran_low_t         *qcoeff = BLOCK_OFFSET(p->qcoeff, block);
-    const int16_t            *scan, *nb;
-    const scan_order         *so;
-    const int                 ref                                    = is_inter_block(mi);
+    TOKENEXTRA                  **tp   = args->tp;
+    uint8_t                       token_cache[32 * 32];
+    struct macroblock_plane      *p  = &x->plane[plane];
+    struct macroblockd_plane     *pd = &xd->plane[plane];
+    ModeInfo                     *mi = xd->mi[0];
+    int                           pt; /* near block/prev token context index */
+    int                           c;
+    TOKENEXTRA                   *t      = *tp; /* store tokens starting here */
+    int                           eob    = p->eobs[block];
+    const PLANE_TYPE              type   = get_plane_type(plane);
+    const tran_low_t             *qcoeff = BLOCK_OFFSET(p->qcoeff, block);
+    const int16_t                *scan, *nb;
+    const scan_order             *so;
+    const int                     ref                                = is_inter_block(mi);
     unsigned int (*const counts)[COEFF_CONTEXTS][ENTROPY_TOKENS]     = td->rd_counts.coef_counts[tx_size][type][ref];
     vpx_prob(*const coef_probs)[COEFF_CONTEXTS][UNCONSTRAINED_NODES] = cpi->common.fc->coef_probs[tx_size][type][ref];
-
-#if 0 // Hsan: count-based probability update not yet supported (i.e. use default)
-  unsigned int(*const eob_branch)[COEFF_CONTEXTS] =
-      td->counts->eob_branch[tx_size][type][ref];
-#endif
 
     const uint8_t *const band   = get_band_translate(tx_size);
     const int            tx_eob = 16 << (tx_size << 1);
@@ -316,9 +187,6 @@ static void tokenize_b(MACROBLOCKD *xd, int plane, int block, int row, int col, 
     while (c < eob) {
         int v = 0;
         v     = qcoeff[scan[c]];
-#if 0 // Hsan: count-based probability update not yet supported (i.e. use default)
-    ++eob_branch[band[c]][pt];
-#endif
         while (!v) {
             add_token_no_extra(&t, coef_probs[band[c]][pt], ZERO_TOKEN, counts[band[c]][pt]);
 
@@ -337,9 +205,6 @@ static void tokenize_b(MACROBLOCKD *xd, int plane, int block, int row, int col, 
         pt = get_coef_context(nb, token_cache, c);
     }
     if (c < tx_eob) {
-#if 0 // Hsan: count-based probability update not yet supported (i.e. use default)
-    ++eob_branch[band[c]][pt];
-#endif
         add_token_no_extra(&t, coef_probs[band[c]][pt], EOB_TOKEN, counts[band[c]][pt]);
     }
 
@@ -352,59 +217,10 @@ struct is_skippable_args {
     uint16_t *eobs;
     int      *skippable;
 };
-#if 0
-static void is_skippable(int plane, int block, int row, int col,
-                         BLOCK_SIZE plane_bsize, TX_SIZE tx_size, void *argv) {
-  struct is_skippable_args *args = argv;
-  (void)plane;
-  (void)plane_bsize;
-  (void)tx_size;
-  (void)row;
-  (void)col;
-  args->skippable[0] &= (!args->eobs[block]);
-}
-
-// TODO(yaowu): rewrite and optimize this function to remove the usage of
-//              vp9_foreach_transform_block() and simplify is_skippable().
-int vp9_is_skippable_in_plane(MACROBLOCK *x, BLOCK_SIZE bsize, int plane) {
-  int result = 1;
-  struct is_skippable_args args = { x->plane[plane].eobs, &result };
-  eb_vp9_foreach_transformed_block_in_plane(&x->e_mbd, bsize, plane, is_skippable,
-                                         &args);
-  return result;
-}
-
-static void has_high_freq_coeff(int plane, int block, int row, int col,
-                                BLOCK_SIZE plane_bsize, TX_SIZE tx_size,
-                                void *argv) {
-  struct is_skippable_args *args = argv;
-  int eobs = (tx_size == TX_4X4) ? 3 : 10;
-  (void)plane;
-  (void)plane_bsize;
-  (void)row;
-  (void)col;
-  *(args->skippable) |= (args->eobs[block] > eobs);
-}
-
-int vp9_has_high_freq_in_plane(MACROBLOCK *x, BLOCK_SIZE bsize, int plane) {
-  int result = 0;
-  struct is_skippable_args args = { x->plane[plane].eobs, &result };
-  eb_vp9_foreach_transformed_block_in_plane(&x->e_mbd, bsize, plane,
-                                         has_high_freq_coeff, &args);
-  return result;
-}
-#endif
 void eb_vp9_tokenize_sb(struct VP9_COMP *cpi, MACROBLOCKD *const xd, struct ThreadData *td, TOKENEXTRA **t, int dry_run,
                         int seg_skip, BLOCK_SIZE bsize) {
-#if 0
-  MACROBLOCK *const x = &td->mb;
-  MACROBLOCKD *const xd = &x->e_mbd;
-#endif
     ModeInfo *const mi = xd->mi[0];
 
-#if 0 // Hsan: count-based probability update not yet supported (i.e. do not increment, and use default)
-  const int ctx = vp9_get_skip_context(xd);
-#endif
     struct tokenize_b_args arg = {cpi, td, t};
 
     if (seg_skip) {
@@ -412,17 +228,11 @@ void eb_vp9_tokenize_sb(struct VP9_COMP *cpi, MACROBLOCKD *const xd, struct Thre
     }
 
     if (mi->skip) {
-#if 0 // Hsan: count-based probability update not yet supported (i.e. do not increment, and use default)
-    if (!dry_run && !seg_skip) ++td->counts->skip[ctx][1];
-#endif
         reset_skip_context(xd, bsize);
         return;
     }
 
     if (!dry_run) {
-#if 0 // Hsan: count-based probability update not yet supported (i.e. do not increment, and use default)
-    ++td->counts->skip[ctx][0];
-#endif
         eb_vp9_foreach_transformed_block(xd, bsize, tokenize_b, &arg);
     } else {
         eb_vp9_foreach_transformed_block(xd, bsize, set_entropy_context_b, &arg);

@@ -20,11 +20,7 @@ extern "C" {
 struct yv12_buffer_config;
 struct VP9_COMP;
 
-void eb_vp9_pick_filter_level(
-#if 0
-    const struct yv12_buffer_config *sd,
-#endif
-    struct VP9_COMP *cpi, LPF_PICK_METHOD method);
+void eb_vp9_pick_filter_level(struct VP9_COMP *cpi, LPF_PICK_METHOD method);
 
 #ifdef __cplusplus
 } // extern "C"

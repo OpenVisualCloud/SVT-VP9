@@ -8,8 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "prob.h"
 #include "vp9_cost.h"
@@ -84,7 +82,7 @@ static void encode_uniform(VpxWriter *w, int v) {
     }
 }
 
-static INLINE int write_bit_gte(VpxWriter *w, int word, int test) {
+static inline int write_bit_gte(VpxWriter *w, int word, int test) {
     vpx_write_literal(w, word >= test, 1);
     return word >= test;
 }

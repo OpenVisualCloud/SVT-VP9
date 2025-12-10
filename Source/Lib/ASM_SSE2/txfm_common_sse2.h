@@ -38,25 +38,25 @@
                    (int16_t)(g),               \
                    (int16_t)(h))
 
-static INLINE __m128i dct_const_round_shift_sse2(const __m128i in) {
+static inline __m128i dct_const_round_shift_sse2(const __m128i in) {
     const __m128i t = _mm_add_epi32(in, _mm_set1_epi32(DCT_CONST_ROUNDING));
     return _mm_srai_epi32(t, DCT_CONST_BITS);
 }
 
-static INLINE __m128i idct_madd_round_shift_sse2(const __m128i in, const __m128i cospi) {
+static inline __m128i idct_madd_round_shift_sse2(const __m128i in, const __m128i cospi) {
     const __m128i t = _mm_madd_epi16(in, cospi);
     return dct_const_round_shift_sse2(t);
 }
 
 // Calculate the dot product between in0/1 and x and wrap to short.
-static INLINE __m128i idct_calc_wraplow_sse2(const __m128i in0, const __m128i in1, const __m128i x) {
+static inline __m128i idct_calc_wraplow_sse2(const __m128i in0, const __m128i in1, const __m128i x) {
     const __m128i t0 = idct_madd_round_shift_sse2(in0, x);
     const __m128i t1 = idct_madd_round_shift_sse2(in1, x);
     return _mm_packs_epi32(t0, t1);
 }
 
 // Multiply elements by constants and add them together.
-static INLINE void butterfly(const __m128i in0, const __m128i in1, const int c0, const int c1, __m128i *const out0,
+static inline void butterfly(const __m128i in0, const __m128i in1, const int c0, const int c1, __m128i *const out0,
                              __m128i *const out1) {
     const __m128i cst0 = pair_set_epi16(c0, -c1);
     const __m128i cst1 = pair_set_epi16(c1, c0);
@@ -66,7 +66,7 @@ static INLINE void butterfly(const __m128i in0, const __m128i in1, const int c0,
     *out1              = idct_calc_wraplow_sse2(lo, hi, cst1);
 }
 
-static INLINE void recon_and_store_16(const __m128i in0, const __m128i in1, uint8_t *const dest) {
+static inline void recon_and_store_16(const __m128i in0, const __m128i in1, uint8_t *const dest) {
     const __m128i zero = _mm_setzero_si128();
     const __m128i d    = _mm_loadu_si128((__m128i *)dest);
     const __m128i d0   = _mm_unpacklo_epi8(d, zero);

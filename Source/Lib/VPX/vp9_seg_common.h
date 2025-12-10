@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_SEG_COMMON_H_
 #define VPX_VP9_COMMON_VP9_SEG_COMMON_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "prob.h"
 
@@ -52,7 +50,7 @@ struct segmentation {
     int      aq_av_offset;
 };
 
-static INLINE int segfeature_active(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
+static inline int segfeature_active(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
     return seg->enabled && (seg->feature_mask[segment_id] & (1 << feature_id));
 }
 
@@ -66,7 +64,7 @@ int eb_vp9_is_segfeature_signed(SEG_LVL_FEATURES feature_id);
 
 void eb_vp9_set_segdata(struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id, int seg_data);
 
-static INLINE int get_segdata(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
+static inline int get_segdata(const struct segmentation *seg, int segment_id, SEG_LVL_FEATURES feature_id) {
     return seg->feature_data[segment_id][feature_id];
 }
 

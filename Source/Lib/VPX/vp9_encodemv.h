@@ -10,14 +10,9 @@
 
 #ifndef VPX_VP9_ENCODER_VP9_ENCODEMV_H_
 #define VPX_VP9_ENCODER_VP9_ENCODEMV_H_
-#if 1
-#define INLINE __inline
 
 #include <stdint.h>
 #include "vp9_encoder.h"
-#else
-#include "vp9/encoder/vp9_encoder.h"
-#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

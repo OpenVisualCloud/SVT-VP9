@@ -22,7 +22,7 @@ static EB_ALIGN(16) const int8_t avc_style_luma_if_coeff8_ssse3[] = {
     18, -2, 18, -2, 18, -2, 18, -2, 18, -2, 18, -2, 18, -2, 18, -2, -1, 9,  -1, 9,  -1, 9,  -1, 9,
     -1, 9,  -1, 9,  -1, 9,  -1, 9,  25, -1, 25, -1, 25, -1, 25, -1, 25, -1, 25, -1, 25, -1, 25, -1};
 
-static INLINE void avc_style_luma_interpolation_filter8(const __m128i ref0, const __m128i ref1, const __m128i ref2,
+static inline void avc_style_luma_interpolation_filter8(const __m128i ref0, const __m128i ref1, const __m128i ref2,
                                                         const __m128i ref3, const __m128i if_offset,
                                                         const __m128i IFCoeff_1_0, const __m128i if_coeff_3_2,
                                                         EbByte const dst) {
@@ -37,7 +37,7 @@ static INLINE void avc_style_luma_interpolation_filter8(const __m128i ref0, cons
     _mm_storel_epi64((__m128i *)dst, sum_clip_U8);
 }
 
-static INLINE void avc_style_luma_interpolation_filter16(const __m128i ref0, const __m128i ref1, const __m128i ref2,
+static inline void avc_style_luma_interpolation_filter16(const __m128i ref0, const __m128i ref1, const __m128i ref2,
                                                          const __m128i ref3, const __m128i if_offset,
                                                          const __m128i IFCoeff_1_0, const __m128i if_coeff_3_2,
                                                          const EbByte dst) {

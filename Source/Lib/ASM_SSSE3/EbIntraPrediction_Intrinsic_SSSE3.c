@@ -9,80 +9,9 @@
 #include "tmmintrin.h"
 #include "vpx_dsp_rtcd.h"
 
-#if 0
-// Keep these 2 functions which are the code base of x86 optimizations.
-static INLINE void d117_pred(uint8_t *dst, ptrdiff_t stride, int bs,
-    const uint8_t *above, const uint8_t *left)
-{
-    EB_ALIGN(16) uint8_t ref[32 + 32 + 1];
-    uint8_t border[32 + 32 - 1];  // outer border from bottom-left to top-right
-    uint8_t border0[64];          // for even rows
-    uint8_t border1[64];          // for odd rows
-
-    // reverse left
-    for (int i = 1; i < bs; ++i) {
-        ref[i] = left[bs - 1 - i];
-    }
-
-    // copy above
-    for (int i = bs; i <= 2 * bs; ++i) {
-        ref[i] = above[i - bs - 1];
-    }
-
-    // average
-    for (int i = 1; i < 2 * bs - 1; ++i) {
-        border[i] = AVG3(ref[i], ref[i + 1], ref[i + 2]);
-    }
-
-    // shuffle
-    for (int i = 0; i < bs / 2 - 1; ++i) {
-        border1[i] = border[2 * i + 1];
-        border0[i] = border[2 * i + 2];
-    }
-
-    for (int i = 0; i < bs; ++i) {
-        border0[bs / 2 - 1 + i] = AVG2(ref[bs + i], ref[bs + i + 1]);
-        border1[bs / 2 - 1 + i] = border[bs - 1 + i];
-    }
-
-    // store
-    for (int i = 0; i < bs / 2; ++i) {
-        memcpy(dst + (2 * i + 0) * stride, border0 + bs / 2 - 1 - i, bs);
-        memcpy(dst + (2 * i + 1) * stride, border1 + bs / 2 - 1 - i, bs);
-    }
-}
-
-static void d135_pred(uint8_t *dst, ptrdiff_t stride, int bs,
-    const uint8_t *above, const uint8_t *left)
-{
-    EB_ALIGN(16) uint8_t ref[32 + 32 + 1];
-    uint8_t border[32 + 32 - 1];  // outer border from bottom-left to top-right
-
-    // reverse left
-    for (int i = 0; i < bs; ++i) {
-        ref[i] = left[bs - 1 - i];
-    }
-
-    // copy above
-    for (int i = bs; i <= 2 * bs; ++i) {
-        ref[i] = above[i - bs - 1];
-    }
-
-    // average
-    for (int i = 0; i < 2 * bs - 1; ++i) {
-        border[i] = AVG3(ref[i], ref[i + 1], ref[i + 2]);
-    }
-
-    // store
-    for (int i = 0; i < bs; ++i) {
-        memcpy(dst + i * stride, border + bs - 1 - i, bs);
-    }
-}
-#endif
-
 // D117
 
-static INLINE __m128i avg3_sse2(const __m128i a, const __m128i b, const __m128i c) {
+static inline __m128i avg3_sse2(const __m128i a, const __m128i b, const __m128i c) {
     const __m128i c1 = _mm_set1_epi8(1);
     __m128i       t0, t1;
     t0 = _mm_xor_si128(a, c); // a ^ c
@@ -96,7 +25,7 @@ static INLINE __m128i avg3_sse2(const __m128i a, const __m128i b, const __m128i 
     return t1;
 }
 
-static INLINE void d117_avg3_4(const __m128i r0, __m128i *const b0h, __m128i *const b) {
+static inline void d117_avg3_4(const __m128i r0, __m128i *const b0h, __m128i *const b) {
     const __m128i r1 = _mm_srli_si128(r0, 1);
     const __m128i r2 = _mm_srli_si128(r0, 2);
     *b0h             = _mm_avg_epu8(r0, r1);
@@ -104,7 +33,7 @@ static INLINE void d117_avg3_4(const __m128i r0, __m128i *const b0h, __m128i *co
     *b               = avg3_sse2(r0, r1, r2);
 }
 
-static INLINE void d117_avg3_8(const uint8_t *const ref, __m128i *const b0h, __m128i *const b) {
+static inline void d117_avg3_8(const uint8_t *const ref, __m128i *const b0h, __m128i *const b) {
     const __m128i r0 = _mm_load_si128((const __m128i *)ref);
     const __m128i r1 = _mm_srli_si128(r0, 1);
     const __m128i r2 = _mm_srli_si128(r0, 2);
@@ -113,14 +42,14 @@ static INLINE void d117_avg3_8(const uint8_t *const ref, __m128i *const b0h, __m
     *b               = avg3_sse2(r0, r1, r2);
 }
 
-static INLINE __m128i d117_avg3(const uint8_t *const ref) {
+static inline __m128i d117_avg3(const uint8_t *const ref) {
     const __m128i r0 = _mm_load_si128((const __m128i *)(ref + 0));
     const __m128i r1 = _mm_loadu_si128((const __m128i *)(ref + 1));
     const __m128i r2 = _mm_loadu_si128((const __m128i *)(ref + 2));
     return avg3_sse2(r0, r1, r2);
 }
 
-static INLINE void d117_avg3_last(const uint8_t *const ref, __m128i *const b0h, __m128i *const b) {
+static inline void d117_avg3_last(const uint8_t *const ref, __m128i *const b0h, __m128i *const b) {
     const __m128i r0 = _mm_loadu_si128((const __m128i *)(ref - 1));
     const __m128i r1 = _mm_load_si128((const __m128i *)ref);
     const __m128i r2 = _mm_srli_si128(r1, 1);
@@ -241,20 +170,20 @@ void eb_vp9_d117_predictor_16x16_ssse3(uint8_t *dst, ptrdiff_t stride, const uin
 // -----------------------------------------------------------------------------
 // D135
 
-static INLINE __m128i d135_avg3_4(const __m128i r0) {
+static inline __m128i d135_avg3_4(const __m128i r0) {
     const __m128i r1 = _mm_srli_si128(r0, 1);
     const __m128i r2 = _mm_srli_si128(r0, 2);
     return avg3_sse2(r0, r1, r2);
 }
 
-static INLINE __m128i d135_avg3(const uint8_t *const ref) {
+static inline __m128i d135_avg3(const uint8_t *const ref) {
     const __m128i r0 = _mm_load_si128((const __m128i *)(ref + 0));
     const __m128i r1 = _mm_loadu_si128((const __m128i *)(ref + 1));
     const __m128i r2 = _mm_loadu_si128((const __m128i *)(ref + 2));
     return avg3_sse2(r0, r1, r2);
 }
 
-static INLINE __m128i d135_avg3_last(const uint8_t *const ref) {
+static inline __m128i d135_avg3_last(const uint8_t *const ref) {
     const __m128i r0 = _mm_load_si128((const __m128i *)(ref + 0));
     const __m128i r1 = _mm_loadu_si128((const __m128i *)(ref + 1));
     const __m128i r2 = _mm_srli_si128(r1, 1);

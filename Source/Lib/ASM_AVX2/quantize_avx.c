@@ -19,7 +19,7 @@
 //#include "vpx_dsp/x86/bitdepth_conversion_sse2.h"
 //#include "vpx_dsp/x86/quantize_x86.h"
 
-static INLINE void load_b_values(const int16_t *zbin_ptr, __m128i *zbin, const int16_t *round_ptr, __m128i *round,
+static inline void load_b_values(const int16_t *zbin_ptr, __m128i *zbin, const int16_t *round_ptr, __m128i *round,
                                  const int16_t *quant_ptr, __m128i *quant, const int16_t *dequant_ptr, __m128i *dequant,
                                  const int16_t *shift_ptr, __m128i *shift) {
     *zbin    = _mm_load_si128((const __m128i *)zbin_ptr);
@@ -29,18 +29,18 @@ static INLINE void load_b_values(const int16_t *zbin_ptr, __m128i *zbin, const i
     *dequant = _mm_load_si128((const __m128i *)dequant_ptr);
     *shift   = _mm_load_si128((const __m128i *)shift_ptr);
 }
-static INLINE void calculate_qcoeff(__m128i *coeff, const __m128i round, const __m128i quant, const __m128i shift) {
+static inline void calculate_qcoeff(__m128i *coeff, const __m128i round, const __m128i quant, const __m128i shift) {
     __m128i tmp, qcoeff;
     qcoeff = _mm_adds_epi16(*coeff, round);
     tmp    = _mm_mulhi_epi16(qcoeff, quant);
     qcoeff = _mm_add_epi16(tmp, qcoeff);
     *coeff = _mm_mulhi_epi16(qcoeff, shift);
 }
-static INLINE __m128i calculate_dqcoeff(__m128i qcoeff, __m128i dequant) { return _mm_mullo_epi16(qcoeff, dequant); }
+static inline __m128i calculate_dqcoeff(__m128i qcoeff, __m128i dequant) { return _mm_mullo_epi16(qcoeff, dequant); }
 
 // Scan 16 values for eob reference in scan_ptr. Use masks (-1) from comparing
 // to zbin to add 1 to the index in 'scan'.
-static INLINE __m128i scan_for_eob(__m128i *coeff0, __m128i *coeff1, const __m128i zbin_mask0, const __m128i zbin_mask1,
+static inline __m128i scan_for_eob(__m128i *coeff0, __m128i *coeff1, const __m128i zbin_mask0, const __m128i zbin_mask1,
                                    const int16_t *scan_ptr, const int index, const __m128i zero) {
     const __m128i zero_coeff0 = _mm_cmpeq_epi16(*coeff0, zero);
     const __m128i zero_coeff1 = _mm_cmpeq_epi16(*coeff1, zero);
@@ -55,7 +55,7 @@ static INLINE __m128i scan_for_eob(__m128i *coeff0, __m128i *coeff1, const __m12
     return _mm_max_epi16(eob0, eob1);
 }
 
-static INLINE int16_t accumulate_eob(__m128i eob) {
+static inline int16_t accumulate_eob(__m128i eob) {
     __m128i eob_shuffled;
     eob_shuffled = _mm_shuffle_epi32(eob, 0xe);
     eob          = _mm_max_epi16(eob, eob_shuffled);
@@ -68,30 +68,11 @@ static INLINE int16_t accumulate_eob(__m128i eob) {
 
 // Load 8 16 bit values. If the source is 32 bits then pack down with
 // saturation.
-static INLINE __m128i load_tran_low(const tran_low_t *a) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i a_low = _mm_load_si128((const __m128i *)a);
-    return _mm_packs_epi32(a_low, *(const __m128i *)(a + 4));
-#else
-    return _mm_load_si128((const __m128i *)a);
-#endif
-}
+static inline __m128i load_tran_low(const tran_low_t *a) { return _mm_load_si128((const __m128i *)a); }
 
 // Store 8 16 bit values. If the destination is 32 bits then sign extend the
 // values by multiplying by 1.
-static INLINE void store_tran_low(__m128i a, tran_low_t *b) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i one  = _mm_set1_epi16(1);
-    const __m128i a_hi = _mm_mulhi_epi16(a, one);
-    const __m128i a_lo = _mm_mullo_epi16(a, one);
-    const __m128i a_1  = _mm_unpacklo_epi16(a_lo, a_hi);
-    const __m128i a_2  = _mm_unpackhi_epi16(a_lo, a_hi);
-    _mm_store_si128((__m128i *)(b), a_1);
-    _mm_store_si128((__m128i *)(b + 4), a_2);
-#else
-    _mm_store_si128((__m128i *)(b), a);
-#endif
-}
+static inline void store_tran_low(__m128i a, tran_low_t *b) { _mm_store_si128((__m128i *)(b), a); }
 
 void eb_vp9_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *zbin_ptr,
                            const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr,
@@ -132,10 +113,6 @@ void eb_vp9_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int s
     if (_mm_test_all_zeros(all_zero, all_zero)) {
         _mm256_storeu_si256((__m256i *)(qcoeff_ptr), big_zero);
         _mm256_storeu_si256((__m256i *)(dqcoeff_ptr), big_zero);
-#if CONFIG_VP9_HIGHBITDEPTH
-        _mm256_storeu_si256((__m256i *)(qcoeff_ptr + 8), big_zero);
-        _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + 8), big_zero);
-#endif // CONFIG_VP9_HIGHBITDEPTH
 
         if (n_coeffs == 16)
             return;
@@ -187,10 +164,6 @@ void eb_vp9_quantize_b_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int s
         if (_mm_test_all_zeros(all_zero, all_zero)) {
             _mm256_storeu_si256((__m256i *)(qcoeff_ptr + index), big_zero);
             _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + index), big_zero);
-#if CONFIG_VP9_HIGHBITDEPTH
-            _mm256_storeu_si256((__m256i *)(qcoeff_ptr + index + 8), big_zero);
-            _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + index + 8), big_zero);
-#endif // CONFIG_VP9_HIGHBITDEPTH
             continue;
         }
 
@@ -275,10 +248,6 @@ void eb_vp9_quantize_b_32x32_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
     if (_mm_test_all_zeros(all_zero, all_zero)) {
         _mm256_storeu_si256((__m256i *)(qcoeff_ptr), big_zero);
         _mm256_storeu_si256((__m256i *)(dqcoeff_ptr), big_zero);
-#if CONFIG_VP9_HIGHBITDEPTH
-        _mm256_storeu_si256((__m256i *)(qcoeff_ptr + 8), big_zero);
-        _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + 8), big_zero);
-#endif // CONFIG_VP9_HIGHBITDEPTH
 
         round   = _mm_unpackhi_epi64(round, round);
         quant   = _mm_unpackhi_epi64(quant, quant);
@@ -340,10 +309,6 @@ void eb_vp9_quantize_b_32x32_avx(const tran_low_t *coeff_ptr, intptr_t n_coeffs,
         if (_mm_test_all_zeros(all_zero, all_zero)) {
             _mm256_storeu_si256((__m256i *)(qcoeff_ptr + index), big_zero);
             _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + index), big_zero);
-#if CONFIG_VP9_HIGHBITDEPTH
-            _mm256_storeu_si256((__m256i *)(qcoeff_ptr + index + 8), big_zero);
-            _mm256_storeu_si256((__m256i *)(dqcoeff_ptr + index + 8), big_zero);
-#endif // CONFIG_VP9_HIGHBITDEPTH
             continue;
         }
 

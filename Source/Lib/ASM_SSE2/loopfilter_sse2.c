@@ -17,7 +17,7 @@
 //#include "vpx_ports/emmintrin_compat.h"
 //#include "vpx_dsp/x86/mem_sse2.h"
 
-static INLINE __m128i abs_diff(__m128i a, __m128i b) { return _mm_or_si128(_mm_subs_epu8(a, b), _mm_subs_epu8(b, a)); }
+static inline __m128i abs_diff(__m128i a, __m128i b) { return _mm_or_si128(_mm_subs_epu8(a, b), _mm_subs_epu8(b, a)); }
 
 // filter_mask and hev_mask
 #define FILTER_HEV_MASK                                                              \
@@ -509,21 +509,21 @@ void eb_vp9_lpf_horizontal_16_sse2(unsigned char *s, int p, const unsigned char 
     }
 }
 
-static INLINE __m128i filter_add2_sub2(const __m128i *const total, const __m128i *const a1, const __m128i *const a2,
+static inline __m128i filter_add2_sub2(const __m128i *const total, const __m128i *const a1, const __m128i *const a2,
                                        const __m128i *const s1, const __m128i *const s2) {
     __m128i x = _mm_add_epi16(*a1, *total);
     x         = _mm_add_epi16(_mm_sub_epi16(x, _mm_add_epi16(*s1, *s2)), *a2);
     return x;
 }
 
-static INLINE __m128i filter8_mask(const __m128i *const flat, const __m128i *const other_filt,
+static inline __m128i filter8_mask(const __m128i *const flat, const __m128i *const other_filt,
                                    const __m128i *const f8_lo, const __m128i *const f8_hi) {
     const __m128i f8     = _mm_packus_epi16(_mm_srli_epi16(*f8_lo, 3), _mm_srli_epi16(*f8_hi, 3));
     const __m128i result = _mm_and_si128(*flat, f8);
     return _mm_or_si128(_mm_andnot_si128(*flat, *other_filt), result);
 }
 
-static INLINE __m128i filter16_mask(const __m128i *const flat, const __m128i *const other_filt,
+static inline __m128i filter16_mask(const __m128i *const flat, const __m128i *const other_filt,
                                     const __m128i *const f_lo, const __m128i *const f_hi) {
     const __m128i f      = _mm_packus_epi16(_mm_srli_epi16(*f_lo, 4), _mm_srli_epi16(*f_hi, 4));
     const __m128i result = _mm_and_si128(*flat, f);
@@ -1386,7 +1386,7 @@ void eb_vp9_lpf_horizontal_4_dual_sse2(unsigned char *s, int p, const unsigned c
     }
 }
 
-static INLINE void transpose8x16(unsigned char *in0, unsigned char *in1, int in_p, unsigned char *out, int out_p) {
+static inline void transpose8x16(unsigned char *in0, unsigned char *in1, int in_p, unsigned char *out, int out_p) {
     __m128i x0, x1, x2, x3, x4, x5, x6, x7;
     __m128i x8, x9, x10, x11, x12, x13, x14, x15;
 
@@ -1455,7 +1455,7 @@ static INLINE void transpose8x16(unsigned char *in0, unsigned char *in1, int in_
     _mm_storeu_si128((__m128i *)(out + 7 * out_p), _mm_unpackhi_epi64(x7, x15));
 }
 
-static INLINE void transpose(unsigned char *src[], int in_p, unsigned char *dst[], int out_p,
+static inline void transpose(unsigned char *src[], int in_p, unsigned char *dst[], int out_p,
                              int num_8x8_to_transpose) {
     int     idx8x8 = 0;
     __m128i x0, x1, x2, x3, x4, x5, x6, x7;

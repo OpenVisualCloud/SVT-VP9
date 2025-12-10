@@ -415,12 +415,6 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
                                     eob,
                                     scan_order->scan,
                                     scan_order->iscan);
-
-#if 0 // Hsan is it similar to RDOQ: to evaluate
-            if (args->enable_coeff_opt) {
-                *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
-            }
-#endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
@@ -460,12 +454,6 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
                               eob,
                               scan_order->scan,
                               scan_order->iscan);
-
-#if 0 // Hsan is it similar to RDOQ: to evaluate
-            if (args->enable_coeff_opt) {
-                *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
-            }
-#endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
@@ -506,12 +494,6 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
                               eob,
                               scan_order->scan,
                               scan_order->iscan);
-
-#if 0 // Hsan is it similar to RDOQ: to evaluate
-            if (args->enable_coeff_opt) {
-                *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
-            }
-#endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
@@ -555,12 +537,6 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
                               eob,
                               scan_order->scan,
                               scan_order->iscan);
-
-#if 0 // Hsan is it similar to RDOQ: to evaluate
-            if (args->enable_coeff_opt) {
-                *a = *l = vp9_optimize_b(x, plane, block, tx_size, entropy_ctx) > 0;
-            }
-#endif
         }
         if (context_ptr->spatial_sse_full_loop || (is_encode_pass && do_recon)) {
             // Hsan: both pred and rec samples are needed @ MD and EP to perform the eob zero mode decision
@@ -769,15 +745,8 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
 
     int tufull_distortion[3][DIST_CALC_TOTAL];
 
-    VP9_COMP     *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-    RD_OPT *const rd  = &cpi->rd;
-#if INTER_INTRA_BIAS
-    const int intra_cost_penalty = vp9_get_intra_cost_penalty(
-        context_ptr->ep_block_stats_ptr->bsize,
-        cpi->common.base_qindex,
-        cpi->common.y_dc_delta_q,
-        picture_control_set_ptr->parent_pcs_ptr->sb_flat_noise_array[sb_ptr->sb_index]);
-#endif
+    VP9_COMP     *cpi   = picture_control_set_ptr->parent_pcs_ptr->cpi;
+    RD_OPT *const rd    = &cpi->rd;
     best_inter_luma_eob = 1;
     bestfull_cost       = 0xFFFFFFFFull;
 
@@ -821,16 +790,8 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                 continue;
             }
         }
-        QUANTS *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
-#if SEG_SUPPORT
-        VP9_COMMON *const          cm     = &cpi->common;
-        struct segmentation *const seg    = &cm->seg;
-        const int                  qindex = eb_vp9_get_qindex(
-            seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
-
-#else
+        QUANTS   *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
         const int qindex = picture_control_set_ptr->base_qindex;
-#endif
         for (uint8_t tu_index = 0; tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);
              tu_index++) {
             uint32_t input_tu_origin_index = ((tu_index & 0x1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) +
@@ -1089,11 +1050,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                                                                         &cb_coeff_bits,
                                                                         &cr_coeff_bits,
                                                                         picture_control_set_ptr);
-#if INTER_INTRA_BIAS
-        if (picture_control_set_ptr->slice_type != I_SLICE && candidate_ptr->mode_info->mode <= TM_PRED &&
-            candidate_ptr->mode_info->mode != DC_PRED && candidate_ptr->mode_info->mode != TM_PRED)
-            *candidate_buffer->full_cost_ptr += intra_cost_penalty;
-#endif
         if (context_ptr->full_loop_escape) {
             if (picture_control_set_ptr->slice_type != I_SLICE) {
                 if (context_ptr->ep_block_stats_ptr->sq_size != MAX_SB_SIZE) {
@@ -1573,11 +1529,7 @@ void set_block_rate_context(PictureControlSet *picture_control_set_ptr, EncDecCo
 
     estimate_ref_frame_costs(&picture_control_set_ptr->parent_pcs_ptr->cpi->common,
                              context_ptr->e_mbd,
-#if SEG_SUPPORT
-                             context_ptr->segment_id,
-#else
                              0,
-#endif
                              context_ptr->ref_costs_single,
                              context_ptr->ref_costs_comp,
                              &context_ptr->comp_mode_p);
@@ -1752,16 +1704,8 @@ void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, EB_BOOL skip_sub_blocks, u
 
 void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferDesc *input_picture_ptr,
                     EncDecContext *context_ptr) {
-    QUANTS *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
-#if SEG_SUPPORT
-    VP9_COMMON *const          cm     = &cpi->common;
-    struct segmentation *const seg    = &cm->seg;
-    const int                  qindex = eb_vp9_get_qindex(
-        seg, candidate_ptr->mode_info->segment_id, picture_control_set_ptr->base_qindex);
-
-#else
+    QUANTS   *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
     const int qindex = picture_control_set_ptr->base_qindex;
-#endif
 
     context_ptr->uv_mode_search_eob[1][0] = 1;
     context_ptr->uv_mode_search_eob[2][0] = 1;
@@ -1783,11 +1727,8 @@ void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferD
         context_ptr->uv_mode_search_eob[2][0]  = 1;
 
         // Set the WebM mi
-        context_ptr->uv_mode_search_mode_info->uv_mode = uv_mode;
-        context_ptr->uv_mode_search_mode_info->sb_type = context_ptr->ep_block_stats_ptr->bsize;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-        context_ptr->uv_mode_search_mode_info->segment_id = context_ptr->segment_id;
-#endif
+        context_ptr->uv_mode_search_mode_info->uv_mode      = uv_mode;
+        context_ptr->uv_mode_search_mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
         context_ptr->uv_mode_search_mode_info->ref_frame[0] = INTRA_FRAME;
         context_ptr->uv_mode_search_mode_info->ref_frame[1] = INTRA_FRAME;
 
@@ -1899,33 +1840,8 @@ void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferD
             &crfull_distortion[0],
             &cr_coeff_bits);
 
-#if 1
         coeff_rate[uv_mode] = cb_coeff_bits + cr_coeff_bits;
         distortion[uv_mode] = cbfull_distortion[DIST_CALC_RESIDUAL] + crfull_distortion[DIST_CALC_RESIDUAL];
-#else
-
-        if (candidate_buffer_ptr->candidate_ptr->mode_info->skip == EB_TRUE) {
-            rate = (int)candidate_buffer_ptr->candidate_ptr->fast_luma_rate +
-                (int)candidate_buffer_ptr->candidate_ptr->fast_chroma_rate +
-                vp9_cost_bit(vp9_get_skip_prob(&cpi->common, xd), 1);
-            distortion = y_distortion[DIST_CALC_PREDICTION] + cb_distortion[DIST_CALC_PREDICTION] +
-                cr_distortion[DIST_CALC_PREDICTION];
-        } else {
-            rate = *y_coeff_bits + *cb_coeff_bits + *cr_coeff_bits +
-                (int)candidate_buffer_ptr->candidate_ptr->fast_luma_rate +
-                (int)candidate_buffer_ptr->candidate_ptr->fast_chroma_rate +
-                vp9_cost_bit(vp9_get_skip_prob(&cpi->common, xd), 0);
-            distortion = y_distortion[DIST_CALC_RESIDUAL] + cb_distortion[DIST_CALC_RESIDUAL] +
-                cr_distortion[DIST_CALC_RESIDUAL];
-        }
-
-        // The cost of Split flag for 8x8 to be added here. It is assumed that 8x8 is not splited. If 4x4 is selected later, the cost of 8x8 will be replaced by 4x4 with split flag =1
-        if (context_ptr->ep_block_stats_ptr->bsize == BLOCK_8X8) {
-            rate += cpi->partition_cost[context_ptr->block_ptr->partition_context][PARTITION_NONE];
-        }
-
-        *candidate_buffer_ptr->full_cost_ptr = RDCOST(context_ptr->RDMULT, rd->RDDIV, rate, distortion);
-#endif
     }
 
     //
@@ -1991,10 +1907,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
     set_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
 
     uint16_t mdc_block_index = 0;
-#if 0 // Hsan - to do
-            uint16_t pa_block_index = 0;
-#endif
-    uint16_t ep_block_index = 0;
+    uint16_t ep_block_index  = 0;
     EB_BOOL  skip_sub_blocks;
 
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
@@ -2058,13 +1971,6 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                 candidate_buffer_ptr_array = &(
                     candidate_buffer_ptr_array_base
                         [context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth]]);
-
-#if SEG_SUPPORT
-                VP9_COMMON *const          cm     = &cpi->common;
-                struct segmentation *const seg    = &cm->seg;
-                const int                  qindex = eb_vp9_get_qindex(
-                    seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
-#endif
 
                 // Initialize Fast Loop
                 coding_loop_init_fast_loop(context_ptr);
@@ -2191,10 +2097,6 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                     context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.mode;
                                 context_ptr->mode_info_array[mi_index]->tx_size =
                                     context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.tx_size;
-#if SEG_SUPPORT // Hsan: segmentation not supported
-                                context_ptr->mode_info_array[mi_index]->segment_id =
-                                    context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.segment_id;
-#endif
                                 context_ptr->mode_info_array[mi_index]->uv_mode =
                                     context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.uv_mode;
                                 context_ptr->mode_info_array[mi_index]->ref_frame[0] =
@@ -2258,11 +2160,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                 context_ptr->block_ptr->split_flag = EB_TRUE;
             }
         }
-#if 0 // Hsan - to do
-                pa_block_index++;
-#else
         ep_block_index++;
-#endif
     }
 
     update_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
@@ -2568,11 +2466,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                 context_ptr->block_ptr->split_flag = EB_TRUE;
             }
         }
-#if 0 // Hsan - to do
-                pa_block_index++;
-#else
         ep_block_index++;
-#endif
     }
 
     update_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
@@ -3618,15 +3512,8 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
                     context_ptr, pred_buffer, pred_stride, plane);
             }
 
-            QUANTS *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
-#if SEG_SUPPORT
-            VP9_COMMON *const          cm  = &cpi->common;
-            struct segmentation *const seg = &cm->seg;
-            const int qindex = eb_vp9_get_qindex(seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
-
-#else
+            QUANTS   *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
             const int qindex = picture_control_set_ptr->base_qindex;
-#endif
             for (uint8_t tu_index = 0; tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);
                  tu_index++) {
                 uint32_t input_tu_origin_index = ((tu_index % 2) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) +
@@ -5194,13 +5081,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                 picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
                 reference_object =
                     (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_0]->object_ptr;
-#if USE_SRC_REF
-                context_ptr->ref_pic_list[REF_LIST_0] = (picture_control_set_ptr->parent_pcs_ptr->use_src_ref)
-                    ? (EbPictureBufferDesc *)reference_object->ref_den_src_picture
-                    : (EbPictureBufferDesc *)reference_object->reference_picture;
-#else
                 context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)reference_object->reference_picture;
-#endif
             } else {
                 context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)NULL;
             }
@@ -5208,13 +5089,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
             if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
                 reference_object =
                     (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_1]->object_ptr;
-#if USE_SRC_REF
-                context_ptr->ref_pic_list[REF_LIST_1] = (picture_control_set_ptr->parent_pcs_ptr->use_src_ref)
-                    ? (EbPictureBufferDesc *)reference_object->ref_den_src_picture
-                    : (EbPictureBufferDesc *)reference_object->reference_picture;
-#else
                 context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)reference_object->reference_picture;
-#endif
             } else {
                 context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)NULL;
             }
@@ -5323,20 +5198,10 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         ? EB_FALSE
                         : EB_TRUE;
 
-#if SEG_SUPPORT
-                    VP9_COMMON *const          cm     = &picture_control_set_ptr->parent_pcs_ptr->cpi->common;
-                    struct segmentation *const seg    = &cm->seg;
-                    const int                  qindex = eb_vp9_get_qindex(
-                        seg, context_ptr->segment_id, picture_control_set_ptr->base_qindex);
-#else
-                    const int qindex = picture_control_set_ptr->base_qindex;
-#endif
+                    const int qindex    = picture_control_set_ptr->base_qindex;
                     context_ptr->RDMULT = eb_vp9_compute_rd_mult(picture_control_set_ptr->parent_pcs_ptr->cpi, qindex);
                     context_ptr->rd_mult_sad = (int)MAX(round(sqrtf((float)context_ptr->RDMULT / 128) * 128), 1);
 
-#if SEG_SUPPORT
-                    context_ptr->segment_id = sb_ptr->segment_id;
-#endif
                     if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_FULL85_DEPTH_MODE ||
                         picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_FULL84_DEPTH_MODE ||
                         picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_OPEN_LOOP_DEPTH_MODE ||
@@ -5366,14 +5231,9 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         bdp_pillar_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
 
                         // If all 4 quadrants are CU32x32, the compare the 4 CU32x32 to CU64x64
-#if SHUT_64x64_BASE_RESTRICTION
                         EB_BOOL is_4_32x32 = (sb_params_ptr->is_complete_sb &&
                                               (picture_control_set_ptr->temporal_layer_index > 0 ||
                                                sequence_control_set_ptr->static_config.tune == TUNE_OQ) &&
-#else
-                        EB_BOOL is_4_32x32 = (sb_params_ptr->is_complete_sb &&
-                                              picture_control_set_ptr->temporal_layer_index > 0 &&
-#endif
                                               sb_ptr->coded_block_array_ptr[5]->split_flag == EB_FALSE &&
                                               sb_ptr->coded_block_array_ptr[174]->split_flag == EB_FALSE &&
                                               sb_ptr->coded_block_array_ptr[343]->split_flag == EB_FALSE &&
@@ -5394,36 +5254,6 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         context_ptr->depth_part_stage = 0;
                         bdp_nearest_near_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
                     }
-#if USE_SRC_REF
-                    // Set valid ref_frame
-                    if (picture_control_set_ptr->slice_type != I_SLICE) {
-                        EbReferenceObject *reference_object;
-
-                        if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == SINGLE_REFERENCE ||
-                            picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode ==
-                                REFERENCE_MODE_SELECT) {
-                            reference_object =
-                                (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_0]->object_ptr;
-                            context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)
-                                                                        reference_object->reference_picture;
-
-                        } else {
-                            context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)NULL;
-                        }
-
-                        if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode ==
-                            REFERENCE_MODE_SELECT) {
-                            reference_object =
-                                (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_1]->object_ptr;
-                            context_ptr->ref_pic_list[REF_LIST_1] =
-                                (picture_control_set_ptr->parent_pcs_ptr->use_src_ref)
-                                ? (EbPictureBufferDesc *)reference_object->ref_den_src_picture
-                                : (EbPictureBufferDesc *)reference_object->reference_picture;
-                        } else {
-                            context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)NULL;
-                        }
-                    }
-#endif
                     // Derive Interpoldation Method @ Encode Pass
                     context_ptr->use_subpel_flag = EB_TRUE;
 
@@ -5443,11 +5273,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
             lf->mode_ref_delta_enabled = 0;
 
             if (sequence_control_set_ptr->static_config.loop_filter) {
-                eb_vp9_pick_filter_level(
-#if 0
-                            picture_control_set_ptr->parent_pcs_ptr->cpi->Source,
-#endif
-                    picture_control_set_ptr->parent_pcs_ptr->cpi, LPF_PICK_FROM_Q);
+                eb_vp9_pick_filter_level(picture_control_set_ptr->parent_pcs_ptr->cpi, LPF_PICK_FROM_Q);
 
                 EB_BOOL lf_application_enable_flag;
 
@@ -5487,15 +5313,11 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
 
                     eb_vp9_build_mask_frame(&picture_control_set_ptr->parent_pcs_ptr->cpi->common, lf->filter_level, 0);
 
-                    eb_vp9_loop_filter_frame(
-#if 0
-                                cm->frame_to_show,
-#endif
-                        &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
-                        context_ptr->e_mbd,
-                        lf->filter_level,
-                        0,
-                        0);
+                    eb_vp9_loop_filter_frame(&picture_control_set_ptr->parent_pcs_ptr->cpi->common,
+                                             context_ptr->e_mbd,
+                                             lf->filter_level,
+                                             0,
+                                             0);
                 }
             }
 

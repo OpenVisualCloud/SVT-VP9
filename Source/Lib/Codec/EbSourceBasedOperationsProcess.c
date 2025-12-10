@@ -73,24 +73,10 @@ void eb_vp9_derive_picture_activity_statistics(SequenceControlSet      *sequence
     uint32_t non_moving_sb_count  = 0;
     uint32_t sb_index;
 
-#if BEA
-    uint64_t non_moving_index_min = ~0u;
-    uint64_t non_moving_index_max = 0;
-#endif
-
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
 
         if (sb_params->is_complete_sb) {
-#if BEA
-            non_moving_index_min = picture_control_set_ptr->non_moving_index_array[sb_index] < non_moving_index_min
-                ? picture_control_set_ptr->non_moving_index_array[sb_index]
-                : non_moving_index_min;
-
-            non_moving_index_max = picture_control_set_ptr->non_moving_index_array[sb_index] > non_moving_index_max
-                ? picture_control_set_ptr->non_moving_index_array[sb_index]
-                : non_moving_index_max;
-#endif
             if (picture_control_set_ptr->non_moving_index_array[sb_index] < NON_MOVING_SCORE_1) {
                 non_moving_sb_count++;
             }
@@ -101,12 +87,6 @@ void eb_vp9_derive_picture_activity_statistics(SequenceControlSet      *sequence
 
     if (complete_sb_count > 0)
         picture_control_set_ptr->non_moving_average_score = (uint16_t)(non_moving_index_sum / complete_sb_count);
-#if BEA
-    picture_control_set_ptr->non_moving_index_min_distance = (uint16_t)(ABS(
-        (int32_t)(picture_control_set_ptr->non_moving_average_score) - (int32_t)non_moving_index_min));
-    picture_control_set_ptr->non_moving_index_max_distance = (uint16_t)(ABS(
-        (int32_t)(picture_control_set_ptr->non_moving_average_score) - (int32_t)non_moving_index_max));
-#endif
     if (complete_sb_count > 0)
         picture_control_set_ptr->kf_zeromotion_pct = (non_moving_sb_count * 100) / complete_sb_count;
 

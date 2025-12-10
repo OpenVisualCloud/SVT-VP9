@@ -14,8 +14,6 @@
 #include "txfm_common.h"
 #include "mem.h"
 
-#define FDCT32x32_HIGH_PRECISION 1
-
 #define pair256_set_epi16(a, b)    \
     _mm256_set_epi16((int16_t)(b), \
                      (int16_t)(a), \
@@ -37,8 +35,7 @@
 #define pair256_set_epi32(a, b) \
     _mm256_set_epi32((int)(b), (int)(a), (int)(b), (int)(a), (int)(b), (int)(a), (int)(b), (int)(a))
 
-#if FDCT32x32_HIGH_PRECISION
-static INLINE __m256i k_madd_epi32_avx2(__m256i a, __m256i b) {
+static inline __m256i k_madd_epi32_avx2(__m256i a, __m256i b) {
     __m256i buf0, buf1;
     buf0 = _mm256_mul_epu32(a, b);
     a    = _mm256_srli_epi64(a, 32);
@@ -47,12 +44,11 @@ static INLINE __m256i k_madd_epi32_avx2(__m256i a, __m256i b) {
     return _mm256_add_epi64(buf0, buf1);
 }
 
-static INLINE __m256i k_packs_epi64_avx2(__m256i a, __m256i b) {
+static inline __m256i k_packs_epi64_avx2(__m256i a, __m256i b) {
     __m256i buf0 = _mm256_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 2, 0));
     __m256i buf1 = _mm256_shuffle_epi32(b, _MM_SHUFFLE(0, 0, 2, 0));
     return _mm256_unpacklo_epi64(buf0, buf1);
 }
-#endif
 
 void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride) {
     // Calculate pre-multiplied strides
@@ -410,147 +406,7 @@ void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride
                 step2[27] = _mm256_packs_epi32(s2_27_6, s2_27_7);
             }
 
-#if !FDCT32x32_HIGH_PRECISION
-            // dump the magnitude by half, hence the intermediate values are within
-            // the range of 16 bits.
-            if (1 == pass) {
-                __m256i s3_00_0 = _mm256_cmpgt_epi16(kZero, step2[0]);
-                __m256i s3_01_0 = _mm256_cmpgt_epi16(kZero, step2[1]);
-                __m256i s3_02_0 = _mm256_cmpgt_epi16(kZero, step2[2]);
-                __m256i s3_03_0 = _mm256_cmpgt_epi16(kZero, step2[3]);
-                __m256i s3_04_0 = _mm256_cmpgt_epi16(kZero, step2[4]);
-                __m256i s3_05_0 = _mm256_cmpgt_epi16(kZero, step2[5]);
-                __m256i s3_06_0 = _mm256_cmpgt_epi16(kZero, step2[6]);
-                __m256i s3_07_0 = _mm256_cmpgt_epi16(kZero, step2[7]);
-                __m256i s2_08_0 = _mm256_cmpgt_epi16(kZero, step2[8]);
-                __m256i s2_09_0 = _mm256_cmpgt_epi16(kZero, step2[9]);
-                __m256i s3_10_0 = _mm256_cmpgt_epi16(kZero, step2[10]);
-                __m256i s3_11_0 = _mm256_cmpgt_epi16(kZero, step2[11]);
-                __m256i s3_12_0 = _mm256_cmpgt_epi16(kZero, step2[12]);
-                __m256i s3_13_0 = _mm256_cmpgt_epi16(kZero, step2[13]);
-                __m256i s2_14_0 = _mm256_cmpgt_epi16(kZero, step2[14]);
-                __m256i s2_15_0 = _mm256_cmpgt_epi16(kZero, step2[15]);
-                __m256i s3_16_0 = _mm256_cmpgt_epi16(kZero, step1[16]);
-                __m256i s3_17_0 = _mm256_cmpgt_epi16(kZero, step1[17]);
-                __m256i s3_18_0 = _mm256_cmpgt_epi16(kZero, step1[18]);
-                __m256i s3_19_0 = _mm256_cmpgt_epi16(kZero, step1[19]);
-                __m256i s3_20_0 = _mm256_cmpgt_epi16(kZero, step2[20]);
-                __m256i s3_21_0 = _mm256_cmpgt_epi16(kZero, step2[21]);
-                __m256i s3_22_0 = _mm256_cmpgt_epi16(kZero, step2[22]);
-                __m256i s3_23_0 = _mm256_cmpgt_epi16(kZero, step2[23]);
-                __m256i s3_24_0 = _mm256_cmpgt_epi16(kZero, step2[24]);
-                __m256i s3_25_0 = _mm256_cmpgt_epi16(kZero, step2[25]);
-                __m256i s3_26_0 = _mm256_cmpgt_epi16(kZero, step2[26]);
-                __m256i s3_27_0 = _mm256_cmpgt_epi16(kZero, step2[27]);
-                __m256i s3_28_0 = _mm256_cmpgt_epi16(kZero, step1[28]);
-                __m256i s3_29_0 = _mm256_cmpgt_epi16(kZero, step1[29]);
-                __m256i s3_30_0 = _mm256_cmpgt_epi16(kZero, step1[30]);
-                __m256i s3_31_0 = _mm256_cmpgt_epi16(kZero, step1[31]);
-
-                step2[0]  = _mm256_sub_epi16(step2[0], s3_00_0);
-                step2[1]  = _mm256_sub_epi16(step2[1], s3_01_0);
-                step2[2]  = _mm256_sub_epi16(step2[2], s3_02_0);
-                step2[3]  = _mm256_sub_epi16(step2[3], s3_03_0);
-                step2[4]  = _mm256_sub_epi16(step2[4], s3_04_0);
-                step2[5]  = _mm256_sub_epi16(step2[5], s3_05_0);
-                step2[6]  = _mm256_sub_epi16(step2[6], s3_06_0);
-                step2[7]  = _mm256_sub_epi16(step2[7], s3_07_0);
-                step2[8]  = _mm256_sub_epi16(step2[8], s2_08_0);
-                step2[9]  = _mm256_sub_epi16(step2[9], s2_09_0);
-                step2[10] = _mm256_sub_epi16(step2[10], s3_10_0);
-                step2[11] = _mm256_sub_epi16(step2[11], s3_11_0);
-                step2[12] = _mm256_sub_epi16(step2[12], s3_12_0);
-                step2[13] = _mm256_sub_epi16(step2[13], s3_13_0);
-                step2[14] = _mm256_sub_epi16(step2[14], s2_14_0);
-                step2[15] = _mm256_sub_epi16(step2[15], s2_15_0);
-                step1[16] = _mm256_sub_epi16(step1[16], s3_16_0);
-                step1[17] = _mm256_sub_epi16(step1[17], s3_17_0);
-                step1[18] = _mm256_sub_epi16(step1[18], s3_18_0);
-                step1[19] = _mm256_sub_epi16(step1[19], s3_19_0);
-                step2[20] = _mm256_sub_epi16(step2[20], s3_20_0);
-                step2[21] = _mm256_sub_epi16(step2[21], s3_21_0);
-                step2[22] = _mm256_sub_epi16(step2[22], s3_22_0);
-                step2[23] = _mm256_sub_epi16(step2[23], s3_23_0);
-                step2[24] = _mm256_sub_epi16(step2[24], s3_24_0);
-                step2[25] = _mm256_sub_epi16(step2[25], s3_25_0);
-                step2[26] = _mm256_sub_epi16(step2[26], s3_26_0);
-                step2[27] = _mm256_sub_epi16(step2[27], s3_27_0);
-                step1[28] = _mm256_sub_epi16(step1[28], s3_28_0);
-                step1[29] = _mm256_sub_epi16(step1[29], s3_29_0);
-                step1[30] = _mm256_sub_epi16(step1[30], s3_30_0);
-                step1[31] = _mm256_sub_epi16(step1[31], s3_31_0);
-
-                step2[0]  = _mm256_add_epi16(step2[0], kOne);
-                step2[1]  = _mm256_add_epi16(step2[1], kOne);
-                step2[2]  = _mm256_add_epi16(step2[2], kOne);
-                step2[3]  = _mm256_add_epi16(step2[3], kOne);
-                step2[4]  = _mm256_add_epi16(step2[4], kOne);
-                step2[5]  = _mm256_add_epi16(step2[5], kOne);
-                step2[6]  = _mm256_add_epi16(step2[6], kOne);
-                step2[7]  = _mm256_add_epi16(step2[7], kOne);
-                step2[8]  = _mm256_add_epi16(step2[8], kOne);
-                step2[9]  = _mm256_add_epi16(step2[9], kOne);
-                step2[10] = _mm256_add_epi16(step2[10], kOne);
-                step2[11] = _mm256_add_epi16(step2[11], kOne);
-                step2[12] = _mm256_add_epi16(step2[12], kOne);
-                step2[13] = _mm256_add_epi16(step2[13], kOne);
-                step2[14] = _mm256_add_epi16(step2[14], kOne);
-                step2[15] = _mm256_add_epi16(step2[15], kOne);
-                step1[16] = _mm256_add_epi16(step1[16], kOne);
-                step1[17] = _mm256_add_epi16(step1[17], kOne);
-                step1[18] = _mm256_add_epi16(step1[18], kOne);
-                step1[19] = _mm256_add_epi16(step1[19], kOne);
-                step2[20] = _mm256_add_epi16(step2[20], kOne);
-                step2[21] = _mm256_add_epi16(step2[21], kOne);
-                step2[22] = _mm256_add_epi16(step2[22], kOne);
-                step2[23] = _mm256_add_epi16(step2[23], kOne);
-                step2[24] = _mm256_add_epi16(step2[24], kOne);
-                step2[25] = _mm256_add_epi16(step2[25], kOne);
-                step2[26] = _mm256_add_epi16(step2[26], kOne);
-                step2[27] = _mm256_add_epi16(step2[27], kOne);
-                step1[28] = _mm256_add_epi16(step1[28], kOne);
-                step1[29] = _mm256_add_epi16(step1[29], kOne);
-                step1[30] = _mm256_add_epi16(step1[30], kOne);
-                step1[31] = _mm256_add_epi16(step1[31], kOne);
-
-                step2[0]  = _mm256_srai_epi16(step2[0], 2);
-                step2[1]  = _mm256_srai_epi16(step2[1], 2);
-                step2[2]  = _mm256_srai_epi16(step2[2], 2);
-                step2[3]  = _mm256_srai_epi16(step2[3], 2);
-                step2[4]  = _mm256_srai_epi16(step2[4], 2);
-                step2[5]  = _mm256_srai_epi16(step2[5], 2);
-                step2[6]  = _mm256_srai_epi16(step2[6], 2);
-                step2[7]  = _mm256_srai_epi16(step2[7], 2);
-                step2[8]  = _mm256_srai_epi16(step2[8], 2);
-                step2[9]  = _mm256_srai_epi16(step2[9], 2);
-                step2[10] = _mm256_srai_epi16(step2[10], 2);
-                step2[11] = _mm256_srai_epi16(step2[11], 2);
-                step2[12] = _mm256_srai_epi16(step2[12], 2);
-                step2[13] = _mm256_srai_epi16(step2[13], 2);
-                step2[14] = _mm256_srai_epi16(step2[14], 2);
-                step2[15] = _mm256_srai_epi16(step2[15], 2);
-                step1[16] = _mm256_srai_epi16(step1[16], 2);
-                step1[17] = _mm256_srai_epi16(step1[17], 2);
-                step1[18] = _mm256_srai_epi16(step1[18], 2);
-                step1[19] = _mm256_srai_epi16(step1[19], 2);
-                step2[20] = _mm256_srai_epi16(step2[20], 2);
-                step2[21] = _mm256_srai_epi16(step2[21], 2);
-                step2[22] = _mm256_srai_epi16(step2[22], 2);
-                step2[23] = _mm256_srai_epi16(step2[23], 2);
-                step2[24] = _mm256_srai_epi16(step2[24], 2);
-                step2[25] = _mm256_srai_epi16(step2[25], 2);
-                step2[26] = _mm256_srai_epi16(step2[26], 2);
-                step2[27] = _mm256_srai_epi16(step2[27], 2);
-                step1[28] = _mm256_srai_epi16(step1[28], 2);
-                step1[29] = _mm256_srai_epi16(step1[29], 2);
-                step1[30] = _mm256_srai_epi16(step1[30], 2);
-                step1[31] = _mm256_srai_epi16(step1[31], 2);
-            }
-#endif
-
-#if FDCT32x32_HIGH_PRECISION
             if (pass == 0) {
-#endif
                 // Stage 3
                 {
                     step3[0] = _mm256_add_epi16(step2[(8 - 1)], step2[0]);
@@ -1161,7 +1017,6 @@ void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride
                     out[11] = _mm256_packs_epi32(out_11_6, out_11_7);
                     out[27] = _mm256_packs_epi32(out_27_6, out_27_7);
                 }
-#if FDCT32x32_HIGH_PRECISION
             } else {
                 __m256i       lstep1[64], lstep2[64], lstep3[64];
                 __m256i       u[32], v[32], sign[16];
@@ -2512,7 +2367,6 @@ void eb_vp9_fdct32x32_avx2(const int16_t *input, int16_t *output_org, int stride
                     out[27] = _mm256_packs_epi32(u[14], u[15]);
                 }
             }
-#endif
             // Transpose the results, do it as four 8x8 transposes.
             {
                 int      transpose_block;
@@ -3008,147 +2862,7 @@ void eb_vpx_partial_fdct32x32_avx2(const int16_t *input, int16_t *output_org, in
                 step2[27] = _mm256_packs_epi32(s2_27_6, s2_27_7);
             }
 
-#if !FDCT32x32_HIGH_PRECISION
-            // dump the magnitude by half, hence the intermediate values are within
-            // the range of 16 bits.
-            if (1 == pass) {
-                __m256i s3_00_0 = _mm256_cmpgt_epi16(kZero, step2[0]);
-                __m256i s3_01_0 = _mm256_cmpgt_epi16(kZero, step2[1]);
-                __m256i s3_02_0 = _mm256_cmpgt_epi16(kZero, step2[2]);
-                __m256i s3_03_0 = _mm256_cmpgt_epi16(kZero, step2[3]);
-                __m256i s3_04_0 = _mm256_cmpgt_epi16(kZero, step2[4]);
-                __m256i s3_05_0 = _mm256_cmpgt_epi16(kZero, step2[5]);
-                __m256i s3_06_0 = _mm256_cmpgt_epi16(kZero, step2[6]);
-                __m256i s3_07_0 = _mm256_cmpgt_epi16(kZero, step2[7]);
-                __m256i s2_08_0 = _mm256_cmpgt_epi16(kZero, step2[8]);
-                __m256i s2_09_0 = _mm256_cmpgt_epi16(kZero, step2[9]);
-                __m256i s3_10_0 = _mm256_cmpgt_epi16(kZero, step2[10]);
-                __m256i s3_11_0 = _mm256_cmpgt_epi16(kZero, step2[11]);
-                __m256i s3_12_0 = _mm256_cmpgt_epi16(kZero, step2[12]);
-                __m256i s3_13_0 = _mm256_cmpgt_epi16(kZero, step2[13]);
-                __m256i s2_14_0 = _mm256_cmpgt_epi16(kZero, step2[14]);
-                __m256i s2_15_0 = _mm256_cmpgt_epi16(kZero, step2[15]);
-                __m256i s3_16_0 = _mm256_cmpgt_epi16(kZero, step1[16]);
-                __m256i s3_17_0 = _mm256_cmpgt_epi16(kZero, step1[17]);
-                __m256i s3_18_0 = _mm256_cmpgt_epi16(kZero, step1[18]);
-                __m256i s3_19_0 = _mm256_cmpgt_epi16(kZero, step1[19]);
-                __m256i s3_20_0 = _mm256_cmpgt_epi16(kZero, step2[20]);
-                __m256i s3_21_0 = _mm256_cmpgt_epi16(kZero, step2[21]);
-                __m256i s3_22_0 = _mm256_cmpgt_epi16(kZero, step2[22]);
-                __m256i s3_23_0 = _mm256_cmpgt_epi16(kZero, step2[23]);
-                __m256i s3_24_0 = _mm256_cmpgt_epi16(kZero, step2[24]);
-                __m256i s3_25_0 = _mm256_cmpgt_epi16(kZero, step2[25]);
-                __m256i s3_26_0 = _mm256_cmpgt_epi16(kZero, step2[26]);
-                __m256i s3_27_0 = _mm256_cmpgt_epi16(kZero, step2[27]);
-                __m256i s3_28_0 = _mm256_cmpgt_epi16(kZero, step1[28]);
-                __m256i s3_29_0 = _mm256_cmpgt_epi16(kZero, step1[29]);
-                __m256i s3_30_0 = _mm256_cmpgt_epi16(kZero, step1[30]);
-                __m256i s3_31_0 = _mm256_cmpgt_epi16(kZero, step1[31]);
-
-                step2[0]  = _mm256_sub_epi16(step2[0], s3_00_0);
-                step2[1]  = _mm256_sub_epi16(step2[1], s3_01_0);
-                step2[2]  = _mm256_sub_epi16(step2[2], s3_02_0);
-                step2[3]  = _mm256_sub_epi16(step2[3], s3_03_0);
-                step2[4]  = _mm256_sub_epi16(step2[4], s3_04_0);
-                step2[5]  = _mm256_sub_epi16(step2[5], s3_05_0);
-                step2[6]  = _mm256_sub_epi16(step2[6], s3_06_0);
-                step2[7]  = _mm256_sub_epi16(step2[7], s3_07_0);
-                step2[8]  = _mm256_sub_epi16(step2[8], s2_08_0);
-                step2[9]  = _mm256_sub_epi16(step2[9], s2_09_0);
-                step2[10] = _mm256_sub_epi16(step2[10], s3_10_0);
-                step2[11] = _mm256_sub_epi16(step2[11], s3_11_0);
-                step2[12] = _mm256_sub_epi16(step2[12], s3_12_0);
-                step2[13] = _mm256_sub_epi16(step2[13], s3_13_0);
-                step2[14] = _mm256_sub_epi16(step2[14], s2_14_0);
-                step2[15] = _mm256_sub_epi16(step2[15], s2_15_0);
-                step1[16] = _mm256_sub_epi16(step1[16], s3_16_0);
-                step1[17] = _mm256_sub_epi16(step1[17], s3_17_0);
-                step1[18] = _mm256_sub_epi16(step1[18], s3_18_0);
-                step1[19] = _mm256_sub_epi16(step1[19], s3_19_0);
-                step2[20] = _mm256_sub_epi16(step2[20], s3_20_0);
-                step2[21] = _mm256_sub_epi16(step2[21], s3_21_0);
-                step2[22] = _mm256_sub_epi16(step2[22], s3_22_0);
-                step2[23] = _mm256_sub_epi16(step2[23], s3_23_0);
-                step2[24] = _mm256_sub_epi16(step2[24], s3_24_0);
-                step2[25] = _mm256_sub_epi16(step2[25], s3_25_0);
-                step2[26] = _mm256_sub_epi16(step2[26], s3_26_0);
-                step2[27] = _mm256_sub_epi16(step2[27], s3_27_0);
-                step1[28] = _mm256_sub_epi16(step1[28], s3_28_0);
-                step1[29] = _mm256_sub_epi16(step1[29], s3_29_0);
-                step1[30] = _mm256_sub_epi16(step1[30], s3_30_0);
-                step1[31] = _mm256_sub_epi16(step1[31], s3_31_0);
-
-                step2[0]  = _mm256_add_epi16(step2[0], kOne);
-                step2[1]  = _mm256_add_epi16(step2[1], kOne);
-                step2[2]  = _mm256_add_epi16(step2[2], kOne);
-                step2[3]  = _mm256_add_epi16(step2[3], kOne);
-                step2[4]  = _mm256_add_epi16(step2[4], kOne);
-                step2[5]  = _mm256_add_epi16(step2[5], kOne);
-                step2[6]  = _mm256_add_epi16(step2[6], kOne);
-                step2[7]  = _mm256_add_epi16(step2[7], kOne);
-                step2[8]  = _mm256_add_epi16(step2[8], kOne);
-                step2[9]  = _mm256_add_epi16(step2[9], kOne);
-                step2[10] = _mm256_add_epi16(step2[10], kOne);
-                step2[11] = _mm256_add_epi16(step2[11], kOne);
-                step2[12] = _mm256_add_epi16(step2[12], kOne);
-                step2[13] = _mm256_add_epi16(step2[13], kOne);
-                step2[14] = _mm256_add_epi16(step2[14], kOne);
-                step2[15] = _mm256_add_epi16(step2[15], kOne);
-                step1[16] = _mm256_add_epi16(step1[16], kOne);
-                step1[17] = _mm256_add_epi16(step1[17], kOne);
-                step1[18] = _mm256_add_epi16(step1[18], kOne);
-                step1[19] = _mm256_add_epi16(step1[19], kOne);
-                step2[20] = _mm256_add_epi16(step2[20], kOne);
-                step2[21] = _mm256_add_epi16(step2[21], kOne);
-                step2[22] = _mm256_add_epi16(step2[22], kOne);
-                step2[23] = _mm256_add_epi16(step2[23], kOne);
-                step2[24] = _mm256_add_epi16(step2[24], kOne);
-                step2[25] = _mm256_add_epi16(step2[25], kOne);
-                step2[26] = _mm256_add_epi16(step2[26], kOne);
-                step2[27] = _mm256_add_epi16(step2[27], kOne);
-                step1[28] = _mm256_add_epi16(step1[28], kOne);
-                step1[29] = _mm256_add_epi16(step1[29], kOne);
-                step1[30] = _mm256_add_epi16(step1[30], kOne);
-                step1[31] = _mm256_add_epi16(step1[31], kOne);
-
-                step2[0]  = _mm256_srai_epi16(step2[0], 2);
-                step2[1]  = _mm256_srai_epi16(step2[1], 2);
-                step2[2]  = _mm256_srai_epi16(step2[2], 2);
-                step2[3]  = _mm256_srai_epi16(step2[3], 2);
-                step2[4]  = _mm256_srai_epi16(step2[4], 2);
-                step2[5]  = _mm256_srai_epi16(step2[5], 2);
-                step2[6]  = _mm256_srai_epi16(step2[6], 2);
-                step2[7]  = _mm256_srai_epi16(step2[7], 2);
-                step2[8]  = _mm256_srai_epi16(step2[8], 2);
-                step2[9]  = _mm256_srai_epi16(step2[9], 2);
-                step2[10] = _mm256_srai_epi16(step2[10], 2);
-                step2[11] = _mm256_srai_epi16(step2[11], 2);
-                step2[12] = _mm256_srai_epi16(step2[12], 2);
-                step2[13] = _mm256_srai_epi16(step2[13], 2);
-                step2[14] = _mm256_srai_epi16(step2[14], 2);
-                step2[15] = _mm256_srai_epi16(step2[15], 2);
-                step1[16] = _mm256_srai_epi16(step1[16], 2);
-                step1[17] = _mm256_srai_epi16(step1[17], 2);
-                step1[18] = _mm256_srai_epi16(step1[18], 2);
-                step1[19] = _mm256_srai_epi16(step1[19], 2);
-                step2[20] = _mm256_srai_epi16(step2[20], 2);
-                step2[21] = _mm256_srai_epi16(step2[21], 2);
-                step2[22] = _mm256_srai_epi16(step2[22], 2);
-                step2[23] = _mm256_srai_epi16(step2[23], 2);
-                step2[24] = _mm256_srai_epi16(step2[24], 2);
-                step2[25] = _mm256_srai_epi16(step2[25], 2);
-                step2[26] = _mm256_srai_epi16(step2[26], 2);
-                step2[27] = _mm256_srai_epi16(step2[27], 2);
-                step1[28] = _mm256_srai_epi16(step1[28], 2);
-                step1[29] = _mm256_srai_epi16(step1[29], 2);
-                step1[30] = _mm256_srai_epi16(step1[30], 2);
-                step1[31] = _mm256_srai_epi16(step1[31], 2);
-            }
-#endif
-
-#if FDCT32x32_HIGH_PRECISION
             if (pass == 0) {
-#endif
                 // Stage 3
                 {
                     step3[0] = _mm256_add_epi16(step2[(8 - 1)], step2[0]);
@@ -3823,7 +3537,6 @@ void eb_vpx_partial_fdct32x32_avx2(const int16_t *input, int16_t *output_org, in
                     out[11] = _mm256_packs_epi32(out_11_6, out_11_7);
                     //out[27] = _mm256_packs_epi32(out_27_6, out_27_7);
                 }
-#if FDCT32x32_HIGH_PRECISION
             } else {
                 __m256i       lstep1[64], lstep2[64], lstep3[64];
                 __m256i       u[32], v[32], sign[16];
@@ -5190,7 +4903,6 @@ void eb_vpx_partial_fdct32x32_avx2(const int16_t *input, int16_t *output_org, in
                     //out[27] = _mm256_packs_epi32(u[14], u[15]);
                 }
             }
-#endif
             // Transpose the results, do it as four 8x8 transposes.
             {
                 int      transpose_block;

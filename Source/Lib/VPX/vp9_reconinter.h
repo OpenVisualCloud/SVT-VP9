@@ -20,21 +20,12 @@
 extern "C" {
 #endif
 
-static INLINE void inter_predictor(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, const int subpel_x,
+static inline void inter_predictor(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, const int subpel_x,
                                    const int subpel_y, const struct scale_factors *sf, int w, int h, int ref,
                                    const InterpKernel *kernel, int xs, int ys) {
     sf->predict[subpel_x != 0][subpel_y != 0][ref](
         src, src_stride, dst, dst_stride, kernel, subpel_x, xs, subpel_y, ys, w, h);
 }
-
-#if CONFIG_VP9_HIGHBITDEPTH
-static INLINE void highbd_inter_predictor(const uint16_t *src, int src_stride, uint16_t *dst, int dst_stride,
-                                          const int subpel_x, const int subpel_y, const struct scale_factors *sf, int w,
-                                          int h, int ref, const InterpKernel *kernel, int xs, int ys, int bd) {
-    sf->highbd_predict[subpel_x != 0][subpel_y != 0][ref](
-        src, src_stride, dst, dst_stride, kernel, subpel_x, xs, subpel_y, ys, w, h, bd);
-}
-#endif // CONFIG_VP9_HIGHBITDEPTH
 
 MV eb_vp9_average_split_mvs(const struct macroblockd_plane *pd, const ModeInfo *mi, int ref, int block);
 
@@ -55,30 +46,19 @@ void eb_vp9_build_inter_predictor(const uint8_t *src, int src_stride, uint8_t *d
 void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, MACROBLOCKD *xd,
                             int plane, int block, int bw, int bh, int x, int y, int w, int h, int mi_x, int mi_y);
 
-#if CONFIG_VP9_HIGHBITDEPTH
-void vp9_highbd_build_inter_predictor(const uint16_t *src, int src_stride, uint16_t *dst, int dst_stride,
-                                      const MV *mv_q3, const struct scale_factors *sf, int w, int h, int do_avg,
-                                      const InterpKernel *kernel, enum mv_precision precision, int x, int y, int bd);
-#endif
-
-static INLINE int scaled_buffer_offset(int x_offset, int y_offset, int stride, const struct scale_factors *sf) {
+static inline int scaled_buffer_offset(int x_offset, int y_offset, int stride, const struct scale_factors *sf) {
     const int x = sf ? sf->scale_value_x(x_offset, sf) : x_offset;
     const int y = sf ? sf->scale_value_y(y_offset, sf) : y_offset;
     return y * stride + x;
 }
 
-static INLINE void setup_pred_plane(struct buf_2d *dst, uint8_t *src, int stride, int mi_row, int mi_col,
+static inline void setup_pred_plane(struct buf_2d *dst, uint8_t *src, int stride, int mi_row, int mi_col,
                                     const struct scale_factors *scale, int subsampling_x, int subsampling_y) {
     const int x = (MI_SIZE * mi_col) >> subsampling_x;
     const int y = (MI_SIZE * mi_row) >> subsampling_y;
     dst->buf    = src + scaled_buffer_offset(x, y, stride, scale);
     dst->stride = stride;
 }
-#if 0
-void vp9_setup_dst_planes(struct macroblockd_plane planes[MAX_MB_PLANE],
-                          const YV12_BUFFER_CONFIG *src, int mi_row,
-                          int mi_col);
-#endif
 void eb_vp9_setup_pre_planes(MACROBLOCKD *xd, int idx, const YV12_BUFFER_CONFIG *src, int mi_row, int mi_col,
                              const struct scale_factors *sf);
 

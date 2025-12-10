@@ -86,28 +86,28 @@ void eb_vpx_convolve_copy_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t
     }
 }
 
-static INLINE void convolve_avg4(const uint8_t *const src, uint8_t *const dst) {
+static inline void convolve_avg4(const uint8_t *const src, uint8_t *const dst) {
     const __m128i s = _mm_cvtsi32_si128(*(const int32_t *)src);
     const __m128i d = _mm_cvtsi32_si128(*(const int32_t *)dst);
     const __m128i a = _mm_avg_epu8(s, d);
     *(int32_t *)dst = _mm_cvtsi128_si32(a);
 }
 
-static INLINE void convolve_avg8(const uint8_t *const src, uint8_t *const dst) {
+static inline void convolve_avg8(const uint8_t *const src, uint8_t *const dst) {
     const __m128i s = _mm_loadl_epi64((const __m128i *)src);
     const __m128i d = _mm_loadl_epi64((const __m128i *)dst);
     const __m128i a = _mm_avg_epu8(s, d);
     _mm_storel_epi64((__m128i *)dst, a);
 }
 
-static INLINE void convolve_avg16(const uint8_t *const src, uint8_t *const dst) {
+static inline void convolve_avg16(const uint8_t *const src, uint8_t *const dst) {
     const __m128i s = _mm_loadu_si128((const __m128i *)src);
     const __m128i d = _mm_load_si128((const __m128i *)dst);
     const __m128i a = _mm_avg_epu8(s, d);
     _mm_store_si128((__m128i *)dst, a);
 }
 
-static INLINE void convolve_avg32(const uint8_t *const src, uint8_t *const dst) {
+static inline void convolve_avg32(const uint8_t *const src, uint8_t *const dst) {
     const __m256i s = _mm256_loadu_si256((const __m256i *)src);
     const __m256i d = _mm256_load_si256((const __m256i *)dst);
     const __m256i a = _mm256_avg_epu8(s, d);
@@ -206,7 +206,7 @@ void eb_vpx_convolve_avg_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t 
 #define MM256_BROADCASTSI128_SI256(x) _mm256_broadcastsi128_si256(x)
 #endif // __clang__
 
-static INLINE void shuffle_filter_avx2(const int16_t *const filter, __m256i *const f) {
+static inline void shuffle_filter_avx2(const int16_t *const filter, __m256i *const f) {
     const __m256i f_values = MM256_BROADCASTSI128_SI256(_mm_load_si128((const __m128i *)filter));
     // pack and duplicate the filter values
     f[0] = _mm256_shuffle_epi8(f_values, _mm256_set1_epi16(0x0200u));
@@ -215,7 +215,7 @@ static INLINE void shuffle_filter_avx2(const int16_t *const filter, __m256i *con
     f[3] = _mm256_shuffle_epi8(f_values, _mm256_set1_epi16(0x0e0cu));
 }
 
-static INLINE __m256i convolve8_16_avx2(const __m256i *const s, const __m256i *const f) {
+static inline __m256i convolve8_16_avx2(const __m256i *const s, const __m256i *const f) {
     // multiply 2 adjacent elements with the filter and add the result
     const __m256i k_64 = _mm256_set1_epi16(1 << 6);
     const __m256i x0   = _mm256_maddubs_epi16(s[0], f[0]);
@@ -237,7 +237,7 @@ static INLINE __m256i convolve8_16_avx2(const __m256i *const s, const __m256i *c
     return sum1;
 }
 
-static INLINE __m128i convolve8_8_avx2(const __m256i *const s, const __m256i *const f) {
+static inline __m128i convolve8_8_avx2(const __m256i *const s, const __m256i *const f) {
     // multiply 2 adjacent elements with the filter and add the result
     const __m128i k_64 = _mm_set1_epi16(1 << 6);
     const __m128i x0   = _mm_maddubs_epi16(_mm256_castsi256_si128(s[0]), _mm256_castsi256_si128(f[0]));
@@ -272,7 +272,7 @@ DECLARE_ALIGNED(32, static const uint8_t, filt3_global_avx2[32]) = {
 DECLARE_ALIGNED(32, static const uint8_t, filt4_global_avx2[32]) = {
     6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14};
 
-static INLINE void vpx_filter_block1d4_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
+static inline void vpx_filter_block1d4_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
                                                  uint8_t *output_ptr, ptrdiff_t output_pitch, uint32_t output_height,
                                                  const int16_t *filter, const int avg) {
     __m128i      outReg1, outReg2;
@@ -356,7 +356,7 @@ static INLINE void vpx_filter_block1d4_h8_x_avx2(const uint8_t *src_ptr, ptrdiff
     }
 }
 
-static INLINE void vpx_filter_block1d8_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
+static inline void vpx_filter_block1d8_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
                                                  uint8_t *output_ptr, ptrdiff_t output_pitch, uint32_t output_height,
                                                  const int16_t *filter, const int avg) {
     __m128i      outReg1, outReg2;
@@ -440,7 +440,7 @@ static INLINE void vpx_filter_block1d8_h8_x_avx2(const uint8_t *src_ptr, ptrdiff
     }
 }
 
-static INLINE void vpx_filter_block1d16_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
+static inline void vpx_filter_block1d16_h8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pixels_per_line,
                                                   uint8_t *output_ptr, ptrdiff_t output_pitch, uint32_t output_height,
                                                   const int16_t *filter, const int avg) {
     __m128i      outReg1, outReg2;
@@ -579,7 +579,7 @@ static void vpx_filter_block1d16_h8_avg_avx2(const uint8_t *src_ptr, ptrdiff_t s
     vpx_filter_block1d16_h8_x_avx2(src_ptr, src_stride, output_ptr, dst_stride, output_height, filter, 1);
 }
 
-static INLINE void vpx_filter_block1d4_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
+static inline void vpx_filter_block1d4_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
                                                  ptrdiff_t out_pitch, uint32_t output_height, const int16_t *filter,
                                                  const int avg) {
     __m128i      outReg1, outReg2;
@@ -730,7 +730,7 @@ static INLINE void vpx_filter_block1d4_v8_x_avx2(const uint8_t *src_ptr, ptrdiff
     }
 }
 
-static INLINE void vpx_filter_block1d8_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
+static inline void vpx_filter_block1d8_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
                                                  ptrdiff_t out_pitch, uint32_t output_height, const int16_t *filter,
                                                  const int avg) {
     __m128i      outReg1, outReg2;
@@ -846,7 +846,7 @@ static INLINE void vpx_filter_block1d8_v8_x_avx2(const uint8_t *src_ptr, ptrdiff
     }
 }
 
-static INLINE void vpx_filter_block1d16_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
+static inline void vpx_filter_block1d16_v8_x_avx2(const uint8_t *src_ptr, ptrdiff_t src_pitch, uint8_t *output_ptr,
                                                   ptrdiff_t out_pitch, uint32_t output_height, const int16_t *filter,
                                                   const int avg) {
     __m128i      outReg1, outReg2;

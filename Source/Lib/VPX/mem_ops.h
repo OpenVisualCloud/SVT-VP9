@@ -8,8 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#define VPX_INLINE __inline
-
 #ifndef VPX_VPX_PORTS_MEM_OPS_H_
 #define VPX_VPX_PORTS_MEM_OPS_H_
 
@@ -135,7 +133,7 @@ static unsigned MEM_VALUE_T mem_get_le32(const void *vmem) {
 }
 
 #define mem_get_s_generic(end, sz)                                                \
-    static VPX_INLINE signed MEM_VALUE_T mem_get_s##end##sz(const void *vmem) {   \
+    static inline signed MEM_VALUE_T mem_get_s##end##sz(const void *vmem) {       \
         const MAU_T       *mem = (const MAU_T *)vmem;                             \
         signed MEM_VALUE_T val = mem_get_##end##sz(mem);                          \
         return (val << (MEM_VALUE_T_SZ_BITS - sz)) >> (MEM_VALUE_T_SZ_BITS - sz); \
@@ -168,7 +166,7 @@ mem_get_s_generic(le, 32)
 
 #undef  mem_put_be16
 #define mem_put_be16 mem_ops_wrap_symbol(mem_put_be16)
-static VPX_INLINE void mem_put_be16(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_be16(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >> 8) & 0xff);
@@ -177,7 +175,7 @@ static VPX_INLINE void mem_put_be16(void *vmem, MEM_VALUE_T val) {
 
 #undef  mem_put_be24
 #define mem_put_be24 mem_ops_wrap_symbol(mem_put_be24)
-static VPX_INLINE void mem_put_be24(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_be24(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >> 16) & 0xff);
@@ -187,7 +185,7 @@ static VPX_INLINE void mem_put_be24(void *vmem, MEM_VALUE_T val) {
 
 #undef  mem_put_be32
 #define mem_put_be32 mem_ops_wrap_symbol(mem_put_be32)
-static VPX_INLINE void mem_put_be32(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_be32(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >> 24) & 0xff);
@@ -198,7 +196,7 @@ static VPX_INLINE void mem_put_be32(void *vmem, MEM_VALUE_T val) {
 
 #undef  mem_put_le16
 #define mem_put_le16 mem_ops_wrap_symbol(mem_put_le16)
-static VPX_INLINE void mem_put_le16(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_le16(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >> 0) & 0xff);
@@ -207,7 +205,7 @@ static VPX_INLINE void mem_put_le16(void *vmem, MEM_VALUE_T val) {
 
 #undef  mem_put_le24
 #define mem_put_le24 mem_ops_wrap_symbol(mem_put_le24)
-static VPX_INLINE void mem_put_le24(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_le24(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >>  0) & 0xff);
@@ -217,7 +215,7 @@ static VPX_INLINE void mem_put_le24(void *vmem, MEM_VALUE_T val) {
 
 #undef  mem_put_le32
 #define mem_put_le32 mem_ops_wrap_symbol(mem_put_le32)
-static VPX_INLINE void mem_put_le32(void *vmem, MEM_VALUE_T val) {
+static inline void mem_put_le32(void *vmem, MEM_VALUE_T val) {
   MAU_T *mem = (MAU_T *)vmem;
 
   mem[0] = (MAU_T)((val >>  0) & 0xff);

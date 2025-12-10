@@ -7,7 +7,6 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#define INLINE __inline
 
 #include "vp9_onyxc_int.h"
 #include "vp9_enums.h"

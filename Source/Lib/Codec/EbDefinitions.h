@@ -21,11 +21,7 @@ extern "C" {
 #ifdef _MSC_VER
 #define FORCE_INLINE __forceinline
 #else
-#ifdef __cplusplus
 #define FORCE_INLINE inline __attribute__((always_inline))
-#else
-#define FORCE_INLINE __inline __attribute__((always_inline))
-#endif
 #endif
 
 #define PKT_PRINT 0 // DEBUG: to print output pictures and ref from packetization
@@ -39,17 +35,6 @@ extern "C" {
 #else
 #define SVT_LOG(s, ...) printf("", ##__VA_ARGS__)
 #endif
-#endif
-#ifdef _WIN32
-#ifndef __cplusplus
-#define inline __inline
-#endif
-#elif __GNUC__
-#define inline __inline__
-#define fseeko64 fseek
-#define ftello64 ftell
-#else
-#error OS not supported
 #endif
 
 #ifdef __GNUC__
@@ -68,7 +53,6 @@ extern "C" {
 #ifdef _MSC_VER
 
 #define NOINLINE __declspec(noinline)
-#define FORCE_INLINE __forceinline
 #pragma warning(disable : 4068) // unknown pragma
 #define EB_MESSAGE(m) (__FILE__ "(" EB_SRC_LINE_NUM "): message: " m)
 
@@ -76,29 +60,10 @@ extern "C" {
 
 #define NOINLINE __attribute__((noinline))
 
-#ifdef __cplusplus
-#define FORCE_INLINE inline __attribute__((always_inline))
-#else
-#define FORCE_INLINE __inline __attribute__((always_inline))
-#endif // __cplusplus
-
 //#define __popcnt                __builtin_popcount
 #define EB_MESSAGE(m) __FILE__ "(" EB_SRC_LINE_NUM "): message: " m
 
 #endif // _MSC_VER
-
-// Define Cross-Platform 64-bit fseek() and ftell()
-#ifdef _WIN32
-typedef __int64 Off64;
-#define fseeko64 _fseeki64
-#define ftello64 _ftelli64
-#else // *Note -- fseeko and ftello are already defined for linux
-#ifndef __cplusplus
-#ifndef __USE_LARGEFILE
-#define __USE_LARGEFILE
-#endif
-#endif
-#endif
 
 // Used to hide GCC warnings for unused function tables
 #ifdef __GNUC__
@@ -107,49 +72,10 @@ typedef __int64 Off64;
 #define FUNC_TABLE
 #endif
 
-#define NEW_PRED_STRUCT 1
 // DEV MACROS
 #define DISABLE_AVX512
 
-#define HME_ENHANCED_CENTER_SEARCH 1
-#define ADP_STATS_PER_LAYER 0 // Lossless: ADP stats
-#define TURN_OFF_PRE_PROCESSING 1 // SQ only:Turn OFF enable_denoise_src_flag and check_input_for_borders_and_preprocess
-#define VP9_RC 1
-
-#define SHUT_64x64_BASE_RESTRICTION 1 // OQ
-
-#define USE_SRC_REF 0
-#define INTER_INTRA_BIAS 0
-
-#define SEG_SUPPORT 0
-
-#define RC_FEEDBACK 1
-
-#define INTRA_4x4_I_SLICE 1 // Hsan: to test/fix/enable
-#define INTRA_4x4_SB_DEPTH_84_85 1 // Hsan: to test/fix/enable
-
-#define ADAPTIVE_QP_INDEX_GEN 1
-
-#if SEG_SUPPORT
-#define BEA 1
-#define BEA_SCENE_CHANGE 1
-#endif
-#if VP9_RC
-#define VP9_RC_PRINTS 0
-#define RC_NO_EXTRA 1
-#endif
-
 #define Log2f eb_vp9_Log2f_SSE2
-
-#ifndef _RSIZE_T_DEFINED
-typedef size_t rsize_t;
-#define _RSIZE_T_DEFINED
-#endif /* _RSIZE_T_DEFINED */
-
-#ifndef _ERRNO_T_DEFINED
-#define _ERRNO_T_DEFINED
-typedef int Errno;
-#endif /* _ERRNO_T_DEFINED */
 
 // *Note - This work around is needed for the windows visual studio compiler
 //  (MSVC) because it doesn't support the C99 header file stdint.h.

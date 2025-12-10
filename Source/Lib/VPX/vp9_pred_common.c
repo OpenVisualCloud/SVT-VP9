@@ -8,7 +8,6 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#define INLINE __inline
 
 #include <stdint.h>
 #include "assert.h"

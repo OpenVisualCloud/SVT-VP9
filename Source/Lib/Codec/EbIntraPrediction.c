@@ -15,12 +15,8 @@
 void intra_prediction(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, int plane) {
     MACROBLOCKD *const xd = context_ptr->e_mbd;
 
-#if 0
-    const TX_SIZE tx_size = plane ? get_uv_tx_size(xd->mi[0], pd) : xd->mi[0]->tx_size;
-#else
     const TX_SIZE tx_size = plane ? context_ptr->ep_block_stats_ptr->tx_size_uv
                                   : context_ptr->ep_block_stats_ptr->tx_size;
-#endif
 
     PREDICTION_MODE mode;
     int             block = context_ptr->bmi_index;
@@ -31,19 +27,7 @@ void intra_prediction(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t p
         mode = plane == 0 ? xd->mi[0]->mode : xd->mi[0]->uv_mode;
     }
 
-    eb_vp9_predict_intra_block(context_ptr,
-#if 0 // Hsan: reference samples generation done per block prior to fast loop @ generate_intra_reference_samples()
-        xd,
-#endif
-                               tx_size,
-                               mode,
-                               pred_buffer,
-                               pred_stride,
-#if 0
-        0,
-        0,
-#endif
-                               plane);
+    eb_vp9_predict_intra_block(context_ptr, tx_size, mode, pred_buffer, pred_stride, plane);
 }
 
 void inter_prediction(struct EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, int plane) {

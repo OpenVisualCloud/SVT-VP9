@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_MV_H_
 #define VPX_VP9_COMMON_VP9_MV_H_
 
-#define INLINE __inline
-
 #include <assert.h>
 #include <stdint.h>
 #include "vpx_dsp_common.h"
@@ -36,11 +34,11 @@ typedef struct mv32 {
     int32_t col;
 } MV32;
 
-static INLINE int is_zero_mv(const MV *mv) { return *((const uint32_t *)mv) == 0; }
+static inline int is_zero_mv(const MV *mv) { return *((const uint32_t *)mv) == 0; }
 
-static INLINE int is_equal_mv(const MV *a, const MV *b) { return *((const uint32_t *)a) == *((const uint32_t *)b); }
+static inline int is_equal_mv(const MV *a, const MV *b) { return *((const uint32_t *)a) == *((const uint32_t *)b); }
 
-static INLINE void clamp_mv(MV *mv, int min_col, int max_col, int min_row, int max_row) {
+static inline void clamp_mv(MV *mv, int min_col, int max_col, int min_row, int max_row) {
     mv->col = (int16_t)clamp(mv->col, min_col, max_col);
     mv->row = (int16_t)clamp(mv->row, min_row, max_row);
 }

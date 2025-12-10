@@ -158,7 +158,6 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
 
                 pred_position_ptr = picture_control_set_ptr->pred_struct_ptr
                                         ->pred_struct_entry_ptr_array[picture_control_set_ptr->pred_struct_index];
-#if NEW_PRED_STRUCT
                 // If there was a change in the number of temporal layers, then cleanup the Reference Queue's Dependent Counts
                 if (picture_control_set_ptr->hierarchical_layers_diff != 0) {
                     // Dynamic GOP
@@ -288,7 +287,6 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                             : reference_queue_index + 1;
                     }
                 }
-#endif
                 // If there was a change in the number of temporal layers, then cleanup the Reference Queue's Dependent Counts
                 if (picture_control_set_ptr->hierarchical_layers_diff != 0) {
                     reference_queue_index = encode_context_ptr->reference_picture_queue_head_index;
@@ -813,9 +811,6 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                             }
                         }
 
-#if SEG_SUPPORT
-                        memset(&child_picture_control_set_ptr->segment_counts[0], 0, MAX_SEGMENTS * sizeof(int));
-#endif
                         // is_low_delay
                         child_picture_control_set_ptr->is_low_delay =
                             (EB_BOOL)(child_picture_control_set_ptr->parent_pcs_ptr->pred_struct_ptr

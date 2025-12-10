@@ -15,18 +15,11 @@
 #include "inv_txfm_sse2.h"
 #include "tmmintrin.h"
 
-static INLINE __m256i load_input_data16_avx2(const tran_low_t *const data) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m256i in0 = _mm256_load_si256((const __m256i *)(data + 0));
-    const __m256i in1 = _mm256_load_si256((const __m256i *)(data + 8));
-    const __m256i in  = _mm256_packs_epi32(in0, in1);
-    return _mm256_permute4x64_epi64(in, 0xD8);
-#else
+static inline __m256i load_input_data16_avx2(const tran_low_t *const data) {
     return _mm256_load_si256((const __m256i *)data);
-#endif
 }
 
-static INLINE void load_buffer_16x16_avx2(const tran_low_t *const input, const int stride, __m256i *const in) {
+static inline void load_buffer_16x16_avx2(const tran_low_t *const input, const int stride, __m256i *const in) {
     in[0]  = load_input_data16_avx2(input + 0 * stride);
     in[1]  = load_input_data16_avx2(input + 1 * stride);
     in[2]  = load_input_data16_avx2(input + 2 * stride);
@@ -45,7 +38,7 @@ static INLINE void load_buffer_16x16_avx2(const tran_low_t *const input, const i
     in[15] = load_input_data16_avx2(input + 15 * stride);
 }
 
-static INLINE void recon_and_store_avx2(const __m256i in, uint8_t *const dest) {
+static inline void recon_and_store_avx2(const __m256i in, uint8_t *const dest) {
     const __m128i zero = _mm_setzero_si128();
     __m128i       d    = _mm_loadu_si128((__m128i *)dest);
     __m128i       d0, d1;
@@ -59,7 +52,7 @@ static INLINE void recon_and_store_avx2(const __m256i in, uint8_t *const dest) {
     _mm_storeu_si128((__m128i *)dest, _mm256_extracti128_si256(dd, 0));
 }
 
-static INLINE void write_buffer_16x1_avx2(const __m256i in, uint8_t *const dest) {
+static inline void write_buffer_16x1_avx2(const __m256i in, uint8_t *const dest) {
     const __m256i final_rounding = _mm256_set1_epi16(1 << 5);
     __m256i       out;
     out = _mm256_adds_epi16(in, final_rounding);
@@ -67,7 +60,7 @@ static INLINE void write_buffer_16x1_avx2(const __m256i in, uint8_t *const dest)
     recon_and_store_avx2(out, dest);
 }
 
-static INLINE void write_buffer_16x16_avx2(__m256i *const in, uint8_t *const dest, const int stride) {
+static inline void write_buffer_16x16_avx2(__m256i *const in, uint8_t *const dest, const int stride) {
     // Final rounding and shift
     write_buffer_16x1_avx2(in[0], dest + 0 * stride);
     write_buffer_16x1_avx2(in[1], dest + 1 * stride);
@@ -88,7 +81,7 @@ static INLINE void write_buffer_16x16_avx2(__m256i *const in, uint8_t *const des
 }
 
 // Only do addition and subtraction butterfly, size = 16, 32
-static INLINE void add_sub_butterfly_avx2(const __m256i *const in, __m256i *const out, const int size) {
+static inline void add_sub_butterfly_avx2(const __m256i *const in, __m256i *const out, const int size) {
     int       i     = 0;
     const int num   = size >> 1;
     const int bound = size - 1;
@@ -99,7 +92,7 @@ static INLINE void add_sub_butterfly_avx2(const __m256i *const in, __m256i *cons
     }
 }
 
-static INLINE void idct16_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct16_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[16], step2[16];
 
     // stage 2
@@ -158,7 +151,7 @@ static INLINE void idct16_avx2(const __m256i *const in, __m256i *const out) {
     add_sub_butterfly_avx2(step2, out, 16);
 }
 
-static INLINE void iadst16_kernel_avx2(const __m256i in0, const __m256i in1, const __m256i in2, const __m256i in3,
+static inline void iadst16_kernel_avx2(const __m256i in0, const __m256i in1, const __m256i in2, const __m256i in3,
                                        const tran_coef_t c0, const tran_coef_t c1, const tran_coef_t c2,
                                        const tran_coef_t c3, __m256i *const out0, __m256i *const out1,
                                        __m256i *const out2, __m256i *const out3) {
@@ -314,7 +307,7 @@ void eb_vp9_iht16x16_256_add_avx2(const tran_low_t *input, uint8_t *dest, int st
 
 //------------------------------------------------------------------------------
 
-static INLINE void recon_and_store_32_avx2(const __m256i in, uint8_t *const dest) {
+static inline void recon_and_store_32_avx2(const __m256i in, uint8_t *const dest) {
     const __m256i zero = _mm256_setzero_si256();
     __m256i       d0, d1;
 
@@ -342,12 +335,12 @@ void eb_vpx_idct32x32_1_add_avx2(const tran_low_t *input, uint8_t *dest, int str
 
 //------------------------------------------------------------------------------
 
-static INLINE void load_transpose_16bit_16x16(const tran_low_t *const input, const int stride, __m256i *const in) {
+static inline void load_transpose_16bit_16x16(const tran_low_t *const input, const int stride, __m256i *const in) {
     load_buffer_16x16_avx2(input, stride, in);
     transpose_16bit_16x16_avx2(in, in);
 }
 
-static INLINE void partial_butterfly_avx2(const __m256i in, const int c0, const int c1, __m256i *const out0,
+static inline void partial_butterfly_avx2(const __m256i in, const int c0, const int c1, __m256i *const out0,
                                           __m256i *const out1) {
     const __m256i cst0 = _mm256_set1_epi16(2 * c0);
     const __m256i cst1 = _mm256_set1_epi16(2 * c1);
@@ -355,7 +348,7 @@ static INLINE void partial_butterfly_avx2(const __m256i in, const int c0, const 
     *out1              = _mm256_mulhrs_epi16(in, cst1);
 }
 
-static INLINE __m256i partial_butterfly_cospi16_avx2(const __m256i in) {
+static inline __m256i partial_butterfly_cospi16_avx2(const __m256i in) {
     const __m256i coef_pair = _mm256_set1_epi16(2 * cospi_16_64);
     return _mm256_mulhrs_epi16(in, coef_pair);
 }
@@ -366,7 +359,7 @@ static INLINE __m256i partial_butterfly_cospi16_avx2(const __m256i in) {
 // quarter_2: 8-15
 // quarter_3_4: 16-23, 24-31
 
-static INLINE void idct32_8x32_quarter_2_stage_4_to_6_avx2(__m256i *const step1, __m256i *const out) {
+static inline void idct32_8x32_quarter_2_stage_4_to_6_avx2(__m256i *const step1, __m256i *const out) {
     __m256i step2[32];
 
     // stage 4
@@ -396,7 +389,7 @@ static INLINE void idct32_8x32_quarter_2_stage_4_to_6_avx2(__m256i *const step1,
     out[15] = step1[15];
 }
 
-static INLINE void idct32_8x32_quarter_3_4_stage_4_to_7_avx2(__m256i *const step1, __m256i *const out) {
+static inline void idct32_8x32_quarter_3_4_stage_4_to_7_avx2(__m256i *const step1, __m256i *const out) {
     __m256i step2[32];
 
     // stage 4
@@ -461,7 +454,7 @@ static INLINE void idct32_8x32_quarter_3_4_stage_4_to_7_avx2(__m256i *const step
 // For each 8x32 block __m256i in[32],
 // Input with index, 0, 4
 // output pixels: 0-7 in __m256i out[32]
-static INLINE void idct32_34_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_34_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[8], step2[8];
 
     // stage 3
@@ -497,7 +490,7 @@ static INLINE void idct32_34_16x32_quarter_1_avx2(const __m256i *const in, __m25
 // For each 8x32 block __m256i in[32],
 // Input with index, 2, 6
 // output pixels: 8-15 in __m256i out[32]
-static INLINE void idct32_34_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_34_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[16], step2[16];
 
     // stage 2
@@ -517,7 +510,7 @@ static INLINE void idct32_34_16x32_quarter_2_avx2(const __m256i *const in, __m25
     idct32_8x32_quarter_2_stage_4_to_6_avx2(step1, out);
 }
 
-static INLINE void idct32_34_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_34_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i temp[16];
     idct32_34_16x32_quarter_1_avx2(in, temp);
     idct32_34_16x32_quarter_2_avx2(in, temp);
@@ -528,7 +521,7 @@ static INLINE void idct32_34_16x32_quarter_1_2_avx2(const __m256i *const in, __m
 // For each 8x32 block __m256i in[32],
 // Input with odd index, 1, 3, 5, 7
 // output pixels: 16-23, 24-31 in __m256i out[32]
-static INLINE void idct32_34_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_34_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[32];
 
     // stage 1
@@ -581,7 +574,7 @@ void eb_vp9_idct32x32_34_add_avx2(const tran_low_t *input, uint8_t *dest, int st
 // For each 16x32 block __m256i in[32],
 // Input with index, 0, 4, 8, 12
 // output pixels: 0-7 in __m256i out[32]
-static INLINE void idct32_135_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_135_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[8], step2[8];
 
     // stage 3
@@ -619,7 +612,7 @@ static INLINE void idct32_135_16x32_quarter_1_avx2(const __m256i *const in, __m2
 // For each 16x32 block __m256i in[32],
 // Input with index, 2, 6, 10, 14
 // output pixels: 8-15 in __m256i out[32]
-static INLINE void idct32_135_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_135_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[16], step2[16];
 
     // stage 2
@@ -641,7 +634,7 @@ static INLINE void idct32_135_16x32_quarter_2_avx2(const __m256i *const in, __m2
     idct32_8x32_quarter_2_stage_4_to_6_avx2(step1, out);
 }
 
-static INLINE void idct32_135_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_135_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i temp[16];
     idct32_135_16x32_quarter_1_avx2(in, temp);
     idct32_135_16x32_quarter_2_avx2(in, temp);
@@ -653,7 +646,7 @@ static INLINE void idct32_135_16x32_quarter_1_2_avx2(const __m256i *const in, __
 // Input with odd index,
 // 1, 3, 5, 7, 9, 11, 13, 15
 // output pixels: 16-23, 24-31 in __m256i out[32]
-static INLINE void idct32_135_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_135_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[32], step2[32];
 
     // stage 1
@@ -712,7 +705,7 @@ static void idct32_135_16x32_avx2(const __m256i *const in, __m256i *const out) {
     add_sub_butterfly_avx2(temp, out, 32);
 }
 
-static INLINE void store_buffer_16x32_avx2(__m256i *const in, uint8_t *dst, const int stride) {
+static inline void store_buffer_16x32_avx2(__m256i *const in, uint8_t *dst, const int stride) {
     const __m256i final_rounding = _mm256_set1_epi16(1 << 5);
     int           j              = 0;
     while (j < 32) {
@@ -752,7 +745,7 @@ void eb_vp9_idct32x32_135_add_avx2(const tran_low_t *input, uint8_t *dest, int s
 // For each 16x32 block __m256i in[32],
 // Input with index, 0, 4, 8, 12, 16, 20, 24, 28
 // output pixels: 0-7 in __m256i out[32]
-static INLINE void idct32_1024_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_1024_16x32_quarter_1_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[8], step2[8];
 
     // stage 3
@@ -790,7 +783,7 @@ static INLINE void idct32_1024_16x32_quarter_1_avx2(const __m256i *const in, __m
 // For each 16x32 block __m256i in[32],
 // Input with index, 2, 6, 10, 14, 18, 22, 26, 30
 // output pixels: 8-15 in __m256i out[32]
-static INLINE void idct32_1024_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_1024_16x32_quarter_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[16], step2[16];
 
     // stage 2
@@ -812,7 +805,7 @@ static INLINE void idct32_1024_16x32_quarter_2_avx2(const __m256i *const in, __m
     idct32_8x32_quarter_2_stage_4_to_6_avx2(step1, out);
 }
 
-static INLINE void idct32_1024_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_1024_16x32_quarter_1_2_avx2(const __m256i *const in, __m256i *const out) {
     __m256i temp[16];
     idct32_1024_16x32_quarter_1_avx2(in, temp);
     idct32_1024_16x32_quarter_2_avx2(in, temp);
@@ -824,7 +817,7 @@ static INLINE void idct32_1024_16x32_quarter_1_2_avx2(const __m256i *const in, _
 // Input with odd index,
 // 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31
 // output pixels: 16-23, 24-31 in __m256i out[32]
-static INLINE void idct32_1024_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
+static inline void idct32_1024_16x32_quarter_3_4_avx2(const __m256i *const in, __m256i *const out) {
     __m256i step1[32], step2[32];
 
     // stage 1

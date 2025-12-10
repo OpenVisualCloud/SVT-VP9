@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_QUANT_COMMON_H_
 #define VPX_VP9_COMMON_VP9_QUANT_COMMON_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vpx_codec.h"
 #include "vp9_seg_common.h"

@@ -14,7 +14,7 @@
 #include "txfm_common.h"
 #include "mem.h"
 
-static INLINE tran_high_t fdct_round_shift(tran_high_t input) {
+static inline tran_high_t fdct_round_shift(tran_high_t input) {
     tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
     // TODO(debargha, peter.derivaz): Find new bounds for this assert
     // and make the bounds consts.

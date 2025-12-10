@@ -1207,199 +1207,6 @@ static uint64_t compute_variance64x64(
     return (mean_of64x64_squared_values_blocks - (mean_of64x64_blocks * mean_of64x64_blocks));
 }
 
-#if !TURN_OFF_PRE_PROCESSING
-void check_input_for_borders_and_preprocess(EbPictureBufferDesc *input_picture_ptr) {
-    uint32_t row_index, col_index;
-    uint32_t pic_height;
-    uint32_t pic_width;
-    uint32_t input_origin_index;
-    uint64_t avg_line_curr, avg_line_neigh;
-
-    uint8_t *ptr_in;
-    uint8_t *ptr_src;
-    uint32_t stride_in, twice_stride_in;
-
-    EB_BOOL filter_top = EB_FALSE, filterBot = EB_FALSE, filterLeft = EB_FALSE, filter_right = EB_FALSE;
-    EB_BOOL filter_top_two = EB_FALSE, filter_left_two = EB_FALSE;
-
-    uint64_t avg_line0, avg_line1, avg_line2;
-    EB_BOOL  filter2_lines = EB_FALSE, filter1_line = EB_FALSE;
-
-    (void)filter_right;
-
-    //Luma
-    pic_height = input_picture_ptr->height;
-    pic_width  = input_picture_ptr->width;
-
-    stride_in          = input_picture_ptr->stride_y;
-    twice_stride_in    = stride_in + stride_in;
-    input_origin_index = input_picture_ptr->origin_x + input_picture_ptr->origin_y * input_picture_ptr->stride_y;
-    ptr_in             = &(input_picture_ptr->buffer_y[input_origin_index]);
-
-    {
-        // Top
-        ptr_src        = ptr_in;
-        avg_line_curr  = 0;
-        avg_line_neigh = 0;
-        // First check the second row of pixels against the first row
-        for (row_index = 0; row_index < pic_width; row_index++) {
-            avg_line_curr += ptr_src[row_index + stride_in];
-            avg_line_neigh += ptr_src[row_index + twice_stride_in];
-        }
-
-        avg_line_curr  = avg_line_curr / pic_width;
-        avg_line_neigh = avg_line_neigh / pic_width;
-
-        filter_top_two = (ABS((int64_t)avg_line_neigh - (int64_t)avg_line_curr) >
-                          (int64_t)(avg_line_neigh * SAMPLE_THRESHOLD_PRECENT_TWO_BORDER_LINES / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-
-        // Next check the first row of pixels against the second
-        avg_line_curr  = 0;
-        avg_line_neigh = 0;
-        for (row_index = 0; row_index < pic_width; row_index++) {
-            avg_line_curr += ptr_src[row_index];
-            avg_line_neigh += ptr_src[row_index + stride_in];
-        }
-
-        avg_line_curr  = avg_line_curr / pic_width;
-        avg_line_neigh = avg_line_neigh / pic_width;
-
-        filter_top = (ABS((int64_t)avg_line_neigh - (int64_t)avg_line_curr) >
-                      (int64_t)(avg_line_neigh * SAMPLE_THRESHOLD_PRECENT_BORDER_LINE / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-
-        //Bottom
-        ptr_src        = &ptr_in[(pic_height - 1) * stride_in];
-        avg_line_curr  = 0;
-        avg_line_neigh = 0;
-        for (row_index = 0; row_index < pic_width; row_index++) {
-            avg_line_curr += ptr_src[row_index];
-            avg_line_neigh += ptr_src[(int32_t)row_index - (int32_t)stride_in];
-        }
-
-        avg_line_curr  = avg_line_curr / pic_width;
-        avg_line_neigh = avg_line_neigh / pic_width;
-
-        filterBot = (ABS((int64_t)avg_line_neigh - (int64_t)avg_line_curr) >
-                     (int64_t)(avg_line_neigh * SAMPLE_THRESHOLD_PRECENT_BORDER_LINE / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-
-        //Left
-        ptr_src = &ptr_in[0];
-        // First check the second col of pixels against the first col
-        avg_line_curr  = 0;
-        avg_line_neigh = 0;
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            avg_line_curr += ptr_src[col_index * stride_in + 1];
-            avg_line_neigh += ptr_src[col_index * stride_in + 2];
-        }
-
-        avg_line_curr  = avg_line_curr / pic_height;
-        avg_line_neigh = avg_line_neigh / pic_height;
-
-        filter_left_two = (ABS((int64_t)avg_line_neigh - (int64_t)avg_line_curr) >
-                           (int64_t)(avg_line_neigh * SAMPLE_THRESHOLD_PRECENT_TWO_BORDER_LINES / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-
-        // Next check the first col of pixels against the second col
-        avg_line_curr  = 0;
-        avg_line_neigh = 0;
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            avg_line_curr += ptr_src[col_index * stride_in];
-            avg_line_neigh += ptr_src[col_index * stride_in + 1];
-        }
-        avg_line_curr  = avg_line_curr / pic_height;
-        avg_line_neigh = avg_line_neigh / pic_height;
-
-        filterLeft = (ABS((int64_t)avg_line_neigh - (int64_t)avg_line_curr) >
-                      (int64_t)(avg_line_neigh * SAMPLE_THRESHOLD_PRECENT_BORDER_LINE / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-
-        //Right
-        ptr_src   = &ptr_in[pic_width - 1];
-        avg_line0 = 0;
-        avg_line1 = 0;
-        avg_line2 = 0;
-        //---L2--L1--L0
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            avg_line0 += ptr_src[col_index * stride_in];
-            avg_line1 += ptr_src[(int32_t)col_index * (int32_t)stride_in - 1];
-            avg_line2 += ptr_src[(int32_t)col_index * (int32_t)stride_in - 2];
-        }
-
-        avg_line0 = avg_line0 / pic_height;
-        avg_line1 = avg_line1 / pic_height;
-        avg_line2 = avg_line2 / pic_height;
-
-        filter2_lines = (ABS((int64_t)avg_line1 - (int64_t)avg_line2) >
-                         (int64_t)(avg_line2 * SAMPLE_THRESHOLD_PRECENT_TWO_BORDER_LINES / 100))
-            ? EB_TRUE
-            : EB_FALSE;
-        filter1_line  = (ABS((int64_t)avg_line1 - (int64_t)avg_line0) >
-                        (int64_t)(avg_line1 * SAMPLE_THRESHOLD_PRECENT_BORDER_LINE / 100))
-             ? EB_TRUE
-             : EB_FALSE;
-
-        //SVT_LOG("--filter2_lines %i--filter1_line% i\n",filter2_lines,filter1_line);
-    }
-
-    // TOP
-    ptr_src = ptr_in;
-    if (filter_top_two && filter_top) {
-        // Replace the two rows of border pixels with third row
-        for (row_index = 0; row_index < pic_width; row_index++) {
-            ptr_src[row_index + stride_in] = ptr_src[row_index + twice_stride_in];
-            ptr_src[row_index]             = ptr_src[row_index + stride_in];
-        }
-    } else if (filter_top && !filter_top_two) {
-        // Replace the first row of pixels with second row
-        for (row_index = 0; row_index < pic_width; row_index++) { ptr_src[row_index] = ptr_src[row_index + stride_in]; }
-    }
-
-    // LEFT
-    ptr_src = &ptr_in[0];
-    if (filter_left_two && filterLeft) {
-        // Replace the two cols of border pixels with third col
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            ptr_src[col_index * stride_in + 1] = ptr_src[col_index * stride_in + 2];
-            ptr_src[col_index * stride_in]     = ptr_src[col_index * stride_in + 1];
-        }
-    } else if (filterLeft && !filter_left_two) {
-        // Replace the first col of border pixels with second col
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            ptr_src[col_index * stride_in] = ptr_src[col_index * stride_in + 1];
-        }
-    }
-
-    // BOTTOM
-    ptr_src = &ptr_in[(pic_height - 1) * stride_in];
-    if (filterBot) {
-        for (row_index = 0; row_index < pic_width; row_index++) {
-            ptr_src[row_index] = ptr_src[(int32_t)row_index - (int32_t)stride_in];
-        }
-    }
-
-    // RIGHT
-    ptr_src = &ptr_in[pic_width - 1];
-    if (filter2_lines) {
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            ptr_src[col_index * stride_in]                       = ptr_src[(int32_t)col_index * (int32_t)stride_in - 2];
-            ptr_src[(int32_t)col_index * (int32_t)stride_in - 1] = ptr_src[(int32_t)col_index * (int32_t)stride_in - 2];
-        }
-    } else if (filter1_line) {
-        for (col_index = 0; col_index < pic_height; col_index++) {
-            ptr_src[col_index * stride_in] = ptr_src[(int32_t)col_index * (int32_t)stride_in - 1];
-        }
-    }
-}
-#endif
-
 static uint8_t get_filtered_types(uint8_t *ptr, uint32_t stride, uint8_t filter_type) {
     uint8_t *p = ptr - 1 - stride;
 
@@ -4175,21 +3982,11 @@ static void set_picture_parameters_for_statistics_gathering(SequenceControlSet *
  ***** Denoising
  ************************************************/
 static void picture_pre_processing_operations(PictureParentControlSet *picture_control_set_ptr,
-#if !TURN_OFF_PRE_PROCESSING
-                                              EbPictureBufferDesc *input_picture_ptr,
-#endif
-                                              PictureAnalysisContext *context_ptr,
-                                              SequenceControlSet     *sequence_control_set_ptr,
-                                              EbPictureBufferDesc    *quarter_decimated_picture_ptr,
-                                              EbPictureBufferDesc    *sixteenth_decimated_picture_ptr,
+                                              PictureAnalysisContext  *context_ptr,
+                                              SequenceControlSet      *sequence_control_set_ptr,
+                                              EbPictureBufferDesc     *quarter_decimated_picture_ptr,
+                                              EbPictureBufferDesc     *sixteenth_decimated_picture_ptr,
                                               uint32_t sb_total_count, uint32_t picture_width_in_sb) {
-
-#if !TURN_OFF_PRE_PROCESSING
-    if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-        check_input_for_borders_and_preprocess(input_picture_ptr);
-    }
-#endif
-
     if (picture_control_set_ptr->noise_detection_method == NOISE_DETECT_HALF_PRECISION) {
         half_sample_denoise(context_ptr,
                             sequence_control_set_ptr,
@@ -5121,9 +4918,6 @@ void *eb_vp9_picture_analysis_kernel(void *input_ptr) {
 
         // Pre processing operations performed on the input picture
         picture_pre_processing_operations(picture_control_set_ptr,
-#if !TURN_OFF_PRE_PROCESSING
-                                          input_picture_ptr,
-#endif
                                           context_ptr,
                                           sequence_control_set_ptr,
                                           quarter_decimated_picture_ptr,

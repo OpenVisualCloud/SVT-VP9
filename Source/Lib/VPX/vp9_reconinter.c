@@ -14,23 +14,6 @@
 #include "vp9_reconinter.h"
 #include "vp9_reconintra.h"
 
-#if CONFIG_VP9_HIGHBITDEPTH
-void vp9_highbd_build_inter_predictor(const uint16_t *src, int src_stride, uint16_t *dst, int dst_stride,
-                                      const MV *src_mv, const struct scale_factors *sf, int w, int h, int ref,
-                                      const InterpKernel *kernel, enum mv_precision precision, int x, int y, int bd) {
-    const int is_q4    = precision == MV_PRECISION_Q4;
-    const MV  mv_q4    = {is_q4 ? src_mv->row : src_mv->row * 2, is_q4 ? src_mv->col : src_mv->col * 2};
-    MV32      mv       = eb_vp9_scale_mv(&mv_q4, x, y, sf);
-    const int subpel_x = mv.col & SUBPEL_MASK;
-    const int subpel_y = mv.row & SUBPEL_MASK;
-
-    src += (mv.row >> SUBPEL_BITS) * src_stride + (mv.col >> SUBPEL_BITS);
-
-    highbd_inter_predictor(
-        src, src_stride, dst, dst_stride, subpel_x, subpel_y, sf, w, h, ref, kernel, sf->x_step_q4, sf->y_step_q4, bd);
-}
-#endif // CONFIG_VP9_HIGHBITDEPTH
-
 void eb_vp9_build_inter_predictor(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, const MV *src_mv,
                                   const struct scale_factors *sf, int w, int h, int ref, const InterpKernel *kernel,
                                   enum mv_precision precision, int x, int y) {
@@ -46,7 +29,7 @@ void eb_vp9_build_inter_predictor(const uint8_t *src, int src_stride, uint8_t *d
         src, src_stride, dst, dst_stride, subpel_x, subpel_y, sf, w, h, ref, kernel, sf->x_step_q4, sf->y_step_q4);
 }
 
-static INLINE int round_mv_comp_q4(int value) { return (value < 0 ? value - 2 : value + 2) / 4; }
+static inline int round_mv_comp_q4(int value) { return (value < 0 ? value - 2 : value + 2) / 4; }
 
 static MV mi_mv_pred_q4(const ModeInfo *mi, int idx) {
     MV res = {(int16_t)round_mv_comp_q4(mi->bmi[0].as_mv[idx].as_mv.row + mi->bmi[1].as_mv[idx].as_mv.row +
@@ -56,7 +39,7 @@ static MV mi_mv_pred_q4(const ModeInfo *mi, int idx) {
     return res;
 }
 
-static INLINE int round_mv_comp_q2(int value) { return (value < 0 ? value - 1 : value + 1) / 2; }
+static inline int round_mv_comp_q2(int value) { return (value < 0 ? value - 1 : value + 1) / 2; }
 
 static MV mi_mv_pred_q2(const ModeInfo *mi, int idx, int block0, int block1) {
     MV res = {(int16_t)round_mv_comp_q2(mi->bmi[block0].as_mv[idx].as_mv.row + mi->bmi[block1].as_mv[idx].as_mv.row),
@@ -104,28 +87,14 @@ void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint
     struct macroblockd_plane *const pd          = &xd->plane[plane];
     const ModeInfo                 *mi          = xd->mi[0];
     const int                       is_compound = has_second_ref(mi);
-#if 1 // Hsan: switchable interp_filter not supported
-    const InterpKernel *kernel = eb_vp9_filter_kernels[0];
-#else
-    const InterpKernel *kernel = eb_vp9_filter_kernels[mi->interp_filter];
-#endif
-    int ref;
+    const InterpKernel             *kernel      = eb_vp9_filter_kernels[0];
+    int                             ref;
 
     for (ref = 0; ref < 1 + is_compound; ++ref) {
-#if 1
         int list_index = (mi->ref_frame[ref] == LAST_FRAME) ? REF_LIST_0 : REF_LIST_1;
 
         const struct scale_factors *const sf = context_ptr->sf;
-#else
-        const struct scale_factors *const sf = &xd->block_refs[ref]->sf;
-#endif
 
-#if 0
-    struct buf_2d *const pre_buf = &pd->pre[ref];
-
-    struct buf_2d *const dst_buf = &pd->dst;
-    uint8_t *const dst = dst_buf->buf + dst_buf->stride * y + x;
-#endif
         const MV mv = mi->sb_type < BLOCK_8X8 ? eb_vp9_average_split_mvs(pd, mi, ref, block) : mi->mv[ref].as_mv;
 
         // TODO(jkoleszar): This clamping is done in the incorrect place for the
@@ -139,7 +108,6 @@ void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint
         MV32     scaled_mv;
         int      xs, ys, subpel_x, subpel_y;
 
-#if 1
         (void)mi_x;
         (void)mi_y;
 
@@ -185,137 +153,10 @@ void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint
         xs = ys = 16;
 
         pre += (scaled_mv.row >> SUBPEL_BITS) * ref_stride + (scaled_mv.col >> SUBPEL_BITS);
-#else
-        const int is_scaled = vp9_is_scaled(sf);
 
-        if (is_scaled) {
-            // Co-ordinate of containing block to pixel precision.
-            const int x_start = (-xd->mb_to_left_edge >> (3 + pd->subsampling_x));
-            const int y_start = (-xd->mb_to_top_edge >> (3 + pd->subsampling_y));
-#if 0 // CONFIG_BETTER_HW_COMPATIBILITY
-      assert(xd->mi[0]->sb_type != BLOCK_4X8 &&
-             xd->mi[0]->sb_type != BLOCK_8X4);
-      assert(mv_q4.row == mv.row * (1 << (1 - pd->subsampling_y)) &&
-             mv_q4.col == mv.col * (1 << (1 - pd->subsampling_x)));
-#endif
-            if (plane == 0)
-                pre_buf->buf = xd->block_refs[ref]->buf->y_buffer;
-            else if (plane == 1)
-                pre_buf->buf = xd->block_refs[ref]->buf->u_buffer;
-            else
-                pre_buf->buf = xd->block_refs[ref]->buf->v_buffer;
-
-            pre_buf->buf += scaled_buffer_offset(x_start + x, y_start + y, pre_buf->stride, sf);
-            pre       = pre_buf->buf;
-            scaled_mv = eb_vp9_scale_mv(&mv_q4, mi_x + x, mi_y + y, sf);
-            xs        = sf->x_step_q4;
-            ys        = sf->y_step_q4;
-        } else {
-            pre           = pre_buf->buf + (y * pre_buf->stride + x);
-            scaled_mv.row = mv_q4.row;
-            scaled_mv.col = mv_q4.col;
-            xs = ys = 16;
-        }
-        subpel_x = scaled_mv.col & SUBPEL_MASK;
-        subpel_y = scaled_mv.row & SUBPEL_MASK;
-        pre += (scaled_mv.row >> SUBPEL_BITS) * pre_buf->stride + (scaled_mv.col >> SUBPEL_BITS);
-#endif
-
-#if CONFIG_VP9_HIGHBITDEPTH
-        if (xd->cur_buf->flags & YV12_FLAG_HIGHBITDEPTH) {
-            highbd_inter_predictor(CONVERT_TO_SHORTPTR(pre),
-                                   pre_buf->stride,
-                                   CONVERT_TO_SHORTPTR(dst),
-                                   dst_buf->stride,
-                                   subpel_x,
-                                   subpel_y,
-                                   sf,
-                                   w,
-                                   h,
-                                   ref,
-                                   kernel,
-                                   xs,
-                                   ys,
-                                   xd->bd);
-        } else {
-            inter_predictor(
-                pre, pre_buf->stride, dst, dst_buf->stride, subpel_x, subpel_y, sf, w, h, ref, kernel, xs, ys);
-        }
-#else
-#if 1
         inter_predictor(pre, ref_stride, pred_buffer, pred_stride, subpel_x, subpel_y, sf, w, h, ref, kernel, xs, ys);
-#else
-        inter_predictor(pre, pre_buf->stride, dst, dst_buf->stride, subpel_x, subpel_y, sf, w, h, ref, kernel, xs, ys);
-#endif
-#endif // CONFIG_VP9_HIGHBITDEPTH
     }
 }
-#if 0
-static void build_inter_predictors_for_planes(MACROBLOCKD *xd, BLOCK_SIZE bsize,
-                                              int mi_row, int mi_col,
-                                              int plane_from, int plane_to) {
-  int plane;
-  const int mi_x = mi_col * MI_SIZE;
-  const int mi_y = mi_row * MI_SIZE;
-  for (plane = plane_from; plane <= plane_to; ++plane) {
-    const BLOCK_SIZE plane_bsize =
-        get_plane_block_size(bsize, &xd->plane[plane]);
-    const int num_4x4_w = eb_vp9_num_4x4_blocks_wide_lookup[plane_bsize];
-    const int num_4x4_h = eb_vp9_num_4x4_blocks_high_lookup[plane_bsize];
-    const int bw = 4 * num_4x4_w;
-    const int bh = 4 * num_4x4_h;
-
-    if (xd->mi[0]->sb_type < BLOCK_8X8) {
-      int i = 0, x, y;
-      assert(bsize == BLOCK_8X8);
-      for (y = 0; y < num_4x4_h; ++y)
-        for (x = 0; x < num_4x4_w; ++x)
-          build_inter_predictors(xd, plane, i++, bw, bh, 4 * x, 4 * y, 4, 4,
-                                 mi_x, mi_y);
-    } else {
-      build_inter_predictors(xd, plane, 0, bw, bh, 0, 0, bw, bh, mi_x, mi_y);
-    }
-  }
-}
-
-void eb_vp9_build_inter_predictors_sby(MACROBLOCKD *xd, int mi_row, int mi_col,
-                                    BLOCK_SIZE bsize) {
-  build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, 0, 0);
-}
-
-void eb_vp9_build_inter_predictors_sbp(MACROBLOCKD *xd, int mi_row, int mi_col,
-                                    BLOCK_SIZE bsize, int plane) {
-  build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, plane, plane);
-}
-
-void eb_vp9_build_inter_predictors_sbuv(MACROBLOCKD *xd, int mi_row, int mi_col,
-                                     BLOCK_SIZE bsize) {
-  build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, 1,
-                                    MAX_MB_PLANE - 1);
-}
-
-void eb_vp9_build_inter_predictors_sb(MACROBLOCKD *xd, int mi_row, int mi_col,
-                                   BLOCK_SIZE bsize) {
-  build_inter_predictors_for_planes(xd, bsize, mi_row, mi_col, 0,
-                                    MAX_MB_PLANE - 1);
-}
-
-void vp9_setup_dst_planes(struct macroblockd_plane planes[MAX_MB_PLANE],
-                          const YV12_BUFFER_CONFIG *src, int mi_row,
-                          int mi_col) {
-  uint8_t *const buffers[MAX_MB_PLANE] = { src->y_buffer, src->u_buffer,
-                                           src->v_buffer };
-  const int strides[MAX_MB_PLANE] = { src->y_stride, src->uv_stride,
-                                      src->uv_stride };
-  int i;
-
-  for (i = 0; i < MAX_MB_PLANE; ++i) {
-    struct macroblockd_plane *const pd = &planes[i];
-    setup_pred_plane(&pd->dst, buffers[i], strides[i], mi_row, mi_col, NULL,
-                     pd->subsampling_x, pd->subsampling_y);
-  }
-}
-#endif
 
 void eb_vp9_setup_pre_planes(MACROBLOCKD *xd, int idx, const YV12_BUFFER_CONFIG *src, int mi_row, int mi_col,
                              const struct scale_factors *sf) {

@@ -13,7 +13,6 @@
 
 /* Interface header for common constant data structures and lookup tables */
 
-#define INLINE __inline
 #include <assert.h>
 #include <stdint.h>
 #include "bitops.h"
@@ -39,7 +38,7 @@ extern "C" {
 #define vp9_zero(dest) memset(&(dest), 0, sizeof(dest))
 #define vp9_zero_array(dest, n) memset(dest, 0, n * sizeof(*dest))
 
-static INLINE int get_unsigned_bits(unsigned int num_values) { return num_values > 0 ? get_msb(num_values) + 1 : 0; }
+static inline int get_unsigned_bits(unsigned int num_values) { return num_values > 0 ? get_msb(num_values) + 1 : 0; }
 
 #if CONFIG_DEBUG
 #define CHECK_MEM_ERROR(cm, lval, expr)                                                                          \

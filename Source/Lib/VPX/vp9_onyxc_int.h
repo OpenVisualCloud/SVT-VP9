@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_COMMON_VP9_ONYXC_INT_H_
 #define VPX_VP9_COMMON_VP9_ONYXC_INT_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include <assert.h>
 #include "vpx_codec_internal.h"
@@ -51,7 +49,6 @@ extern "C" {
 
 #define NUM_PING_PONG_BUFFERS 2
 
-#if 1
 // Generates 4 bit field in which each bit set to 1 represents
 // a block_size partition  1111 means we split 64x64, 32x32, 16x16
 // and 8x8.  1000 means we just split the 64x64 to 32x32
@@ -75,12 +72,6 @@ static PART_CONT partition_context_lookup[BLOCK_SIZES] = {
     {0, 8}, // 64X32 - {0b0000, 0b1000}
     {0, 0}, // 64X64 - {0b0000, 0b0000}
 };
-#else
-extern const struct {
-    PARTITION_CONTEXT above;
-    PARTITION_CONTEXT left;
-} partition_context_lookup[BLOCK_SIZES];
-#endif
 
 typedef enum {
     SINGLE_REFERENCE      = 0,
@@ -95,35 +86,15 @@ typedef struct {
 } MV_REF;
 
 typedef struct {
-    int     ref_count;
-    MV_REF *mvs;
-    int     mi_rows;
-    int     mi_cols;
-    uint8_t released;
-    int     frame_index;
-#if 0
-  vpx_codec_frame_buffer_t raw_frame_buffer;
-#endif
+    int                ref_count;
+    MV_REF            *mvs;
+    int                mi_rows;
+    int                mi_cols;
+    uint8_t            released;
+    int                frame_index;
     YV12_BUFFER_CONFIG buf;
 } RefCntBuffer;
-#if 0
-typedef struct BufferPool {
-  // Private data associated with the frame buffer callbacks.
-  void *cb_priv;
-
-  vpx_get_frame_buffer_cb_fn_t get_fb_cb;
-  vpx_release_frame_buffer_cb_fn_t release_fb_cb;
-
-  RefCntBuffer frame_bufs[FRAME_BUFFERS];
-
-  // Frame buffers allocated internally by the codec.
-  InternalFrameBufferList int_frame_buffers;
-} BufferPool;
-#endif
 typedef struct VP9Common {
-#if 0
-  struct vpx_internal_error_info error;
-#endif
     vpx_color_space_t color_space;
     vpx_color_range_t color_range;
     int               width;
@@ -139,27 +110,13 @@ typedef struct VP9Common {
     int subsampling_x;
     int subsampling_y;
 
-#if CONFIG_VP9_HIGHBITDEPTH
-    int use_highbitdepth; // Marks if we need to use 16bit frame buffers.
-#endif
     YV12_BUFFER_CONFIG *frame_to_show;
     RefCntBuffer       *prev_frame;
-#if 0
-  // TODO(hkuang): Combine this with cur_buf in macroblockd.
-  RefCntBuffer *cur_frame;
-#endif
-    int ref_frame_map[REF_FRAMES]; /* maps fb_idx to reference slot */
+    int                 ref_frame_map[REF_FRAMES]; /* maps fb_idx to reference slot */
 
     // Prepare ref_frame_map for the next frame.
     // Only used in frame parallel decode.
     int next_ref_frame_map[REF_FRAMES];
-#if 0
-  // TODO(jkoleszar): could expand active_ref_idx to 4, with 0 as intra, and
-  // roll new_fb_idx into it.
-
-  // Each frame can reference REFS_PER_FRAME buffers
-  ref_buffer frame_refs[REFS_PER_FRAME];
-#endif
     int new_fb_idx;
 
     int cur_show_frame_fb_idx;
@@ -234,13 +191,10 @@ typedef struct VP9Common {
     int seg_map_idx;
     int prev_seg_map_idx;
 
-    uint8_t *seg_map_array[NUM_PING_PONG_BUFFERS];
-    uint8_t *last_frame_seg_map;
-    uint8_t *current_frame_seg_map;
-    int      seg_map_alloc_size;
-#if 0 // Hsan: switchable interp_filter not supported
-  INTERP_FILTER interp_filter;
-#endif
+    uint8_t           *seg_map_array[NUM_PING_PONG_BUFFERS];
+    uint8_t           *last_frame_seg_map;
+    uint8_t           *current_frame_seg_map;
+    int                seg_map_alloc_size;
     loop_filter_info_n lf_info;
 
     int refresh_frame_context; /* Two state 0 = NO, 1 = YES */
@@ -274,115 +228,39 @@ typedef struct VP9Common {
     int error_resilient_mode;
     int frame_parallel_decoding_mode;
 
-    int log2_tile_cols, log2_tile_rows;
-    int byte_alignment;
-    int skip_loop_filter;
-#if 0
-  // Private data associated with the frame buffer callbacks.
-  void *cb_priv;
-  vpx_get_frame_buffer_cb_fn_t get_fb_cb;
-  vpx_release_frame_buffer_cb_fn_t release_fb_cb;
-
-  // Handles memory for the codec.
-  InternalFrameBufferList int_frame_buffers;
-
-  // External BufferPool passed from outside.
-  BufferPool *buffer_pool;
-#endif
+    int                log2_tile_cols, log2_tile_rows;
+    int                byte_alignment;
+    int                skip_loop_filter;
     PARTITION_CONTEXT *above_seg_context;
     ENTROPY_CONTEXT   *above_context;
     int                above_context_alloc_cols;
 } VP9_COMMON;
-#if 0
-static INLINE YV12_BUFFER_CONFIG *get_buf_frame(VP9_COMMON *cm, int index) {
-  if (index < 0 || index >= FRAME_BUFFERS) return NULL;
-  if (cm->error.error_code != VPX_CODEC_OK) return NULL;
-  return &cm->buffer_pool->frame_bufs[index].buf;
-}
+static inline int mi_cols_aligned_to_sb(int n_mis) { return ALIGN_POWER_OF_TWO(n_mis, MI_BLOCK_SIZE_LOG2); }
 
-static INLINE YV12_BUFFER_CONFIG *get_ref_frame(VP9_COMMON *cm, int index) {
-  if (index < 0 || index >= REF_FRAMES) return NULL;
-  if (cm->ref_frame_map[index] < 0) return NULL;
-  assert(cm->ref_frame_map[index] < FRAME_BUFFERS);
-  return &cm->buffer_pool->frame_bufs[cm->ref_frame_map[index]].buf;
-}
-
-static INLINE YV12_BUFFER_CONFIG *get_frame_new_buffer(VP9_COMMON *cm) {
-  return &cm->buffer_pool->frame_bufs[cm->new_fb_idx].buf;
-}
-
-static INLINE int get_free_fb(VP9_COMMON *cm) {
-  RefCntBuffer *const frame_bufs = cm->buffer_pool->frame_bufs;
-  int i;
-
-  for (i = 0; i < FRAME_BUFFERS; ++i)
-    if (frame_bufs[i].ref_count == 0) break;
-
-  if (i != FRAME_BUFFERS) {
-    frame_bufs[i].ref_count = 1;
-  } else {
-    // Reset i to be INVALID_IDX to indicate no free buffer found.
-    i = INVALID_IDX;
-  }
-
-  return i;
-}
-
-static INLINE void ref_cnt_fb(RefCntBuffer *bufs, int *idx, int new_idx) {
-  const int ref_index = *idx;
-
-  if (ref_index >= 0 && bufs[ref_index].ref_count > 0)
-    bufs[ref_index].ref_count--;
-
-  *idx = new_idx;
-
-  bufs[new_idx].ref_count++;
-}
-#endif
-static INLINE int mi_cols_aligned_to_sb(int n_mis) { return ALIGN_POWER_OF_TWO(n_mis, MI_BLOCK_SIZE_LOG2); }
-
-static INLINE int frame_is_intra_only(const VP9_COMMON *const cm) {
+static inline int frame_is_intra_only(const VP9_COMMON *const cm) {
     return cm->frame_type == KEY_FRAME || cm->intra_only;
 }
 
-static INLINE void set_partition_probs(const VP9_COMMON *const cm, MACROBLOCKD *const xd) {
+static inline void set_partition_probs(const VP9_COMMON *const cm, MACROBLOCKD *const xd) {
     xd->partition_probs = frame_is_intra_only(cm) ? &eb_vp9_kf_partition_probs[0]
                                                   : (const vpx_prob(*)[PARTITION_TYPES - 1]) cm->fc->partition_prob;
 }
 // Hsan now does something different - to rename ?
-static INLINE void vp9_init_macroblockd(VP9_COMMON *cm, MACROBLOCKD *xd, tran_low_t *dqcoeff) {
+static inline void vp9_init_macroblockd(VP9_COMMON *cm, MACROBLOCKD *xd, tran_low_t *dqcoeff) {
     (void)dqcoeff;
     int i;
 
     for (i = 0; i < MAX_MB_PLANE; ++i) {
-#if 0
-    xd->plane[i].dqcoeff = dqcoeff;
-#endif
         xd->above_context[i] = cm->above_context +
             i * sizeof(*cm->above_context) * 2 * mi_cols_aligned_to_sb(cm->mi_cols);
-#if 0
-    if (get_plane_type(i) == PLANE_TYPE_Y) {
-      memcpy(xd->plane[i].seg_dequant, cm->y_dequant, sizeof(cm->y_dequant));
-    } else {
-      memcpy(xd->plane[i].seg_dequant, cm->uv_dequant, sizeof(cm->uv_dequant));
-    }
-
-    xd->fc = cm->fc;
-#endif
     }
 
     xd->above_seg_context = cm->above_seg_context;
-#if 0
-  xd->mi_stride = cm->mi_stride;
-  xd->error_info = &cm->error;
-
-  set_partition_probs(cm, xd);
-#endif
 }
 
-static INLINE const vpx_prob *get_partition_probs(const MACROBLOCKD *xd, int ctx) { return xd->partition_probs[ctx]; }
+static inline const vpx_prob *get_partition_probs(const MACROBLOCKD *xd, int ctx) { return xd->partition_probs[ctx]; }
 
-static INLINE void set_skip_context(MACROBLOCKD *xd, int mi_row, int mi_col) {
+static inline void set_skip_context(MACROBLOCKD *xd, int mi_row, int mi_col) {
     const int above_idx = mi_col * 2;
     const int left_idx  = (mi_row * 2) & 15;
     int       i;
@@ -393,12 +271,12 @@ static INLINE void set_skip_context(MACROBLOCKD *xd, int mi_row, int mi_col) {
     }
 }
 
-static INLINE int calc_mi_size(int len) {
+static inline int calc_mi_size(int len) {
     // len is in mi units.
     return len + MI_BLOCK_SIZE;
 }
 
-static INLINE void set_mi_row_col(MACROBLOCKD *xd, const TileInfo *const tile, int mi_row, int bh, int mi_col, int bw,
+static inline void set_mi_row_col(MACROBLOCKD *xd, const TileInfo *const tile, int mi_row, int bh, int mi_col, int bw,
                                   int mi_rows, int mi_cols) {
     xd->mb_to_top_edge    = -((mi_row * MI_SIZE) * 8);
     xd->mb_to_bottom_edge = ((mi_rows - bh - mi_row) * MI_SIZE) * 8;
@@ -410,7 +288,7 @@ static INLINE void set_mi_row_col(MACROBLOCKD *xd, const TileInfo *const tile, i
     xd->left_mi  = (mi_col > tile->mi_col_start) ? xd->mi[-1] : NULL;
 }
 
-static INLINE void update_partition_context(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE subsize,
+static inline void update_partition_context(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE subsize,
                                             BLOCK_SIZE bsize) {
     PARTITION_CONTEXT *const above_ctx = xd->above_seg_context + mi_col;
     PARTITION_CONTEXT *const left_ctx  = xd->left_seg_context + (mi_row & MI_MASK);
@@ -425,7 +303,7 @@ static INLINE void update_partition_context(MACROBLOCKD *xd, int mi_row, int mi_
     memset(left_ctx, partition_context_lookup[subsize].left, bs);
 }
 
-static INLINE int partition_plane_context(const MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize) {
+static inline int partition_plane_context(const MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize) {
     const PARTITION_CONTEXT *above_ctx = xd->above_seg_context + mi_col;
     const PARTITION_CONTEXT *left_ctx  = xd->left_seg_context + (mi_row & MI_MASK);
     const int                bsl       = eb_vp9_mi_width_log2_lookup[bsize];

@@ -173,9 +173,6 @@ typedef struct PictureControlSet {
 
     EB_BOOL bdp_present_flag;
     EB_BOOL md_present_flag;
-#if SEG_SUPPORT
-    int segment_counts[MAX_SEGMENTS];
-#endif
 } PictureControlSet;
 
 // To optimize based on the max input size
@@ -372,21 +369,13 @@ typedef struct PictureParentControlSet {
     EdgeSbResults *edge_results_ptr; // used by EncDecProcess()
 
     uint8_t *sharp_edge_sb_flag;
-#if 0 // Hsan:  PA detector to evaluate                     after adding OIS
-    uint8_t                                             *failing_motion_sb_flag;                            // used by EncDecProcess() and ModeDecisionConfigurationProcess
-    EB_BOOL                                             *uncovered_area_sb_flag;                            // used by EncDecProcess()
-#endif
     EB_BOOL *sb_homogeneous_area_array; // used by EncDecProcess()
     EB_BOOL  logo_pic_flag; // used by EncDecProcess()
     uint64_t **
         var_of_var_32x32_based_sb_array; // used by ModeDecisionConfigurationProcess()- the variance of 8x8 block variances for each 32x32 block
     EB_BOOL *sb_cmplx_contrast_array; // used by EncDecProcess()
 
-    uint16_t non_moving_average_score; // used by ModeDecisionConfigurationProcess()
-#if BEA
-    int16_t non_moving_index_min_distance;
-    int16_t non_moving_index_max_distance;
-#endif
+    uint16_t         non_moving_average_score; // used by ModeDecisionConfigurationProcess()
     EB_BOOL         *sb_isolated_non_homogeneous_area_array; // used by ModeDecisionConfigurationProcess()
     uint8_t          grass_percentage_in_picture;
     uint8_t          percentage_of_edge_in_light_background;

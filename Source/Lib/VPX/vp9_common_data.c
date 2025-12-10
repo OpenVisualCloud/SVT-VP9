@@ -7,7 +7,6 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#define INLINE __inline
 
 #include <stdint.h>
 #include "vp9_enums.h" //#include "vp9_enums.h" NO
@@ -303,41 +302,3 @@ const TX_SIZE eb_vp9_uv_txsize_lookup[BLOCK_SIZES][TX_SIZES][2][2] = {
         {{TX_32X32, TX_32X32}, {TX_32X32, TX_32X32}},
     },
 };
-#if 0
-// Generates 4 bit field in which each bit set to 1 represents
-// a block_size partition  1111 means we split 64x64, 32x32, 16x16
-// and 8x8.  1000 means we just split the 64x64 to 32x32
-const struct {
-  PARTITION_CONTEXT above;
-  PARTITION_CONTEXT left;
-} partition_context_lookup[BLOCK_SIZES] = {
-  { 15, 15 },  // 4X4   - {0b1111, 0b1111}
-  { 15, 14 },  // 4X8   - {0b1111, 0b1110}
-  { 14, 15 },  // 8X4   - {0b1110, 0b1111}
-  { 14, 14 },  // 8X8   - {0b1110, 0b1110}
-  { 14, 12 },  // 8X16  - {0b1110, 0b1100}
-  { 12, 14 },  // 16X8  - {0b1100, 0b1110}
-  { 12, 12 },  // 16X16 - {0b1100, 0b1100}
-  { 12, 8 },   // 16X32 - {0b1100, 0b1000}
-  { 8, 12 },   // 32X16 - {0b1000, 0b1100}
-  { 8, 8 },    // 32X32 - {0b1000, 0b1000}
-  { 8, 0 },    // 32X64 - {0b1000, 0b0000}
-  { 0, 8 },    // 64X32 - {0b0000, 0b1000}
-  { 0, 0 },    // 64X64 - {0b0000, 0b0000}
-};
-#endif
-
-#if CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH
-const uint8_t need_top_left[INTRA_MODES] = {
-    0, // DC_PRED
-    0, // V_PRED
-    0, // H_PRED
-    0, // D45_PRED
-    1, // D135_PRED
-    1, // D117_PRED
-    1, // D153_PRED
-    0, // D207_PRED
-    0, // D63_PRED
-    1, // TM_PRED
-};
-#endif // CONFIG_BETTER_HW_COMPATIBILITY && CONFIG_VP9_HIGHBITDEPTH

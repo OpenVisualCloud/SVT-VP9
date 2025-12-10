@@ -2120,12 +2120,7 @@ static void copy_api_from_app(SequenceControlSet       *sequence_control_set_ptr
         ((EbSvtVp9EncConfiguration *)p_component_parameter_structure)->target_bit_rate;
     sequence_control_set_ptr->static_config.max_qp_allowed = (sequence_control_set_ptr->static_config.rate_control_mode)
         ? ((EbSvtVp9EncConfiguration *)p_component_parameter_structure)->max_qp_allowed
-        :
-#if VP9_RC
-        MAX_QP_VALUE;
-#else
-        51;
-#endif
+        : MAX_QP_VALUE;
 
     sequence_control_set_ptr->static_config.min_qp_allowed = (sequence_control_set_ptr->static_config.rate_control_mode)
         ? ((EbSvtVp9EncConfiguration *)p_component_parameter_structure)->min_qp_allowed
@@ -2492,33 +2487,14 @@ static EbErrorType verify_settings(SequenceControlSet *sequence_control_set_ptr)
         SVT_LOG("Error Instance %u: The rate control mode must be [0 - 2] \n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
-#if !VP9_RC
-    if (config->rate_control_mode == 1 && config->tune > 0) {
-        SVT_LOG(
-            "Error Instance %u: The rate control is not supported for OQ mode (Tune = 1 ) and VMAF mode (Tune = 2)\n",
-            channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-#endif
 
-#if VP9_RC
     if (config->max_qp_allowed > 63) {
         SVT_LOG("Error instance %u: max_qp_allowed must be [0 - 63]\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     } else if (config->min_qp_allowed > 62) {
         SVT_LOG("Error instance %u: min_qp_allowed must be [0 - 62]\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
-    }
-#else
-    if (config->max_qp_allowed > 51) {
-        SVT_LOG("Error instance %u: max_qp_allowed must be [0 - 51]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    } else if (config->min_qp_allowed > 50) {
-        SVT_LOG("Error instance %u: min_qp_allowed must be [0 - 50]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-#endif
-    else if ((config->min_qp_allowed) > (config->max_qp_allowed)) {
+    } else if ((config->min_qp_allowed) > (config->max_qp_allowed)) {
         SVT_LOG("Error Instance %u:  min_qp_allowed must be smaller than max_qp_allowed\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }

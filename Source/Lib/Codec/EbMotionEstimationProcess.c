@@ -352,82 +352,6 @@ EbErrorType eb_vp9_motion_estimation_context_ctor(MotionEstimationContext **cont
 ***************************************************************************************************/
 int non_moving_th_shift[4] = {4, 2, 0, 0};
 
-#if 0 //ADAPTIVE_QP_INDEX_GEN
-EbErrorType compute_zz_sad(
-    MotionEstimationContext *context_ptr,
-    SequenceControlSet      *sequence_control_set_ptr,
-    PictureParentControlSet *picture_control_set_ptr,
-    EbPictureBufferDesc     *input_padded_picture_ptr,
-    uint32_t                 x_sb_start_index,
-    uint32_t                 x_sb_end_index,
-    uint32_t                 y_sb_start_index,
-    uint32_t                 y_sb_end_index) {
-
-    EbErrorType return_error = EB_ErrorNone;
-
-    PictureParentControlSet      *previous_picture_control_set_wrapper_ptr = ((PictureParentControlSet  *)picture_control_set_ptr->previous_picture_control_set_wrapper_ptr->object_ptr);
-    EbPictureBufferDesc          *previous_input = previous_picture_control_set_wrapper_ptr->enhanced_picture_ptr;
-
-    uint32_t sb_index;
-
-    uint32_t sb_origin_x;
-    uint32_t sb_origin_y;
-
-    uint32_t block_index_sub;
-    uint32_t block_index;
-
-    uint32_t zz_sad;
-
-    uint32_t xsb_index;
-    uint32_t ysb_index;
-
-    for (ysb_index = y_sb_start_index; ysb_index < y_sb_end_index; ++ysb_index) {
-        for (xsb_index = x_sb_start_index; xsb_index < x_sb_end_index; ++xsb_index) {
-
-            sb_index = xsb_index + ysb_index * sequence_control_set_ptr->picture_width_in_sb;
-            SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
-
-            sb_origin_x = sb_params->origin_x;
-            sb_origin_y = sb_params->origin_y;
-
-            uint32_t zz_sad = 0;
-
-            if (sb_params->is_complete_sb)
-            {
-
-                block_index_sub = (input_padded_picture_ptr->origin_y    + sb_origin_y) * input_padded_picture_ptr->stride_y    + (input_padded_picture_ptr->origin_x    + sb_origin_x);
-                block_index      = (previous_input->origin_y + sb_origin_y) * previous_input->stride_y + (previous_input->origin_x + sb_origin_x);
-
-                // ZZ SAD between current and collocated
-                zz_sad = n_x_m_sad_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & AVX2_MASK) && 1][MAX_SB_SIZE >> 3](
-                    &(input_padded_picture_ptr->buffer_y[block_index_sub]),
-                    input_padded_picture_ptr->stride_y,
-                    &(previous_input->buffer_y[block_index]),
-                    previous_input->stride_y,
-                    MAX_SB_SIZE, MAX_SB_SIZE);
-            }
-            else {
-                zz_sad = (uint32_t)~0;
-            }
-
-            if (zz_sad < ((MAX_SB_SIZE * MAX_SB_SIZE) * 2) >> non_moving_th_shift[sequence_control_set_ptr->input_resolution]) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_0;
-            }
-            else if (zz_sad < ((MAX_SB_SIZE * MAX_SB_SIZE) * 4) >> non_moving_th_shift[sequence_control_set_ptr->input_resolution]) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_1;
-            }
-            else if (zz_sad < ((MAX_SB_SIZE * MAX_SB_SIZE) * 8) >> non_moving_th_shift[sequence_control_set_ptr->input_resolution]) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_2;
-            }
-            else {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_3;
-            }
-        }
-    }
-
-    return return_error;
-}
-#else
 EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
                            PictureParentControlSet *picture_control_set_ptr,
                            EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t x_sb_start_index,
@@ -503,7 +427,6 @@ EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControl
             } else {
                 zz_sad = (uint32_t)~0;
             }
-#if ADAPTIVE_QP_INDEX_GEN
             if (zz_sad < (((block_width * block_height) * 2) >>
                           non_moving_th_shift[sequence_control_set_ptr->input_resolution])) {
                 previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_0;
@@ -516,23 +439,11 @@ EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControl
             } else {
                 previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_3;
             }
-#else
-            if (zz_sad < ((block_width * block_height) * 2)) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_0;
-            } else if (zz_sad < ((block_width * block_height) * 4)) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_1;
-            } else if (zz_sad < ((block_width * block_height) * 8)) {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_2;
-            } else {
-                previous_picture_control_set_wrapper_ptr->non_moving_index_array[sb_index] = NON_MOVING_SCORE_3;
-            }
-#endif
         }
     }
 
     return return_error;
 }
-#endif
 /******************************************************
 * Derive ME Settings for SQ
   Input   : encoder mode and tune
@@ -1074,17 +985,6 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
             {
                 // ZZ SAD
                 if (picture_control_set_ptr->picture_number > 0) {
-#if 0 //ADAPTIVE_QP_INDEX_GEN
-                    compute_zz_sad(
-                        context_ptr,
-                        sequence_control_set_ptr,
-                        picture_control_set_ptr,
-                        input_padded_picture_ptr,
-                        x_sb_start_index,
-                        x_sb_end_index,
-                        y_sb_start_index,
-                        y_sb_end_index);
-#else
                     compute_zz_sad(context_ptr,
                                    sequence_control_set_ptr,
                                    picture_control_set_ptr,
@@ -1093,7 +993,6 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                                    x_sb_end_index,
                                    y_sb_start_index,
                                    y_sb_end_index);
-#endif
                 }
             }
         }
@@ -1135,27 +1034,8 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                             picture_control_set_ptr->inter_sad_interval_index[sb_index] = sad_interval_index;
                             picture_control_set_ptr->me_distortion_histogram[sad_interval_index]++;
 
-#if VP9_RC
-
                             intra_sad_interval_index =
                                 picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4;
-#else
-                            uint32_t bestOisblock_index = 0;
-                            intra_sad_interval_index = (uint32_t)((picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[1][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[2][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[3][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[4][bestOisblock_index]
-                                                                       .distortion) >>
-                                                                  (12 -
-                                                                   SAD_PRECISION_INTERVAL)); //change 12 to 2*log2(64) ;
-#endif
                             intra_sad_interval_index = (uint16_t)(intra_sad_interval_index >> 2);
                             if (intra_sad_interval_index > (NUMBER_OF_SAD_INTERVALS >> 1) - 1) {
                                 uint32_t sadIntervalIndexTemp = intra_sad_interval_index -
@@ -1193,26 +1073,8 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                         picture_control_set_ptr->intra_sad_interval_index[sb_index] = 0;
 
                         if (sb_width == MAX_SB_SIZE && sb_height == MAX_SB_SIZE) {
-#if VP9_RC
-
                             intra_sad_interval_index =
                                 picture_control_set_ptr->variance[sb_index][PA_RASTER_SCAN_CU_INDEX_64x64] >> 4;
-#else
-                            intra_sad_interval_index = (uint32_t)((picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[1][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[2][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[3][bestOisblock_index]
-                                                                       .distortion +
-                                                                   picture_control_set_ptr->oisCu32Cu16Results[sb_index]
-                                                                       ->sortedOisCandidate[4][bestOisblock_index]
-                                                                       .distortion) >>
-                                                                  (12 -
-                                                                   SAD_PRECISION_INTERVAL)); //change 12 to 2*log2(64) ;
-#endif
 
                             intra_sad_interval_index = (uint16_t)(intra_sad_interval_index >> 2);
                             if (intra_sad_interval_index > (NUMBER_OF_SAD_INTERVALS >> 1) - 1) {

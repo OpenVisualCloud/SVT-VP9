@@ -11,8 +11,6 @@
 #ifndef VPX_VPX_DSP_BITWRITER_H_
 #define VPX_VPX_DSP_BITWRITER_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "prob.h"
 
@@ -31,7 +29,7 @@ typedef struct VpxWriter {
 void eb_vp9_start_encode(VpxWriter *bc, uint8_t *buffer);
 void eb_vp9_stop_encode(VpxWriter *bc);
 
-static INLINE void vpx_write(VpxWriter *br, int bit, int probability) {
+static inline void vpx_write(VpxWriter *br, int bit, int probability) {
     unsigned int split;
     int          count    = br->count;
     unsigned int range    = br->range;
@@ -79,11 +77,11 @@ static INLINE void vpx_write(VpxWriter *br, int bit, int probability) {
     br->range    = range;
 }
 
-static INLINE void vpx_write_bit(VpxWriter *w, int bit) {
+static inline void vpx_write_bit(VpxWriter *w, int bit) {
     vpx_write(w, bit, 128); // vpx_prob_half
 }
 
-static INLINE void vpx_write_literal(VpxWriter *w, int data, int bits) {
+static inline void vpx_write_literal(VpxWriter *w, int data, int bits) {
     int bit;
 
     for (bit = bits - 1; bit >= 0; bit--) vpx_write_bit(w, 1 & (data >> bit));

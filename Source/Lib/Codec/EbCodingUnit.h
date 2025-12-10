@@ -62,9 +62,6 @@ typedef struct SbUnit {
 
     int quantized_coeff_buffer_block_offset[MAX_MB_PLANE];
 
-#if BEA
-    int8_t segment_id;
-#endif
 } SbUnit;
 
 extern EbErrorType sb_unit_ctor(SbUnit **sb_unit_dbl_ptr, uint32_t picture_width, uint32_t picture_height,

@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_ENCODER_VP9_SPEED_FEATURES_H_
 #define VPX_VP9_ENCODER_VP9_SPEED_FEATURES_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_enums.h"
 
@@ -38,19 +36,6 @@ enum {
     INTER_NEAREST_NEAR_NEW  = (1 << NEARESTMV) | (1 << NEARMV) | (1 << NEWMV),
     INTER_NEAREST_NEAR_ZERO = (1 << NEARESTMV) | (1 << NEARMV) | (1 << ZEROMV),
 };
-#if 0
-enum {
-  DISABLE_ALL_INTER_SPLIT = (1 << THR_COMP_GA) | (1 << THR_COMP_LA) |
-                            (1 << THR_ALTR) | (1 << THR_GOLD) | (1 << THR_LAST),
-
-  DISABLE_ALL_SPLIT = (1 << THR_INTRA) | DISABLE_ALL_INTER_SPLIT,
-
-  DISABLE_COMPOUND_SPLIT = (1 << THR_COMP_GA) | (1 << THR_COMP_LA),
-
-  LAST_AND_INTRA_SPLIT_ONLY = (1 << THR_COMP_GA) | (1 << THR_COMP_LA) |
-                              (1 << THR_ALTR) | (1 << THR_GOLD)
-};
-#endif
 
 typedef enum {
     DIAMOND      = 0,

@@ -21,12 +21,6 @@ typedef void (*convolve_fn_t)(const uint8_t *src, ptrdiff_t src_stride, uint8_t 
                               const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w,
                               int h);
 
-#if CONFIG_VP9_HIGHBITDEPTH
-typedef void (*highbd_convolve_fn_t)(const uint16_t *src, ptrdiff_t src_stride, uint16_t *dst, ptrdiff_t dst_stride,
-                                     const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4,
-                                     int w, int h, int bd);
-#endif
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

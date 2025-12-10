@@ -11,7 +11,7 @@
 #include "vpx_dsp_rtcd.h"
 #include "EbMemory_AVX2.h"
 
-static INLINE void transpose_8bit_16x16_avx2(const __m128i *const in, __m128i *const out) {
+static inline void transpose_8bit_16x16_avx2(const __m128i *const in, __m128i *const out) {
     // Combine inputs. Goes from:
     // in[ 0]: 00 01 02 03 04 05 06 07  08 09 0A 0B 0C 0D 0E 0F
     // in[ 1]: 10 11 12 13 14 15 16 17  18 19 1A 1B 1C 1D 1E 1F
@@ -194,7 +194,7 @@ static INLINE void transpose_8bit_16x16_avx2(const __m128i *const in, __m128i *c
     out[15] = _mm256_extracti128_si256(e7, 1);
 }
 
-static INLINE void transpose_16bit_8x16_avx2(const __m128i *const in, __m256i *const out) {
+static inline void transpose_16bit_8x16_avx2(const __m128i *const in, __m256i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[ 0]: 00 01 02 03 04 05 06 07
     // in[ 1]: 10 11 12 13 14 15 16 17
@@ -285,7 +285,7 @@ static INLINE void transpose_16bit_8x16_avx2(const __m128i *const in, __m256i *c
     out[7] = _mm256_unpackhi_epi64(c3, c7);
 }
 
-static INLINE void transpose_16bit_16x16_avx2(const __m256i *const in, __m256i *const out) {
+static inline void transpose_16bit_16x16_avx2(const __m256i *const in, __m256i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[ 0]: 00 01 02 03 04 05 06 07  08 09 0A 0B 0C 0D 0E 0F
     // in[ 1]: 10 11 12 13 14 15 16 17  18 19 1A 1B 1C 1D 1E 1F

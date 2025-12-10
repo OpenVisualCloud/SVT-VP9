@@ -19,7 +19,7 @@
 #include "transpose_sse2.h"
 #include "txfm_common_sse2.h"
 
-static INLINE void idct8x8_12_transpose_16bit_4x8(const __m128i *const in, __m128i *const out) {
+static inline void idct8x8_12_transpose_16bit_4x8(const __m128i *const in, __m128i *const out) {
     // Unpack 16 bit elements. Goes from:
     // in[0]: 30 31 32 33  00 01 02 03
     // in[1]: 20 21 22 23  10 11 12 13
@@ -56,7 +56,7 @@ static INLINE void idct8x8_12_transpose_16bit_4x8(const __m128i *const in, __m12
     out[3] = _mm_unpackhi_epi64(tr1_2, tr1_3);
 }
 
-static INLINE __m128i butterfly_cospi16(const __m128i in) {
+static inline __m128i butterfly_cospi16(const __m128i in) {
     const __m128i cst = pair_set_epi16(cospi_16_64, cospi_16_64);
     const __m128i lo  = _mm_unpacklo_epi16(in, _mm_setzero_si128());
     const __m128i hi  = _mm_unpackhi_epi16(in, _mm_setzero_si128());
@@ -65,27 +65,11 @@ static INLINE __m128i butterfly_cospi16(const __m128i in) {
 
 // Functions to allow 8 bit optimisations to be used when profile 0 is used with
 // highbitdepth enabled
-static INLINE __m128i load_input_data4(const tran_low_t *data) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i zero = _mm_setzero_si128();
-    const __m128i in   = _mm_load_si128((const __m128i *)data);
-    return _mm_packs_epi32(in, zero);
-#else
-    return _mm_loadl_epi64((const __m128i *)data);
-#endif
-}
+static inline __m128i load_input_data4(const tran_low_t *data) { return _mm_loadl_epi64((const __m128i *)data); }
 
-static INLINE __m128i load_input_data8(const tran_low_t *data) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m128i in0 = _mm_load_si128((const __m128i *)data);
-    const __m128i in1 = _mm_load_si128((const __m128i *)(data + 4));
-    return _mm_packs_epi32(in0, in1);
-#else
-    return _mm_load_si128((const __m128i *)data);
-#endif
-}
+static inline __m128i load_input_data8(const tran_low_t *data) { return _mm_load_si128((const __m128i *)data); }
 
-static INLINE void load_buffer_8x8(const tran_low_t *const input, const int stride, __m128i *const in) {
+static inline void load_buffer_8x8(const tran_low_t *const input, const int stride, __m128i *const in) {
     in[0] = load_input_data8(input + 0 * stride);
     in[1] = load_input_data8(input + 1 * stride);
     in[2] = load_input_data8(input + 2 * stride);
@@ -96,12 +80,12 @@ static INLINE void load_buffer_8x8(const tran_low_t *const input, const int stri
     in[7] = load_input_data8(input + 7 * stride);
 }
 
-static INLINE void load_transpose_16bit_8x8(const tran_low_t *input, const int stride, __m128i *const in) {
+static inline void load_transpose_16bit_8x8(const tran_low_t *input, const int stride, __m128i *const in) {
     load_buffer_8x8(input, stride, in);
     transpose_16bit_8x8(in, in);
 }
 
-static INLINE void recon_and_store(const __m128i in, uint8_t *const dest) {
+static inline void recon_and_store(const __m128i in, uint8_t *const dest) {
     const __m128i zero = _mm_setzero_si128();
     __m128i       d0   = _mm_loadl_epi64((__m128i *)dest);
     d0                 = _mm_unpacklo_epi8(d0, zero);
@@ -110,7 +94,7 @@ static INLINE void recon_and_store(const __m128i in, uint8_t *const dest) {
     _mm_storel_epi64((__m128i *)dest, d0);
 }
 
-static INLINE void round_shift_8x8(const __m128i *const in, __m128i *const out) {
+static inline void round_shift_8x8(const __m128i *const in, __m128i *const out) {
     const __m128i final_rounding = _mm_set1_epi16(1 << 4);
 
     out[0] = _mm_add_epi16(in[0], final_rounding);
@@ -132,7 +116,7 @@ static INLINE void round_shift_8x8(const __m128i *const in, __m128i *const out) 
     out[7] = _mm_srai_epi16(out[7], 5);
 }
 
-static INLINE void write_buffer_8x8(const __m128i *const in, uint8_t *const dest, const int stride) {
+static inline void write_buffer_8x8(const __m128i *const in, uint8_t *const dest, const int stride) {
     __m128i t[8];
 
     round_shift_8x8(in, t);
@@ -147,7 +131,7 @@ static INLINE void write_buffer_8x8(const __m128i *const in, uint8_t *const dest
     recon_and_store(t[7], dest + 7 * stride);
 }
 
-static INLINE void recon_and_store4x4_sse2(const __m128i *const in, uint8_t *const dest, const int stride) {
+static inline void recon_and_store4x4_sse2(const __m128i *const in, uint8_t *const dest, const int stride) {
     const __m128i zero = _mm_setzero_si128();
     __m128i       d[2];
 
@@ -171,7 +155,7 @@ static INLINE void recon_and_store4x4_sse2(const __m128i *const in, uint8_t *con
     *(int *)(dest + stride * 3) = _mm_cvtsi128_si32(d[0]);
 }
 
-static INLINE void store_buffer_8x32(__m128i *in, uint8_t *dst, int stride) {
+static inline void store_buffer_8x32(__m128i *in, uint8_t *dst, int stride) {
     const __m128i final_rounding = _mm_set1_epi16(1 << 5);
     int           j              = 0;
     while (j < 32) {
@@ -189,7 +173,7 @@ static INLINE void store_buffer_8x32(__m128i *in, uint8_t *dst, int stride) {
     }
 }
 
-static INLINE void write_buffer_8x1(uint8_t *const dest, const __m128i in) {
+static inline void write_buffer_8x1(uint8_t *const dest, const __m128i in) {
     const __m128i final_rounding = _mm_set1_epi16(1 << 5);
     __m128i       out;
     out = _mm_adds_epi16(in, final_rounding);
@@ -198,7 +182,7 @@ static INLINE void write_buffer_8x1(uint8_t *const dest, const __m128i in) {
 }
 
 // Only do addition and subtraction butterfly, size = 16, 32
-static INLINE void add_sub_butterfly(const __m128i *in, __m128i *out, int size) {
+static inline void add_sub_butterfly(const __m128i *in, __m128i *out, int size) {
     int       i     = 0;
     const int num   = size >> 1;
     const int bound = size - 1;
@@ -209,7 +193,7 @@ static INLINE void add_sub_butterfly(const __m128i *in, __m128i *out, int size) 
     }
 }
 
-static INLINE void idct8(const __m128i *const in /*in[8]*/, __m128i *const out /*out[8]*/) {
+static inline void idct8(const __m128i *const in /*in[8]*/, __m128i *const out /*out[8]*/) {
     __m128i step1[8], step2[8];
 
     // stage 1
@@ -243,7 +227,7 @@ static INLINE void idct8(const __m128i *const in /*in[8]*/, __m128i *const out /
     out[7] = _mm_sub_epi16(step1[0], step2[7]);
 }
 
-static INLINE void idct8x8_12_add_kernel_sse2(__m128i *const io /*io[8]*/) {
+static inline void idct8x8_12_add_kernel_sse2(__m128i *const io /*io[8]*/) {
     const __m128i zero      = _mm_setzero_si128();
     const __m128i cp_16_16  = pair_set_epi16(cospi_16_64, cospi_16_64);
     const __m128i cp_16_n16 = pair_set_epi16(cospi_16_64, -cospi_16_64);
@@ -301,7 +285,7 @@ static INLINE void idct8x8_12_add_kernel_sse2(__m128i *const io /*io[8]*/) {
     idct8(io, io);
 }
 
-static INLINE void idct16_8col(const __m128i *const in /*in[16]*/, __m128i *const out /*out[16]*/) {
+static inline void idct16_8col(const __m128i *const in /*in[16]*/, __m128i *const out /*out[16]*/) {
     __m128i step1[16], step2[16];
 
     // stage 2
@@ -358,7 +342,7 @@ static INLINE void idct16_8col(const __m128i *const in /*in[16]*/, __m128i *cons
     add_sub_butterfly(step2, out, 16);
 }
 
-static INLINE void idct16x16_10_pass1(const __m128i *const input /*input[4]*/, __m128i *const output /*output[16]*/) {
+static inline void idct16x16_10_pass1(const __m128i *const input /*input[4]*/, __m128i *const output /*output[16]*/) {
     const __m128i zero             = _mm_setzero_si128();
     const __m128i k__cospi_p16_p16 = pair_set_epi16(cospi_16_64, cospi_16_64);
     const __m128i k__cospi_m16_p16 = pair_set_epi16(-cospi_16_64, cospi_16_64);
@@ -462,7 +446,7 @@ static INLINE void idct16x16_10_pass1(const __m128i *const input /*input[4]*/, _
     output[15] = _mm_sub_epi16(step2[0], step1[15]);
 }
 
-static INLINE void idct16x16_10_pass2(__m128i *const l /*l[8]*/, __m128i *const io /*io[16]*/) {
+static inline void idct16x16_10_pass2(__m128i *const l /*l[8]*/, __m128i *const io /*io[16]*/) {
     const __m128i zero = _mm_setzero_si128();
     __m128i       step1[16], step2[16];
 
@@ -522,7 +506,7 @@ static INLINE void idct16x16_10_pass2(__m128i *const l /*l[8]*/, __m128i *const 
     io[15] = _mm_sub_epi16(step2[0], step1[15]);
 }
 
-static INLINE void idct32_8x32_quarter_2_stage_4_to_6(__m128i *const step1 /*step1[16]*/,
+static inline void idct32_8x32_quarter_2_stage_4_to_6(__m128i *const step1 /*step1[16]*/,
                                                       __m128i *const out /*out[16]*/) {
     __m128i step2[32];
 
@@ -553,7 +537,7 @@ static INLINE void idct32_8x32_quarter_2_stage_4_to_6(__m128i *const step1 /*ste
     out[15] = step1[15];
 }
 
-static INLINE void idct32_8x32_quarter_3_4_stage_4_to_7(__m128i *const step1 /*step1[32]*/,
+static inline void idct32_8x32_quarter_3_4_stage_4_to_7(__m128i *const step1 /*step1[32]*/,
                                                         __m128i *const out /*out[32]*/) {
     __m128i step2[32];
 

@@ -15,8 +15,6 @@
 extern "C" {
 #endif
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vpx_codec.h"
 
@@ -65,37 +63,6 @@ typedef struct yv12_buffer_config {
 } YV12_BUFFER_CONFIG;
 
 #define YV12_FLAG_HIGHBITDEPTH 8
-#if 0
-int vp8_yv12_alloc_frame_buffer(YV12_BUFFER_CONFIG *ybf, int width, int height,
-                                int border);
-int vp8_yv12_realloc_frame_buffer(YV12_BUFFER_CONFIG *ybf, int width,
-                                  int height, int border);
-int vp8_yv12_de_alloc_frame_buffer(YV12_BUFFER_CONFIG *ybf);
-
-int vpx_alloc_frame_buffer(YV12_BUFFER_CONFIG *ybf, int width, int height,
-                           int ss_x, int ss_y,
-#if CONFIG_VP9_HIGHBITDEPTH
-                           int use_highbitdepth,
-#endif
-                           int border, int byte_alignment);
-
-// Updates the yv12 buffer config with the frame buffer. |byte_alignment| must
-// be a power of 2, from 32 to 1024. 0 sets legacy alignment. If cb is not
-// NULL, then libvpx is using the frame buffer callbacks to handle memory.
-// If cb is not NULL, libvpx will call cb with minimum size in bytes needed
-// to decode the current frame. If cb is NULL, libvpx will allocate memory
-// internally to decode the current frame. Returns 0 on success. Returns < 0
-// on failure.
-int vpx_realloc_frame_buffer(YV12_BUFFER_CONFIG *ybf, int width, int height,
-                             int ss_x, int ss_y,
-#if CONFIG_VP9_HIGHBITDEPTH
-                             int use_highbitdepth,
-#endif
-                             int border, int byte_alignment,
-                             vpx_codec_frame_buffer_t *fb,
-                             vpx_get_frame_buffer_cb_fn_t cb, void *cb_priv);
-int vpx_free_frame_buffer(YV12_BUFFER_CONFIG *ybf);
-#endif
 
 #ifdef __cplusplus
 }

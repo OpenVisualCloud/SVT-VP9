@@ -32,10 +32,6 @@
 
 #define CONVERT_TO_SHORTPTR(x) ((uint16_t *)(((uintptr_t)(x)) << 1))
 #define CAST_TO_SHORTPTR(x) ((uint16_t *)((uintptr_t)(x)))
-#if CONFIG_VP9_HIGHBITDEPTH
-#define CONVERT_TO_BYTEPTR(x) ((uint8_t *)(((uintptr_t)(x)) >> 1))
-#define CAST_TO_BYTEPTR(x) ((uint8_t *)((uintptr_t)(x)))
-#endif // CONFIG_VP9_HIGHBITDEPTH
 
 #if !defined(__has_feature)
 #define __has_feature(x) 0

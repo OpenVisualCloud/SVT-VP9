@@ -20,10 +20,6 @@
 #include "EbRateDistortionCost.h"
 #include "stdint.h"
 
-#if SEG_SUPPORT
-#include "vp9_segmentation.h"
-#endif
-
 // Shooting states
 #define UNDER_SHOOTING 0
 #define OVER_SHOOTING 1
@@ -1014,56 +1010,16 @@ void eb_vp9_derive_search_method(SequenceControlSet               *sequence_cont
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_LIGHT_AVC_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_LIGHT_AVC_DEPTH_MODE;
             picture_control_set_ptr->md_present_flag                               = EB_TRUE;
-#if SHUT_64x64_BASE_RESTRICTION
         } else if (picture_control_set_ptr->temporal_layer_index == 0 &&
                    (sequence_control_set_ptr->static_config.tune == TUNE_SQ ||
                     sequence_control_set_ptr->static_config.tune == TUNE_VMAF)) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_FULL84_DEPTH_MODE;
             picture_control_set_ptr->md_present_flag                               = EB_TRUE;
-#else
-        } else if (picture_control_set_ptr->temporal_layer_index == 0) {
-            picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_FULL84_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
-#endif
         } else {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_FULL85_DEPTH_MODE;
             picture_control_set_ptr->md_present_flag                               = EB_TRUE;
         }
     }
-
-#if ADP_STATS_PER_LAYER
-    SequenceControlSet *sequence_control_set_ptr =
-        (SequenceControlSet *)picture_control_set_ptr->parent_pcs_ptr->sequence_control_set_wrapper_ptr->object_ptr;
-
-    for (sb_index = 0; sb_index < picture_control_set_ptr->parent_pcs_ptr->sb_total_count; sb_index++) {
-        sequence_control_set_ptr->total_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-
-        if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FULL85_DEPTH_MODE ||
-            picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FULL84_DEPTH_MODE) {
-            sequence_control_set_ptr->fs_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_BDP_DEPTH_MODE) {
-            sequence_control_set_ptr->f_bdp_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_LIGHT_BDP_DEPTH_MODE) {
-            sequence_control_set_ptr->l_bdp_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_OPEN_LOOP_DEPTH_MODE) {
-            sequence_control_set_ptr->f_mdc_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
-                   SB_LIGHT_OPEN_LOOP_DEPTH_MODE) {
-            sequence_control_set_ptr->l_mdc_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_AVC_DEPTH_MODE ||
-                   picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_LIGHT_AVC_DEPTH_MODE) {
-            sequence_control_set_ptr->avc_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
-                   SB_PRED_OPEN_LOOP_DEPTH_MODE) {
-            sequence_control_set_ptr->pred_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
-                   SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE) {
-            sequence_control_set_ptr->pred1_nfl_count[picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index]++;
-        } else {
-            SVT_LOG("error");
-        }
-    }
-#endif
 }
 
 /******************************************************
@@ -1683,14 +1639,6 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
         depth_two_candidate_block_index = topLeftblock_index - 1;
 
         // Compute depth N cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-        get_partition_cost(
-            picture_control_set_ptr,
-            BLOCK_16X16,
-            PARTITION_NONE,
-            (local_cu_array[depth_two_candidate_block_index]).partition_context,
-            &depth_n_part_cost);
-#endif
         depth_n_cost = (local_cu_array[depth_two_candidate_block_index]).early_cost + depth_n_part_cost;
 
         if (end_depth < 3) {
@@ -1698,14 +1646,6 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
             (local_cu_array[depth_two_candidate_block_index]).early_cost       = depth_n_cost;
         } else {
             // Compute depth N+1 cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-            get_partition_cost(
-                picture_control_set_ptr,
-                BLOCK_16X16,
-                PARTITION_SPLIT,
-                (local_cu_array[depth_two_candidate_block_index]).partition_context,
-                &depth_n_plus_one_part_cost);
-#endif
             depth_n_plus_one_cost = (local_cu_array[block_index]).early_cost +
                 (local_cu_array[leftblock_index]).early_cost + (local_cu_array[topblock_index]).early_cost +
                 (local_cu_array[topLeftblock_index]).early_cost + depth_n_plus_one_part_cost;
@@ -1743,14 +1683,6 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
 
         if (pa_get_block_stats(depth_one_candidate_block_index)->depth == 1) {
             // Compute depth N cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-            get_partition_cost(
-                picture_control_set_ptr,
-                BLOCK_32X32,
-                PARTITION_NONE,
-                local_cu_array[depth_one_candidate_block_index].partition_context,
-                &depth_n_part_cost);
-#endif
 
             depth_n_cost = local_cu_array[depth_one_candidate_block_index].early_cost + depth_n_part_cost;
             if (end_depth < 2) {
@@ -1759,14 +1691,6 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
 
             } else {
                 // Compute depth N+1 cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-                get_partition_cost(
-                    picture_control_set_ptr,
-                    BLOCK_32X32,
-                    PARTITION_SPLIT,
-                    local_cu_array[depth_one_candidate_block_index].partition_context,
-                    &depth_n_plus_one_part_cost);
-#endif
                 depth_n_plus_one_cost = local_cu_array[depth_two_candidate_block_index].early_cost +
                     local_cu_array[leftblock_index].early_cost + local_cu_array[topblock_index].early_cost +
                     local_cu_array[topLeftblock_index].early_cost + depth_n_plus_one_part_cost;
@@ -1807,28 +1731,12 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
 
         if (pa_get_block_stats(depth_zero_candidate_block_index)->depth == 0) {
             // Compute depth N cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-            get_partition_cost(
-                picture_control_set_ptr,
-                BLOCK_64X64,
-                PARTITION_NONE,
-                (&local_cu_array[depth_zero_candidate_block_index])->partition_context,
-                &depth_n_part_cost);
-#endif
             depth_n_cost = (&local_cu_array[depth_zero_candidate_block_index])->early_cost + depth_n_part_cost;
 
             if (end_depth < 1) {
                 (&local_cu_array[depth_zero_candidate_block_index])->early_split_flag = EB_FALSE;
             } else {
                 // Compute depth N+1 cost
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-                get_partition_cost(
-                    picture_control_set_ptr,
-                    BLOCK_64X64,
-                    PARTITION_SPLIT,
-                    (&local_cu_array[depth_zero_candidate_block_index])->partition_context,
-                    &depth_n_plus_one_part_cost);
-#endif
                 depth_n_plus_one_cost = local_cu_array[depth_one_candidate_block_index].early_cost +
                     local_cu_array[leftblock_index].early_cost + local_cu_array[topblock_index].early_cost +
                     local_cu_array[topLeftblock_index].early_cost + depth_n_plus_one_part_cost;
@@ -1864,23 +1772,13 @@ static void prediction_partition_loop(SequenceControlSet               *sequence
 
     VP9_COMP *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
 
-#if SEG_SUPPORT
-    VP9_COMMON *const          cm  = &cpi->common;
-    struct segmentation *const seg = &cm->seg;
-    const int qindex               = eb_vp9_get_qindex(seg, sb_ptr->segment_id, picture_control_set_ptr->base_qindex);
-#else
-    const int qindex = picture_control_set_ptr->base_qindex;
-#endif
-    int RDMULT               = eb_vp9_compute_rd_mult(cpi, qindex);
+    const int qindex         = picture_control_set_ptr->base_qindex;
+    int       RDMULT         = eb_vp9_compute_rd_mult(cpi, qindex);
     context_ptr->rd_mult_sad = (int)MAX(round(sqrtf((float)RDMULT / 128) * 128), 1);
 
     for (block_index = 0; block_index < PA_BLOCK_MAX_COUNT; ++block_index) {
         block_ptr = &local_cu_array[block_index];
 
-#if 0 // Hsan: partition rate not helping @ open loop partitioning
-        // Hsan: neighbor not generated @ open loop partitioning
-        block_ptr->partition_context = 0;
-#endif
         local_cu_array[block_index].slected_cu = EB_FALSE;
         local_cu_array[block_index].stop_split = EB_FALSE;
 
@@ -2330,16 +2228,12 @@ static EbErrorType early_mode_decision_sb(SequenceControlSet               *sequ
     EB_SLICE slice_type = picture_control_set_ptr->slice_type;
 
     // Hsan: to evaluate after freezing a 1st M6
-#if SHUT_64x64_BASE_RESTRICTION
     uint32_t start_depth = (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0 &&
                             (sequence_control_set_ptr->static_config.tune == TUNE_SQ ||
                              sequence_control_set_ptr->static_config.tune == TUNE_VMAF))
         ? DEPTH_32
         : DEPTH_64;
-#else
-    uint32_t start_depth = (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0) ? DEPTH_32 : DEPTH_64;
-#endif
-    uint32_t end_depth = (slice_type == I_SLICE) ? DEPTH_8 : DEPTH_16;
+    uint32_t end_depth   = (slice_type == I_SLICE) ? DEPTH_8 : DEPTH_16;
 
     context_ptr->group_of8x8_blocks_count   = 0;
     context_ptr->group_of16x16_blocks_count = 0;
@@ -2392,7 +2286,6 @@ void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             switch (depth) {
-#if INTRA_4x4_SB_DEPTH_84_85
             case 0:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                 results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
@@ -2413,27 +2306,6 @@ void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                 results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
                 break;
-#else
-            case 0:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                break;
-
-            case 1:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                break;
-
-            case 2:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                break;
-
-            case 3:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
-                break;
-#endif
             }
         }
 
@@ -2457,7 +2329,6 @@ void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             switch (depth) {
-#if INTRA_4x4_SB_DEPTH_84_85
             case 0: split_flag = EB_TRUE; break;
             case 1:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
@@ -2475,24 +2346,6 @@ void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                 results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
                 break;
-#else
-            case 0: split_flag = EB_TRUE; break;
-
-            case 1:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                break;
-
-            case 2:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                break;
-
-            case 3:
-                results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
-                break;
-#endif
             }
         }
 
@@ -2518,7 +2371,6 @@ void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, Pictur
             uint8_t             depth              = ep_block_stats_ptr->depth;
             if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
                 switch (depth) {
-#if INTRA_4x4_SB_DEPTH_84_85
                 case 0:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                     results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
@@ -2539,27 +2391,6 @@ void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, Pictur
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                     results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
                     break;
-#else
-                case 0:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                    break;
-
-                case 1:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                    break;
-
-                case 2:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                    break;
-
-                case 3:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
-                    break;
-#endif
                 }
             }
 
@@ -2586,7 +2417,6 @@ void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, Pictur
             uint8_t             depth              = ep_block_stats_ptr->depth;
             if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
                 switch (depth) {
-#if INTRA_4x4_I_SLICE
                 case 0: split_flag = EB_TRUE; break;
                 case 1:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
@@ -2604,21 +2434,6 @@ void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, Pictur
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
                     results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
                     break;
-#else
-                case 0: split_flag = EB_TRUE; break;
-                case 1:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                    break;
-                case 2:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
-                    break;
-                case 3:
-                    results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
-                    break;
-#endif
                 }
             }
             block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
@@ -2692,86 +2507,6 @@ void sb_depth_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureC
     }
 }
 
-#if BEA
-#define MAX_DELTA_QINDEX 80
-#define DELTA_QINDEX_SEGMENTS 8
-EbErrorType qpm_derive_bea(ModeDecisionConfigurationContext *context_ptr, PictureControlSet *picture_control_set_ptr,
-                           SequenceControlSet *sequence_control_set_ptr) {
-    EbErrorType return_error = EB_ErrorNone;
-    SbUnit     *sb_ptr;
-    int64_t     non_moving_index_distance;
-    int32_t     non_moving_weight = MAX_DELTA_QINDEX;
-    int         non_moving_delta_qp;
-    int         non_moving_delta_qp_temp;
-    if (picture_control_set_ptr->slice_type == 2)
-        non_moving_weight = MAX_DELTA_QINDEX;
-    else if (picture_control_set_ptr->temporal_layer_index == 0)
-        non_moving_weight = MAX_DELTA_QINDEX / 2;
-    else if (picture_control_set_ptr->temporal_layer_index == 1)
-        non_moving_weight = MAX_DELTA_QINDEX / 4;
-#if BEA_SCENE_CHANGE
-    if (picture_control_set_ptr->parent_pcs_ptr->scene_change_flag)
-        non_moving_weight = non_moving_weight / 2;
-#endif
-
-    //else
-    //    non_moving_weight = 1;
-
-    uint32_t distanceRatio = (uint32_t)~0;
-
-    for (int sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
-        sb_ptr = picture_control_set_ptr->sb_ptr_array[sb_index];
-        if (picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance != 0 &&
-            picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance != 0) {
-            distanceRatio = (picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance >
-                             picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance)
-                ? abs(picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance * 100 /
-                      picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance)
-                : abs(picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance * 100 /
-                      picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance);
-        }
-
-        //if (distanceRatio >= BEA_DISTANSE_RATIO_T0) {
-        //    non_moving_weight = 1;
-        //}
-
-        non_moving_index_distance = (int32_t)picture_control_set_ptr->parent_pcs_ptr->non_moving_index_array[sb_index] -
-            (int32_t)picture_control_set_ptr->parent_pcs_ptr->non_moving_average_score;
-
-        if (non_moving_index_distance < 0) {
-            non_moving_delta_qp      = (picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance != 0)
-                     ? (int8_t)((non_moving_weight * non_moving_index_distance) /
-                           picture_control_set_ptr->parent_pcs_ptr->non_moving_index_min_distance)
-                     : 0;
-            non_moving_delta_qp_temp = (non_moving_delta_qp * (DELTA_QINDEX_SEGMENTS - 2) / non_moving_weight);
-            non_moving_delta_qp      = (non_moving_delta_qp * (DELTA_QINDEX_SEGMENTS - 2) / non_moving_weight) *
-                non_moving_weight / (DELTA_QINDEX_SEGMENTS - 2);
-            sb_ptr->segment_id = CLIP3(1, DELTA_QINDEX_SEGMENTS - 1, 1 - non_moving_delta_qp_temp);
-            //sb_ptr->segment_id = CLIP3( 1, DELTA_QINDEX_SEGMENTS - 1, 1 +  (-non_moving_delta_qp * (DELTA_QINDEX_SEGMENTS - 2) / non_moving_weight));
-        } else {
-            non_moving_delta_qp = (picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance != 0)
-                ? (int8_t)((non_moving_index_distance * 100) /
-                           (picture_control_set_ptr->parent_pcs_ptr->non_moving_index_max_distance))
-                : 0;
-            non_moving_delta_qp = (non_moving_delta_qp + 50) / 100;
-            sb_ptr->segment_id  = CLIP3(0, 1, 1 + -non_moving_delta_qp);
-
-            if (non_moving_delta_qp) {
-                if (picture_control_set_ptr->slice_type == 2)
-                    non_moving_delta_qp = 8;
-                else if (picture_control_set_ptr->temporal_layer_index == 0)
-                    non_moving_delta_qp = 4;
-                else if (picture_control_set_ptr->temporal_layer_index == 1)
-                    non_moving_delta_qp = 2;
-            }
-        }
-        context_ptr->qindex_delta[sb_ptr->segment_id] = non_moving_delta_qp;
-        picture_control_set_ptr->segment_counts[sb_ptr->segment_id]++;
-    }
-    return return_error;
-}
-#endif
-
 /******************************************************
  * Mode Decision Configuration Kernel
  ******************************************************/
@@ -2842,42 +2577,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
             picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.mvsadcost =
                 picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvsadcost;
         }
-
-#if SEG_SUPPORT
-#if BEA
-        for (int segment_index = 0; segment_index < DELTA_QINDEX_SEGMENTS; ++segment_index) {
-            context_ptr->qindex_delta[segment_index] = 0;
-        }
-        VP9_COMP                  *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-        VP9_COMMON *const          cm  = &cpi->common;
-        struct segmentation *const seg = &cm->seg;
-
-        eb_vp9_disable_segmentation(seg);
-        eb_vp9_clearall_segfeatures(seg);
-
-        if (sequence_control_set_ptr->static_config.rate_control_mode == 2 &&
-            picture_control_set_ptr->temporal_layer_index < 1 &&
-            picture_control_set_ptr->parent_pcs_ptr->non_moving_average_score > 5) {
-            qpm_derive_bea(context_ptr, picture_control_set_ptr, sequence_control_set_ptr);
-
-            eb_vp9_enable_segmentation(seg);
-            // Select delta coding method.
-            seg->abs_delta = SEGMENT_DELTADATA;
-
-            // Use some of the segments for in frame Q adjustment.
-            for (int segment = 0; segment < DELTA_QINDEX_SEGMENTS; ++segment) {
-                int qindex_delta;
-
-                qindex_delta = context_ptr->qindex_delta[segment];
-                //if ((cm->base_qindex + qindex_delta) > 0) {
-                if ((cm->base_qindex + qindex_delta) > 0 && picture_control_set_ptr->segment_counts[segment]) {
-                    eb_vp9_enable_segfeature(seg, segment, SEG_LVL_ALT_Q);
-                    eb_vp9_set_segdata(seg, segment, SEG_LVL_ALT_Q, qindex_delta);
-                }
-            }
-        }
-#endif
-#endif
 
         context_ptr->qp = picture_control_set_ptr->picture_qp;
 

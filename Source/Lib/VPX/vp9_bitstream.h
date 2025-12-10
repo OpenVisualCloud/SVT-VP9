@@ -15,8 +15,6 @@
 extern "C" {
 #endif
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "vp9_encoder.h"
 #include "bitwriter.h"
@@ -37,20 +35,10 @@ typedef struct VP9BitstreamWorkerData {
     int interp_filter_selected[1][SWITCHABLE];
     DECLARE_ALIGNED(16, MACROBLOCKD, xd);
 } VP9BitstreamWorkerData;
-#if 0
-int vp9_get_refresh_mask(VP9_COMP *cpi);
-#endif
 void vp9_bitstream_encode_tiles_buffer_dealloc(VP9_COMP *const cpi);
 
 void eb_vp9_pack_bitstream(PictureControlSet *picture_control_set_ptr, VP9_COMP *cpi, uint8_t *dest, size_t *size,
                            int show_existing_frame, int show_existing_frame_index);
-
-#if 0
-static INLINE int vp9_preserve_existing_gf(VP9_COMP *cpi) {
-  return cpi->refresh_golden_frame && cpi->rc.is_src_frame_alt_ref &&
-         !cpi->use_svc;
-}
-#endif
 
 void write_partition(const VP9_COMMON *const cm, const MACROBLOCKD *const xd, int hbs, int mi_row, int mi_col,
                      PARTITION_TYPE p, BLOCK_SIZE bsize, VpxWriter *w);

@@ -358,7 +358,6 @@ static EbErrorType release_prev_picture_from_reorder_queue(EncodeContext *encode
 
     return return_error;
 }
-#if NEW_PRED_STRUCT
 
 /***************************************************************************************************
 * Initializes mini GOP activity array
@@ -633,8 +632,6 @@ static EbErrorType update_base_layer_reference_queue_dependent_count(PictureDeci
 
     return return_error;
 }
-
-#endif
 
 /***************************************************************************************************
 * Generates mini GOP RPSs
@@ -1109,11 +1106,8 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
         if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index])
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
 
-    }
-#if NEW_PRED_STRUCT
-    else if (picture_control_set_ptr->hierarchical_levels == 4) //RPS for 4L GOP
+    } else if (picture_control_set_ptr->hierarchical_levels == 4) //RPS for 4L GOP
     {
-
         //Reset miniGop Toggling. The first miniGop after a KEY frame has toggle=0
         if (picture_control_set_ptr->cpi->common.frame_type == KEY_FRAME) {
             context_ptr->mini_gop_toggle                             = 0;
@@ -1319,9 +1313,7 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
         //a regular I keeps the toggling process and does not reset the toggle.  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
         if (picture_index == context_ptr->mini_gop_end_index[mini_gop_index])
             context_ptr->mini_gop_toggle = 1 - context_ptr->mini_gop_toggle;
-    }
-#endif
-    else {
+    } else {
         SVT_LOG("SVT [ERROR]: Not supported GOP structure!");
         return;
     }
@@ -1655,7 +1647,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                         ? sequence_control_set_ptr->hierarchical_levels
                         : encode_context_ptr->previous_mini_gop_hierarchical_levels;
 
-#if NEW_PRED_STRUCT
                     {
                         if (encode_context_ptr->pre_assignment_buffer_count > 1) {
                             eb_vp9_initialize_mini_gop_activity_array(context_ptr);
@@ -1671,7 +1662,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             eb_vp9_handle_incomplete_picture_window_map(context_ptr, encode_context_ptr);
                         }
                     }
-#endif
                     generate_mini_gop_rps(context_ptr, encode_context_ptr);
 
                     // Loop over Mini GOPs
@@ -1679,7 +1669,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                     for (mini_gop_index = 0; mini_gop_index < context_ptr->total_number_of_mini_gops;
                          ++mini_gop_index) {
                         pre_assignment_buffer_first_pass_flag = EB_TRUE;
-#if NEW_PRED_STRUCT
                         {
                             update_base_layer_reference_queue_dependent_count(
                                 context_ptr, encode_context_ptr, mini_gop_index);
@@ -1688,7 +1677,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             encode_context_ptr->previous_mini_gop_hierarchical_levels =
                                 context_ptr->mini_gop_hierarchical_levels[mini_gop_index];
                         }
-#endif
                         // 1st Loop over Pictures in the Pre-Assignment Buffer
                         for (picture_index = context_ptr->mini_gop_start_index[mini_gop_index];
                              picture_index <= context_ptr->mini_gop_end_index[mini_gop_index];
@@ -1745,13 +1733,11 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                     (encode_context_ptr->pre_assignment_buffer_eos_flag) ? P_SLICE
                                                                                          : B_SLICE;
                             }
-#if NEW_PRED_STRUCT
                             // If mini GOP switch, reset position
                             encode_context_ptr->pred_struct_position =
                                 (picture_control_set_ptr->init_pred_struct_position_flag)
                                 ? picture_control_set_ptr->pred_struct_ptr->init_pic_index
                                 : encode_context_ptr->pred_struct_position;
-#endif
                             // If Intra, reset position
                             if (picture_control_set_ptr->idr_flag == EB_TRUE) {
                                 encode_context_ptr->pred_struct_position =
@@ -1877,13 +1863,8 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                             generate_rps_info(picture_control_set_ptr,
                                               context_ptr,
-#if NEW_PRED_STRUCT
                                               picture_index - context_ptr->mini_gop_start_index[mini_gop_index],
                                               mini_gop_index);
-#else
-                                              picture_index,
-                                              mini_gop_index);
-#endif
                             picture_control_set_ptr->cpi->allow_comp_inter_inter = 0;
                             picture_control_set_ptr->cpi->common.reference_mode  = (REFERENCE_MODE)0xFF;
                             if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -1908,17 +1889,11 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             if (picture_control_set_ptr->cpi->common.reference_mode != SINGLE_REFERENCE)
                                 eb_vp9_setup_compound_reference_mode(&picture_control_set_ptr->cpi->common);
 
-#if USE_SRC_REF
-                            picture_control_set_ptr->use_src_ref = (picture_control_set_ptr->temporal_layer_index > 0)
-                                ? EB_TRUE
-                                : EB_FALSE;
-#else
                             picture_control_set_ptr->use_src_ref = (sequence_control_set_ptr->input_resolution ==
                                                                         INPUT_SIZE_4K_RANGE &&
                                                                     picture_control_set_ptr->temporal_layer_index > 0)
                                 ? EB_TRUE
                                 : EB_FALSE;
-#endif
 
                             // Set QP Scaling Mode
                             picture_control_set_ptr->qp_scaling_mode = (picture_control_set_ptr->slice_type == I_SLICE)

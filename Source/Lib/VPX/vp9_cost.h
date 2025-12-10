@@ -11,8 +11,6 @@
 #ifndef VPX_VP9_ENCODER_VP9_COST_H_
 #define VPX_VP9_ENCODER_VP9_COST_H_
 
-#define INLINE __inline
-
 #include <stdint.h>
 #include "prob.h"
 
@@ -31,12 +29,12 @@ extern const uint16_t eb_vp9_prob_cost[256];
 
 #define vp9_cost_bit(prob, bit) vp9_cost_zero((bit) ? 256 - (prob) : (prob))
 
-static INLINE unsigned int cost_branch256(const unsigned int ct[2], vpx_prob p) {
+static inline unsigned int cost_branch256(const unsigned int ct[2], vpx_prob p) {
     assert(p > 0);
     return ct[0] * vp9_cost_zero(p) + ct[1] * vp9_cost_one(p);
 }
 
-static INLINE int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits, int len) {
+static inline int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits, int len) {
     int            cost = 0;
     vpx_tree_index i    = 0;
 

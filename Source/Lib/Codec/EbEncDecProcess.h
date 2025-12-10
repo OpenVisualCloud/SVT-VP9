@@ -190,9 +190,6 @@ typedef struct EncDecContext {
     // Hsan: use macro definitions here
     int depth_part_stage; // 0: mdc_depth_part or bdp_depth_part @ nearest/near stage, 1: bdp_depth_part @ pillar stage, 2: bdp_depth_part @ refinement stage
 
-#if SEG_SUPPORT
-    int8_t segment_id;
-#endif
     int RDMULT;
     int rd_mult_sad;
 

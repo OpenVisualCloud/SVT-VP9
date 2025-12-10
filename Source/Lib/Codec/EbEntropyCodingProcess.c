@@ -16,10 +16,6 @@
 #include "vp9_bitstream.h"
 #include "vp9_enums.h"
 #include "bitwriter.h"
-#if SEG_SUPPORT
-#include "vp9_segmentation.h"
-
-#endif
 /******************************************************
  * Enc Dec Context Constructor
  ******************************************************/
@@ -443,34 +439,13 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
                     sb_ptr   = picture_control_set_ptr->sb_ptr_array[sb_index];
 
                     sb_ptr->sb_total_bits = 0;
-#if VP9_RC
-                    uint32_t prev_pos = sb_index ? picture_control_set_ptr->entropy_coder_ptr->residual_bc.pos : 0;
-#endif
-#if SEG_SUPPORT
-                    if (sb_index == 0) {
-                        MACROBLOCKD      *xd = NULL;
-                        VP9_COMMON *const cm = &picture_control_set_ptr->parent_pcs_ptr->cpi->common;
-
-                        struct segmentation *seg = &cm->seg;
-                        if (seg->update_map) {
-                            vpx_prob no_pred_tree[SEG_TREE_PROBS];
-                            memset(seg->tree_probs, 255, sizeof(seg->tree_probs));
-                            memset(seg->pred_probs, 255, sizeof(seg->pred_probs));
-                            // Work out probability tree for coding segments without prediction
-                            calc_segtree_probs(picture_control_set_ptr->segment_counts, no_pred_tree);
-                            seg->temporal_update = 0;
-                            memcpy(seg->tree_probs, no_pred_tree, sizeof(no_pred_tree));
-                        }
-                    }
-#endif
+                    uint32_t prev_pos     = sb_index ? picture_control_set_ptr->entropy_coder_ptr->residual_bc.pos : 0;
                     // Entropy Coding
                     EntropyCodingSb(
                         picture_control_set_ptr, context_ptr, sb_ptr, picture_control_set_ptr->entropy_coder_ptr);
-#if VP9_RC
                     sb_ptr->sb_total_bits = (picture_control_set_ptr->entropy_coder_ptr->residual_bc.pos - prev_pos)
                         << 3;
                     picture_control_set_ptr->parent_pcs_ptr->quantized_coeff_num_bits += sb_ptr->sb_total_bits;
-#endif
 
                     rowsb_total_bits += sb_ptr->sb_total_bits;
                 }
