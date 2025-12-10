@@ -66,7 +66,6 @@ static inline tran_high_t dct_const_round_shift(tran_high_t input) {
 void eb_vp9_idct4_c(const tran_low_t *input, tran_low_t *output);
 void eb_vp9_idct8_c(const tran_low_t *input, tran_low_t *output);
 void eb_vp9_idct16_c(const tran_low_t *input, tran_low_t *output);
-void eb_vp9_idct32_c(const tran_low_t *input, tran_low_t *output);
 void eb_vp9_iadst4_c(const tran_low_t *input, tran_low_t *output);
 void eb_vp9_iadst8_c(const tran_low_t *input, tran_low_t *output);
 void eb_vp9_iadst16_c(const tran_low_t *input, tran_low_t *output);

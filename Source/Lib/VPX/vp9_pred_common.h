@@ -98,8 +98,6 @@ static inline vpx_prob vp9_get_pred_prob_single_ref_p2(const VP9_COMMON *cm, con
     return cm->fc->single_ref_prob[eb_vp9_get_pred_context_single_ref_p2(xd)][1];
 }
 
-int eb_vp9_compound_reference_allowed(const VP9_COMMON *cm);
-
 void eb_vp9_setup_compound_reference_mode(VP9_COMMON *cm);
 
 // Returns a context number for the given MB prediction signal

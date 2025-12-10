@@ -37,16 +37,6 @@ extern EbErrorType eb_vp9_output_bitstream_unit_ctor(OutputBitstreamUnit *bitstr
 
 extern EbErrorType eb_vp9_output_bitstream_reset(OutputBitstreamUnit *bitstream_ptr);
 
-extern EbErrorType output_bitstream_write(OutputBitstreamUnit *bitstream_ptr, uint32_t bits, uint32_t number_of_bits);
-
-extern EbErrorType output_bitstream_write_byte(OutputBitstreamUnit *bitstream_ptr, uint32_t bits);
-
-extern EbErrorType output_bitstream_write_align_zero(OutputBitstreamUnit *bitstream_ptr);
-
-extern EbErrorType eb_vp9_output_bitstream_rbsp_to_payload(OutputBitstreamUnit *bitstream_ptr, EbByte output_buffer,
-                                                           uint32_t *output_buffer_index, uint32_t *output_buffer_size,
-                                                           uint32_t start_location);
-
 #ifdef __cplusplus
 }
 #endif

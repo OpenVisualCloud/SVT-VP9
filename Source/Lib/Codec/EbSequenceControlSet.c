@@ -8,6 +8,17 @@
 #include "EbDefinitions.h"
 #include "EbSequenceControlSet.h"
 
+static EbErrorType sb_params_ctor(SequenceControlSet *sequence_control_set_ptr) {
+    EbErrorType return_error = EB_ErrorNone;
+
+    EB_MALLOC(SbParams *,
+              sequence_control_set_ptr->sb_params_array,
+              sizeof(SbParams) * ((MAX_PICTURE_WIDTH_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) *
+                  ((MAX_PICTURE_HEIGHT_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE),
+              EB_N_PTR);
+    return return_error;
+}
+
 /**************************************************************************************************
     General notes on how Sequence Control Sets (SCS) are used.
 
@@ -200,17 +211,6 @@ EbErrorType eb_vp9_sequence_control_set_instance_ctor(EbSequenceControlSetInstan
     EB_CREATEMUTEX(EbHandle *, (*object_dbl_ptr)->config_mutex, sizeof(EbHandle), EB_MUTEX);
 
     return EB_ErrorNone;
-}
-
-extern EbErrorType sb_params_ctor(SequenceControlSet *sequence_control_set_ptr) {
-    EbErrorType return_error = EB_ErrorNone;
-
-    EB_MALLOC(SbParams *,
-              sequence_control_set_ptr->sb_params_array,
-              sizeof(SbParams) * ((MAX_PICTURE_WIDTH_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE) *
-                  ((MAX_PICTURE_HEIGHT_SIZE + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE),
-              EB_N_PTR);
-    return return_error;
 }
 
 extern EbErrorType eb_vp9_sb_params_init(SequenceControlSet *sequence_control_set_ptr) {

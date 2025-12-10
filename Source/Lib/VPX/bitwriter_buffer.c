@@ -35,8 +35,3 @@ void eb_vp9_wb_write_literal(struct vpx_write_bit_buffer *wb, int data, int bits
     int bit;
     for (bit = bits - 1; bit >= 0; bit--) eb_vp9_wb_write_bit(wb, (data >> bit) & 1);
 }
-
-void eb_vp9_wb_write_inv_signed_literal(struct vpx_write_bit_buffer *wb, int data, int bits) {
-    eb_vp9_wb_write_literal(wb, abs(data), bits);
-    eb_vp9_wb_write_bit(wb, data < 0);
-}

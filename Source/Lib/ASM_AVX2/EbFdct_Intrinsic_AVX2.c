@@ -386,18 +386,6 @@ static inline void right_shift_write_buffer_8x8(const __m256i *const in, tran_lo
     store_output(out[7], output + 7 * 8);
 }
 
-void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
-    int     overflow;
-    __m256i in[4];
-
-    load_buffer_left_shift2_fdct_8x8_avx2(input, stride, in);
-    overflow = fdct8_overflow_avx2(in, 0);
-    overflow |= fdct8_overflow_avx2(in, 1);
-    right_shift_write_buffer_8x8(in, output);
-
-    (void)overflow;
-}
-
 void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
     int     overflow = 0;
     __m256i in[4], x[4];
@@ -784,14 +772,6 @@ static void fadst16_avx2(__m256i *const in) {
 
     // transpose
     transpose_16bit_16x16_avx2(in, in);
-}
-
-void eb_vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
-    __m256i in[16];
-
-    load_buffer_left_shift2_16x16_avx2(input, stride, in);
-    right_shift_fdct_16x16_avx2(in);
-    write_buffer_16x16_avx2(in, output, 16);
 }
 
 void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {

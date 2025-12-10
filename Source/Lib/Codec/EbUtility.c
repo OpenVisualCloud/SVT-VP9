@@ -124,7 +124,7 @@ PaBlockStats *pa_get_block_stats(int block_index) { return &pa_get_block_stats_a
  *  Leading Zeros (NLZ) algorithm to get
  *  the log2f of a 64-bit number
  *****************************************/
-inline uint64_t Log2f64(uint64_t x) {
+static inline uint64_t Log2f64(uint64_t x) {
     uint64_t y;
     int64_t  n = 64, c = 32;
 
@@ -138,20 +138,6 @@ inline uint64_t Log2f64(uint64_t x) {
     } while (c > 0);
 
     return 64 - n;
-}
-
-/*****************************************
- * Endian Swap
- *****************************************/
-uint32_t eb_vp9_endian_swap(uint32_t ui) {
-    unsigned int ul2;
-
-    ul2 = ui >> 24;
-    ul2 |= (ui >> 8) & 0x0000ff00;
-    ul2 |= (ui << 8) & 0x00ff0000;
-    ul2 |= ui << 24;
-
-    return ul2;
 }
 
 uint64_t eb_vp9_log2f_high_precision(uint64_t x, uint8_t precision) {
@@ -191,7 +177,7 @@ const MiniGopStats *eb_vp9_get_mini_gop_stats(const uint32_t mini_gop_index) {
     return &mini_gop_stats_array[mini_gop_index];
 }
 
-uint8_t eb_vp9_ns_quarter_off_mult[9 /*Up to 9 part*/][2 /*x+y*/][4 /*Up to 4 ns blocks per part*/] = {
+static uint8_t ns_quarter_off_mult[9 /*Up to 9 part*/][2 /*x+y*/][4 /*Up to 4 ns blocks per part*/] = {
     //9 means not used.
 
     //          |   x   |     |   y   |
@@ -208,7 +194,7 @@ uint8_t eb_vp9_ns_quarter_off_mult[9 /*Up to 9 part*/][2 /*x+y*/][4 /*Up to 4 ns
 
 };
 
-uint8_t eb_vp9_ns_quarter_size_mult[9 /*Up to 9 part*/][2 /*h+v*/][4 /*Up to 4 ns blocks per part*/] = {
+static uint8_t ns_quarter_size_mult[9 /*Up to 9 part*/][2 /*h+v*/][4 /*Up to 4 ns blocks per part*/] = {
     //9 means not used.
 
     //          |   h   |     |   v   |
@@ -225,66 +211,67 @@ uint8_t eb_vp9_ns_quarter_size_mult[9 /*Up to 9 part*/][2 /*h+v*/][4 /*Up to 4 n
 
 };
 
-BLOCK_SIZE eb_vp9_hvsize_to_bsize[/*H*/ 5][/*V*/ 5] = {{
-                                                           BLOCK_4X4,
-                                                           BLOCK_4X8,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                       },
-                                                       {
-                                                           BLOCK_8X4,
-                                                           BLOCK_8X8,
-                                                           BLOCK_8X16,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                       },
-                                                       {
-                                                           BLOCK_INVALID,
-                                                           BLOCK_16X8,
-                                                           BLOCK_16X16,
-                                                           BLOCK_16X32,
-                                                           BLOCK_INVALID,
-                                                       },
-                                                       {
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_32X16,
-                                                           BLOCK_32X32,
-                                                           BLOCK_32X64,
-                                                       },
-                                                       {
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_INVALID,
-                                                           BLOCK_64X32,
-                                                           BLOCK_64X64,
-                                                       }
+static BLOCK_SIZE hvsize_to_bsize[/*H*/ 5][/*V*/ 5] = {
+    {
+        BLOCK_4X4,
+        BLOCK_4X8,
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+    },
+    {
+        BLOCK_8X4,
+        BLOCK_8X8,
+        BLOCK_8X16,
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+    },
+    {
+        BLOCK_INVALID,
+        BLOCK_16X8,
+        BLOCK_16X16,
+        BLOCK_16X32,
+        BLOCK_INVALID,
+    },
+    {
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+        BLOCK_32X16,
+        BLOCK_32X32,
+        BLOCK_32X64,
+    },
+    {
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+        BLOCK_INVALID,
+        BLOCK_64X32,
+        BLOCK_64X64,
+    },
 
 };
 
-uint8_t eb_vp9_max_sb = 64;
+static uint8_t max_sb = 64;
 
-uint32_t eb_vp9_max_depth = 5;
+static uint32_t max_depth = 5;
 
-uint32_t eb_vp9_max_part = 3;
-uint32_t eb_vp9_max_num_active_blocks;
+static uint32_t max_part = 3;
+static uint32_t max_num_active_blocks;
 
 //data could be  organized in 2 forms: depth scan (dps) or MD scan (mds):
 //dps: all depth0 - all depth1 - all depth2 - all depth3.
 //     within a depth: square blk0 in raster scan (followed by all its ns blcoks),
 //     square blk1 in raster scan (followed by all its ns blcoks), etc
 //mds: top-down and Z scan.
-EpBlockStats ep_block_stats_ptr_dps
-    [EP_BLOCK_MAX_COUNT]; //to access geom info of a particular block : use this table if you have the block index in depth scan
-EpBlockStats ep_block_stats_ptr_mds
-    [EP_BLOCK_MAX_COUNT]; //to access geom info of a particular block : use this table if you have the block index in md    scan
+//to access geom info of a particular block : use this table if you have the block index in depth scan
+static EpBlockStats ep_block_stats_ptr_dps[EP_BLOCK_MAX_COUNT];
+//to access geom info of a particular block : use this table if you have the block index in md scan
+static EpBlockStats ep_block_stats_ptr_mds[EP_BLOCK_MAX_COUNT];
 
-uint32_t eb_vp9_search_matching_from_dps(uint8_t depth, Part part, uint8_t x, uint8_t y) {
+static uint32_t search_matching_from_dps(uint8_t depth, Part part, uint8_t x, uint8_t y) {
     uint32_t found = 0;
     uint32_t it;
     uint32_t matched = 0xFFFF;
-    for (it = 0; it < eb_vp9_max_num_active_blocks; it++) {
+    for (it = 0; it < max_num_active_blocks; it++) {
         if (ep_block_stats_ptr_dps[it].depth == depth && ep_block_stats_ptr_dps[it].shape == part &&
             ep_block_stats_ptr_dps[it].origin_x == x && ep_block_stats_ptr_dps[it].origin_y == y) {
             if (found == 0) {
@@ -302,11 +289,11 @@ uint32_t eb_vp9_search_matching_from_dps(uint8_t depth, Part part, uint8_t x, ui
 
     return matched;
 }
-uint32_t eb_vp9_search_matching_from_mds(uint8_t depth, Part part, uint8_t x, uint8_t y) {
+static uint32_t search_matching_from_mds(uint8_t depth, Part part, uint8_t x, uint8_t y) {
     uint32_t found = 0;
     uint32_t it;
     uint32_t matched = 0xFFFF;
-    for (it = 0; it < eb_vp9_max_num_active_blocks; it++) {
+    for (it = 0; it < max_num_active_blocks; it++) {
         if (ep_block_stats_ptr_mds[it].depth == depth && ep_block_stats_ptr_mds[it].shape == part &&
             ep_block_stats_ptr_mds[it].origin_x == x && ep_block_stats_ptr_mds[it].origin_y == y) {
             if (found == 0) {
@@ -331,7 +318,7 @@ static BLOCK_SIZE get_plane_block_size(BLOCK_SIZE bsize, int subsampling_x, int 
     return eb_vp9_ss_size_lookup[bsize][subsampling_x][subsampling_y];
 }
 
-void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint8_t y, int is_last_quadrant) {
+static void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint8_t y, int is_last_quadrant) {
     // the input block is the parent square block of size sq_size located at pos (x,y)
     uint32_t part_it;
     uint16_t sqi_mds;
@@ -340,13 +327,13 @@ void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint
     uint8_t halfsize  = sq_size / 2;
     uint8_t quartsize = sq_size / 4;
 
-    uint32_t max_part_updated = sq_size == 128 ? MIN(eb_vp9_max_part, 7) :
+    uint32_t max_part_updated = sq_size == 128 ? MIN(max_part, 7) :
 
-        sq_size == 8 ? MIN(eb_vp9_max_part, 3)
+        sq_size == 8 ? MIN(max_part, 3)
         :
 
         sq_size == 4 ? 1
-                     : eb_vp9_max_part;
+                     : max_part;
 
     d1_it   = 0;
     sqi_mds = *idx_mds;
@@ -359,36 +346,35 @@ void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint
         uint8_t tot_num_ns_per_part = part_it < 1 ? 1 : part_it < 3 ? 2 : part_it < 7 ? 3 : 4;
 
         for (nsq_it = 0; nsq_it < tot_num_ns_per_part; nsq_it++) {
-            ep_block_stats_ptr_mds[*idx_mds].depth = sq_size == eb_vp9_max_sb / 1 ? 0
-                : sq_size == eb_vp9_max_sb / 2                                    ? 1
-                : sq_size == eb_vp9_max_sb / 4                                    ? 2
-                : sq_size == eb_vp9_max_sb / 8                                    ? 3
-                : sq_size == eb_vp9_max_sb / 16                                   ? 4
-                                                                                  : 5;
+            ep_block_stats_ptr_mds[*idx_mds].depth = sq_size == max_sb / 1 ? 0
+                : sq_size == max_sb / 2                                    ? 1
+                : sq_size == max_sb / 4                                    ? 2
+                : sq_size == max_sb / 8                                    ? 3
+                : sq_size == max_sb / 16                                   ? 4
+                                                                           : 5;
 
             ep_block_stats_ptr_mds[*idx_mds].shape    = (Part)part_it;
-            ep_block_stats_ptr_mds[*idx_mds].origin_x = x + quartsize * eb_vp9_ns_quarter_off_mult[part_it][0][nsq_it];
-            ep_block_stats_ptr_mds[*idx_mds].origin_y = y + quartsize * eb_vp9_ns_quarter_off_mult[part_it][1][nsq_it];
+            ep_block_stats_ptr_mds[*idx_mds].origin_x = x + quartsize * ns_quarter_off_mult[part_it][0][nsq_it];
+            ep_block_stats_ptr_mds[*idx_mds].origin_y = y + quartsize * ns_quarter_off_mult[part_it][1][nsq_it];
 
             ep_block_stats_ptr_mds[*idx_mds].d1i     = d1_it++;
             ep_block_stats_ptr_mds[*idx_mds].sqi_mds = sqi_mds;
             ep_block_stats_ptr_mds[*idx_mds].totns   = tot_num_ns_per_part;
             ep_block_stats_ptr_mds[*idx_mds].nsi     = nsq_it;
 
-            uint32_t matched = eb_vp9_search_matching_from_dps(ep_block_stats_ptr_mds[*idx_mds].depth,
-                                                               ep_block_stats_ptr_mds[*idx_mds].shape,
-                                                               ep_block_stats_ptr_mds[*idx_mds].origin_x,
-                                                               ep_block_stats_ptr_mds[*idx_mds].origin_y);
+            uint32_t matched = search_matching_from_dps(ep_block_stats_ptr_mds[*idx_mds].depth,
+                                                        ep_block_stats_ptr_mds[*idx_mds].shape,
+                                                        ep_block_stats_ptr_mds[*idx_mds].origin_x,
+                                                        ep_block_stats_ptr_mds[*idx_mds].origin_y);
 
             ep_block_stats_ptr_mds[*idx_mds].blkidx_dps = ep_block_stats_ptr_dps[matched].blkidx_dps;
 
-            ep_block_stats_ptr_mds[*idx_mds].bwidth       = quartsize * eb_vp9_ns_quarter_size_mult[part_it][0][nsq_it];
-            ep_block_stats_ptr_mds[*idx_mds].bheight      = quartsize * eb_vp9_ns_quarter_size_mult[part_it][1][nsq_it];
+            ep_block_stats_ptr_mds[*idx_mds].bwidth       = quartsize * ns_quarter_size_mult[part_it][0][nsq_it];
+            ep_block_stats_ptr_mds[*idx_mds].bheight      = quartsize * ns_quarter_size_mult[part_it][1][nsq_it];
             ep_block_stats_ptr_mds[*idx_mds].bwidth_log2  = (uint8_t)Log2f(ep_block_stats_ptr_mds[*idx_mds].bwidth);
             ep_block_stats_ptr_mds[*idx_mds].bheight_log2 = (uint8_t)Log2f(ep_block_stats_ptr_mds[*idx_mds].bheight);
-            ep_block_stats_ptr_mds[*idx_mds].bsize =
-                eb_vp9_hvsize_to_bsize[ep_block_stats_ptr_mds[*idx_mds].bwidth_log2 - 2]
-                                      [ep_block_stats_ptr_mds[*idx_mds].bheight_log2 - 2];
+            ep_block_stats_ptr_mds[*idx_mds].bsize = hvsize_to_bsize[ep_block_stats_ptr_mds[*idx_mds].bwidth_log2 - 2]
+                                                                    [ep_block_stats_ptr_mds[*idx_mds].bheight_log2 - 2];
 
             ep_block_stats_ptr_mds[*idx_mds].bwidth_uv  = MAX(4, ep_block_stats_ptr_mds[*idx_mds].bwidth >> 1);
             ep_block_stats_ptr_mds[*idx_mds].bheight_uv = MAX(4, ep_block_stats_ptr_mds[*idx_mds].bheight >> 1);
@@ -421,7 +407,7 @@ void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint
         }
     }
 
-    uint32_t min_size = eb_vp9_max_sb >> (eb_vp9_max_depth - 1);
+    uint32_t min_size = max_sb >> (max_depth - 1);
     if (halfsize >= min_size) {
         eb_vp9_md_scan_all_blks(idx_mds, halfsize, x, y, 0);
         eb_vp9_md_scan_all_blks(idx_mds, halfsize, x + halfsize, y, 0);
@@ -430,27 +416,27 @@ void eb_vp9_md_scan_all_blks(uint16_t *idx_mds, uint8_t sq_size, uint8_t x, uint
     }
 }
 
-void eb_vp9_depth_scan_all_blks() {
+static void eb_vp9_depth_scan_all_blks() {
     uint8_t  depth_it, sq_it_y, sq_it_x, part_it, nsq_it;
     uint8_t  sq_orgx, sq_orgy;
     uint16_t depth_scan_idx = 0;
 
-    for (depth_it = 0; depth_it < eb_vp9_max_depth; depth_it++) {
+    for (depth_it = 0; depth_it < max_depth; depth_it++) {
         uint32_t tot_num_sq = 1 << depth_it;
-        uint8_t  sq_size    = depth_it == 0 ? eb_vp9_max_sb
-                : depth_it == 1             ? eb_vp9_max_sb / 2
-                : depth_it == 2             ? eb_vp9_max_sb / 4
-                : depth_it == 3             ? eb_vp9_max_sb / 8
-                : depth_it == 4             ? eb_vp9_max_sb / 16
-                                            : eb_vp9_max_sb / 32;
+        uint8_t  sq_size    = depth_it == 0 ? max_sb
+                : depth_it == 1             ? max_sb / 2
+                : depth_it == 2             ? max_sb / 4
+                : depth_it == 3             ? max_sb / 8
+                : depth_it == 4             ? max_sb / 16
+                                            : max_sb / 32;
 
-        uint32_t max_part_updated = sq_size == 128 ? MIN(eb_vp9_max_part, 7) :
+        uint32_t max_part_updated = sq_size == 128 ? MIN(max_part, 7) :
 
-            sq_size == 8 ? MIN(eb_vp9_max_part, 3)
+            sq_size == 8 ? MIN(max_part, 3)
             :
 
             sq_size == 4 ? 1
-                         : eb_vp9_max_part;
+                         : max_part;
 
         for (sq_it_y = 0; sq_it_y < tot_num_sq; sq_it_y++) {
             sq_orgy = sq_it_y * sq_size;
@@ -466,9 +452,9 @@ void eb_vp9_depth_scan_all_blks() {
                         ep_block_stats_ptr_dps[depth_scan_idx].depth      = depth_it;
                         ep_block_stats_ptr_dps[depth_scan_idx].shape      = (Part)part_it;
                         ep_block_stats_ptr_dps[depth_scan_idx].origin_x   = sq_orgx +
-                            (sq_size / 4) * eb_vp9_ns_quarter_off_mult[part_it][0][nsq_it];
+                            (sq_size / 4) * ns_quarter_off_mult[part_it][0][nsq_it];
                         ep_block_stats_ptr_dps[depth_scan_idx].origin_y = sq_orgy +
-                            (sq_size / 4) * eb_vp9_ns_quarter_off_mult[part_it][1][nsq_it];
+                            (sq_size / 4) * ns_quarter_off_mult[part_it][1][nsq_it];
 
                         depth_scan_idx++;
                     }
@@ -478,7 +464,7 @@ void eb_vp9_depth_scan_all_blks() {
     }
 }
 
-void eb_vp9_finish_depth_scan_all_blks() {
+static void eb_vp9_finish_depth_scan_all_blks() {
     uint32_t do_print = 0;
     //uint32_t min_size = eb_vp9_max_sb >> (eb_vp9_max_depth - 1);
     //FILE * fp = NULL;
@@ -489,22 +475,22 @@ void eb_vp9_finish_depth_scan_all_blks() {
 
     uint32_t depth_scan_idx = 0;
 
-    for (depth_it = 0; depth_it < eb_vp9_max_depth; depth_it++) {
+    for (depth_it = 0; depth_it < max_depth; depth_it++) {
         uint32_t tot_num_sq = 1 << depth_it;
-        uint32_t sq_size    = depth_it == 0 ? eb_vp9_max_sb
-               : depth_it == 1              ? eb_vp9_max_sb / 2
-               : depth_it == 2              ? eb_vp9_max_sb / 4
-               : depth_it == 3              ? eb_vp9_max_sb / 8
-               : depth_it == 4              ? eb_vp9_max_sb / 16
-                                            : eb_vp9_max_sb / 32;
+        uint32_t sq_size    = depth_it == 0 ? max_sb
+               : depth_it == 1              ? max_sb / 2
+               : depth_it == 2              ? max_sb / 4
+               : depth_it == 3              ? max_sb / 8
+               : depth_it == 4              ? max_sb / 16
+                                            : max_sb / 32;
 
-        uint32_t max_part_updated = sq_size == 128 ? MIN(eb_vp9_max_part, 7) :
+        uint32_t max_part_updated = sq_size == 128 ? MIN(max_part, 7) :
 
-            sq_size == 8 ? MIN(eb_vp9_max_part, 3)
+            sq_size == 8 ? MIN(max_part, 3)
             :
 
             sq_size == 4 ? 1
-                         : eb_vp9_max_part;
+                         : max_part;
 
         if (do_print) {
             SVT_LOG("\n\n\n");
@@ -525,11 +511,10 @@ void eb_vp9_finish_depth_scan_all_blks() {
                     uint32_t tot_num_ns_per_part = part_it < 1 ? 1 : part_it < 3 ? 2 : part_it < 7 ? 3 : 4;
 
                     for (nsq_it = 0; nsq_it < tot_num_ns_per_part; nsq_it++) {
-                        uint32_t matched = eb_vp9_search_matching_from_mds(
-                            ep_block_stats_ptr_dps[depth_scan_idx].depth,
-                            ep_block_stats_ptr_dps[depth_scan_idx].shape,
-                            ep_block_stats_ptr_dps[depth_scan_idx].origin_x,
-                            ep_block_stats_ptr_dps[depth_scan_idx].origin_y);
+                        uint32_t matched = search_matching_from_mds(ep_block_stats_ptr_dps[depth_scan_idx].depth,
+                                                                    ep_block_stats_ptr_dps[depth_scan_idx].shape,
+                                                                    ep_block_stats_ptr_dps[depth_scan_idx].origin_x,
+                                                                    ep_block_stats_ptr_dps[depth_scan_idx].origin_y);
 
                         ep_block_stats_ptr_dps[depth_scan_idx].blkidx_mds = ep_block_stats_ptr_mds[matched].blkidx_mds;
 
@@ -555,27 +540,27 @@ void eb_vp9_finish_depth_scan_all_blks() {
     //    fclose(fp);
 }
 
-uint32_t eb_vp9_count_total_num_of_active_blks() {
+static uint32_t count_total_num_of_active_blks() {
     uint32_t depth_it, sq_it_y, sq_it_x, part_it, nsq_it;
 
     uint32_t depth_scan_idx = 0;
 
-    for (depth_it = 0; depth_it < eb_vp9_max_depth; depth_it++) {
+    for (depth_it = 0; depth_it < max_depth; depth_it++) {
         uint32_t tot_num_sq = 1 << depth_it;
-        uint32_t sq_size    = depth_it == 0 ? eb_vp9_max_sb
-               : depth_it == 1              ? eb_vp9_max_sb / 2
-               : depth_it == 2              ? eb_vp9_max_sb / 4
-               : depth_it == 3              ? eb_vp9_max_sb / 8
-               : depth_it == 4              ? eb_vp9_max_sb / 16
-                                            : eb_vp9_max_sb / 32;
+        uint32_t sq_size    = depth_it == 0 ? max_sb
+               : depth_it == 1              ? max_sb / 2
+               : depth_it == 2              ? max_sb / 4
+               : depth_it == 3              ? max_sb / 8
+               : depth_it == 4              ? max_sb / 16
+                                            : max_sb / 32;
 
-        uint32_t max_part_updated = sq_size == 128 ? MIN(eb_vp9_max_part, 7) :
+        uint32_t max_part_updated = sq_size == 128 ? MIN(max_part, 7) :
 
-            sq_size == 8 ? MIN(eb_vp9_max_part, 3)
+            sq_size == 8 ? MIN(max_part, 3)
             :
 
             sq_size == 4 ? 1
-                         : eb_vp9_max_part;
+                         : max_part;
 
         for (sq_it_y = 0; sq_it_y < tot_num_sq; sq_it_y++) {
             for (sq_it_x = 0; sq_it_x < tot_num_sq; sq_it_x++) {
@@ -593,16 +578,16 @@ uint32_t eb_vp9_count_total_num_of_active_blks() {
 
 void build_ep_block_stats() {
     //(0)compute total number of blocks using the information provided
-    eb_vp9_max_num_active_blocks = eb_vp9_count_total_num_of_active_blks();
-    if (eb_vp9_max_num_active_blocks != EP_BLOCK_MAX_COUNT)
-        SVT_LOG(" \n\n Error %i blocks\n\n ", eb_vp9_max_num_active_blocks);
+    max_num_active_blocks = count_total_num_of_active_blks();
+    if (max_num_active_blocks != EP_BLOCK_MAX_COUNT)
+        SVT_LOG(" \n\n Error %i blocks\n\n ", max_num_active_blocks);
 
     //(1) Construct depth scan ep_block_stats_ptr_dps
     eb_vp9_depth_scan_all_blks();
 
     //(2) Construct md scan ep_block_stats_ptr_mds:  use info from dps
     uint16_t idx_mds = 0;
-    eb_vp9_md_scan_all_blks(&idx_mds, eb_vp9_max_sb, 0, 0, 0);
+    eb_vp9_md_scan_all_blks(&idx_mds, max_sb, 0, 0, 0);
 
     //(3) Fill more info from mds to dps - print using dps
     eb_vp9_finish_depth_scan_all_blks();

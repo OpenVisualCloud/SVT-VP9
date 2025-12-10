@@ -103,39 +103,3 @@ void eb_vp9_initialize_buffer_32bits(uint32_t *pointer, uint32_t count128, uint3
 
     for (block_index = 0; block_index < ((count128 << 2) + count32); block_index++) { pointer[block_index] = value; }
 }
-
-/*******************************************
-* weight_search_region
-*   Apply weight and offsets for reference
-*   samples and sotre them in local buffer
-*******************************************/
-void weight_search_region(uint8_t *input_buffer, uint32_t input_stride, uint8_t *dst_buffer, uint32_t dst_stride,
-                          uint32_t search_area_width, uint32_t search_area_height, int16_t wp_weight, int16_t wp_offset,
-                          uint32_t wp_luma_weight_denominator_shift) {
-    uint32_t y_search_index = 0;
-    uint32_t x_search_index = 0;
-    uint32_t input_region_index;
-    uint32_t dst_region_index;
-    int32_t  wp_luma_weight_denominator_offset = (1 << (wp_luma_weight_denominator_shift)) >> 1;
-
-    while (y_search_index < search_area_height) {
-        while (x_search_index < search_area_width) {
-            input_region_index = x_search_index + y_search_index * input_stride;
-            dst_region_index   = x_search_index + y_search_index * dst_stride;
-
-            dst_buffer[dst_region_index] = (uint8_t)CLIP3(
-                0,
-                MAX_SAMPLE_VALUE,
-                (((wp_weight * input_buffer[input_region_index]) + wp_luma_weight_denominator_offset) >>
-                 wp_luma_weight_denominator_shift) +
-                    wp_offset);
-
-            // Next x position
-            x_search_index++;
-        }
-        // Intilize x position to 0
-        x_search_index = 0;
-        // Next y position
-        y_search_index++;
-    }
-}

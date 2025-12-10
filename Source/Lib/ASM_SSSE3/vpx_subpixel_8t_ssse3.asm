@@ -326,12 +326,6 @@ cglobal filter_block1d16_%1, 6, 6, 14, LOCAL_VARS_SIZE, \
     REP_RET
 %endm
 
-INIT_XMM ssse3
-SUBPIX_HFILTER16 h8      ; eb_vp9_filter_block1d16_h8_ssse3
-SUBPIX_HFILTER16 h8_avg  ; eb_vp9_filter_block1d16_h8_avg_ssse3
-SUBPIX_HFILTER8  h8      ; eb_vp9_filter_block1d8_h8_ssse3
-SUBPIX_HFILTER4  h8      ; eb_vp9_filter_block1d4_h8_ssse3
-
 ;-------------------------------------------------------------------------------
 
 ; TODO(Linfeng): Detect cpu type and choose the code with better performance.
@@ -791,8 +785,3 @@ cglobal filter_block1d16_%1, 6, NUM_GENERAL_REG_USED, 16, LOCAL_VARS_SIZE, \
 %endif ; ARCH_X86_64
 
 %endm
-
-INIT_XMM ssse3
-SUBPIX_VFILTER16     v8     ; eb_vp9_filter_block1d16_v8_ssse3
-SUBPIX_VFILTER16 v8_avg     ; eb_vp9_filter_block1d16_v8_avg_ssse3
-SUBPIX_VFILTER       v8, 8  ; eb_vp9_filter_block1d8_v8_ssse3

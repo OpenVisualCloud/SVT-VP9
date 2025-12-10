@@ -66,7 +66,7 @@ EbErrorType eb_vp9_source_based_operations_context_ctor(SourceBasedOperationsCon
 * Derives BEA statistics and set activity flags
 ***************************************************/
 
-void eb_vp9_derive_picture_activity_statistics(SequenceControlSet      *sequence_control_set_ptr,
+static void derive_picture_activity_statistics(SequenceControlSet      *sequence_control_set_ptr,
                                                PictureParentControlSet *picture_control_set_ptr) {
     uint64_t non_moving_index_sum = 0;
     uint32_t complete_sb_count    = 0;
@@ -93,8 +93,8 @@ void eb_vp9_derive_picture_activity_statistics(SequenceControlSet      *sequence
     return;
 }
 
-void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
-                   PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
+static void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
+                          PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
     uint32_t child_index;
 
     bool sb_grass_flag = false;
@@ -183,7 +183,8 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
     context_ptr->picture_num_grass_sb += sb_grass_flag ? 1 : 0;
 }
 
-void grass_skin_picture(SourceBasedOperationsContext *context_ptr, PictureParentControlSet *picture_control_set_ptr) {
+static void grass_skin_picture(SourceBasedOperationsContext *context_ptr,
+                               PictureParentControlSet      *picture_control_set_ptr) {
     picture_control_set_ptr->grass_percentage_in_picture = (uint8_t)(context_ptr->picture_num_grass_sb * 100 /
                                                                      picture_control_set_ptr->sb_total_count);
 }
@@ -337,7 +338,7 @@ static void determine_more_potential_aura_areas(SequenceControlSet      *sequenc
 /***************************************************
 * Detects the presence of dark area
 ***************************************************/
-void eb_vp9_derive_high_dark_area_density_flag(SequenceControlSet      *sequence_control_set_ptr,
+static void derive_high_dark_area_density_flag(SequenceControlSet      *sequence_control_set_ptr,
                                                PictureParentControlSet *picture_control_set_ptr) {
     uint32_t region_in_picture_width_index;
     uint32_t region_in_picture_height_index;
@@ -413,13 +414,13 @@ void eb_vp9_derive_high_dark_area_density_flag(SequenceControlSet      *sequence
 /******************************************************
 * High  contrast classifier
 ******************************************************/
-void temporal_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
-                                       PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
-    uint32_t blk_it;
-    uint32_t nsad_table[] = {10, 5, 5, 5, 5, 5};
-    uint32_t th_res       = 0;
-    uint32_t nsad;
-    uint32_t me_dist = 0;
+static void temporal_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
+                                              PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
+    uint32_t       blk_it;
+    const uint32_t nsad_table[] = {10, 5, 5, 5, 5, 5};
+    uint32_t       th_res       = 0;
+    uint32_t       nsad;
+    uint32_t       me_dist = 0;
 
     if (picture_control_set_ptr->slice_type == B_SLICE) {
         for (blk_it = 0; blk_it < 4; blk_it++) {
@@ -435,8 +436,8 @@ void temporal_high_contrast_classifier(SourceBasedOperationsContext *context_ptr
     context_ptr->high_dist = me_dist > 0 ? true : false;
 }
 
-void spatial_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
-                                      PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
+static void spatial_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
+                                             PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
     uint32_t blk_it;
 
     context_ptr->high_contrast_num = 0;
@@ -463,9 +464,9 @@ void spatial_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
 Input   : current SB value
 Output  : populate to neighbor SBs
 ******************************************************/
-void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_control_set_ptr, bool input_to_populate,
-                                              bool *output_buffer, uint32_t sb_adrr, uint32_t sb_origin_x,
-                                              uint32_t sb_origin_y) {
+static void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_control_set_ptr,
+                                                     bool input_to_populate, bool *output_buffer, uint32_t sb_adrr,
+                                                     uint32_t sb_origin_x, uint32_t sb_origin_y) {
     uint32_t picture_width_in_sbs = (picture_control_set_ptr->enhanced_picture_ptr->width + MAX_SB_SIZE_MINUS_1) /
         MAX_SB_SIZE;
 
@@ -517,9 +518,8 @@ void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_c
 Input   : variance
 Output  : true if current & neighbors are spatially complex
 ******************************************************/
-bool is_spatially_complex_area(
-
-    PictureParentControlSet *picture_control_set_ptr, uint32_t sb_adrr, uint32_t sb_origin_x, uint32_t sb_origin_y) {
+static bool is_spatially_complex_area(PictureParentControlSet *picture_control_set_ptr, uint32_t sb_adrr,
+                                      uint32_t sb_origin_x, uint32_t sb_origin_y) {
     uint32_t available_sbs_count     = 0;
     uint32_t high_variance_sbs_count = 0;
     uint32_t picture_width_in_sbs    = (picture_control_set_ptr->enhanced_picture_ptr->width + MAX_SB_SIZE_MINUS_1) /
@@ -615,7 +615,7 @@ bool is_spatially_complex_area(
 Input   : activity, layer index
 Output  : LCU complexity level
 ******************************************************/
-void eb_vp9_derive_blockiness_present_flag(SequenceControlSet      *sequence_control_set_ptr,
+static void derive_blockiness_present_flag(SequenceControlSet      *sequence_control_set_ptr,
                                            PictureParentControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
 
@@ -651,7 +651,7 @@ void eb_vp9_derive_blockiness_present_flag(SequenceControlSet      *sequence_con
     }
 }
 
-void eb_vp9_derive_min_max_me_distortion(SequenceControlSet      *sequence_control_set_ptr,
+static void derive_min_max_me_distortion(SequenceControlSet      *sequence_control_set_ptr,
                                          PictureParentControlSet *picture_control_set_ptr) {
     uint32_t me_distortion;
 
@@ -1005,7 +1005,7 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
 
         /*********************************************Picture-based operations**********************************************************/
         // Dark density derivation (histograms not available when no SCD)
-        eb_vp9_derive_high_dark_area_density_flag(sequence_control_set_ptr, picture_control_set_ptr);
+        derive_high_dark_area_density_flag(sequence_control_set_ptr, picture_control_set_ptr);
 
         // Detect and mark LCU and 32x32 CUs which belong to an isolated non-homogeneous region surrounding a homogenous and flat region.
         determine_isolated_non_homogeneous_region_in_picture(sequence_control_set_ptr, picture_control_set_ptr);
@@ -1014,10 +1014,10 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
         determine_more_potential_aura_areas(sequence_control_set_ptr, picture_control_set_ptr);
 
         // Activity statistics derivation
-        eb_vp9_derive_picture_activity_statistics(sequence_control_set_ptr, picture_control_set_ptr);
+        derive_picture_activity_statistics(sequence_control_set_ptr, picture_control_set_ptr);
 
         // Derive blockinessPresentFlag
-        eb_vp9_derive_blockiness_present_flag(sequence_control_set_ptr, picture_control_set_ptr);
+        derive_blockiness_present_flag(sequence_control_set_ptr, picture_control_set_ptr);
 
         // Skin & Grass detection
         grass_skin_picture(context_ptr, picture_control_set_ptr);
@@ -1035,7 +1035,7 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
 
         // Derive Min/Max ME distortion
         if (picture_control_set_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
-            eb_vp9_derive_min_max_me_distortion(sequence_control_set_ptr, picture_control_set_ptr);
+            derive_min_max_me_distortion(sequence_control_set_ptr, picture_control_set_ptr);
         }
 
         // Get Empty Results Object

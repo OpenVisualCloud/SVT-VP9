@@ -98,7 +98,7 @@ EbErrorType eb_vp9_resource_coordination_context_ctor(
 // Inputs: TargetSpeed, Status of the sc_buffer
 // Output: EncMod
 //******************************************************************************//
-void eb_vp9_SpeedBufferControl(ResourceCoordinationContext *context_ptr,
+static void SpeedBufferControl(ResourceCoordinationContext *context_ptr,
                                PictureParentControlSet     *picture_control_set_ptr,
                                SequenceControlSet          *sequence_control_set_ptr) {
     uint64_t curs_time_seconds  = 0;
@@ -288,7 +288,7 @@ void eb_vp9_SpeedBufferControl(ResourceCoordinationContext *context_ptr,
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_pre_analysis_sq(SequenceControlSet      *sequence_control_set_ptr,
                                                      PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -350,7 +350,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(SequenceControlSet      *se
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_pre_analysis_oq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_pre_analysis_oq(SequenceControlSet      *sequence_control_set_ptr,
                                                      PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -418,7 +418,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_oq(SequenceControlSet      *se
 Input   : encoder mode and tune
 Output  : Pre-Analysis signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_pre_analysis_vmaf(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_pre_analysis_vmaf(SequenceControlSet      *sequence_control_set_ptr,
                                                        PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -698,7 +698,7 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         picture_control_set_ptr->sb_total_count = sequence_control_set_ptr->sb_total_count;
 
         if (sequence_control_set_ptr->static_config.speed_control_flag) {
-            eb_vp9_SpeedBufferControl(context_ptr, picture_control_set_ptr, sequence_control_set_ptr);
+            SpeedBufferControl(context_ptr, picture_control_set_ptr, sequence_control_set_ptr);
         } else {
             picture_control_set_ptr->enc_mode = (EB_ENC_MODE)sequence_control_set_ptr->static_config.enc_mode;
         }
@@ -708,11 +708,11 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
 
         // Pre-Analysis Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            eb_vp9_signal_derivation_pre_analysis_sq(sequence_control_set_ptr, picture_control_set_ptr);
+            signal_derivation_pre_analysis_sq(sequence_control_set_ptr, picture_control_set_ptr);
         } else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-            eb_vp9_signal_derivation_pre_analysis_vmaf(sequence_control_set_ptr, picture_control_set_ptr);
+            signal_derivation_pre_analysis_vmaf(sequence_control_set_ptr, picture_control_set_ptr);
         } else {
-            eb_vp9_signal_derivation_pre_analysis_oq(sequence_control_set_ptr, picture_control_set_ptr);
+            signal_derivation_pre_analysis_oq(sequence_control_set_ptr, picture_control_set_ptr);
         }
 
         // Rate Control

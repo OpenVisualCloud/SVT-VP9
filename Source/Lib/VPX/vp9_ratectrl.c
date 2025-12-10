@@ -100,20 +100,7 @@ double eb_vp9_convert_qindex_to_q(int qindex, vpx_bit_depth_t bit_depth) {
     return eb_vp9_ac_quant(qindex, 0, bit_depth) / 4.0;
 }
 
-int eb_vp9_convert_q_to_qindex(double q_val, vpx_bit_depth_t bit_depth) {
-    int i;
-
-    for (i = 0; i < QINDEX_RANGE; ++i)
-        if (eb_vp9_convert_qindex_to_q(i, bit_depth) >= q_val)
-            break;
-
-    if (i == QINDEX_RANGE)
-        i--;
-
-    return i;
-}
-
-int eb_vp9_rc_bits_per_mb(FRAME_TYPE frame_type, int qindex, double correction_factor, vpx_bit_depth_t bit_depth) {
+static int rc_bits_per_mb(FRAME_TYPE frame_type, int qindex, double correction_factor, vpx_bit_depth_t bit_depth) {
     const double q          = eb_vp9_convert_qindex_to_q(qindex, bit_depth);
     int          enumerator = frame_type == KEY_FRAME ? 2700000 : 1800000;
 
@@ -155,6 +142,30 @@ int get_gf_active_quality(struct VP9_COMP *cpi, int q, vpx_bit_depth_t bit_depth
     ASSIGN_MINQ_TABLE(bit_depth, arfgf_high_motion_minq);
     return get_active_quality(q, gfu_boost, gf_low, gf_high, arfgf_low_motion_minq, arfgf_high_motion_minq);
 }
+
+// Computes a q delta (in "q index" terms) to get from a starting q value
+// to a value that should equate to the given rate ratio.
+static int compute_qdelta_by_rate(const RATE_CONTROL *rc, FRAME_TYPE frame_type, int qindex, double rate_target_ratio,
+                                  vpx_bit_depth_t bit_depth) {
+    int target_index = rc->worst_quality;
+    int i;
+
+    // Look up the current projected bits per block for the base index
+    const int base_bits_per_mb = rc_bits_per_mb(frame_type, qindex, 1.0, bit_depth);
+
+    // Find the target bits per mb based on the base value and given ratio.
+    const int target_bits_per_mb = (int)(rate_target_ratio * base_bits_per_mb);
+
+    // Convert the q target to an index
+    for (i = rc->best_quality; i < rc->worst_quality; ++i) {
+        if (rc_bits_per_mb(frame_type, i, 1.0, bit_depth) <= target_bits_per_mb) {
+            target_index = i;
+            break;
+        }
+    }
+    return target_index - qindex;
+}
+
 int eb_vp9_frame_type_qdelta(struct VP9_COMP *cpi, int rf_level, int q) {
     static const double rate_factor_deltas[RATE_FACTOR_LEVELS] = {
         1.00, // INTER_NORMAL
@@ -165,8 +176,7 @@ int eb_vp9_frame_type_qdelta(struct VP9_COMP *cpi, int rf_level, int q) {
     };
     const VP9_COMMON *const cm = &cpi->common;
 
-    int qdelta = eb_vp9_compute_qdelta_by_rate(
-        &cpi->rc, cm->frame_type, q, rate_factor_deltas[rf_level], cm->bit_depth);
+    int qdelta = compute_qdelta_by_rate(&cpi->rc, cm->frame_type, q, rate_factor_deltas[rf_level], cm->bit_depth);
     return qdelta;
 }
 int eb_vp9_compute_qdelta(const RATE_CONTROL *rc, double qstart, double qtarget, vpx_bit_depth_t bit_depth) {
@@ -189,25 +199,4 @@ int eb_vp9_compute_qdelta(const RATE_CONTROL *rc, double qstart, double qtarget,
     }
 
     return target_index - start_index;
-}
-
-int eb_vp9_compute_qdelta_by_rate(const RATE_CONTROL *rc, FRAME_TYPE frame_type, int qindex, double rate_target_ratio,
-                                  vpx_bit_depth_t bit_depth) {
-    int target_index = rc->worst_quality;
-    int i;
-
-    // Look up the current projected bits per block for the base index
-    const int base_bits_per_mb = eb_vp9_rc_bits_per_mb(frame_type, qindex, 1.0, bit_depth);
-
-    // Find the target bits per mb based on the base value and given ratio.
-    const int target_bits_per_mb = (int)(rate_target_ratio * base_bits_per_mb);
-
-    // Convert the q target to an index
-    for (i = rc->best_quality; i < rc->worst_quality; ++i) {
-        if (eb_vp9_rc_bits_per_mb(frame_type, i, 1.0, bit_depth) <= target_bits_per_mb) {
-            target_index = i;
-            break;
-        }
-    }
-    return target_index - qindex;
 }

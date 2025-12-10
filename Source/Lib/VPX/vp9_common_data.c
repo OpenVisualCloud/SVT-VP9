@@ -24,85 +24,6 @@ const uint8_t eb_vp9_num_8x8_blocks_high_lookup[BLOCK_SIZES] = {1, 1, 1, 1, 2, 1
 // VPXMIN(3, VPXMIN(eb_vp9_b_width_log2_lookup(bsize), eb_vp9_b_height_log2_lookup(bsize)))
 const uint8_t eb_vp9_size_group_lookup[BLOCK_SIZES] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3};
 
-const uint8_t eb_vp9_num_pels_log2_lookup[BLOCK_SIZES] = {4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11, 11, 12};
-
-const PARTITION_TYPE eb_vp9_partition_lookup[][BLOCK_SIZES] = {
-    {// 4X4
-     // 4X4, 4X8,8X4,8X8,8X16,16X8,16X16,16X32,32X16,32X32,32X64,64X32,64X64
-     PARTITION_NONE,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID},
-    {// 8X8
-     // 4X4, 4X8,8X4,8X8,8X16,16X8,16X16,16X32,32X16,32X32,32X64,64X32,64X64
-     PARTITION_SPLIT,
-     PARTITION_VERT,
-     PARTITION_HORZ,
-     PARTITION_NONE,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID},
-    {// 16X16
-     // 4X4, 4X8,8X4,8X8,8X16,16X8,16X16,16X32,32X16,32X32,32X64,64X32,64X64
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_VERT,
-     PARTITION_HORZ,
-     PARTITION_NONE,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID},
-    {// 32X32
-     // 4X4, 4X8,8X4,8X8,8X16,16X8,16X16,16X32,32X16,32X32,32X64,64X32,64X64
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_VERT,
-     PARTITION_HORZ,
-     PARTITION_NONE,
-     PARTITION_INVALID,
-     PARTITION_INVALID,
-     PARTITION_INVALID},
-    {// 64X64
-     // 4X4, 4X8,8X4,8X8,8X16,16X8,16X16,16X32,32X16,32X32,32X64,64X32,64X64
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_SPLIT,
-     PARTITION_VERT,
-     PARTITION_HORZ,
-     PARTITION_NONE}};
-
 const BLOCK_SIZE eb_vp9_subsize_lookup[PARTITION_TYPES][BLOCK_SIZES] = {{// PARTITION_NONE
                                                                          BLOCK_4X4,
                                                                          BLOCK_4X8,
@@ -173,13 +94,6 @@ const TX_SIZE eb_vp9_max_txsize_lookup[BLOCK_SIZES] = {TX_4X4,
                                                        TX_32X32,
                                                        TX_32X32,
                                                        TX_32X32};
-
-const BLOCK_SIZE eb_vp9_txsize_to_bsize[TX_SIZES] = {
-    BLOCK_4X4, // TX_4X4
-    BLOCK_8X8, // TX_8X8
-    BLOCK_16X16, // TX_16X16
-    BLOCK_32X32, // TX_32X32
-};
 
 const TX_SIZE eb_vp9_tx_mode_to_biggest_tx_size[TX_MODES] = {
     TX_4X4, // ONLY_4X4

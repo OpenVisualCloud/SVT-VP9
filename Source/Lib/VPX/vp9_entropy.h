@@ -97,7 +97,6 @@ typedef unsigned int vp9_coeff_stats[REF_TYPES][COEF_BANDS][COEFF_CONTEXTS][ENTR
 
 struct VP9Common;
 void eb_vp9_default_coef_probs(struct VP9Common *cm);
-void eb_vp9_adapt_coef_probs(struct VP9Common *cm);
 
 // This is the index in the scan order beyond which all coefficients for
 // 8x8 transform and above are in the top band.

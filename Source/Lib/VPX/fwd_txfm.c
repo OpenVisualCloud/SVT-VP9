@@ -78,15 +78,6 @@ void eb_vp9_fdct4x4_c(const int16_t *input, tran_low_t *output, int stride) {
     }
 }
 
-void eb_vp9_fdct4x4_1_c(const int16_t *input, tran_low_t *output, int stride) {
-    int        r, c;
-    tran_low_t sum = 0;
-    for (r = 0; r < 4; ++r)
-        for (c = 0; c < 4; ++c) sum += input[r * stride + c];
-
-    output[0] = sum * 2;
-}
-
 void eb_vp9_fdct8x8_c(const int16_t *input, tran_low_t *final_output, int stride) {
     int               i, j;
     tran_low_t        intermediate[64];
@@ -169,15 +160,6 @@ void eb_vp9_fdct8x8_c(const int16_t *input, tran_low_t *final_output, int stride
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 8; ++j) final_output[j + i * 8] /= 2;
     }
-}
-
-void eb_vp9_fdct8x8_1_c(const int16_t *input, tran_low_t *output, int stride) {
-    int        r, c;
-    tran_low_t sum = 0;
-    for (r = 0; r < 8; ++r)
-        for (c = 0; c < 8; ++c) sum += input[r * stride + c];
-
-    output[0] = sum;
 }
 
 void eb_vp9_fdct16x16_c(const int16_t *input, tran_low_t *output, int stride) {
@@ -360,15 +342,6 @@ void eb_vp9_fdct16x16_c(const int16_t *input, tran_low_t *output, int stride) {
     }
 }
 
-void eb_vp9_fdct16x16_1_c(const int16_t *input, tran_low_t *output, int stride) {
-    int r, c;
-    int sum = 0;
-    for (r = 0; r < 16; ++r)
-        for (c = 0; c < 16; ++c) sum += input[r * stride + c];
-
-    output[0] = (tran_low_t)(sum >> 1);
-}
-
 static inline tran_high_t dct_32_round(tran_high_t input) {
     tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
     // TODO(debargha, peter.derivaz): Find new bounds for this assert,
@@ -382,7 +355,7 @@ static inline tran_high_t half_round_shift(tran_high_t input) {
     return rv;
 }
 
-void eb_vp9_fdct32(const tran_high_t *input, tran_high_t *output, int round) {
+static void fdct32(const tran_high_t *input, tran_high_t *output, int round) {
     tran_high_t step[32];
     // Stage 1
     step[0]  = input[0] + input[(32 - 1)];
@@ -713,7 +686,7 @@ void eb_vp9_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
     for (i = 0; i < 32; ++i) {
         tran_high_t temp_in[32], temp_out[32];
         for (j = 0; j < 32; ++j) temp_in[j] = input[j * stride + i] * 4;
-        eb_vp9_fdct32(temp_in, temp_out, 0);
+        fdct32(temp_in, temp_out, 0);
         for (j = 0; j < 32; ++j) output[j * 32 + i] = (temp_out[j] + 1 + (temp_out[j] > 0)) >> 2;
     }
 
@@ -721,7 +694,7 @@ void eb_vp9_fdct32x32_c(const int16_t *input, tran_low_t *out, int stride) {
     for (i = 0; i < 32; ++i) {
         tran_high_t temp_in[32], temp_out[32];
         for (j = 0; j < 32; ++j) temp_in[j] = output[j + i * 32];
-        eb_vp9_fdct32(temp_in, temp_out, 0);
+        fdct32(temp_in, temp_out, 0);
         for (j = 0; j < 32; ++j) out[j + i * 32] = (tran_low_t)((temp_out[j] + 1 + (temp_out[j] < 0)) >> 2);
     }
 }
@@ -1070,41 +1043,4 @@ void eb_vpx_partial_fdct32x32_c(const int16_t *input, tran_low_t *out, int strid
         //for (j = 0; j < 32; ++j)
         for (j = 0; j < 16; ++j) out[j + i * 32] = (tran_low_t)((temp_out[j] + 1 + (temp_out[j] < 0)) >> 2);
     }
-}
-
-// Note that although we use dct_32_round in dct32 computation flow,
-// this 2d fdct32x32 for rate-distortion optimization loop is operating
-// within 16 bits precision.
-void eb_vp9_fdct32x32_rd_c(const int16_t *input, tran_low_t *out, int stride) {
-    int         i, j;
-    tran_high_t output[32 * 32];
-
-    // Columns
-    for (i = 0; i < 32; ++i) {
-        tran_high_t temp_in[32], temp_out[32];
-        for (j = 0; j < 32; ++j) temp_in[j] = input[j * stride + i] * 4;
-        eb_vp9_fdct32(temp_in, temp_out, 0);
-        for (j = 0; j < 32; ++j)
-            // TODO(cd): see quality impact of only doing
-            //           output[j * 32 + i] = (temp_out[j] + 1) >> 2;
-            //           PS: also change code in vpx_dsp/x86/vpx_dct_sse2.c
-            output[j * 32 + i] = (temp_out[j] + 1 + (temp_out[j] > 0)) >> 2;
-    }
-
-    // Rows
-    for (i = 0; i < 32; ++i) {
-        tran_high_t temp_in[32], temp_out[32];
-        for (j = 0; j < 32; ++j) temp_in[j] = output[j + i * 32];
-        eb_vp9_fdct32(temp_in, temp_out, 1);
-        for (j = 0; j < 32; ++j) out[j + i * 32] = (tran_low_t)temp_out[j];
-    }
-}
-
-void eb_vp9_fdct32x32_1_c(const int16_t *input, tran_low_t *output, int stride) {
-    int r, c;
-    int sum = 0;
-    for (r = 0; r < 32; ++r)
-        for (c = 0; c < 32; ++c) sum += input[r * stride + c];
-
-    output[0] = (tran_low_t)(sum >> 3);
 }

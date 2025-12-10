@@ -122,30 +122,14 @@ typedef struct RD_COST {
     int64_t rdcost;
 } RD_COST;
 
-// Reset the rate distortion cost values to maximum (invalid) value.
-void eb_vp9_rd_cost_reset(RD_COST *rd_cost);
-// Initialize the rate distortion cost values to zero.
-void eb_vp9_rd_cost_init(RD_COST *rd_cost);
-
 struct TileInfo;
 struct TileDataEnc;
 struct VP9_COMP;
 struct macroblock;
 
-int64_t eb_vp9_compute_rd_mult_based_on_qindex(const struct VP9_COMP *cpi, int qindex);
-
 int eb_vp9_compute_rd_mult(const struct VP9_COMP *cpi, int qindex);
 
-int eb_vp9_get_adaptive_rdmult(const struct VP9_COMP *cpi, double beta);
-
 void eb_vp9_initialize_rd_consts(struct VP9_COMP *cpi);
-
-void eb_vp9_initialize_me_consts(struct VP9_COMP *cpi, MACROBLOCK *x, int qindex);
-
-void eb_vp9_model_rd_from_var_lapndz(unsigned int var, unsigned int n, unsigned int qstep, int *rate, int64_t *dist);
-
-void eb_vp9_model_rd_from_var_lapndz_vec(unsigned int var[MAX_MB_PLANE], unsigned int n_log2[MAX_MB_PLANE],
-                                         unsigned int qstep[MAX_MB_PLANE], int64_t *rate_sum, int64_t *dist_sum);
 
 int vp9_get_switchable_rate(const struct VP9_COMP *cpi, const MACROBLOCKD *const xd);
 
@@ -154,8 +138,6 @@ int vp9_raster_block_offset(BLOCK_SIZE plane_bsize, int raster_block, int stride
 int16_t *vp9_raster_block_offset_int16(BLOCK_SIZE plane_bsize, int raster_block, int16_t *base);
 
 YV12_BUFFER_CONFIG *vp9_get_scaled_ref_frame(const struct VP9_COMP *cpi, int ref_frame);
-
-void eb_vp9_init_me_luts(void);
 
 void eb_vp9_get_entropy_contexts(BLOCK_SIZE bsize, TX_SIZE tx_size, const struct macroblockd_plane *pd,
                                  ENTROPY_CONTEXT t_above[16], ENTROPY_CONTEXT t_left[16]);

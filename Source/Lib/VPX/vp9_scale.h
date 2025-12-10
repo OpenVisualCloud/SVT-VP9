@@ -35,8 +35,6 @@ struct scale_factors {
     convolve_fn_t predict[2][2][2]; // horiz, vert, avg
 };
 
-MV32 eb_vp9_scale_mv(const MV *mv, int x, int y, const struct scale_factors *sf);
-
 void eb_vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w, int other_h, int this_w, int this_h);
 
 static inline int vp9_is_valid_scale(const struct scale_factors *sf) {

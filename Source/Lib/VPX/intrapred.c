@@ -217,37 +217,6 @@ static inline void dc_predictor(uint8_t *dst, ptrdiff_t stride, int bs, const ui
     }
 }
 
-void eb_vp9_he_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
-    const int H = above[-1];
-    const int I = left[0];
-    const int J = left[1];
-    const int K = left[2];
-    const int L = left[3];
-
-    memset(dst + stride * 0, AVG3(H, I, J), 4);
-    memset(dst + stride * 1, AVG3(I, J, K), 4);
-    memset(dst + stride * 2, AVG3(J, K, L), 4);
-    memset(dst + stride * 3, AVG3(K, L, L), 4);
-}
-
-void eb_vp9_ve_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
-    const int H = above[-1];
-    const int I = above[0];
-    const int J = above[1];
-    const int K = above[2];
-    const int L = above[3];
-    const int M = above[4];
-    (void)left;
-
-    dst[0] = (uint8_t)AVG3(H, I, J);
-    dst[1] = (uint8_t)AVG3(I, J, K);
-    dst[2] = (uint8_t)AVG3(J, K, L);
-    dst[3] = (uint8_t)AVG3(K, L, M);
-    memcpy(dst + stride * 1, dst, 4);
-    memcpy(dst + stride * 2, dst, 4);
-    memcpy(dst + stride * 3, dst, 4);
-}
-
 void eb_vp9_d207_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
     const int I = left[0];
     const int J = left[1];
@@ -285,29 +254,6 @@ void eb_vp9_d63_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *a
     dst(3, 3)             = (uint8_t)AVG3(E, F, G); // differs from vp8
 }
 
-void eb_vp9_d63e_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
-    const int A = above[0];
-    const int B = above[1];
-    const int C = above[2];
-    const int D = above[3];
-    const int E = above[4];
-    const int F = above[5];
-    const int G = above[6];
-    const int H = above[7];
-    (void)left;
-    dst(0, 0) = (uint8_t)AVG2(A, B);
-    dst(1, 0) = dst(0, 2) = (uint8_t)AVG2(B, C);
-    dst(2, 0) = dst(1, 2) = (uint8_t)AVG2(C, D);
-    dst(3, 0) = dst(2, 2) = (uint8_t)AVG2(D, E);
-    dst(3, 2)             = (uint8_t)AVG3(E, F, G);
-
-    dst(0, 1) = (uint8_t)AVG3(A, B, C);
-    dst(1, 1) = dst(0, 3) = (uint8_t)AVG3(B, C, D);
-    dst(2, 1) = dst(1, 3) = (uint8_t)AVG3(C, D, E);
-    dst(3, 1) = dst(2, 3) = (uint8_t)AVG3(D, E, F);
-    dst(3, 3)             = (uint8_t)AVG3(F, G, H);
-}
-
 void eb_vp9_d45_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
     const int A = above[0];
     const int B = above[1];
@@ -326,26 +272,6 @@ void eb_vp9_d45_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *a
     dst(3, 1) = dst(2, 2) = dst(1, 3) = (uint8_t)AVG3(E, F, G);
     dst(3, 2) = dst(2, 3) = (uint8_t)AVG3(F, G, H);
     dst(3, 3)             = (uint8_t)H; // differs from vp8
-}
-
-void eb_vp9_d45e_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {
-    const int A = above[0];
-    const int B = above[1];
-    const int C = above[2];
-    const int D = above[3];
-    const int E = above[4];
-    const int F = above[5];
-    const int G = above[6];
-    const int H = above[7];
-    (void)stride;
-    (void)left;
-    dst(0, 0) = (uint8_t)AVG3(A, B, C);
-    dst(1, 0) = dst(0, 1) = (uint8_t)AVG3(B, C, D);
-    dst(2, 0) = dst(1, 1) = dst(0, 2) = (uint8_t)AVG3(C, D, E);
-    dst(3, 0) = dst(2, 1) = dst(1, 2) = dst(0, 3) = (uint8_t)AVG3(D, E, F);
-    dst(3, 1) = dst(2, 2) = dst(1, 3) = (uint8_t)AVG3(E, F, G);
-    dst(3, 2) = dst(2, 3) = (uint8_t)AVG3(F, G, H);
-    dst(3, 3)             = (uint8_t)AVG3(G, H, H);
 }
 
 void eb_vp9_d117_predictor_4x4_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left) {

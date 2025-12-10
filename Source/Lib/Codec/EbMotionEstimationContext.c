@@ -8,7 +8,7 @@
 
 #include "EbMotionEstimationContext.h"
 
-void motion_estimetion_pred_unit_ctor(MePredUnit *pu) {
+static void motion_estimetion_pred_unit_ctor(MePredUnit *pu) {
     pu->distortion = 0xFFFFFFFFull;
 
     pu->prediction_direction = UNI_PRED_LIST_0;

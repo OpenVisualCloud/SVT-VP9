@@ -53,8 +53,8 @@ EbErrorType eb_vp9_entropy_coding_context_ctor(EntropyCodingContext **context_db
 /**********************************************
 * Entropy Coding SB
 **********************************************/
-EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyCodingContext *context_ptr,
-                            SbUnit *sb_ptr, EntropyCoder *entropy_coder_ptr) {
+static EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyCodingContext *context_ptr,
+                                   SbUnit *sb_ptr, EntropyCoder *entropy_coder_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     SequenceControlSet *sequence_control_set_ptr =

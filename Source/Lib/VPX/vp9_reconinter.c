@@ -14,21 +14,6 @@
 #include "vp9_reconinter.h"
 #include "vp9_reconintra.h"
 
-void eb_vp9_build_inter_predictor(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, const MV *src_mv,
-                                  const struct scale_factors *sf, int w, int h, int ref, const InterpKernel *kernel,
-                                  enum mv_precision precision, int x, int y) {
-    const int is_q4    = precision == MV_PRECISION_Q4;
-    const MV  mv_q4    = {is_q4 ? src_mv->row : src_mv->row * 2, is_q4 ? src_mv->col : src_mv->col * 2};
-    MV32      mv       = eb_vp9_scale_mv(&mv_q4, x, y, sf);
-    const int subpel_x = mv.col & SUBPEL_MASK;
-    const int subpel_y = mv.row & SUBPEL_MASK;
-
-    src += (mv.row >> SUBPEL_BITS) * src_stride + (mv.col >> SUBPEL_BITS);
-
-    inter_predictor(
-        src, src_stride, dst, dst_stride, subpel_x, subpel_y, sf, w, h, ref, kernel, sf->x_step_q4, sf->y_step_q4);
-}
-
 static inline int round_mv_comp_q4(int value) { return (value < 0 ? value - 2 : value + 2) / 4; }
 
 static MV mi_mv_pred_q4(const ModeInfo *mi, int idx) {
@@ -48,7 +33,7 @@ static MV mi_mv_pred_q2(const ModeInfo *mi, int idx, int block0, int block1) {
 }
 
 // TODO(jkoleszar): yet another mv clamping function :-(
-MV eb_vp9_clamp_mv_to_umv_border_sb(const MACROBLOCKD *xd, const MV *src_mv, int bw, int bh, int ss_x, int ss_y) {
+static MV clamp_mv_to_umv_border_sb(const MACROBLOCKD *xd, const MV *src_mv, int bw, int bh, int ss_x, int ss_y) {
     // If the MV points so far into the UMV border that no visible pixels
     // are used for reconstruction, the subpel part of the MV can be
     // discarded and the MV limited to 16 pixels with equivalent results.
@@ -69,7 +54,7 @@ MV eb_vp9_clamp_mv_to_umv_border_sb(const MACROBLOCKD *xd, const MV *src_mv, int
     return clamped_mv;
 }
 
-MV eb_vp9_average_split_mvs(const struct macroblockd_plane *pd, const ModeInfo *mi, int ref, int block) {
+static MV average_split_mvs(const struct macroblockd_plane *pd, const ModeInfo *mi, int ref, int block) {
     const int ss_idx = ((pd->subsampling_x > 0) << 1) | (pd->subsampling_y > 0);
     MV        res    = {0, 0};
     switch (ss_idx) {
@@ -95,14 +80,14 @@ void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint
 
         const struct scale_factors *const sf = context_ptr->sf;
 
-        const MV mv = mi->sb_type < BLOCK_8X8 ? eb_vp9_average_split_mvs(pd, mi, ref, block) : mi->mv[ref].as_mv;
+        const MV mv = mi->sb_type < BLOCK_8X8 ? average_split_mvs(pd, mi, ref, block) : mi->mv[ref].as_mv;
 
         // TODO(jkoleszar): This clamping is done in the incorrect place for the
         // scaling case. It needs to be done on the scaled MV, not the pre-scaling
         // MV. Note however that it performs the subsampling aware scaling so
         // that the result is always q4.
         // mv_precision precision is MV_PRECISION_Q4.
-        const MV mv_q4 = eb_vp9_clamp_mv_to_umv_border_sb(xd, &mv, bw, bh, pd->subsampling_x, pd->subsampling_y);
+        const MV mv_q4 = clamp_mv_to_umv_border_sb(xd, &mv, bw, bh, pd->subsampling_x, pd->subsampling_y);
 
         uint8_t *pre;
         MV32     scaled_mv;
@@ -155,19 +140,5 @@ void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint
         pre += (scaled_mv.row >> SUBPEL_BITS) * ref_stride + (scaled_mv.col >> SUBPEL_BITS);
 
         inter_predictor(pre, ref_stride, pred_buffer, pred_stride, subpel_x, subpel_y, sf, w, h, ref, kernel, xs, ys);
-    }
-}
-
-void eb_vp9_setup_pre_planes(MACROBLOCKD *xd, int idx, const YV12_BUFFER_CONFIG *src, int mi_row, int mi_col,
-                             const struct scale_factors *sf) {
-    if (src != NULL) {
-        int            i;
-        uint8_t *const buffers[MAX_MB_PLANE] = {src->y_buffer, src->u_buffer, src->v_buffer};
-        const int      strides[MAX_MB_PLANE] = {src->y_stride, src->uv_stride, src->uv_stride};
-        for (i = 0; i < MAX_MB_PLANE; ++i) {
-            struct macroblockd_plane *const pd = &xd->plane[i];
-            setup_pred_plane(
-                &pd->pre[idx], buffers[i], strides[i], mi_row, mi_col, sf, pd->subsampling_x, pd->subsampling_y);
-        }
     }
 }

@@ -200,7 +200,7 @@ static inline void iadst16_kernel_avx2(const __m256i in0, const __m256i in1, con
     *out3 = _mm256_packs_epi32(u[6], u[7]);
 }
 
-void iadst16_avx2(__m256i *const in) {
+static void iadst16_avx2(__m256i *const in) {
     const __m256i kZero = _mm256_set1_epi16(0);
     __m256i       s[16], x[16];
 
@@ -267,12 +267,12 @@ void iadst16_avx2(__m256i *const in) {
     in[15] = _mm256_sub_epi16(kZero, s[1]);
 }
 
-void transpose_idct16_avx2(__m256i *const in) {
+static void transpose_idct16_avx2(__m256i *const in) {
     transpose_16bit_16x16_avx2(in, in);
     idct16_avx2(in, in);
 }
 
-void transpose_iadst16_avx2(__m256i *const in) {
+static void transpose_iadst16_avx2(__m256i *const in) {
     transpose_16bit_16x16_avx2(in, in);
     iadst16_avx2(in);
 }

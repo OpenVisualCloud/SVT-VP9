@@ -33,13 +33,6 @@ static int get_fixed_point_scale_factor(int other_size, int this_size) {
     return (other_size << REF_SCALE_SHIFT) / this_size;
 }
 
-MV32 eb_vp9_scale_mv(const MV *mv, int x, int y, const struct scale_factors *sf) {
-    const int  x_off_q4 = scaled_x(x << SUBPEL_BITS, sf) & SUBPEL_MASK;
-    const int  y_off_q4 = scaled_y(y << SUBPEL_BITS, sf) & SUBPEL_MASK;
-    const MV32 res      = {scaled_y(mv->row, sf) + y_off_q4, scaled_x(mv->col, sf) + x_off_q4};
-    return res;
-}
-
 void eb_vp9_setup_scale_factors_for_frame(struct scale_factors *sf, int other_w, int other_h, int this_w, int this_h) {
     if (!valid_ref_frame_size(other_w, other_h, this_w, this_h)) {
         sf->x_scale_fp = REF_INVALID_SCALE;

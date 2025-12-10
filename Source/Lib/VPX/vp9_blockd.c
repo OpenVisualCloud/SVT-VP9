@@ -36,7 +36,7 @@ PREDICTION_MODE eb_vp9_above_block_mode(const ModeInfo *cur_mi, const ModeInfo *
     }
 }
 
-void eb_vp9_foreach_transformed_block_in_plane(MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
+static void foreach_transformed_block_in_plane(MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
                                                foreach_transformed_block_visitor visit, void *arg) {
     const struct macroblockd_plane *const pd = &xd->plane[plane];
     const ModeInfo                       *mi = xd->mi[0];
@@ -75,8 +75,7 @@ void eb_vp9_foreach_transformed_block(MACROBLOCKD *xd, BLOCK_SIZE bsize, foreach
                                       void *arg) {
     int plane;
 
-    for (plane = 0; plane < MAX_MB_PLANE; ++plane)
-        eb_vp9_foreach_transformed_block_in_plane(xd, bsize, plane, visit, arg);
+    for (plane = 0; plane < MAX_MB_PLANE; ++plane) foreach_transformed_block_in_plane(xd, bsize, plane, visit, arg);
 }
 
 void eb_vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd, BLOCK_SIZE plane_bsize, TX_SIZE tx_size,
@@ -113,14 +112,5 @@ void eb_vp9_set_contexts(const MACROBLOCKD *xd, struct macroblockd_plane *pd, BL
         for (i = left_contexts; i < tx_size_in_blocks; ++i) l[i] = 0;
     } else {
         memset(l, has_eob, sizeof(ENTROPY_CONTEXT) * tx_size_in_blocks);
-    }
-}
-
-void eb_vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y) {
-    int i;
-
-    for (i = 0; i < MAX_MB_PLANE; i++) {
-        xd->plane[i].subsampling_x = i ? ss_x : 0;
-        xd->plane[i].subsampling_y = i ? ss_y : 0;
     }
 }

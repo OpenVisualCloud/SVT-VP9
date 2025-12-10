@@ -255,7 +255,10 @@ void eb_vp9_loop_filter_init(VP9_COMMON *cm) {
     for (lvl = 0; lvl <= MAX_LOOP_FILTER; lvl++) memset(lfi->lfthr[lvl].hev_thr, lvl >> 4, SIMD_WIDTH);
 }
 
-void eb_vp9_loop_filter_frame_init(VP9_COMMON *cm, int default_filt_lvl) {
+// Update the loop filter for the current frame.
+// This should be called before eb_vp9_loop_filter_frame(), eb_vp9_build_mask_frame()
+// calls this function directly.
+static void loop_filter_frame_init(VP9_COMMON *cm, int default_filt_lvl) {
     int seg_id;
     // n_shift is the multiplier for lf_deltas
     // the multiplier is 1 for when filter_lvl is between 0 and 31;
@@ -587,7 +590,7 @@ static void build_y_mask(const loop_filter_info_n *const lfi_n, const ModeInfo *
         *int_4x4_y |= size_mask[block_size] << shift_y;
 }
 
-void eb_vp9_adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col, LOOP_FILTER_MASK *lfm) {
+static void adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col, LOOP_FILTER_MASK *lfm) {
     int i;
 
     // The largest loop_filter we have is 16x16 so we use the 16x16 mask
@@ -702,7 +705,7 @@ void eb_vp9_adjust_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col
 
 // This function sets up the bit masks for the entire 64x64 region represented
 // by mi_row, mi_col.
-void eb_vp9_setup_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col, ModeInfo **mi,
+static void setup_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col, ModeInfo **mi,
                        const int mode_info_stride, LOOP_FILTER_MASK *lfm) {
     int                             idx_32, idx_16, idx_8;
     const loop_filter_info_n *const lfi_n = &cm->lf_info;
@@ -822,7 +825,7 @@ void eb_vp9_setup_mask(VP9_COMMON *const cm, const int mi_row, const int mi_col,
     }
 }
 
-void eb_vp9_filter_block_plane_ss00(VP9_COMMON *const cm, struct macroblockd_plane *const plane, int mi_row,
+static void filter_block_plane_ss00(VP9_COMMON *const cm, struct macroblockd_plane *const plane, int mi_row,
                                     LOOP_FILTER_MASK *lfm) {
     struct buf_2d *const dst  = &plane->dst;
     uint8_t *const       dst0 = dst->buf;
@@ -892,7 +895,7 @@ void eb_vp9_filter_block_plane_ss00(VP9_COMMON *const cm, struct macroblockd_pla
     }
 }
 
-void eb_vp9_filter_block_plane_ss11(VP9_COMMON *const cm, struct macroblockd_plane *const plane, int mi_row,
+static void filter_block_plane_ss11(VP9_COMMON *const cm, struct macroblockd_plane *const plane, int mi_row,
                                     LOOP_FILTER_MASK *lfm) {
     struct buf_2d *const dst  = &plane->dst;
     uint8_t *const       dst0 = dst->buf;
@@ -991,12 +994,10 @@ static void loop_filter_rows(VP9_COMMON *cm, struct macroblockd_plane planes[MAX
             planes[2].dst.buf = reconCr + (mi_col * MI_BLOCK_SIZE >> 1) +
                 (mi_row * MI_BLOCK_SIZE >> 1) * planes[2].dst.stride;
             // TODO(jimbankoski): For 444 only need to do y mask.
-            eb_vp9_adjust_mask(cm, mi_row, mi_col, lfm);
+            adjust_mask(cm, mi_row, mi_col, lfm);
 
-            eb_vp9_filter_block_plane_ss00(cm, &planes[0], mi_row, lfm);
-            for (plane = 1; plane < num_planes; ++plane) {
-                eb_vp9_filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm);
-            }
+            filter_block_plane_ss00(cm, &planes[0], mi_row, lfm);
+            for (plane = 1; plane < num_planes; ++plane) { filter_block_plane_ss11(cm, &planes[plane], mi_row, lfm); }
         }
     }
 }
@@ -1033,127 +1034,19 @@ void eb_vp9_build_mask_frame(VP9_COMMON *cm, int frame_filter_level, int partial
     }
     end_mi_row = start_mi_row + mi_rows_to_filter;
 
-    eb_vp9_loop_filter_frame_init(cm, frame_filter_level);
+    loop_filter_frame_init(cm, frame_filter_level);
 
     for (mi_row = start_mi_row; mi_row < end_mi_row; mi_row += MI_BLOCK_SIZE) {
         ModeInfo **mi = cm->mi_grid_visible + mi_row * cm->mi_stride;
         for (mi_col = 0; mi_col < cm->mi_cols; mi_col += MI_BLOCK_SIZE) {
-            // eb_vp9_setup_mask() zeros lfm
-            eb_vp9_setup_mask(cm, mi_row, mi_col, mi + mi_col, cm->mi_stride, get_lfm(&cm->lf, mi_row, mi_col));
+            // zeros lfm
+            setup_mask(cm, mi_row, mi_col, mi + mi_col, cm->mi_stride, get_lfm(&cm->lf, mi_row, mi_col));
         }
     }
-}
-
-// 8x8 blocks in a superblock.  A "1" represents the first block in a 16x16
-// or greater area.
-static const uint8_t first_block_in_16x16[8][8] = {{1, 0, 1, 0, 1, 0, 1, 0},
-                                                   {0, 0, 0, 0, 0, 0, 0, 0},
-                                                   {1, 0, 1, 0, 1, 0, 1, 0},
-                                                   {0, 0, 0, 0, 0, 0, 0, 0},
-                                                   {1, 0, 1, 0, 1, 0, 1, 0},
-                                                   {0, 0, 0, 0, 0, 0, 0, 0},
-                                                   {1, 0, 1, 0, 1, 0, 1, 0},
-                                                   {0, 0, 0, 0, 0, 0, 0, 0}};
-
-// This function sets up the bit masks for a block represented
-// by mi_row, mi_col in a 64x64 region.
-// TODO(SJL): This function only works for yv12.
-void eb_vp9_build_mask(VP9_COMMON *cm, const ModeInfo *mi, int mi_row, int mi_col, int bw, int bh) {
-    const BLOCK_SIZE                block_size   = mi->sb_type;
-    const TX_SIZE                   tx_size_y    = mi->tx_size;
-    const loop_filter_info_n *const lfi_n        = &cm->lf_info;
-    const int                       filter_level = get_filter_level(lfi_n, mi);
-    const TX_SIZE                   tx_size_uv   = eb_vp9_uv_txsize_lookup[block_size][tx_size_y][1][1];
-    LOOP_FILTER_MASK *const         lfm          = get_lfm(&cm->lf, mi_row, mi_col);
-    uint64_t *const                 left_y       = &lfm->left_y[tx_size_y];
-    uint64_t *const                 above_y      = &lfm->above_y[tx_size_y];
-    uint64_t *const                 int_4x4_y    = &lfm->int_4x4_y;
-    uint16_t *const                 left_uv      = &lfm->left_uv[tx_size_uv];
-    uint16_t *const                 above_uv     = &lfm->above_uv[tx_size_uv];
-    uint16_t *const                 int_4x4_uv   = &lfm->int_4x4_uv;
-    const int                       row_in_sb    = (mi_row & 7);
-    const int                       col_in_sb    = (mi_col & 7);
-    const int                       shift_y      = col_in_sb + (row_in_sb << 3);
-    const int                       shift_uv     = (col_in_sb >> 1) + ((row_in_sb >> 1) << 2);
-    const int                       build_uv     = first_block_in_16x16[row_in_sb][col_in_sb];
-
-    if (!filter_level) {
-        return;
-    } else {
-        int index = shift_y;
-        int i;
-        for (i = 0; i < bh; i++) {
-            memset(&lfm->lfl_y[index], filter_level, bw);
-            index += 8;
-        }
-    }
-
-    // These set 1 in the current block size for the block size edges.
-    // For instance if the block size is 32x16, we'll set:
-    //    above =   1111
-    //              0000
-    //    and
-    //    left  =   1000
-    //          =   1000
-    // NOTE : In this example the low bit is left most ( 1000 ) is stored as
-    //        1,  not 8...
-    //
-    // U and V set things on a 16 bit scale.
-    //
-    *above_y |= above_prediction_mask[block_size] << shift_y;
-    *left_y |= left_prediction_mask[block_size] << shift_y;
-
-    if (build_uv) {
-        *above_uv |= above_prediction_mask_uv[block_size] << shift_uv;
-        *left_uv |= left_prediction_mask_uv[block_size] << shift_uv;
-    }
-
-    // If the block has no coefficients and is not intra we skip applying
-    // the loop filter on block edges.
-    if (mi->skip && is_inter_block(mi))
-        return;
-
-    // Add a mask for the transform size. The transform size mask is set to
-    // be correct for a 64x64 prediction block size. Mask to match the size of
-    // the block we are working on and then shift it into place.
-    *above_y |= (size_mask[block_size] & above_64x64_txform_mask[tx_size_y]) << shift_y;
-    *left_y |= (size_mask[block_size] & left_64x64_txform_mask[tx_size_y]) << shift_y;
-
-    if (build_uv) {
-        *above_uv |= (size_mask_uv[block_size] & above_64x64_txform_mask_uv[tx_size_uv]) << shift_uv;
-
-        *left_uv |= (size_mask_uv[block_size] & left_64x64_txform_mask_uv[tx_size_uv]) << shift_uv;
-    }
-
-    // Try to determine what to do with the internal 4x4 block boundaries.  These
-    // differ from the 4x4 boundaries on the outside edge of an 8x8 in that the
-    // internal ones can be skipped and don't depend on the prediction block size.
-    if (tx_size_y == TX_4X4)
-        *int_4x4_y |= size_mask[block_size] << shift_y;
-
-    if (build_uv && tx_size_uv == TX_4X4)
-        *int_4x4_uv |= (size_mask_uv[block_size] & 0xffff) << shift_uv;
-}
-
-void eb_vp9_loop_filter_data_reset(LFWorkerData *lf_data, YV12_BUFFER_CONFIG *frame_buffer, struct VP9Common *cm,
-                                   const struct macroblockd_plane planes[MAX_MB_PLANE]) {
-    lf_data->frame_buffer = frame_buffer;
-    lf_data->cm           = cm;
-    lf_data->start        = 0;
-    lf_data->stop         = 0;
-    lf_data->y_only       = 0;
-    memcpy(lf_data->planes, planes, sizeof(lf_data->planes));
 }
 
 void eb_vp9_reset_lfm(VP9_COMMON *const cm) {
     if (cm->lf.filter_level) {
         memset(cm->lf.lfm, 0, ((cm->mi_rows + (MI_BLOCK_SIZE - 1)) >> 3) * cm->lf.lfm_stride * sizeof(*cm->lf.lfm));
     }
-}
-
-int eb_vp9_loop_filter_worker(void *arg1, void *unused) {
-    LFWorkerData *const lf_data = (LFWorkerData *)arg1;
-    (void)unused;
-    loop_filter_rows(lf_data->cm, lf_data->planes, lf_data->start, lf_data->stop, lf_data->y_only);
-    return 1;
 }

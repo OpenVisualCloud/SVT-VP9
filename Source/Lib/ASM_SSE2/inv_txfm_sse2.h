@@ -602,13 +602,8 @@ static inline void idct32_8x32_quarter_3_4_stage_4_to_7(__m128i *const step1 /*s
 
 void eb_vp9_idct4_sse2(__m128i *const in);
 void eb_vp9_idct8_sse2(__m128i *const in);
-void eb_vp9_idct16_sse2(__m128i *const in0, __m128i *const in1);
 void eb_vp9_iadst4_sse2(__m128i *const in);
 void eb_vp9_iadst8_sse2(__m128i *const in);
-void eb_vp9_iadst16_8col_sse2(__m128i *const in);
-void eb_vp9_iadst16_sse2(__m128i *const in0, __m128i *const in1);
-void eb_vp9_idct32_1024_8x32(const __m128i *const in, __m128i *const out);
-void eb_vp9_idct32_34_8x32_sse2(const __m128i *const in, __m128i *const out);
 void eb_vp9_idct32_34_8x32_ssse3(const __m128i *const in, __m128i *const out);
 
 #endif // VPX_VPX_DSP_X86_INV_TXFM_SSE2_H_

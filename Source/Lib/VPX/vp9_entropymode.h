@@ -82,11 +82,6 @@ extern const vpx_prob       eb_vp9_kf_partition_probs[PARTITION_CONTEXTS][PARTIT
 extern const vpx_tree_index eb_vp9_intra_mode_tree[TREE_SIZE(INTRA_MODES)];
 extern const vpx_tree_index eb_vp9_inter_mode_tree[TREE_SIZE(INTER_MODES)];
 extern const vpx_tree_index eb_vp9_partition_tree[TREE_SIZE(PARTITION_TYPES)];
-extern const vpx_tree_index eb_vp9_switchable_interp_tree[TREE_SIZE(SWITCHABLE_FILTERS)];
-
-void eb_vp9_setup_past_independence(struct VP9Common *cm);
-
-void eb_vp9_adapt_mode_probs(struct VP9Common *cm);
 
 void eb_vp9_tx_counts_to_branch_counts_32x32(const unsigned int *tx_count_32x32p, unsigned int (*ct_32x32p)[2]);
 void eb_vp9_tx_counts_to_branch_counts_16x16(const unsigned int *tx_count_16x16p, unsigned int (*ct_16x16p)[2]);

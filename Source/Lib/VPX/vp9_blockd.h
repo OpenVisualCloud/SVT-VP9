@@ -208,8 +208,6 @@ static inline TX_TYPE get_tx_type_4x4(PLANE_TYPE plane_type, const MACROBLOCKD *
     return eb_vp9_intra_mode_to_tx_type_lookup[get_y_mode(mi, ib)];
 }
 
-void eb_vp9_setup_block_planes(MACROBLOCKD *xd, int ss_x, int ss_y);
-
 static inline TX_SIZE get_uv_tx_size(const ModeInfo *mi, const struct macroblockd_plane *pd) {
     assert(mi->sb_type < BLOCK_8X8 ||
            eb_vp9_ss_size_lookup[mi->sb_type][pd->subsampling_x][pd->subsampling_y] != BLOCK_INVALID);
@@ -239,9 +237,6 @@ static inline const vpx_prob *get_y_mode_probs(const ModeInfo *mi, const ModeInf
 
 typedef void (*foreach_transformed_block_visitor)(MACROBLOCKD *xd, int plane, int block, int row, int col,
                                                   BLOCK_SIZE plane_bsize, TX_SIZE tx_size, void *arg);
-
-void eb_vp9_foreach_transformed_block_in_plane(MACROBLOCKD *xd, BLOCK_SIZE bsize, int plane,
-                                               foreach_transformed_block_visitor visit, void *arg);
 
 void eb_vp9_foreach_transformed_block(MACROBLOCKD *xd, BLOCK_SIZE bsize, foreach_transformed_block_visitor visit,
                                       void *arg);

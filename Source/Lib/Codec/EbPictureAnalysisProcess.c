@@ -1254,7 +1254,7 @@ static uint8_t get_filtered_types(uint8_t *ptr, uint32_t stride, uint8_t filter_
 * eb_vp9_noise_extract_luma_strong
 *  strong filter Luma.
 *******************************************/
-void eb_vp9_noise_extract_luma_strong(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
+static void noise_extract_luma_strong(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
                                       uint32_t sb_origin_y, uint32_t sb_origin_x) {
     uint32_t ii, jj;
     uint32_t pic_height, sb_height;
@@ -1302,7 +1302,7 @@ void eb_vp9_noise_extract_luma_strong(EbPictureBufferDesc *input_picture_ptr, Eb
 * eb_vp9_noise_extract_chroma_strong
 *  strong filter chroma.
 *******************************************/
-void eb_vp9_noise_extract_chroma_strong(EbPictureBufferDesc *input_picture_ptr,
+static void noise_extract_chroma_strong(EbPictureBufferDesc *input_picture_ptr,
                                         EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
                                         uint32_t sb_origin_x) {
     uint32_t ii, jj;
@@ -1379,7 +1379,7 @@ void eb_vp9_noise_extract_chroma_strong(EbPictureBufferDesc *input_picture_ptr,
 * eb_vp9_noise_extract_chroma_weak
 *  weak filter chroma.
 *******************************************/
-void eb_vp9_noise_extract_chroma_weak(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
+static void noise_extract_chroma_weak(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
                                       uint32_t sb_origin_y, uint32_t sb_origin_x) {
     uint32_t ii, jj;
     uint32_t pic_height, sb_height;
@@ -1457,7 +1457,7 @@ void eb_vp9_noise_extract_chroma_weak(EbPictureBufferDesc *input_picture_ptr, Eb
 * eb_vp9_noise_extract_luma_weak
 *  weak filter Luma and store noise.
 *******************************************/
-void eb_vp9_noise_extract_luma_weak(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
+static void noise_extract_luma_weak(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
                                     EbPictureBufferDesc *noise_picture_ptr, uint32_t sb_origin_y,
                                     uint32_t sb_origin_x) {
     uint32_t ii, jj;
@@ -1512,7 +1512,7 @@ void eb_vp9_noise_extract_luma_weak(EbPictureBufferDesc *input_picture_ptr, EbPi
     }
 }
 
-void eb_vp9_noise_extract_luma_weak_sb(EbPictureBufferDesc *input_picture_ptr,
+static void noise_extract_luma_weak_sb(EbPictureBufferDesc *input_picture_ptr,
                                        EbPictureBufferDesc *denoised_picture_ptr,
                                        EbPictureBufferDesc *noise_picture_ptr, uint32_t sb_origin_y,
                                        uint32_t sb_origin_x) {
@@ -3162,6 +3162,41 @@ static EbErrorType compute_block_mean_compute_variance(
     return return_error;
 }
 
+typedef void (*EbStrongChromaFilterType)(EbPictureBufferDesc *input_picture_ptr,
+                                         EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                         uint32_t sb_origin_x);
+
+static EbStrongChromaFilterType FUNC_TABLE strong_chroma_filter_func_ptr_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    noise_extract_chroma_strong,
+    // AVX2
+    eb_vp9_noise_extract_chroma_strong_avx2_intrin,
+
+};
+
+typedef void (*EbWeakChromaFilterType)(EbPictureBufferDesc *input_picture_ptr,
+                                       EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                       uint32_t sb_origin_x);
+
+static EbWeakChromaFilterType FUNC_TABLE weak_chroma_filter_func_ptr_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    noise_extract_chroma_weak,
+    // AVX2
+    eb_vp9_noise_extract_chroma_weak_avx2_intrin,
+
+};
+
+typedef void (*EbStrongLumaFilterType)(EbPictureBufferDesc *input_picture_ptr,
+                                       EbPictureBufferDesc *denoised_picture_ptr, uint32_t sb_origin_y,
+                                       uint32_t sb_origin_x);
+static EbStrongLumaFilterType FUNC_TABLE strong_luma_filter_func_ptr_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    noise_extract_luma_strong,
+    // AVX2
+    eb_vp9_noise_extract_luma_strong_avx2_intrin,
+
+};
+
 static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
                                          SequenceControlSet      *sequence_control_set_ptr,
                                          PictureParentControlSet *picture_control_set_ptr,
@@ -3196,7 +3231,7 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
                     input_picture_ptr, denoised_picture_ptr, sb_origin_y, sb_origin_x);
 
             if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                eb_vp9_noise_extract_luma_strong(input_picture_ptr, denoised_picture_ptr, sb_origin_y, sb_origin_x);
+                noise_extract_luma_strong(input_picture_ptr, denoised_picture_ptr, sb_origin_y, sb_origin_x);
             }
         }
 
@@ -3219,8 +3254,7 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
                     input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
 
             if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                eb_vp9_noise_extract_chroma_strong(
-                    input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
+                noise_extract_chroma_strong(input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
             }
         }
 
@@ -3265,8 +3299,7 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
                     input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
 
             if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                eb_vp9_noise_extract_chroma_weak(
-                    input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
+                noise_extract_chroma_weak(input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
             }
         }
 
@@ -3315,6 +3348,18 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
     return return_error;
 }
 
+typedef void (*EbWeakLumaFilterType)(EbPictureBufferDesc *input_picture_ptr, EbPictureBufferDesc *denoised_picture_ptr,
+                                     EbPictureBufferDesc *noise_picture_ptr, uint32_t sb_origin_y,
+                                     uint32_t sb_origin_x);
+
+static EbWeakLumaFilterType FUNC_TABLE weak_luma_filter_func_ptr_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    noise_extract_luma_weak,
+    // AVX2
+    eb_vp9_noise_extract_luma_weak_avx2_intrin,
+
+};
+
 static EbErrorType detect_input_picture_noise(PictureAnalysisContext  *context_ptr,
                                               SequenceControlSet      *sequence_control_set_ptr,
                                               PictureParentControlSet *picture_control_set_ptr,
@@ -3352,7 +3397,7 @@ static EbErrorType detect_input_picture_noise(PictureAnalysisContext  *context_p
                 input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
 
         if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-            eb_vp9_noise_extract_luma_weak(
+            noise_extract_luma_weak(
                 input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
         }
 
@@ -3457,6 +3502,14 @@ static EbErrorType full_sample_denoise(PictureAnalysisContext  *context_ptr,
     return return_error;
 }
 
+static EbWeakLumaFilterType FUNC_TABLE weak_luma_filter_sb_func_ptr_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    noise_extract_luma_weak_sb,
+    // AVX2
+    eb_vp9_noise_extract_luma_weak_sb_avx2_intrin,
+
+};
+
 static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_control_set_ptr,
                                            PictureParentControlSet *picture_control_set_ptr,
                                            EbPictureBufferDesc     *input_picture_ptr,
@@ -3490,7 +3543,7 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
                     input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
 
             if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                eb_vp9_noise_extract_luma_weak(
+                noise_extract_luma_weak(
                     input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
             }
         }
@@ -3514,8 +3567,7 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
                     input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
 
             if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                eb_vp9_noise_extract_chroma_weak(
-                    input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
+                noise_extract_chroma_weak(input_picture_ptr, denoised_picture_ptr, sb_origin_y / 2, sb_origin_x / 2);
             }
         }
 
@@ -3549,7 +3601,7 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
                     input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
 
                 if (sb_origin_x + MAX_SB_SIZE > input_picture_ptr->width) {
-                    eb_vp9_noise_extract_luma_weak_sb(
+                    noise_extract_luma_weak_sb(
                         input_picture_ptr, denoised_picture_ptr, noise_picture_ptr, sb_origin_y, sb_origin_x);
                 }
 
@@ -3638,7 +3690,7 @@ static EbErrorType quarter_sample_detect_noise(PictureAnalysisContext  *context_
                     quarter_decimated_picture_ptr, denoised_picture_ptr, noise_picture_ptr, block64x64_y, block64x64_x);
 
             if (block64x64_y + MAX_SB_SIZE > quarter_decimated_picture_ptr->width) {
-                eb_vp9_noise_extract_luma_weak(
+                noise_extract_luma_weak(
                     quarter_decimated_picture_ptr, denoised_picture_ptr, noise_picture_ptr, block64x64_y, block64x64_x);
             }
 
@@ -3762,11 +3814,11 @@ static EbErrorType sub_sample_detect_noise(PictureAnalysisContext  *context_ptr,
                                                                                      block64x64_x);
 
             if (block64x64_y + MAX_SB_SIZE > sixteenth_decimated_picture_ptr->width) {
-                eb_vp9_noise_extract_luma_weak(sixteenth_decimated_picture_ptr,
-                                               denoised_picture_ptr,
-                                               noise_picture_ptr,
-                                               block64x64_y,
-                                               block64x64_x);
+                noise_extract_luma_weak(sixteenth_decimated_picture_ptr,
+                                        denoised_picture_ptr,
+                                        noise_picture_ptr,
+                                        block64x64_y,
+                                        block64x64_x);
             }
 
             // Loop over 16x16 blocks (i.e, 64x64 blocks in full resolution)
@@ -3904,10 +3956,11 @@ static EbErrorType quarter_sample_denoise(PictureAnalysisContext  *context_ptr,
     return return_error;
 }
 
-EbErrorType half_sample_denoise(PictureAnalysisContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
-                                PictureParentControlSet *picture_control_set_ptr,
-                                EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t sb_total_count,
-                                bool denoise_flag, uint32_t picture_width_in_sb) {
+static EbErrorType half_sample_denoise(PictureAnalysisContext  *context_ptr,
+                                       SequenceControlSet      *sequence_control_set_ptr,
+                                       PictureParentControlSet *picture_control_set_ptr,
+                                       EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t sb_total_count,
+                                       bool denoise_flag, uint32_t picture_width_in_sb) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t             sb_index;
@@ -4214,9 +4267,9 @@ static void sub_sample_chroma_generate_pixel_intensity_histogram_bins(
     return;
 }
 
-void edge_detection_mean_luma_chroma16x16(SequenceControlSet      *sequence_control_set_ptr,
-                                          PictureParentControlSet *picture_control_set_ptr,
-                                          PictureAnalysisContext *context_ptr, uint32_t total_sb_count) {
+static void edge_detection_mean_luma_chroma16x16(SequenceControlSet      *sequence_control_set_ptr,
+                                                 PictureParentControlSet *picture_control_set_ptr,
+                                                 PictureAnalysisContext *context_ptr, uint32_t total_sb_count) {
     uint32_t sb_index;
     uint32_t max_grad = 1;
 
@@ -4325,7 +4378,8 @@ void edge_detection_mean_luma_chroma16x16(SequenceControlSet      *sequence_cont
 /******************************************************
 * Edge map derivation
 ******************************************************/
-void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentControlSet *picture_control_set_ptr) {
+static void edge_detection(SequenceControlSet      *sequence_control_set_ptr,
+                           PictureParentControlSet *picture_control_set_ptr) {
     uint16_t *variance_ptr;
     uint64_t  thrsld_level0 = (picture_control_set_ptr->pic_avg_variance * 70) / 100;
     uint8_t  *mean_ptr;
@@ -4711,8 +4765,8 @@ static void gathering_picture_statistics(SequenceControlSet      *sequence_contr
  * Pad Picture at the right and bottom sides
  ** To match a multiple of min CU size in width and height
  ************************************************/
-void pad_picture_to_multiple_of_min_cu_size_dimensions(SequenceControlSet  *sequence_control_set_ptr,
-                                                       EbPictureBufferDesc *input_picture_ptr) {
+static void pad_picture_to_multiple_of_min_cu_size_dimensions(SequenceControlSet  *sequence_control_set_ptr,
+                                                              EbPictureBufferDesc *input_picture_ptr) {
     bool is_16bit_input = (bool)(sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
     // Input Picture Padding
@@ -4796,11 +4850,11 @@ static void pad_picture_to_multiple_of_sb_dimensions(EbPictureBufferDesc *input_
 /************************************************
 * 1/4 & 1/16 input picture decimation
 ************************************************/
-void decimate_input_picture(SequenceControlSet      *sequence_control_set_ptr,
-                            PictureParentControlSet *picture_control_set_ptr,
-                            EbPictureBufferDesc     *input_padded_picture_ptr,
-                            EbPictureBufferDesc     *quarter_decimated_picture_ptr,
-                            EbPictureBufferDesc     *sixteenth_decimated_picture_ptr) {
+static void decimate_input_picture(SequenceControlSet      *sequence_control_set_ptr,
+                                   PictureParentControlSet *picture_control_set_ptr,
+                                   EbPictureBufferDesc     *input_padded_picture_ptr,
+                                   EbPictureBufferDesc     *quarter_decimated_picture_ptr,
+                                   EbPictureBufferDesc     *sixteenth_decimated_picture_ptr) {
     // Decimate input picture for HME L1
     bool preform_quarter_pell_decimation_flag;
     if (sequence_control_set_ptr->static_config.speed_control_flag) {
@@ -4964,9 +5018,4 @@ void *eb_vp9_picture_analysis_kernel(void *input_ptr) {
         eb_vp9_post_full_object(output_results_wrapper_ptr);
     }
     return NULL;
-}
-
-void unused_variablevoid_func_pa() {
-    (void)eb_vp9_sad_calculation_8x8_16x16_func_ptr_array;
-    (void)eb_vp9_sad_calculation_32x32_64x64_func_ptr_array;
 }

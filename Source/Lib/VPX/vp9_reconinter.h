@@ -27,22 +27,6 @@ static inline void inter_predictor(const uint8_t *src, int src_stride, uint8_t *
         src, src_stride, dst, dst_stride, kernel, subpel_x, xs, subpel_y, ys, w, h);
 }
 
-MV eb_vp9_average_split_mvs(const struct macroblockd_plane *pd, const ModeInfo *mi, int ref, int block);
-
-MV eb_vp9_clamp_mv_to_umv_border_sb(const MACROBLOCKD *xd, const MV *src_mv, int bw, int bh, int ss_x, int ss_y);
-
-void eb_vp9_build_inter_predictors_sby(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize);
-
-void eb_vp9_build_inter_predictors_sbp(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize, int plane);
-
-void eb_vp9_build_inter_predictors_sbuv(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize);
-
-void eb_vp9_build_inter_predictors_sb(MACROBLOCKD *xd, int mi_row, int mi_col, BLOCK_SIZE bsize);
-
-void eb_vp9_build_inter_predictor(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, const MV *mv_q3,
-                                  const struct scale_factors *sf, int w, int h, int do_avg, const InterpKernel *kernel,
-                                  enum mv_precision precision, int x, int y);
-
 void build_inter_predictors(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride, MACROBLOCKD *xd,
                             int plane, int block, int bw, int bh, int x, int y, int w, int h, int mi_x, int mi_y);
 
@@ -59,8 +43,6 @@ static inline void setup_pred_plane(struct buf_2d *dst, uint8_t *src, int stride
     dst->buf    = src + scaled_buffer_offset(x, y, stride, scale);
     dst->stride = stride;
 }
-void eb_vp9_setup_pre_planes(MACROBLOCKD *xd, int idx, const YV12_BUFFER_CONFIG *src, int mi_row, int mi_col,
-                             const struct scale_factors *sf);
 
 #ifdef __cplusplus
 } // extern "C"

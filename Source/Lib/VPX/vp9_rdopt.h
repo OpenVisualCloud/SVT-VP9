@@ -31,8 +31,6 @@ extern void estimate_ref_frame_costs(const VP9_COMMON *cm, const MACROBLOCKD *xd
 
 int cost_mv_ref(const VP9_COMP *cpi, PREDICTION_MODE mode, int mode_context);
 
-int cost_coeffs(MACROBLOCK *x, int plane, int block, TX_SIZE tx_size, int pt, const int16_t *scan, const int16_t *nb,
-                int use_fast_coef_costing);
 #ifdef __cplusplus
 } // extern "C"
 #endif

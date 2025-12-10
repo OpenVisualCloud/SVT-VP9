@@ -684,9 +684,6 @@ static void update_histogram_queue_entry(SequenceControlSet      *sequence_contr
     return;
 }
 
-EB_AURA_STATUS aura_detection64x64(PictureControlSet *picture_control_set_ptr, uint8_t picture_qp, uint32_t xsb_index,
-                                   uint32_t ysb_index);
-
 /************************************************
 * Initial Rate Control Kernel
 * The Initial Rate Control Process determines the initial bit budget for each

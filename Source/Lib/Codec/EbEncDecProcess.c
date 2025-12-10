@@ -32,7 +32,7 @@
 #include "vp9_pred_common.h"
 
 // compute the cost of curr depth, and the depth above
-void eb_vp9_compute_depth_costs(PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr, EncDecContext *context_ptr,
+static void compute_depth_costs(PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr, EncDecContext *context_ptr,
                                 uint32_t current_depth_idx_mds, uint32_t parent_depth_idx_mds,
                                 BLOCK_SIZE parent_depth_bsize, uint32_t step, uint64_t *parent_depth_cost,
                                 uint64_t *current_depth_cost) {
@@ -71,8 +71,8 @@ void eb_vp9_compute_depth_costs(PictureControlSet *picture_control_set_ptr, SbUn
     }
 }
 
-uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr, EncDecContext *context_ptr,
-                              uint32_t blk_mds) {
+static uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr,
+                                     EncDecContext *context_ptr, uint32_t blk_mds) {
     uint32_t last_block_index;
     uint64_t parent_depth_cost = 0, current_depth_cost = 0;
 
@@ -97,15 +97,15 @@ uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit
 
             parent_depth_bsize = ep_get_block_stats(parent_depth_idx_mds)->bsize;
 
-            eb_vp9_compute_depth_costs(picture_control_set_ptr,
-                                       sb_ptr,
-                                       context_ptr,
-                                       current_depth_idx_mds,
-                                       parent_depth_idx_mds,
-                                       parent_depth_bsize,
-                                       sq_depth_offset[ep_block_stats_ptr->depth],
-                                       &parent_depth_cost,
-                                       &current_depth_cost);
+            compute_depth_costs(picture_control_set_ptr,
+                                sb_ptr,
+                                context_ptr,
+                                current_depth_idx_mds,
+                                parent_depth_idx_mds,
+                                parent_depth_bsize,
+                                sq_depth_offset[ep_block_stats_ptr->depth],
+                                &parent_depth_cost,
+                                &current_depth_cost);
 
             if (parent_depth_cost <= current_depth_cost) {
                 sb_ptr->coded_block_array_ptr[parent_depth_idx_mds]->split_flag    = false;
@@ -124,12 +124,12 @@ uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit
     return last_block_index;
 }
 
-const EbPredictionFunc prediction_fun_table[2] = {inter_prediction, intra_prediction};
+static const EbPredictionFunc prediction_fun_table[2] = {inter_prediction, intra_prediction};
 
-EbFastCostFunc       fast_cost_func_table[2] = {inter_fast_cost, intra_fast_cost};
-const EbFullCostFunc full_cost_func_table[2] = {inter_full_cost, intra_full_cost};
+static const EbFastCostFunc fast_cost_func_table[2] = {inter_fast_cost, intra_fast_cost};
+static const EbFullCostFunc full_cost_func_table[2] = {inter_full_cost, intra_full_cost};
 
-void set_nfl(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static void set_nfl(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr) {
     // NFL Level MD         Settings
     // 0                    11
     // 1                    4
@@ -158,7 +158,7 @@ void set_nfl(PictureControlSet *picture_control_set_ptr, EncDecContext *context_
 /*******************************************
 * Coding Loop - Fast Loop Initialization
 *******************************************/
-void coding_loop_init_fast_loop(EncDecContext *context_ptr) {
+static void coding_loop_init_fast_loop(EncDecContext *context_ptr) {
     // Initialize the candidate buffer costs
     uint32_t buffer_depth_index_start = context_ptr->buffer_depth_index_start[context_ptr->ep_block_stats_ptr->depth];
     uint32_t buffer_depth_index_width = context_ptr->buffer_depth_index_width[context_ptr->ep_block_stats_ptr->depth];
@@ -172,11 +172,11 @@ void coding_loop_init_fast_loop(EncDecContext *context_ptr) {
     return;
 }
 
-void perform_fast_loop(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
-                       ModeDecisionCandidateBuffer **candidate_buffer_ptr_array_base,
-                       ModeDecisionCandidate *fast_candidate_array, uint32_t fast_candidate_total_count,
-                       EbPictureBufferDesc *input_picture_ptr, uint32_t max_buffers,
-                       uint32_t *second_fast_candidate_total_count) {
+static void perform_fast_loop(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
+                              ModeDecisionCandidateBuffer **candidate_buffer_ptr_array_base,
+                              ModeDecisionCandidate *fast_candidate_array, uint32_t fast_candidate_total_count,
+                              EbPictureBufferDesc *input_picture_ptr, uint32_t max_buffers,
+                              uint32_t *second_fast_candidate_total_count) {
     int32_t                      fast_loop_candidate_index;
     uint64_t                     luma_fast_distortion;
     uint64_t                     chroma_fast_distortion;
@@ -357,13 +357,13 @@ void perform_fast_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
     } while (--fast_loop_candidate_index >= 0);
 }
 
-void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coeff_buffer,
-                         const int residual_quant_coeff_stride, EbByte input_buffer, uint16_t input_stride,
-                         EbByte pred_buffer, uint16_t pred_stride, int16_t *trans_coeff_buffer,
-                         int16_t *recon_coeff_buffer, EbByte recon_buffer, uint16_t recon_stride,
-                         const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr,
-                         const int16_t *quant_shift_ptr, int16_t *dequant_ptr, uint16_t *eob, TX_SIZE tx_size,
-                         int plane, bool is_encode_pass, bool do_recon) {
+static void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coeff_buffer,
+                                const int residual_quant_coeff_stride, EbByte input_buffer, uint16_t input_stride,
+                                EbByte pred_buffer, uint16_t pred_stride, int16_t *trans_coeff_buffer,
+                                int16_t *recon_coeff_buffer, EbByte recon_buffer, uint16_t recon_stride,
+                                const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr,
+                                const int16_t *quant_shift_ptr, int16_t *dequant_ptr, uint16_t *eob, TX_SIZE tx_size,
+                                int plane, bool is_encode_pass, bool do_recon) {
     TX_TYPE tx_type = DCT_DCT;
 
     MACROBLOCKD *const xd    = context_ptr->e_mbd;
@@ -557,9 +557,9 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
     }
 }
 
-void perform_inv_trans_add(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride,
-                           int16_t *recon_coeff_buffer, EbByte recon_buffer, uint16_t recon_stride, uint16_t *eob,
-                           TX_SIZE tx_size, int plane) {
+static void perform_inv_trans_add(EncDecContext *context_ptr, EbByte pred_buffer, uint16_t pred_stride,
+                                  int16_t *recon_coeff_buffer, EbByte recon_buffer, uint16_t recon_stride,
+                                  uint16_t *eob, TX_SIZE tx_size, int plane) {
     TX_TYPE tx_type = DCT_DCT;
 
     MACROBLOCKD *const xd    = context_ptr->e_mbd;
@@ -625,7 +625,7 @@ void perform_inv_trans_add(EncDecContext *context_ptr, EbByte pred_buffer, uint1
     }
 }
 
-void perform_inverse_transform_recon(EncDecContext *context_ptr, ModeDecisionCandidateBuffer *candidate_buffer) {
+static void perform_inverse_transform_recon(EncDecContext *context_ptr, ModeDecisionCandidateBuffer *candidate_buffer) {
     for (uint8_t tu_index = 0; tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);
          tu_index++) {
         uint32_t pred_recon_tu_origin_index = ((tu_index & 0x1) * tu_size[context_ptr->ep_block_stats_ptr->tx_size]) +
@@ -734,8 +734,8 @@ static void perform_dist_rate_calc(EncDecContext *context_ptr, PictureControlSet
         }
     }
 }
-void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
-                       EbPictureBufferDesc *input_picture_ptr, uint32_t full_candidate_total_count) {
+static void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
+                              EbPictureBufferDesc *input_picture_ptr, uint32_t full_candidate_total_count) {
     (void)sb_ptr;
     uint32_t best_inter_luma_eob;
     uint64_t bestfull_cost;
@@ -1066,8 +1066,8 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
 }
 
 // use neighbor sample arrays to contruct intra reference samples
-void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_ptr, EncDecContext *context_ptr,
-                                      int plane) {
+static void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_ptr, EncDecContext *context_ptr,
+                                             int plane) {
     MACROBLOCKD *const              xd      = context_ptr->e_mbd;
     struct macroblockd_plane *const pd      = &xd->plane[plane];
     const TX_SIZE                   tx_size = plane ? context_ptr->ep_block_stats_ptr->tx_size_uv
@@ -1257,9 +1257,9 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
 }
 
 // use input or recon buffer to construct neighbor sample arrays
-void update_recon_neighbor_arrays(EbPictureBufferDesc *input_picture_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
-                                  ModeDecisionCandidateBuffer *candidate_buffer,
-                                  bool recon_location) { // 0: candidate buffer ot 1: scratch buffer
+static void update_recon_neighbor_arrays(EbPictureBufferDesc *input_picture_ptr, EncDecContext *context_ptr,
+                                         SbUnit *sb_ptr, ModeDecisionCandidateBuffer *candidate_buffer,
+                                         bool recon_location) { // 0: candidate buffer ot 1: scratch buffer
     (void)sb_ptr;
     if (context_ptr->intra_md_open_loop_flag) {
         // Input Samples - Luma
@@ -1350,10 +1350,10 @@ void update_recon_neighbor_arrays(EbPictureBufferDesc *input_picture_ptr, EncDec
 }
 
 // use input or recon buffer to construct neighbor sample arrays
-void update_bdp_recon_neighbor_arrays(PictureControlSet   *picture_control_set_ptr,
-                                      EbPictureBufferDesc *input_picture_ptr, EncDecContext *context_ptr,
-                                      SbUnit *sb_ptr, ModeDecisionCandidateBuffer *candidate_buffer,
-                                      int depth_part_stage) {
+static void update_bdp_recon_neighbor_arrays(PictureControlSet   *picture_control_set_ptr,
+                                             EbPictureBufferDesc *input_picture_ptr, EncDecContext *context_ptr,
+                                             SbUnit *sb_ptr, ModeDecisionCandidateBuffer *candidate_buffer,
+                                             int depth_part_stage) {
     (void)sb_ptr;
     if (context_ptr->intra_md_open_loop_flag) {
         // Input Samples - Luma
@@ -1442,7 +1442,8 @@ void update_bdp_recon_neighbor_arrays(PictureControlSet   *picture_control_set_p
 }
 
 // Set context for the rate of sbs
-void set_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, MACROBLOCKD *xd) {
+static void set_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                MACROBLOCKD *xd) {
     VP9_COMP         *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     VP9_COMMON *const cm  = &cpi->common;
 
@@ -1469,7 +1470,8 @@ void set_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecConte
 }
 
 // update context for the rate of sb
-void update_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, MACROBLOCKD *xd) {
+static void update_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                   MACROBLOCKD *xd) {
     VP9_COMP         *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     VP9_COMMON *const cm  = &cpi->common;
 
@@ -1486,8 +1488,8 @@ void update_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecCo
 }
 
 // update the context rate for BDP pilar and refinment stages
-void update_bdp_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, MACROBLOCKD *xd,
-                                int depth_part_stage) {
+static void update_bdp_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                       MACROBLOCKD *xd, int depth_part_stage) {
     VP9_COMP         *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     VP9_COMMON *const cm  = &cpi->common;
 
@@ -1523,7 +1525,8 @@ void update_bdp_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncD
 }
 
 // Set context for the rate of cus
-void set_block_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, MACROBLOCKD *xd) {
+static void set_block_rate_context(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                   MACROBLOCKD *xd) {
     // Set skip context
     set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
 
@@ -1553,7 +1556,7 @@ void set_block_rate_context(PictureControlSet *picture_control_set_ptr, EncDecCo
                                 context_ptr->t_left[2]);
 }
 // Update context for the rate of cus
-void update_block_rate_context(EncDecContext *context_ptr, MACROBLOCKD *xd) {
+static void update_block_rate_context(EncDecContext *context_ptr, MACROBLOCKD *xd) {
     struct macroblockd_plane *pd = &xd->plane[0];
     // Set skip context. point to the right location
     set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);
@@ -1612,8 +1615,8 @@ void update_block_rate_context(EncDecContext *context_ptr, MACROBLOCKD *xd) {
             xd, context_ptr->mi_row, context_ptr->mi_col, subsize, context_ptr->ep_block_stats_ptr->bsize);
 }
 
-void update_scratch_recon_buffer(EncDecContext *context_ptr, EbPictureBufferDesc *recon_src_ptr,
-                                 EbPictureBufferDesc *recon_dst_ptr, SbUnit *sb_ptr) {
+static void update_scratch_recon_buffer(EncDecContext *context_ptr, EbPictureBufferDesc *recon_src_ptr,
+                                        EbPictureBufferDesc *recon_dst_ptr, SbUnit *sb_ptr) {
     (void)sb_ptr;
     if ((context_ptr->ep_block_stats_ptr->sq_size >> 3) < 9) {
         pic_copy_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) &&
@@ -1653,8 +1656,9 @@ void update_scratch_recon_buffer(EncDecContext *context_ptr, EbPictureBufferDesc
     }
 }
 
-bool check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                           EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static bool check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr,
+                                  PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                  SbUnit *sb_ptr) {
     SbParams *sb_params_ptr = &sequence_control_set_ptr->sb_params_array[sb_ptr->sb_index];
 
     // Only if complete SB, if both neighbors are available, and if current block will be further splitted
@@ -1682,7 +1686,7 @@ bool check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr, Picture
     return (false);
 }
 
-void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, bool skip_sub_blocks, uint16_t *mdc_block_index) {
+static void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, bool skip_sub_blocks, uint16_t *mdc_block_index) {
     PartBlockData *part_block_data_ptr = &mdc_sb_data_ptr->block_data_array[*mdc_block_index];
 
     if (skip_sub_blocks == true) {
@@ -1702,8 +1706,8 @@ void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, bool skip_sub_blocks, uint
     }
 }
 
-void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferDesc *input_picture_ptr,
-                    EncDecContext *context_ptr) {
+static void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferDesc *input_picture_ptr,
+                           EncDecContext *context_ptr) {
     QUANTS   *quants = &picture_control_set_ptr->parent_pcs_ptr->cpi->quants;
     const int qindex = picture_control_set_ptr->base_qindex;
 
@@ -1865,7 +1869,7 @@ void search_uv_mode(PictureControlSet *picture_control_set_ptr, EbPictureBufferD
     }
 }
 
-void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+static void mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                              EncDecContext *context_ptr, SbUnit *sb_ptr) {
     EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
     uint32_t                      buffer_total_count;
@@ -2174,8 +2178,8 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
     }
 }
 
-void construct_pillar_block_data_array(SequenceControlSet *sequence_control_set_ptr, EncDecContext *context_ptr,
-                                       SbUnit *sb_ptr) {
+static void construct_pillar_block_data_array(SequenceControlSet *sequence_control_set_ptr, EncDecContext *context_ptr,
+                                              SbUnit *sb_ptr) {
     uint16_t  block_index = 0;
     bool      split_flag;
     SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_ptr->sb_index];
@@ -2217,8 +2221,8 @@ void construct_pillar_block_data_array(SequenceControlSet *sequence_control_set_
     }
 }
 
-void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                   EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                          EncDecContext *context_ptr, SbUnit *sb_ptr) {
     EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
     uint32_t                      buffer_total_count;
     ModeDecisionCandidateBuffer  *candidate_buffer;
@@ -2472,8 +2476,9 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
     update_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
 }
 
-void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                           EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr,
+                                  PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                  SbUnit *sb_ptr) {
     EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
     uint32_t                      buffer_total_count;
     ModeDecisionCandidateBuffer  *candidate_buffer;
@@ -2737,8 +2742,9 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
     update_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
 }
 
-void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                           EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr,
+                                  PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                  SbUnit *sb_ptr) {
     EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
     uint32_t                      buffer_total_count;
     ModeDecisionCandidateBuffer  *candidate_buffer;
@@ -3060,8 +3066,9 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
     update_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
 }
 
-void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                         EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr,
+                                PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                SbUnit *sb_ptr) {
     EbPictureBufferDesc          *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
     uint32_t                      buffer_total_count;
     ModeDecisionCandidateBuffer  *candidate_buffer;
@@ -3300,7 +3307,7 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
         this function checks whether any intra
         block is present in the current SB
         *************************************/
-bool is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
+static bool is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
     uint16_t block_index = 0;
     while (block_index < EP_BLOCK_MAX_COUNT) {
         CodingUnit *const block_ptr = sb_ptr->coded_block_array_ptr[block_index];
@@ -3337,9 +3344,9 @@ bool is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
         *   Coefficient Samples
         *
         *******************************************/
-EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_ptr,
-                                     PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                     SbUnit *sb_ptr) {
+static EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_ptr,
+                                  PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                  SbUnit *sb_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     EbPictureBufferDesc *input_picture_ptr = picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
@@ -4588,7 +4595,7 @@ static void pad_ref_and_set_flags(PictureControlSet  *picture_control_set_ptr,
     reference_object->slice_type = picture_control_set_ptr->parent_pcs_ptr->slice_type;
 }
 
-void copy_statistics_to_ref_object(PictureControlSet *picture_control_set_ptr) {
+static void copy_statistics_to_ref_object(PictureControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         ((EbReferenceObject *)picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr->object_ptr)
@@ -4607,7 +4614,7 @@ void copy_statistics_to_ref_object(PictureControlSet *picture_control_set_ptr) {
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_sq(SequenceControlSet *sequence_control_set_ptr,
+static EbErrorType signal_derivation_enc_dec_kernel_sq(SequenceControlSet *sequence_control_set_ptr,
                                                        PictureControlSet  *picture_control_set_ptr,
                                                        EncDecContext      *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -4737,7 +4744,7 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_sq(SequenceControlSet *seque
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_oq(SequenceControlSet *sequence_control_set_ptr,
+static EbErrorType signal_derivation_enc_dec_kernel_oq(SequenceControlSet *sequence_control_set_ptr,
                                                        PictureControlSet  *picture_control_set_ptr,
                                                        EncDecContext      *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -4876,7 +4883,7 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_oq(SequenceControlSet *seque
         Input   : encoder mode and tune
         Output  : EncDec Kernel signal(s)
         ******************************************************/
-EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_vmaf(SequenceControlSet *sequence_control_set_ptr,
+static EbErrorType signal_derivation_enc_dec_kernel_vmaf(SequenceControlSet *sequence_control_set_ptr,
                                                          PictureControlSet  *picture_control_set_ptr,
                                                          EncDecContext      *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -5062,12 +5069,11 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
 
         // EncDec Kernel Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            eb_vp9_signal_derivation_enc_dec_kernel_sq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_enc_dec_kernel_sq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         } else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-            eb_vp9_signal_derivation_enc_dec_kernel_vmaf(
-                sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_enc_dec_kernel_vmaf(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         } else {
-            eb_vp9_signal_derivation_enc_dec_kernel_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_enc_dec_kernel_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         }
 
         // Set valid ref_frame
@@ -5218,7 +5224,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                               SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE))) {
                         // MDC depth partitioning
                         context_ptr->depth_part_stage = 0;
-                        eb_vp9_mode_decision_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
+                        mode_decision_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
 
                     } else {
                         // Pillar depth partitioning : 32x32 vs 16x16

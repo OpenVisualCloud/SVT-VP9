@@ -283,7 +283,6 @@ extern uint32_t*         memory_map_index; // library memory index
 extern uint64_t*         total_lib_memory; // library Memory malloc'd
 
 extern uint32_t lib_malloc_count;
-extern uint32_t lib_thread_count;
 extern uint32_t lib_semaphore_count;
 extern uint32_t lib_mutex_count;
 
@@ -328,7 +327,6 @@ extern uint32_t lib_mutex_count;
 
 #define EB_MEMORY()                                                             \
     SVT_LOG("Total Number of Mallocs in Library: %d\n", lib_malloc_count);      \
-    SVT_LOG("Total Number of Threads in Library: %d\n", lib_thread_count);      \
     SVT_LOG("Total Number of Semaphore in Library: %d\n", lib_semaphore_count); \
     SVT_LOG("Total Number of Mutex in Library: %d\n", lib_mutex_count);         \
     SVT_LOG("Total Library Memory: %.2lf KB\n\n", *total_lib_memory / (double)1024);

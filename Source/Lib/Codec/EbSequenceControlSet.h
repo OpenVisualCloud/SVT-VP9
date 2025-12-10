@@ -153,8 +153,6 @@ extern EbErrorType eb_vp9_copy_sequence_control_set(SequenceControlSet *dst, Seq
 
 extern EbErrorType eb_vp9_sequence_control_set_instance_ctor(EbSequenceControlSetInstance **object_dbl_ptr);
 
-extern EbErrorType sb_params_ctor(SequenceControlSet *sequence_control_set_ptr);
-
 extern EbErrorType eb_vp9_sb_params_init(SequenceControlSet *sequence_control_set_ptr);
 
 extern EbErrorType eb_vp9_derive_input_resolution(SequenceControlSet *sequence_control_set_ptr, uint32_t input_size);

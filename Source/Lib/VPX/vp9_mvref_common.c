@@ -132,14 +132,3 @@ int eb_vp9_find_mv_refs(EncDecContext *context_ptr, const VP9_COMMON *cm, const 
                         uint8_t *mode_context) {
     return find_mv_refs_idx(context_ptr, cm, xd, mi, ref_frame, mv_ref_list, -1, mi_row, mi_col, mode_context);
 }
-
-void eb_vp9_find_best_ref_mvs(MACROBLOCKD *xd, int allow_hp, int_mv *mvlist, int_mv *nearest_mv, int_mv *near_mv) {
-    int i;
-    // Make sure all the candidates are properly clamped etc
-    for (i = 0; i < MAX_MV_REF_CANDIDATES; ++i) {
-        lower_mv_precision(&mvlist[i].as_mv, allow_hp);
-        clamp_mv2(&mvlist[i].as_mv, xd);
-    }
-    *nearest_mv = mvlist[0];
-    *near_mv    = mvlist[1];
-}

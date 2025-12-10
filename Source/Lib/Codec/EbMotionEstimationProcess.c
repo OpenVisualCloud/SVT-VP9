@@ -44,16 +44,12 @@
 |40||41||44||45|     |56||57||60||61|
 |42||43||46||47|     |58||59||62||63|
 -------------------------------------*/
-EbErrorType check_zero_zero_center(PictureParentControlSet *picture_control_set_ptr, EbPictureBufferDesc *ref_pic_ptr,
-                                   MeContext *context_ptr, uint32_t sb_origin_x, uint32_t sb_origin_y,
-                                   uint32_t sb_width, uint32_t sb_height, int16_t *x_search_center,
-                                   int16_t *y_search_center);
 
 /************************************************
  * Set ME/HME Params
  ************************************************/
-void *set_me_hme_params_sq(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
-                           SequenceControlSet *sequence_control_set_ptr, EB_INPUT_RESOLUTION input_resolution) {
+static void *set_me_hme_params_sq(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
+                                  SequenceControlSet *sequence_control_set_ptr, EB_INPUT_RESOLUTION input_resolution) {
     uint8_t hme_me_level = picture_control_set_ptr->enc_mode;
 
     uint32_t input_ratio = sequence_control_set_ptr->luma_width / sequence_control_set_ptr->luma_height;
@@ -159,7 +155,7 @@ void *set_me_hme_params_sq(MeContext *me_context_ptr, PictureParentControlSet *p
 /************************************************
  * Set ME/HME Params
  ************************************************/
-void *eb_vp9_set_me_hme_params_oq(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
+static void *set_me_hme_params_oq(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
                                   SequenceControlSet *sequence_control_set_ptr, EB_INPUT_RESOLUTION input_resolution) {
     uint8_t hme_me_level = picture_control_set_ptr->enc_mode;
 
@@ -253,8 +249,9 @@ void *eb_vp9_set_me_hme_params_oq(MeContext *me_context_ptr, PictureParentContro
 /************************************************
  * Set ME/HME Params
  ************************************************/
-void *set_me_hme_params_vmaf(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
-                             SequenceControlSet *sequence_control_set_ptr, EB_INPUT_RESOLUTION input_resolution) {
+static void *set_me_hme_params_vmaf(MeContext *me_context_ptr, PictureParentControlSet *picture_control_set_ptr,
+                                    SequenceControlSet *sequence_control_set_ptr,
+                                    EB_INPUT_RESOLUTION input_resolution) {
     uint8_t hme_me_level = picture_control_set_ptr->enc_mode;
 
     uint32_t input_ratio = sequence_control_set_ptr->luma_width / sequence_control_set_ptr->luma_height;
@@ -316,7 +313,7 @@ void *set_me_hme_params_vmaf(MeContext *me_context_ptr, PictureParentControlSet 
 /************************************************
  * Set ME/HME Params from Config
  ************************************************/
-void *eb_vp9_set_me_hme_params_from_confi(SequenceControlSet *sequence_control_set_ptr, MeContext *me_context_ptr) {
+static void *set_me_hme_params_from_confi(SequenceControlSet *sequence_control_set_ptr, MeContext *me_context_ptr) {
     me_context_ptr->search_area_width  = (uint8_t)sequence_control_set_ptr->static_config.search_area_width;
     me_context_ptr->search_area_height = (uint8_t)sequence_control_set_ptr->static_config.search_area_height;
 
@@ -350,12 +347,12 @@ EbErrorType eb_vp9_motion_estimation_context_ctor(MotionEstimationContext **cont
 /***************************************************************************************************
 * ZZ SAD
 ***************************************************************************************************/
-int non_moving_th_shift[4] = {4, 2, 0, 0};
+static int non_moving_th_shift[4] = {4, 2, 0, 0};
 
-EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
-                           PictureParentControlSet *picture_control_set_ptr,
-                           EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t x_sb_start_index,
-                           uint32_t x_sb_end_index, uint32_t y_sb_start_index, uint32_t y_sb_end_index) {
+static EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
+                                  PictureParentControlSet *picture_control_set_ptr,
+                                  EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t x_sb_start_index,
+                                  uint32_t x_sb_end_index, uint32_t y_sb_start_index, uint32_t y_sb_end_index) {
     EbErrorType return_error = EB_ErrorNone;
 
     PictureParentControlSet *previous_picture_control_set_wrapper_ptr =
@@ -449,7 +446,7 @@ EbErrorType compute_zz_sad(MotionEstimationContext *context_ptr, SequenceControl
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_me_kernel_sq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_me_kernel_sq(SequenceControlSet      *sequence_control_set_ptr,
                                                   PictureParentControlSet *picture_control_set_ptr,
                                                   MotionEstimationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -461,7 +458,7 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_sq(SequenceControlSet      *seque
                              sequence_control_set_ptr,
                              sequence_control_set_ptr->input_resolution);
     } else {
-        eb_vp9_set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
+        set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
     }
 
     // Set number of quadrant(s)
@@ -511,19 +508,19 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_sq(SequenceControlSet      *seque
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_me_kernel_oq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_me_kernel_oq(SequenceControlSet      *sequence_control_set_ptr,
                                                   PictureParentControlSet *picture_control_set_ptr,
                                                   MotionEstimationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     // Set ME/HME search regions
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-        eb_vp9_set_me_hme_params_oq(context_ptr->me_context_ptr,
-                                    picture_control_set_ptr,
-                                    sequence_control_set_ptr,
-                                    sequence_control_set_ptr->input_resolution);
+        set_me_hme_params_oq(context_ptr->me_context_ptr,
+                             picture_control_set_ptr,
+                             sequence_control_set_ptr,
+                             sequence_control_set_ptr->input_resolution);
     } else {
-        eb_vp9_set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
+        set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
     }
 
     // Set number of quadrant(s)
@@ -573,7 +570,7 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_oq(SequenceControlSet      *seque
   Input   : encoder mode and tune
   Output  : ME Kernel signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_me_kernel_vmaf(SequenceControlSet      *sequence_control_set_ptr,
                                                     PictureParentControlSet *picture_control_set_ptr,
                                                     MotionEstimationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -585,7 +582,7 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(SequenceControlSet      *seq
                                sequence_control_set_ptr,
                                sequence_control_set_ptr->input_resolution);
     } else {
-        eb_vp9_set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
+        set_me_hme_params_from_confi(sequence_control_set_ptr, context_ptr->me_context_ptr);
     }
 
     // Set number of quadrant(s)
@@ -655,7 +652,7 @@ static void get_me_dist(PictureParentControlSet *picture_control_set_ptr, uint32
 /******************************************************
 * Derive Similar Collocated Flag
 ******************************************************/
-void eb_vp9_derive_similar_collocated_flag(PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index)
+static void derive_similar_collocated_flag(PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index)
 
 {
     // Similairty detector for collocated LCU
@@ -863,11 +860,11 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
 
         // ME Kernel Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            eb_vp9_signal_derivation_me_kernel_sq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_me_kernel_sq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         } else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-            eb_vp9_signal_derivation_me_kernel_vmaf(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_me_kernel_vmaf(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         } else {
-            eb_vp9_signal_derivation_me_kernel_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            signal_derivation_me_kernel_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
         }
 
         // Motion Estimation
@@ -962,7 +959,7 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                 sb_index    = (uint16_t)(xsb_index + ysb_index * picture_width_in_sb);
 
                 // Derive Similar Collocated Flag
-                eb_vp9_derive_similar_collocated_flag(picture_control_set_ptr, sb_index);
+                derive_similar_collocated_flag(picture_control_set_ptr, sb_index);
 
                 //Check conditions for stationary edge over time Part 1
                 stationary_edge_over_update_over_time_sb_part1(

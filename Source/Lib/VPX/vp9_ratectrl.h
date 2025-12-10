@@ -47,10 +47,6 @@ void   eb_vp9_rc_init_minq_luts(void);
 // to a target q value
 int eb_vp9_compute_qdelta(const RATE_CONTROL *rc, double qstart, double qtarget, vpx_bit_depth_t bit_depth);
 
-// Computes a q delta (in "q index" terms) to get from a starting q value
-// to a value that should equate to the given rate ratio.
-int eb_vp9_compute_qdelta_by_rate(const RATE_CONTROL *rc, FRAME_TYPE frame_type, int qindex, double rate_target_ratio,
-                                  vpx_bit_depth_t bit_depth);
 int eb_vp9_frame_type_qdelta(struct VP9_COMP *cpi, int rf_level, int q);
 
 int get_kf_active_quality(const RATE_CONTROL *const rc, int q, vpx_bit_depth_t bit_depth);

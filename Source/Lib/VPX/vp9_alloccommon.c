@@ -11,7 +11,6 @@
 #include "mem.h"
 #include "vp9_alloccommon.h"
 #include "vp9_enums.h" //#include "vp9_blockd.h"
-#include "string.h" //#include "vp9_blockd.h"
 #include "vp9_onyxc_int.h"
 
 void eb_vp9_set_mb_mi(VP9_COMMON *cm, int width, int height) {
@@ -25,19 +24,4 @@ void eb_vp9_set_mb_mi(VP9_COMMON *cm, int width, int height) {
     cm->mb_cols = (cm->mi_cols + 1) >> 1;
     cm->mb_rows = (cm->mi_rows + 1) >> 1;
     cm->MBs     = cm->mb_rows * cm->mb_cols;
-}
-void eb_vp9_init_context_buffers(VP9_COMMON *cm) {
-    cm->setup_mi(cm);
-    if (cm->last_frame_seg_map)
-        memset(cm->last_frame_seg_map, 0, cm->mi_rows * cm->mi_cols);
-}
-
-void eb_vp9_swap_current_and_last_seg_map(VP9_COMMON *cm) {
-    // Swap indices.
-    const int tmp        = cm->seg_map_idx;
-    cm->seg_map_idx      = cm->prev_seg_map_idx;
-    cm->prev_seg_map_idx = tmp;
-
-    cm->current_frame_seg_map = cm->seg_map_array[cm->seg_map_idx];
-    cm->last_frame_seg_map    = cm->seg_map_array[cm->prev_seg_map_idx];
 }

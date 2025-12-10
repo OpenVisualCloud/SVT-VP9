@@ -784,7 +784,7 @@ static void write_uncompressed_header(PictureControlSet *picture_control_set_ptr
     write_tile_info(cm, wb);
 }
 
-size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data) {
+static size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data) {
     VP9_COMMON *const    cm = &cpi->common;
     FRAME_CONTEXT *const fc = cm->fc;
 

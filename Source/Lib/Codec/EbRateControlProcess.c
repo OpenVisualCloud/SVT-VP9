@@ -31,14 +31,14 @@ static int gf_low  = 400;
 static int kf_high = 4800;
 static int kf_low  = 300;
 #endif
-const double delta_rate_oq[2][6] = {{0.35, 0.70, 0.85, 1.00, 1.00, 1.00}, // 4L
-                                    {0.30, 0.6, 0.8, 0.9, 1.0, 1.0}}; // 5L
-const double delta_rate_sq[6]    = {0.35, 0.50, 0.75, 1.00, 1.00, 1.00};
-const double delta_rate_vmaf[6]  = {0.50, 0.70, 0.85, 1.00, 1.00, 1.00};
+static const double delta_rate_oq[2][6] = {{0.35, 0.70, 0.85, 1.00, 1.00, 1.00}, // 4L
+                                           {0.30, 0.6, 0.8, 0.9, 1.0, 1.0}}; // 5L
+static const double delta_rate_sq[6]    = {0.35, 0.50, 0.75, 1.00, 1.00, 1.00};
+static const double delta_rate_vmaf[6]  = {0.50, 0.70, 0.85, 1.00, 1.00, 1.00};
 
 // calculate the QP based on the QP scaling
-uint32_t eb_vp9_qp_scaling_calc(SequenceControlSet *sequence_control_set_ptr, EB_SLICE slice_type,
-                                uint32_t temporal_layer_index, uint32_t base_qp) {
+static uint32_t eb_vp9_qp_scaling_calc(SequenceControlSet *sequence_control_set_ptr, EB_SLICE slice_type,
+                                       uint32_t temporal_layer_index, uint32_t base_qp) {
     uint32_t scaled_qp;
     int      base_qindex;
 
@@ -84,7 +84,7 @@ uint32_t eb_vp9_qp_scaling_calc(SequenceControlSet *sequence_control_set_ptr, EB
 /*****************************
 * Internal Typedefs
 *****************************/
-void eb_vp9_rate_control_layer_reset(RateControlLayerContext *rate_control_layer_ptr,
+static void rate_control_layer_reset(RateControlLayerContext *rate_control_layer_ptr,
                                      PictureControlSet       *picture_control_set_ptr,
                                      RateControlContext *rate_control_context_ptr, uint32_t picture_area_in_pixel,
                                      bool was_used) {
@@ -241,7 +241,7 @@ void eb_vp9_rate_control_layer_reset(RateControlLayerContext *rate_control_layer
     }
 }
 
-void eb_vp9_rate_control_layer_reset_part2(RateControlContext      *context_ptr,
+static void rate_control_layer_reset_part2(RateControlContext      *context_ptr,
                                            RateControlLayerContext *rate_control_layer_ptr,
                                            PictureControlSet       *picture_control_set_ptr) {
     // update this based on temporal layers
@@ -259,7 +259,7 @@ void eb_vp9_rate_control_layer_reset_part2(RateControlContext      *context_ptr,
     rate_control_layer_ptr->calculated_frame_qp          = rate_control_layer_ptr->max_qp;
 }
 
-EbErrorType eb_vp9_high_level_eb_vp9_rate_control_context_ctor(HighLevelRateControlContext **entry_dbl_ptr) {
+static EbErrorType high_level_eb_vp9_rate_control_context_ctor(HighLevelRateControlContext **entry_dbl_ptr) {
     HighLevelRateControlContext *entry_ptr;
     EB_MALLOC(HighLevelRateControlContext *, entry_ptr, sizeof(HighLevelRateControlContext), EB_N_PTR);
     *entry_dbl_ptr = entry_ptr;
@@ -267,7 +267,7 @@ EbErrorType eb_vp9_high_level_eb_vp9_rate_control_context_ctor(HighLevelRateCont
     return EB_ErrorNone;
 }
 
-EbErrorType eb_vp9_rate_control_layer_context_ctor(RateControlLayerContext **entry_dbl_ptr) {
+static EbErrorType rate_control_layer_context_ctor(RateControlLayerContext **entry_dbl_ptr) {
     RateControlLayerContext *entry_ptr;
     EB_MALLOC(RateControlLayerContext *, entry_ptr, sizeof(RateControlLayerContext), EB_N_PTR);
 
@@ -280,7 +280,7 @@ EbErrorType eb_vp9_rate_control_layer_context_ctor(RateControlLayerContext **ent
     return EB_ErrorNone;
 }
 
-EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalParamContext **entry_dbl_ptr) {
+static EbErrorType rate_control_interval_param_context_ctor(RateControlIntervalParamContext **entry_dbl_ptr) {
     uint32_t                         temporal_index;
     EbErrorType                      return_error = EB_ErrorNone;
     RateControlIntervalParamContext *entry_ptr;
@@ -298,7 +298,7 @@ EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalP
               EB_N_PTR);
 
     for (temporal_index = 0; temporal_index < EB_MAX_TEMPORAL_LAYERS; temporal_index++) {
-        return_error = eb_vp9_rate_control_layer_context_ctor(&entry_ptr->rate_control_layer_array[temporal_index]);
+        return_error = rate_control_layer_context_ctor(&entry_ptr->rate_control_layer_array[temporal_index]);
         entry_ptr->rate_control_layer_array[temporal_index]->temporal_index = temporal_index;
         entry_ptr->rate_control_layer_array[temporal_index]->frame_rate     = 1 << RC_PRECISION;
         if (return_error == EB_ErrorInsufficientResources) {
@@ -318,19 +318,6 @@ EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalP
     entry_ptr->first_pic_actual_qp_assigned = false;
     entry_ptr->scene_change_in_gop          = false;
     entry_ptr->extra_ap_bit_ratio_i         = 0;
-
-    return EB_ErrorNone;
-}
-
-EbErrorType eb_vp9_rate_control_coded_frames_stats_context_ctor(CodedFramesStatsEntry **entry_dbl_ptr,
-                                                                uint64_t                picture_number) {
-    CodedFramesStatsEntry *entry_ptr;
-    EB_MALLOC(CodedFramesStatsEntry *, entry_ptr, sizeof(CodedFramesStatsEntry), EB_N_PTR);
-
-    *entry_dbl_ptr = entry_ptr;
-
-    entry_ptr->picture_number         = picture_number;
-    entry_ptr->frame_total_bit_actual = -1;
 
     return EB_ErrorNone;
 }
@@ -355,7 +342,7 @@ EbErrorType eb_vp9_rate_control_context_ctor(RateControlContext **context_dbl_pt
     context_ptr->rate_control_output_results_fifo_ptr = rate_control_output_results_fifo_ptr;
 
     // High level RC
-    return_error = eb_vp9_high_level_eb_vp9_rate_control_context_ctor(&context_ptr->high_level_rate_control_ptr);
+    return_error = high_level_eb_vp9_rate_control_context_ctor(&context_ptr->high_level_rate_control_ptr);
     if (return_error == EB_ErrorInsufficientResources) {
         return EB_ErrorInsufficientResources;
     }
@@ -380,8 +367,7 @@ EbErrorType eb_vp9_rate_control_context_ctor(RateControlContext **context_dbl_pt
 
     context_ptr->rate_control_param_queue_head_index = 0;
     for (interval_index = 0; interval_index < PARALLEL_GOP_MAX_NUMBER; interval_index++) {
-        return_error = eb_vp9_rate_control_interval_param_context_ctor(
-            &context_ptr->rate_control_param_queue[interval_index]);
+        return_error = rate_control_interval_param_context_ctor(&context_ptr->rate_control_param_queue[interval_index]);
         context_ptr->rate_control_param_queue[interval_index]->first_poc = (interval_index *
                                                                             (uint32_t)(intra_period + 1));
         context_ptr->rate_control_param_queue[interval_index]->last_poc  = ((interval_index + 1) *
@@ -423,7 +409,8 @@ EbErrorType eb_vp9_rate_control_context_ctor(RateControlContext **context_dbl_pt
 
     return EB_ErrorNone;
 }
-void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_control_set_ptr,
+
+static void high_level_rc_input_picture_vbr(PictureParentControlSet *picture_control_set_ptr,
                                             SequenceControlSet      *sequence_control_set_ptr,
                                             EncodeContext *encode_context_ptr, RateControlContext *context_ptr,
                                             HighLevelRateControlContext *high_level_rate_control_ptr) {
@@ -1039,7 +1026,8 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
     }
     eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 }
-void eb_vp9_frame_level_rc_input_picture_vbr(PictureControlSet               *picture_control_set_ptr,
+
+static void frame_level_rc_input_picture_vbr(PictureControlSet               *picture_control_set_ptr,
                                              SequenceControlSet              *sequence_control_set_ptr,
                                              RateControlContext              *context_ptr,
                                              RateControlLayerContext         *rate_control_layer_ptr,
@@ -1173,11 +1161,11 @@ void eb_vp9_frame_level_rc_input_picture_vbr(PictureControlSet               *pi
 
             for (temporal_layer_idex = 0; temporal_layer_idex < EB_MAX_TEMPORAL_LAYERS; temporal_layer_idex++) {
                 rate_control_layer_temp_ptr = rate_control_param_ptr->rate_control_layer_array[temporal_layer_idex];
-                eb_vp9_rate_control_layer_reset(rate_control_layer_temp_ptr,
-                                                picture_control_set_ptr,
-                                                context_ptr,
-                                                picture_area_in_pixel,
-                                                rate_control_param_ptr->was_used);
+                rate_control_layer_reset(rate_control_layer_temp_ptr,
+                                         picture_control_set_ptr,
+                                         context_ptr,
+                                         picture_area_in_pixel,
+                                         rate_control_param_ptr->was_used);
             }
         }
 
@@ -1355,8 +1343,7 @@ void eb_vp9_frame_level_rc_input_picture_vbr(PictureControlSet               *pi
             uint32_t temporal_layer_idex;
             for (temporal_layer_idex = 0; temporal_layer_idex < EB_MAX_TEMPORAL_LAYERS; temporal_layer_idex++) {
                 rate_control_layer_temp_ptr = rate_control_param_ptr->rate_control_layer_array[temporal_layer_idex];
-                eb_vp9_rate_control_layer_reset_part2(
-                    context_ptr, rate_control_layer_temp_ptr, picture_control_set_ptr);
+                rate_control_layer_reset_part2(context_ptr, rate_control_layer_temp_ptr, picture_control_set_ptr);
             }
         }
 
@@ -1690,7 +1677,7 @@ void eb_vp9_frame_level_rc_input_picture_vbr(PictureControlSet               *pi
     rate_control_layer_ptr->previous_calculated_frame_qp = rate_control_layer_ptr->calculated_frame_qp;
 }
 
-void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentpicture_control_set_ptr,
+static void frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentpicture_control_set_ptr,
                                                 SequenceControlSet      *sequence_control_set_ptr,
                                                 RateControlContext      *context_ptr) {
     RateControlLayerContext         *rate_control_layer_temp_ptr;
@@ -2182,10 +2169,11 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
         }
     }
 }
-void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_set_ptr,
-                                     SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr,
-                                     RateControlContext          *context_ptr,
-                                     HighLevelRateControlContext *high_level_rate_control_ptr) {
+
+static void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_set_ptr,
+                                            SequenceControlSet      *sequence_control_set_ptr,
+                                            EncodeContext *encode_context_ptr, RateControlContext *context_ptr,
+                                            HighLevelRateControlContext *high_level_rate_control_ptr) {
     bool end_of_sequence_flag = true;
 
     HlRateControlHistogramEntry *hl_rate_control_histogram_ptr_temp;
@@ -2800,7 +2788,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
     }
     eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 }
-void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *picture_control_set_ptr,
+static void frame_level_rc_input_picture_cbr(PictureControlSet               *picture_control_set_ptr,
                                              SequenceControlSet              *sequence_control_set_ptr,
                                              RateControlContext              *context_ptr,
                                              RateControlLayerContext         *rate_control_layer_ptr,
@@ -2887,11 +2875,11 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
 
             for (temporal_layer_idex = 0; temporal_layer_idex < EB_MAX_TEMPORAL_LAYERS; temporal_layer_idex++) {
                 rate_control_layer_temp_ptr = rate_control_param_ptr->rate_control_layer_array[temporal_layer_idex];
-                eb_vp9_rate_control_layer_reset(rate_control_layer_temp_ptr,
-                                                picture_control_set_ptr,
-                                                context_ptr,
-                                                picture_area_in_pixel,
-                                                rate_control_param_ptr->was_used);
+                rate_control_layer_reset(rate_control_layer_temp_ptr,
+                                         picture_control_set_ptr,
+                                         context_ptr,
+                                         picture_area_in_pixel,
+                                         rate_control_param_ptr->was_used);
             }
         }
 
@@ -3032,8 +3020,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
             uint32_t temporal_layer_idex;
             for (temporal_layer_idex = 0; temporal_layer_idex < EB_MAX_TEMPORAL_LAYERS; temporal_layer_idex++) {
                 rate_control_layer_temp_ptr = rate_control_param_ptr->rate_control_layer_array[temporal_layer_idex];
-                eb_vp9_rate_control_layer_reset_part2(
-                    context_ptr, rate_control_layer_temp_ptr, picture_control_set_ptr);
+                rate_control_layer_reset_part2(context_ptr, rate_control_layer_temp_ptr, picture_control_set_ptr);
             }
         }
 
@@ -3565,7 +3552,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
     rate_control_layer_ptr->previous_calculated_frame_qp = rate_control_layer_ptr->calculated_frame_qp;
 }
 
-void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentpicture_control_set_ptr,
+static void frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentpicture_control_set_ptr,
                                                 SequenceControlSet      *sequence_control_set_ptr,
                                                 RateControlContext      *context_ptr) {
     RateControlLayerContext         *rate_control_layer_temp_ptr;
@@ -3897,7 +3884,7 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
     }
 }
 
-void eb_vp9_high_level_rc_feed_back_picture(PictureParentControlSet *picture_control_set_ptr,
+static void high_level_rc_feed_back_picture(PictureParentControlSet *picture_control_set_ptr,
                                             SequenceControlSet      *sequence_control_set_ptr) {
     // Queue variables
     HlRateControlHistogramEntry *hl_rate_control_histogram_ptr_temp;
@@ -3939,7 +3926,7 @@ void eb_vp9_high_level_rc_feed_back_picture(PictureParentControlSet *picture_con
     }
 }
 // rate control QP refinement
-void eb_vp9_rate_control_refinement(PictureControlSet               *picture_control_set_ptr,
+static void rate_control_refinement(PictureControlSet               *picture_control_set_ptr,
                                     SequenceControlSet              *sequence_control_set_ptr,
                                     RateControlIntervalParamContext *rate_control_param_ptr,
                                     RateControlIntervalParamContext *prev_gop_rate_control_param_ptr,
@@ -4040,8 +4027,8 @@ void eb_vp9_rate_control_refinement(PictureControlSet               *picture_con
     }
 }
 // initialize the rate control parameter at the beginning
-void eb_vp9_init_rc(RateControlContext *context_ptr, PictureControlSet *picture_control_set_ptr,
-                    SequenceControlSet *sequence_control_set_ptr) {
+static void eb_vp9_init_rc(RateControlContext *context_ptr, PictureControlSet *picture_control_set_ptr,
+                           SequenceControlSet *sequence_control_set_ptr) {
     context_ptr->high_level_rate_control_ptr->target_bit_rate = sequence_control_set_ptr->static_config.target_bit_rate;
     context_ptr->high_level_rate_control_ptr->frame_rate      = sequence_control_set_ptr->frame_rate;
     context_ptr->high_level_rate_control_ptr->channel_bit_rate_per_frame = (uint64_t)MAX(
@@ -4126,8 +4113,8 @@ void eb_vp9_init_rc(RateControlContext *context_ptr, PictureControlSet *picture_
     }
 }
 
-uint64_t predictBits(SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr,
-                     HlRateControlHistogramEntry *hlRateControl_histogram_ptr_temp, uint32_t qp) {
+static uint64_t predictBits(SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr,
+                            HlRateControlHistogramEntry *hlRateControl_histogram_ptr_temp, uint32_t qp) {
     uint64_t total_bits = 0;
 
     if (hlRateControl_histogram_ptr_temp->is_coded) {
@@ -4180,8 +4167,8 @@ uint64_t predictBits(SequenceControlSet *sequence_control_set_ptr, EncodeContext
     return total_bits;
 }
 
-uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControlSet *sequence_control_set_ptr,
-                     EncodeContext *encode_context_ptr) {
+static uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControlSet *sequence_control_set_ptr,
+                            EncodeContext *encode_context_ptr) {
     int32_t  loop_terminate = 0;
     uint32_t q              = picture_control_set_ptr->picture_qp;
     uint32_t q0             = picture_control_set_ptr->picture_qp;
@@ -4332,11 +4319,11 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 picture_control_set_ptr->parent_pcs_ptr->intra_selected_org_qp = 0;
                 // High level RC
                 if (sequence_control_set_ptr->static_config.rate_control_mode == 1)
-                    eb_vp9_high_level_rc_input_picture_vbr(picture_control_set_ptr->parent_pcs_ptr,
-                                                           sequence_control_set_ptr,
-                                                           sequence_control_set_ptr->encode_context_ptr,
-                                                           context_ptr,
-                                                           context_ptr->high_level_rate_control_ptr);
+                    high_level_rc_input_picture_vbr(picture_control_set_ptr->parent_pcs_ptr,
+                                                    sequence_control_set_ptr,
+                                                    sequence_control_set_ptr->encode_context_ptr,
+                                                    context_ptr,
+                                                    context_ptr->high_level_rate_control_ptr);
                 else
                     high_level_rc_input_picture_cbr(picture_control_set_ptr->parent_pcs_ptr,
                                                     sequence_control_set_ptr,
@@ -4527,24 +4514,24 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
             } else {
                 // ***Rate Control***
                 if (sequence_control_set_ptr->static_config.rate_control_mode == 1) {
-                    eb_vp9_frame_level_rc_input_picture_vbr(picture_control_set_ptr,
-                                                            sequence_control_set_ptr,
-                                                            context_ptr,
-                                                            rate_control_layer_ptr,
-                                                            rate_control_param_ptr);
+                    frame_level_rc_input_picture_vbr(picture_control_set_ptr,
+                                                     sequence_control_set_ptr,
+                                                     context_ptr,
+                                                     rate_control_layer_ptr,
+                                                     rate_control_param_ptr);
 
                     // rate control QP refinement
-                    eb_vp9_rate_control_refinement(picture_control_set_ptr,
-                                                   sequence_control_set_ptr,
-                                                   rate_control_param_ptr,
-                                                   prev_gop_rate_control_param_ptr,
-                                                   next_gop_rate_control_param_ptr);
+                    rate_control_refinement(picture_control_set_ptr,
+                                            sequence_control_set_ptr,
+                                            rate_control_param_ptr,
+                                            prev_gop_rate_control_param_ptr,
+                                            next_gop_rate_control_param_ptr);
                 } else {
-                    eb_vp9_frame_level_rc_input_picture_cbr(picture_control_set_ptr,
-                                                            sequence_control_set_ptr,
-                                                            context_ptr,
-                                                            rate_control_layer_ptr,
-                                                            rate_control_param_ptr);
+                    frame_level_rc_input_picture_cbr(picture_control_set_ptr,
+                                                     sequence_control_set_ptr,
+                                                     context_ptr,
+                                                     rate_control_layer_ptr,
+                                                     rate_control_param_ptr);
                 }
                 picture_control_set_ptr->picture_qp = (uint8_t)CLIP3(
                     sequence_control_set_ptr->static_config.min_qp_allowed,
@@ -4699,12 +4686,12 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                     (int64_t)parentpicture_control_set_ptr->total_num_bits -
                     (int64_t)context_ptr->high_level_rate_control_ptr->channel_bit_rate_per_frame;
 
-                eb_vp9_high_level_rc_feed_back_picture(parentpicture_control_set_ptr, sequence_control_set_ptr);
+                high_level_rc_feed_back_picture(parentpicture_control_set_ptr, sequence_control_set_ptr);
                 if (sequence_control_set_ptr->static_config.rate_control_mode == 1)
-                    eb_vp9_frame_level_rc_feedback_picture_vbr(
+                    frame_level_rc_feedback_picture_vbr(
                         parentpicture_control_set_ptr, sequence_control_set_ptr, context_ptr);
                 else
-                    eb_vp9_frame_level_rc_feedback_picture_cbr(
+                    frame_level_rc_feedback_picture_cbr(
                         parentpicture_control_set_ptr, sequence_control_set_ptr, context_ptr);
                 if (parentpicture_control_set_ptr->picture_number == rate_control_param_ptr->first_poc) {
                     rate_control_param_ptr->first_pic_pred_bits =

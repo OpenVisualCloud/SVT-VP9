@@ -48,8 +48,6 @@ void eb_vp9_write_modes_b(EntropyCodingContext *context_ptr, VP9_COMP *cpi, MACR
                           int mi_row, int mi_col, unsigned int *const max_mv_magnitude,
                           int interp_filter_selected[MAX_REF_FRAMES][SWITCHABLE]);
 
-size_t write_compressed_header(VP9_COMP *cpi, uint8_t *data);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif

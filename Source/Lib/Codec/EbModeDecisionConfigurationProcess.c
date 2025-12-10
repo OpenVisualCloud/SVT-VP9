@@ -138,7 +138,8 @@ EbErrorType eb_vp9_mode_decision_configuration_context_ctor(ModeDecisionConfigur
     return EB_ErrorNone;
 }
 
-EB_AURA_STATUS aura_detection64x64(PictureControlSet *picture_control_set_ptr, uint8_t picture_qp, uint32_t sb_index) {
+static EB_AURA_STATUS aura_detection64x64(PictureControlSet *picture_control_set_ptr, uint8_t picture_qp,
+                                          uint32_t sb_index) {
     SequenceControlSet *sequence_control_set_ptr =
         (SequenceControlSet *)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
     int32_t  picture_width_in_sb = (sequence_control_set_ptr->luma_width + MAX_SB_SIZE_MINUS_1) >> MAX_LOG2_SB_SIZE;
@@ -250,7 +251,7 @@ EB_AURA_STATUS aura_detection64x64(PictureControlSet *picture_control_set_ptr, u
 /******************************************************
 * Aura detection
 ******************************************************/
-void aura_detection(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
+static void aura_detection(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
 
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
@@ -260,17 +261,14 @@ void aura_detection(SequenceControlSet *sequence_control_set_ptr, PictureControl
         // Aura status intialization
         sb_ptr->aura_status = INVALID_AURA_STATUS;
 
-        if (picture_control_set_ptr->slice_type == B_SLICE) {
-            if (!sb_params->is_edge_sb) {
-                sb_ptr->aura_status = aura_detection64x64(
-                    picture_control_set_ptr, (uint8_t)picture_control_set_ptr->picture_qp, sb_ptr->sb_index);
-            }
+        if (picture_control_set_ptr->slice_type == B_SLICE && !sb_params->is_edge_sb) {
+            sb_ptr->aura_status = aura_detection64x64(
+                picture_control_set_ptr, (uint8_t)picture_control_set_ptr->picture_qp, sb_ptr->sb_index);
         }
     }
-    return;
 }
 
-EbErrorType eb_vp9_derive_default_segments(PictureControlSet                *picture_control_set_ptr,
+static EbErrorType derive_default_segments(PictureControlSet                *picture_control_set_ptr,
                                            ModeDecisionConfigurationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -394,8 +392,8 @@ EbErrorType eb_vp9_derive_default_segments(PictureControlSet                *pic
     Output  : budget per picture
 ******************************************************/
 
-void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                       ModeDecisionConfigurationContext *context_ptr) {
+static void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                              ModeDecisionConfigurationContext *context_ptr) {
     uint32_t budget;
 
     if (context_ptr->adp_level <= ENC_MODE_4) {
@@ -663,7 +661,7 @@ Input   : cost per depth
 Output  : budget per picture
 ******************************************************/
 
-void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_control_set_ptr,
+static void set_target_budget_oq(SequenceControlSet               *sequence_control_set_ptr,
                                  PictureControlSet                *picture_control_set_ptr,
                                  ModeDecisionConfigurationContext *context_ptr) {
     uint32_t budget;
@@ -785,9 +783,9 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
 Input   : cost per depth
 Output  : budget per picture
 ******************************************************/
-
-void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                            ModeDecisionConfigurationContext *context_ptr) {
+static void set_target_budget_vmaf(SequenceControlSet               *sequence_control_set_ptr,
+                                   PictureControlSet                *picture_control_set_ptr,
+                                   ModeDecisionConfigurationContext *context_ptr) {
     uint32_t budget;
 
     if (context_ptr->adp_level <= ENC_MODE_3) {
@@ -847,8 +845,8 @@ void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, Pictur
  * Input: Sharpe Edge, Potential Aura/Grass, B-Logo, S-Logo, Potential Blockiness Area signals
  * Output: TRUE if one of the above is TRUE
  ******************************************************/
-bool is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                              SbUnit *sb_ptr) {
+static bool is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr,
+                                     PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr) {
     const uint32_t sb_index       = sb_ptr->sb_index;
     SbParams      *sb_params      = &sequence_control_set_ptr->sb_params_array[sb_index];
     EB_SLICE       slice_type     = picture_control_set_ptr->slice_type;
@@ -901,7 +899,7 @@ bool is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr, Pict
     Input   : the offline derived cost per search method, detection signals
     Output  : valid cost_depth_mode and valid sensitivePicture
 ******************************************************/
-void eb_vp9_configure_adp(PictureControlSet *picture_control_set_ptr, ModeDecisionConfigurationContext *context_ptr) {
+static void configure_adp(PictureControlSet *picture_control_set_ptr, ModeDecisionConfigurationContext *context_ptr) {
     context_ptr->cost_depth_mode[SB_FULL85_DEPTH_MODE - 1]               = FULL_SEARCH_COST;
     context_ptr->cost_depth_mode[SB_FULL84_DEPTH_MODE - 1]               = FULL_SEARCH_COST;
     context_ptr->cost_depth_mode[SB_BDP_DEPTH_MODE - 1]                  = BDP_COST;
@@ -974,7 +972,7 @@ void eb_vp9_configure_adp(PictureControlSet *picture_control_set_ptr, ModeDecisi
     Input   : allocated budget per LCU
     Output  : search method per LCU
 ******************************************************/
-void eb_vp9_derive_search_method(SequenceControlSet               *sequence_control_set_ptr,
+static void derive_search_method(SequenceControlSet               *sequence_control_set_ptr,
                                  PictureControlSet                *picture_control_set_ptr,
                                  ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
@@ -1027,7 +1025,7 @@ void eb_vp9_derive_search_method(SequenceControlSet               *sequence_cont
     Input   : LCU score, detection signals, iteration
     Output  : predicted budget for the LCU
 ******************************************************/
-void eb_vp9_set_sb_budget(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+static void set_sb_budget(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                           SbUnit *sb_ptr, ModeDecisionConfigurationContext *context_ptr) {
     const uint32_t sb_index = sb_ptr->sb_index;
     uint32_t       max_to_min_score, score_to_min;
@@ -1104,7 +1102,7 @@ void eb_vp9_set_sb_budget(SequenceControlSet *sequence_control_set_ptr, PictureC
     Input   : budget per picture, ditortion, detection signals, iteration
     Output  : optimal budget for each LCU
 ******************************************************/
-void eb_vp9_derive_optimal_budget_per_sb(SequenceControlSet               *sequence_control_set_ptr,
+static void derive_optimal_budget_per_sb(SequenceControlSet               *sequence_control_set_ptr,
                                          PictureControlSet                *picture_control_set_ptr,
                                          ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
@@ -1135,7 +1133,7 @@ void eb_vp9_derive_optimal_budget_per_sb(SequenceControlSet               *seque
         for (sb_index = 0; sb_index < picture_control_set_ptr->parent_pcs_ptr->sb_total_count; sb_index++) {
             SbUnit *sb_ptr = picture_control_set_ptr->sb_ptr_array[sb_index];
 
-            eb_vp9_set_sb_budget(sequence_control_set_ptr, picture_control_set_ptr, sb_ptr, context_ptr);
+            set_sb_budget(sequence_control_set_ptr, picture_control_set_ptr, sb_ptr, context_ptr);
         }
 
         // Compute the deviation between the predicted budget & the target budget
@@ -1180,8 +1178,9 @@ void eb_vp9_derive_optimal_budget_per_sb(SequenceControlSet               *seque
     Input   : budget per picture, and the cost of the refinment
     Output  : the refinment flag
 ******************************************************/
-void compute_refinement_cost(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                             ModeDecisionConfigurationContext *context_ptr) {
+static void compute_refinement_cost(SequenceControlSet               *sequence_control_set_ptr,
+                                    PictureControlSet                *picture_control_set_ptr,
+                                    ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
     uint32_t avc_refinement_cost       = 0;
     uint32_t light_avc_refinement_cost = 0;
@@ -1218,7 +1217,7 @@ void compute_refinement_cost(SequenceControlSet *sequence_control_set_ptr, Pictu
     Input   : distortion, detection signals
     Output  : LCU score
 ******************************************************/
-void eb_vp9_derive_sb_score(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+static void derive_sb_score(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                             ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
     uint32_t sb_score = 0;
@@ -1352,9 +1351,9 @@ void eb_vp9_derive_sb_score(SequenceControlSet *sequence_control_set_ptr, Pictur
     MAX_SCORE = MAX_SCORE - MAX_D * I_Value.
 ******************************************************/
 
-void perform_outlier_removal(SequenceControlSet               *sequence_control_set_ptr,
-                             PictureParentControlSet          *picture_control_set_ptr,
-                             ModeDecisionConfigurationContext *context_ptr) {
+static void perform_outlier_removal(SequenceControlSet               *sequence_control_set_ptr,
+                                    PictureParentControlSet          *picture_control_set_ptr,
+                                    ModeDecisionConfigurationContext *context_ptr) {
     uint32_t max_interval          = 0;
     uint32_t sub_interval          = 0;
     uint32_t sb_scoreHistogram[10] = {0};
@@ -1426,10 +1425,10 @@ void perform_outlier_removal(SequenceControlSet               *sequence_control_
     Input   : LCU score, detection signals
     Output  : search method for each LCU
 ******************************************************/
-void eb_vp9_derive_sb_md_mode(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+static void derive_sb_md_mode(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                               ModeDecisionConfigurationContext *context_ptr) {
     // Configure ADP
-    eb_vp9_configure_adp(picture_control_set_ptr, context_ptr);
+    configure_adp(picture_control_set_ptr, context_ptr);
 
     // Set the target budget
     if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
@@ -1437,26 +1436,26 @@ void eb_vp9_derive_sb_md_mode(SequenceControlSet *sequence_control_set_ptr, Pict
     } else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
         set_target_budget_vmaf(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
     } else {
-        eb_vp9_set_target_budget_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+        set_target_budget_oq(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
     }
 
     // Set the percentage based thresholds
-    eb_vp9_derive_default_segments(picture_control_set_ptr, context_ptr);
+    derive_default_segments(picture_control_set_ptr, context_ptr);
 
     // Compute the cost of the refinements
     compute_refinement_cost(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
 
     // Derive LCU score
-    eb_vp9_derive_sb_score(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+    derive_sb_score(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
 
     // Remove the outliers
     perform_outlier_removal(sequence_control_set_ptr, picture_control_set_ptr->parent_pcs_ptr, context_ptr);
 
     // Perform Budgetting
-    eb_vp9_derive_optimal_budget_per_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+    derive_optimal_budget_per_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
 
     // Set the search method using the LCU cost (mapping)
-    eb_vp9_derive_search_method(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+    derive_search_method(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
 }
 
 /******************************************************
@@ -1464,7 +1463,7 @@ void eb_vp9_derive_sb_md_mode(SequenceControlSet *sequence_control_set_ptr, Pict
 Input   : encoder mode and tune
 Output  : EncDec Kernel signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_sq(PictureControlSet *picture_control_set_ptr,
+static EbErrorType signal_derivation_mode_decision_config_kernel_sq(PictureControlSet *picture_control_set_ptr,
                                                                     ModeDecisionConfigurationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -1478,7 +1477,7 @@ EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_sq(PictureContr
 Input   : encoder mode and tune
 Output  : EncDec Kernel signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(
+static EbErrorType signal_derivation_mode_decision_config_kernel_oq_vmaf(
     PictureControlSet *picture_control_set_ptr, ModeDecisionConfigurationContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -1608,7 +1607,7 @@ mdcSetDepth : set depth to be tested
 #define PA_DEPTH_TWO_STEP 5
 #define PA_DEPTH_THREE_STEP 1
 
-void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr, uint32_t origin_x, uint32_t origin_y,
+static void MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr, uint32_t origin_x, uint32_t origin_y,
                                   uint32_t end_depth, uint32_t block_index) {
     uint32_t leftblock_index;
     uint32_t topblock_index;
@@ -1858,7 +1857,7 @@ static void prediction_partition_loop(SequenceControlSet               *sequence
                                                                          : 0;
                 }
 
-                eb_vp9_MdcInterDepthDecision(
+                MdcInterDepthDecision(
                     context_ptr, block_stats_ptr->origin_x, block_stats_ptr->origin_y, end_depth, block_index);
             } else {
                 block_ptr->early_cost = ~0u;
@@ -2088,15 +2087,12 @@ static void refinement_prediction_loop(SequenceControlSet *sequence_control_set_
                     (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
                          SB_PRED_OPEN_LOOP_DEPTH_MODE ||
                      picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
-                         SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE)) {
+                         SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE))
                     refinement_level = Pred;
-                } else
-
-                    if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_OPEN_LOOP_DEPTH_MODE ||
-                        (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE &&
-                         picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
-                             SB_OPEN_LOOP_DEPTH_MODE))
-
+                else if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_OPEN_LOOP_DEPTH_MODE ||
+                         (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE &&
+                          picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] ==
+                              SB_OPEN_LOOP_DEPTH_MODE))
                     refinement_level = ndp_refinement_control_nref[temporal_layer_index][depth];
                 else
                     refinement_level = ndp_refinement_control_fast[temporal_layer_index][depth];
@@ -2131,9 +2127,9 @@ static void refinement_prediction_loop(SequenceControlSet *sequence_control_set_
     } // End while 1 CU Loop
 }
 
-void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
-                                 PictureControlSet *picture_control_set_ptr, uint32_t sb_index,
-                                 ModeDecisionConfigurationContext *context_ptr) {
+static void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
+                                        PictureControlSet *picture_control_set_ptr, uint32_t sb_index,
+                                        ModeDecisionConfigurationContext *context_ptr) {
     uint8_t              block_index    = 0;
     uint32_t             cu_class       = DO_NOT_ADD_CU_CONTINUE_SPLIT;
     bool                 split_flag     = true;
@@ -2251,8 +2247,9 @@ static EbErrorType early_mode_decision_sb(SequenceControlSet               *sequ
 /******************************************************
 * Predict the LCU partitionning
 ******************************************************/
-void picture_depth_open_loop(ModeDecisionConfigurationContext *context_ptr,
-                             SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
+static void picture_depth_open_loop(ModeDecisionConfigurationContext *context_ptr,
+                                    SequenceControlSet               *sequence_control_set_ptr,
+                                    PictureControlSet                *picture_control_set_ptr) {
     for (int sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         early_mode_decision_sb(sequence_control_set_ptr,
                                picture_control_set_ptr,
@@ -2261,16 +2258,17 @@ void picture_depth_open_loop(ModeDecisionConfigurationContext *context_ptr,
     }
 }
 
-void sb_depth_open_loop(ModeDecisionConfigurationContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
-                        PictureControlSet *picture_control_set_ptr, uint32_t sb_index) {
+static void sb_depth_open_loop(ModeDecisionConfigurationContext *context_ptr,
+                               SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                               uint32_t sb_index) {
     early_mode_decision_sb(sequence_control_set_ptr,
                            picture_control_set_ptr,
                            context_ptr,
                            picture_control_set_ptr->sb_ptr_array[sb_index]);
 }
 
-void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                       uint32_t sb_index) {
+static void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                              uint32_t sb_index) {
     bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
@@ -2312,8 +2310,8 @@ void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
     }
 }
 
-void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                       uint32_t sb_index) {
+static void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                              uint32_t sb_index) {
     bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
@@ -2352,7 +2350,8 @@ void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
     }
 }
 
-void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
+static void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr,
+                                   PictureControlSet  *picture_control_set_ptr) {
     uint32_t sb_index;
     bool     split_flag;
 
@@ -2398,7 +2397,8 @@ void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, Pictur
     }
 }
 
-void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
+static void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr,
+                                   PictureControlSet  *picture_control_set_ptr) {
     uint32_t sb_index;
     bool     split_flag;
 
@@ -2440,8 +2440,8 @@ void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, Pictur
     }
 }
 
-void sb_depth_8x8_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                              uint32_t sb_index) {
+static void sb_depth_8x8_16x16_block(SequenceControlSet *sequence_control_set_ptr,
+                                     PictureControlSet *picture_control_set_ptr, uint32_t sb_index) {
     bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
@@ -2473,8 +2473,8 @@ void sb_depth_8x8_16x16_block(SequenceControlSet *sequence_control_set_ptr, Pict
     }
 }
 
-void sb_depth_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                          uint32_t sb_index) {
+static void sb_depth_16x16_block(SequenceControlSet *sequence_control_set_ptr,
+                                 PictureControlSet *picture_control_set_ptr, uint32_t sb_index) {
     bool split_flag;
 
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
@@ -2535,9 +2535,9 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
 
         // Mode Decision Configuration Kernel Signal(s) derivation
         if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-            eb_vp9_signal_derivation_mode_decision_config_kernel_sq(picture_control_set_ptr, context_ptr);
+            signal_derivation_mode_decision_config_kernel_sq(picture_control_set_ptr, context_ptr);
         } else {
-            eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(picture_control_set_ptr, context_ptr);
+            signal_derivation_mode_decision_config_kernel_oq_vmaf(picture_control_set_ptr, context_ptr);
         }
 
         // Initialize the rd cost
@@ -2608,7 +2608,7 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
         aura_detection(sequence_control_set_ptr, picture_control_set_ptr);
 
         if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
-            eb_vp9_derive_sb_md_mode(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
+            derive_sb_md_mode(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);
 
             for (int sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
                 if (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FULL85_DEPTH_MODE) {

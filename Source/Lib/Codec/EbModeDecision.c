@@ -182,9 +182,9 @@ EbErrorType pre_mode_decision(uint32_t buffer_total_count, ModeDecisionCandidate
     return return_error;
 }
 
-void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
-                                 uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
-                                 MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
+static void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                        SbUnit *sb_ptr, uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
+                                        MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
     MeCuResults *me_pu_result =
         &picture_control_set_ptr->parent_pcs_ptr->me_results[sb_ptr->sb_index][me_2nx2n_table_offset];
 
@@ -234,10 +234,10 @@ void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, Enc
     return;
 }
 
-void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                               SbUnit *sb_ptr, uint32_t me_2nx2n_table_offset,
-                                               MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                               uint32_t *can_total_cnt) {
+static void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_control_set_ptr,
+                                                      EncDecContext *context_ptr, SbUnit *sb_ptr,
+                                                      uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
+                                                      MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
     MeCuResults *me_pu_result =
         &picture_control_set_ptr->parent_pcs_ptr->me_results[sb_ptr->sb_index][me_2nx2n_table_offset];
 
@@ -280,9 +280,9 @@ void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_contro
     return;
 }
 
-void nearest_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                     MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                     uint32_t *can_total_cnt) {
+static void nearest_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                            MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
+                                            uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
     context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
@@ -317,9 +317,9 @@ void nearest_mv_candidates_injection(PictureControlSet *picture_control_set_ptr,
     return;
 }
 
-void near_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                  MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                  uint32_t *can_total_cnt) {
+static void near_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                         MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
+                                         uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
 
     context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
@@ -355,9 +355,9 @@ void near_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
     return;
 }
 
-void zero_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                  MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                  uint32_t *can_total_cnt) {
+static void zero_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                         MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
+                                         uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
     context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready        = 0;
     context_ptr->fast_candidate_array[*can_total_cnt].mode_info->sb_type      = context_ptr->ep_block_stats_ptr->bsize;
@@ -383,13 +383,13 @@ void zero_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, En
 }
 
 #define NEWMV_3x3_REFINMENT_POSITIONS 8
-int8_t newmv_3x3_x_pos[NEWMV_3x3_REFINMENT_POSITIONS] = {-1, -1, 0, 1, 1, 1, 0, -1};
-int8_t newmv_3x3_y_pos[NEWMV_3x3_REFINMENT_POSITIONS] = {0, 1, 1, 1, 0, -1, -1, -1};
+static int8_t newmv_3x3_x_pos[NEWMV_3x3_REFINMENT_POSITIONS] = {-1, -1, 0, 1, 1, 1, 0, -1};
+static int8_t newmv_3x3_y_pos[NEWMV_3x3_REFINMENT_POSITIONS] = {0, 1, 1, 1, 0, -1, -1, -1};
 
-void new_mv_unipred3x3_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                            SbUnit *sb_ptr, const uint32_t me_2nx2n_table_offset,
-                                            MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                            uint32_t *can_total_cnt) {
+static void new_mv_unipred3x3_candidates_injection(PictureControlSet *picture_control_set_ptr,
+                                                   EncDecContext *context_ptr, SbUnit *sb_ptr,
+                                                   const uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
+                                                   MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
     MeCuResults *me_pu_result =
         &picture_control_set_ptr->parent_pcs_ptr->me_results[sb_ptr->sb_index][me_2nx2n_table_offset];
     for (uint32_t position = 0; position < NEWMV_3x3_REFINMENT_POSITIONS; ++position) {
@@ -416,10 +416,10 @@ void new_mv_unipred3x3_candidates_injection(PictureControlSet *picture_control_s
     }
 }
 
-void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                           SbUnit *sb_ptr, const uint32_t me_2nx2n_table_offset,
-                                           MV_REFERENCE_FRAME ref_frame_0, MV_REFERENCE_FRAME ref_frame_1,
-                                           uint32_t *can_total_cnt) {
+static void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_set_ptr,
+                                                  EncDecContext *context_ptr, SbUnit *sb_ptr,
+                                                  const uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
+                                                  MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
     MeCuResults *me_pu_result =
         &picture_control_set_ptr->parent_pcs_ptr->me_results[sb_ptr->sb_index][me_2nx2n_table_offset];
 
@@ -455,9 +455,9 @@ void new_mv_bipred3x3_candidates_injection(PictureControlSet *picture_control_se
     }
 }
 
-void inter_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
-                                uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
-                                MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
+static void inter_candidates_injection(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                       SbUnit *sb_ptr, uint32_t me_2nx2n_table_offset, MV_REFERENCE_FRAME ref_frame_0,
+                                       MV_REFERENCE_FRAME ref_frame_1, uint32_t *can_total_cnt) {
     if (context_ptr->use_ref_mvs_flag[ref_frame_0] && context_ptr->use_ref_mvs_flag[ref_frame_1]) {
         // Nearest
         if (context_ptr->nearest_injection) {
@@ -516,8 +516,8 @@ void inter_candidates_injection(PictureControlSet *picture_control_set_ptr, EncD
     }
 }
 
-void intra_candidates_injection_mi(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                   uint32_t *can_total_cnt) {
+static void intra_candidates_injection_mi(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                          uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
 
     PREDICTION_MODE mode;
@@ -545,8 +545,8 @@ void intra_candidates_injection_mi(PictureControlSet *picture_control_set_ptr, E
     }
 }
 
-void intra_candidates_injection_bmi(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
-                                    uint32_t *can_total_cnt) {
+static void intra_candidates_injection_bmi(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr,
+                                           uint32_t *can_total_cnt) {
     (void)picture_control_set_ptr;
 
     PREDICTION_MODE mode;

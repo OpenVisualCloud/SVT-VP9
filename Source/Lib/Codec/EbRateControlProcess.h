@@ -18,11 +18,11 @@
 #define RC_PRECISION 16
 #define RC_PRECISION_OFFSET (1 << (RC_PRECISION - 1))
 
-#define OVERSHOOT_STAT_PRINT                                                                           \
-    0 // Do not remove.                                                                  \ \ \ \ \ \ \ \
-        // For printing overshooting percentages for both RC and fixed QP.               \ \ \ \ \ \ \ \
-        // Target rate and and max buffer size should be set properly even for fixed QP. \ \ \ \ \ \ \ \
-        // Disabled by default.
+// Do not remove.
+// For printing overshooting percentages for both RC and fixed QP.
+// Target rate and and max buffer size should be set properly even for fixed QP.
+// Disabled by default.
+#define OVERSHOOT_STAT_PRINT 0
 #if OVERSHOOT_STAT_PRINT
 #define CODED_FRAMES_STAT_QUEUE_MAX_DEPTH 10000
 #endif
@@ -224,13 +224,6 @@ typedef struct RateControlContext {
 /**************************************
  * Extern Function Declarations
  **************************************/
-extern EbErrorType eb_vp9_rate_control_layer_context_ctor(RateControlLayerContext **entry_dbl_ptr);
-
-extern EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalParamContext **entry_dbl_ptr);
-
-extern EbErrorType eb_vp9_rate_control_coded_frames_stats_context_ctor(CodedFramesStatsEntry **entry_dbl_ptr,
-                                                                       uint64_t                picture_number);
-
 extern EbErrorType eb_vp9_rate_control_context_ctor(RateControlContext **context_dbl_ptr,
                                                     EbFifo              *rate_control_input_tasks_fifo_ptr,
                                                     EbFifo *rate_control_output_results_fifo_ptr, int32_t intra_period);

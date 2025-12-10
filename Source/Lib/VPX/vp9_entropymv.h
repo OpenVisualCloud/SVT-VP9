@@ -25,8 +25,6 @@ struct VP9Common;
 
 void eb_vp9_init_mv_probs(struct VP9Common *cm);
 
-void eb_vp9_adapt_mv_probs(struct VP9Common *cm, int usehp);
-
 static inline int use_mv_hp(const MV *ref) {
     const int kMvRefThresh = 64; // threshold for use of high-precision 1/8 mv
     return abs(ref->row) < kMvRefThresh && abs(ref->col) < kMvRefThresh;
@@ -122,8 +120,6 @@ typedef struct {
     unsigned int         joints[MV_JOINTS];
     nmv_component_counts comps[2];
 } nmv_context_counts;
-
-void eb_vp9_inc_mv(const MV *mv, nmv_context_counts *mvctx);
 
 #ifdef __cplusplus
 } // extern "C"

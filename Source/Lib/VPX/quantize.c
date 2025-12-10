@@ -13,53 +13,6 @@
 #include "vpx_dsp_rtcd.h"
 #include "mem.h"
 
-void eb_vp9_quantize_dc(const tran_low_t *coeff_ptr, int n_coeffs, int skip_block, const int16_t *round_ptr,
-                        const int16_t quant, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t dequant_ptr,
-                        uint16_t *eob_ptr) {
-    const int rc         = 0;
-    const int coeff      = coeff_ptr[rc];
-    const int coeff_sign = (coeff >> 31);
-    const int abs_coeff  = (coeff ^ coeff_sign) - coeff_sign;
-    int       tmp, eob = -1;
-
-    memset(qcoeff_ptr, 0, n_coeffs * sizeof(*qcoeff_ptr));
-    memset(dqcoeff_ptr, 0, n_coeffs * sizeof(*dqcoeff_ptr));
-
-    if (!skip_block) {
-        tmp             = clamp(abs_coeff + round_ptr[rc != 0], INT16_MIN, INT16_MAX);
-        tmp             = (tmp * quant) >> 16;
-        qcoeff_ptr[rc]  = (int16_t)((tmp ^ coeff_sign) - coeff_sign);
-        dqcoeff_ptr[rc] = qcoeff_ptr[rc] * dequant_ptr;
-        if (tmp)
-            eob = 0;
-    }
-    *eob_ptr = (int16_t)eob + 1;
-}
-
-void eb_vp9_quantize_dc_32x32(const tran_low_t *coeff_ptr, int skip_block, const int16_t *round_ptr,
-                              const int16_t quant, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr,
-                              const int16_t dequant_ptr, uint16_t *eob_ptr) {
-    const int n_coeffs   = 1024;
-    const int rc         = 0;
-    const int coeff      = coeff_ptr[rc];
-    const int coeff_sign = (coeff >> 31);
-    const int abs_coeff  = (coeff ^ coeff_sign) - coeff_sign;
-    int       tmp, eob = -1;
-
-    memset(qcoeff_ptr, 0, n_coeffs * sizeof(*qcoeff_ptr));
-    memset(dqcoeff_ptr, 0, n_coeffs * sizeof(*dqcoeff_ptr));
-
-    if (!skip_block) {
-        tmp             = clamp(abs_coeff + ROUND_POWER_OF_TWO(round_ptr[rc != 0], 1), INT16_MIN, INT16_MAX);
-        tmp             = (tmp * quant) >> 15;
-        qcoeff_ptr[rc]  = (int16_t)((tmp ^ coeff_sign) - coeff_sign);
-        dqcoeff_ptr[rc] = qcoeff_ptr[rc] * dequant_ptr / 2;
-        if (tmp)
-            eob = 0;
-    }
-    *eob_ptr = (int16_t)eob + 1;
-}
-
 void eb_vp9_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *zbin_ptr,
                          const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr,
                          tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr,

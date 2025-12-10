@@ -16,72 +16,6 @@
 #include "vp9_encoder.h"
 #include "vp9_quantize.h"
 
-void eb_vp9_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block, const int16_t *round_ptr,
-                          const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr,
-                          const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan) {
-    int i, eob = -1;
-    (void)iscan;
-    (void)skip_block;
-    assert(!skip_block);
-
-    memset(qcoeff_ptr, 0, n_coeffs * sizeof(*qcoeff_ptr));
-    memset(dqcoeff_ptr, 0, n_coeffs * sizeof(*dqcoeff_ptr));
-
-    // Quantization pass: All coefficients with index >= zero_flag are
-    // skippable. Note: zero_flag can be zero.
-    for (i = 0; i < n_coeffs; i++) {
-        const int rc         = scan[i];
-        const int coeff      = coeff_ptr[rc];
-        const int coeff_sign = (coeff >> 31);
-        const int abs_coeff  = (coeff ^ coeff_sign) - coeff_sign;
-
-        int tmp = clamp(abs_coeff + round_ptr[rc != 0], INT16_MIN, INT16_MAX);
-        tmp     = (tmp * quant_ptr[rc != 0]) >> 16;
-
-        qcoeff_ptr[rc]  = (int16_t)((tmp ^ coeff_sign) - coeff_sign);
-        dqcoeff_ptr[rc] = qcoeff_ptr[rc] * dequant_ptr[rc != 0];
-
-        if (tmp)
-            eob = i;
-    }
-    *eob_ptr = (int16_t)(eob + 1);
-}
-
-// TODO(jingning) Refactor this file and combine functions with similar
-// operations.
-void eb_vp9_quantize_fp_32x32_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, int skip_block,
-                                const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr,
-                                tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr,
-                                const int16_t *scan, const int16_t *iscan) {
-    int i, eob = -1;
-    (void)iscan;
-    (void)skip_block;
-    assert(!skip_block);
-
-    memset(qcoeff_ptr, 0, n_coeffs * sizeof(*qcoeff_ptr));
-    memset(dqcoeff_ptr, 0, n_coeffs * sizeof(*dqcoeff_ptr));
-
-    for (i = 0; i < n_coeffs; i++) {
-        const int rc         = scan[i];
-        const int coeff      = coeff_ptr[rc];
-        const int coeff_sign = (coeff >> 31);
-        int       tmp        = 0;
-        int       abs_coeff  = (coeff ^ coeff_sign) - coeff_sign;
-
-        if (abs_coeff >= (dequant_ptr[rc != 0] >> 2)) {
-            abs_coeff += ROUND_POWER_OF_TWO(round_ptr[rc != 0], 1);
-            abs_coeff       = clamp(abs_coeff, INT16_MIN, INT16_MAX);
-            tmp             = (abs_coeff * quant_ptr[rc != 0]) >> 15;
-            qcoeff_ptr[rc]  = (int16_t)((tmp ^ coeff_sign) - coeff_sign);
-            dqcoeff_ptr[rc] = qcoeff_ptr[rc] * dequant_ptr[rc != 0] / 2;
-        }
-
-        if (tmp)
-            eob = i;
-    }
-    *eob_ptr = (int16_t)(eob + 1);
-}
-
 static void invert_quant(int16_t *quant, int16_t *shift, int d) {
     unsigned t;
     int      l, m;
@@ -167,13 +101,3 @@ static const int quantizer_to_qindex[] = {
 };
 
 int eb_vp9_quantizer_to_qindex(int quantizer) { return quantizer_to_qindex[quantizer]; }
-
-int eb_vp9_qindex_to_quantizer(int qindex) {
-    int quantizer;
-
-    for (quantizer = 0; quantizer < 64; ++quantizer)
-        if (quantizer_to_qindex[quantizer] >= qindex)
-            return quantizer;
-
-    return 63;
-}

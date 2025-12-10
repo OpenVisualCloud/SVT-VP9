@@ -97,240 +97,6 @@ EbErrorType eb_vp9_picture_decision_context_ctor(PictureDecisionContext **contex
     return EB_ErrorNone;
 }
 
-bool eb_vp9_SceneTransitionDetector(PictureDecisionContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
-                                    PictureParentControlSet **parent_pcs_window, uint32_t window_width_future) {
-    PictureParentControlSet *previouspicture_control_set_ptr = parent_pcs_window[0];
-    PictureParentControlSet *currentpicture_control_set_ptr  = parent_pcs_window[1];
-    PictureParentControlSet *futurepicture_control_set_ptr   = parent_pcs_window[2];
-
-    // calculating the frame threshold based on the number of 64x64 blocks in the frame
-    uint32_t region_thresh_hold;
-    uint32_t region_thresh_hold_chroma;
-    // this variable determines whether the running average should be reset to equal the ahd or not after detecting a scene change.
-    //bool reset_running_avg = context_ptr->reset_running_avg;
-
-    bool is_abrupt_change; // this variable signals an abrubt change (scene change or flash)
-    bool is_scene_change; // this variable signals a frame representing a scene change
-    bool is_flash; // this variable signals a frame that contains a flash
-    bool is_fade; // this variable signals a frame that contains a fade
-    bool
-        gradual_change; // this signals the detection of a light scene change a small/localized flash or the start of a fade
-
-    uint32_t ahd; // accumulative histogram (absolute) differences between the past and current frame
-
-    uint32_t ahd_cb;
-    uint32_t ahd_cr;
-
-    uint32_t ahd_error_cb = 0;
-    uint32_t ahd_error_cr = 0;
-
-    uint32_t **ahd_running_avg_cb = context_ptr->ahd_running_avg_cb;
-    uint32_t **ahd_running_avg_cr = context_ptr->ahd_running_avg_cr;
-    uint32_t **ahd_running_avg    = context_ptr->ahd_running_avg;
-
-    uint32_t ahd_error = 0; // the difference between the ahd and the running average at the current frame.
-
-    uint8_t aid_future_past =
-        0; // this variable denotes the average intensity difference between the next and the past frames
-    uint8_t aid_future_present = 0;
-    uint8_t aid_present_past   = 0;
-
-    uint32_t bin = 0; // variable used to iterate through the bins of the histograms
-
-    uint32_t region_in_picture_width_index;
-    uint32_t region_in_picture_height_index;
-
-    uint32_t region_width;
-    uint32_t region_height;
-    uint32_t region_width_offset;
-    uint32_t region_height_offset;
-
-    uint32_t is_abrupt_change_count = 0;
-    uint32_t is_scene_change_count  = 0;
-
-    uint32_t region_count_threshold = (sequence_control_set_ptr->scd_mode == SCD_MODE_2)
-        ? (uint32_t)(((float)((sequence_control_set_ptr->picture_analysis_number_of_regions_per_width *
-                               sequence_control_set_ptr->picture_analysis_number_of_regions_per_height) *
-                              75) /
-                      100) +
-                     0.5)
-        : (uint32_t)(((float)((sequence_control_set_ptr->picture_analysis_number_of_regions_per_width *
-                               sequence_control_set_ptr->picture_analysis_number_of_regions_per_height) *
-                              50) /
-                      100) +
-                     0.5);
-
-    region_width = parent_pcs_window[1]->enhanced_picture_ptr->width /
-        sequence_control_set_ptr->picture_analysis_number_of_regions_per_width;
-    region_height = parent_pcs_window[1]->enhanced_picture_ptr->height /
-        sequence_control_set_ptr->picture_analysis_number_of_regions_per_height;
-
-    // Loop over regions inside the picture
-    for (region_in_picture_width_index = 0;
-         region_in_picture_width_index < sequence_control_set_ptr->picture_analysis_number_of_regions_per_width;
-         region_in_picture_width_index++) { // loop over horizontal regions
-        for (region_in_picture_height_index = 0;
-             region_in_picture_height_index < sequence_control_set_ptr->picture_analysis_number_of_regions_per_height;
-             region_in_picture_height_index++) { // loop over vertical regions
-
-            is_abrupt_change = false;
-            is_scene_change  = false;
-            is_flash         = false;
-            gradual_change   = false;
-
-            // Reset accumulative histogram (absolute) differences between the past and current frame
-            ahd    = 0;
-            ahd_cb = 0;
-            ahd_cr = 0;
-
-            region_width_offset = (region_in_picture_width_index ==
-                                   sequence_control_set_ptr->picture_analysis_number_of_regions_per_width - 1)
-                ? parent_pcs_window[1]->enhanced_picture_ptr->width -
-                    (sequence_control_set_ptr->picture_analysis_number_of_regions_per_width * region_width)
-                : 0;
-
-            region_height_offset = (region_in_picture_height_index ==
-                                    sequence_control_set_ptr->picture_analysis_number_of_regions_per_height - 1)
-                ? parent_pcs_window[1]->enhanced_picture_ptr->height -
-                    (sequence_control_set_ptr->picture_analysis_number_of_regions_per_height * region_height)
-                : 0;
-
-            region_width += region_width_offset;
-            region_height += region_height_offset;
-
-            region_thresh_hold = (
-                                     // Noise insertion/removal detection
-                                     ((ABS((int64_t)currentpicture_control_set_ptr->pic_avg_variance -
-                                           (int64_t)previouspicture_control_set_ptr->pic_avg_variance)) >
-                                      NOISE_VARIANCE_TH) &&
-                                     (currentpicture_control_set_ptr->pic_avg_variance > HIGH_PICTURE_VARIANCE_TH ||
-                                      previouspicture_control_set_ptr->pic_avg_variance > HIGH_PICTURE_VARIANCE_TH))
-                ? NOISY_SCENE_TH * NUM64x64INPIC(region_width, region_height)
-                : // SCD TH function of noise insertion/removal.
-                SCENE_TH * NUM64x64INPIC(region_width, region_height);
-
-            region_thresh_hold_chroma = region_thresh_hold / 4;
-
-            for (bin = 0; bin < HISTOGRAM_NUMBER_OF_BINS; ++bin) {
-                ahd += ABS(
-                    (int32_t)currentpicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0][bin] -
-                    (int32_t)previouspicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][0][bin]);
-                ahd_cb += ABS(
-                    (int32_t)currentpicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1][bin] -
-                    (int32_t)previouspicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][1][bin]);
-                ahd_cr += ABS(
-                    (int32_t)currentpicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2][bin] -
-                    (int32_t)previouspicture_control_set_ptr
-                        ->picture_histogram[region_in_picture_width_index][region_in_picture_height_index][2][bin]);
-            }
-
-            if (context_ptr->reset_running_avg) {
-                ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index]    = ahd;
-                ahd_running_avg_cb[region_in_picture_width_index][region_in_picture_height_index] = ahd_cb;
-                ahd_running_avg_cr[region_in_picture_width_index][region_in_picture_height_index] = ahd_cr;
-            }
-
-            ahd_error    = ABS((int32_t)ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] -
-                            (int32_t)ahd);
-            ahd_error_cb = ABS(
-                (int32_t)ahd_running_avg_cb[region_in_picture_width_index][region_in_picture_height_index] -
-                (int32_t)ahd_cb);
-            ahd_error_cr = ABS(
-                (int32_t)ahd_running_avg_cr[region_in_picture_width_index][region_in_picture_height_index] -
-                (int32_t)ahd_cr);
-
-            if ((ahd_error > region_thresh_hold && ahd >= ahd_error) ||
-                (ahd_error_cb > region_thresh_hold_chroma && ahd_cb >= ahd_error_cb) ||
-                (ahd_error_cr > region_thresh_hold_chroma && ahd_cr >= ahd_error_cr)) {
-                is_abrupt_change = true;
-
-            } else if ((ahd_error > (region_thresh_hold >> 1)) && ahd >= ahd_error) {
-                gradual_change = true;
-            }
-
-            if (is_abrupt_change) {
-                aid_future_past    = (uint8_t)ABS((int16_t)futurepicture_control_set_ptr
-                                                   ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                 [region_in_picture_height_index][0] -
-                                               (int16_t)previouspicture_control_set_ptr
-                                                   ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                 [region_in_picture_height_index][0]);
-                aid_future_present = (uint8_t)ABS(
-                    (int16_t)
-                        futurepicture_control_set_ptr->average_intensity_per_region[region_in_picture_width_index]
-                                                                                   [region_in_picture_height_index][0] -
-                    (int16_t)currentpicture_control_set_ptr
-                        ->average_intensity_per_region[region_in_picture_width_index][region_in_picture_height_index]
-                                                      [0]);
-                aid_present_past = (uint8_t)ABS((int16_t)currentpicture_control_set_ptr
-                                                    ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                  [region_in_picture_height_index][0] -
-                                                (int16_t)previouspicture_control_set_ptr
-                                                    ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                  [region_in_picture_height_index][0]);
-
-                if (aid_future_past < FLASH_TH && aid_future_present >= FLASH_TH && aid_present_past >= FLASH_TH) {
-                    is_flash = true;
-                    //SVT_LOG ("\nFlash in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
-                } else if (aid_future_present < FADE_TH && aid_present_past < FADE_TH) {
-                    is_fade = true;
-                    //SVT_LOG ("\nFlash in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
-                } else {
-                    is_scene_change = true;
-                    //SVT_LOG ("\nScene Change in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
-                }
-
-            } else if (gradual_change) {
-                aid_future_past = (uint8_t)ABS((int16_t)futurepicture_control_set_ptr
-                                                   ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                 [region_in_picture_height_index][0] -
-                                               (int16_t)previouspicture_control_set_ptr
-                                                   ->average_intensity_per_region[region_in_picture_width_index]
-                                                                                 [region_in_picture_height_index][0]);
-                if (aid_future_past < FLASH_TH) {
-                    // proper action to be signalled
-                    //SVT_LOG ("\nLight Flash in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
-                    ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] =
-                        (3 * ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] + ahd) / 4;
-                } else {
-                    // proper action to be signalled
-                    //SVT_LOG ("\nLight Scene Change / fade detected in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
-                    ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] =
-                        (3 * ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] + ahd) / 4;
-                }
-
-            } else {
-                ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] =
-                    (3 * ahd_running_avg[region_in_picture_width_index][region_in_picture_height_index] + ahd) / 4;
-            }
-
-            is_abrupt_change_count += is_abrupt_change;
-            is_scene_change_count += is_scene_change;
-        }
-    }
-
-    (void)window_width_future;
-    (void)is_flash;
-    (void)is_fade;
-
-    if (is_abrupt_change_count >= region_count_threshold) {
-        context_ptr->reset_running_avg = true;
-    } else {
-        context_ptr->reset_running_avg = false;
-    }
-
-    if (is_scene_change_count >= region_count_threshold) {
-        return (true);
-    } else {
-        return (false);
-    }
-}
-
 /***************************************************************************************************
 * release_prev_picture_from_reorder_queue
 ***************************************************************************************************/
@@ -362,7 +128,7 @@ static EbErrorType release_prev_picture_from_reorder_queue(EncodeContext *encode
 * Initializes mini GOP activity array
 *
 ***************************************************************************************************/
-EbErrorType eb_vp9_initialize_mini_gop_activity_array(PictureDecisionContext *context_ptr) {
+static EbErrorType eb_vp9_initialize_mini_gop_activity_array(PictureDecisionContext *context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t mini_gop_index;
@@ -381,8 +147,8 @@ EbErrorType eb_vp9_initialize_mini_gop_activity_array(PictureDecisionContext *co
 *
 *
 ***************************************************************************************************/
-EbErrorType eb_vp9_generate_picture_window_split(PictureDecisionContext *context_ptr,
-                                                 EncodeContext          *encode_context_ptr) {
+static EbErrorType eb_vp9_generate_picture_window_split(PictureDecisionContext *context_ptr,
+                                                        EncodeContext          *encode_context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t mini_gop_index;
@@ -430,8 +196,8 @@ EbErrorType eb_vp9_generate_picture_window_split(PictureDecisionContext *context
 *
 *
 ***************************************************************************************************/
-EbErrorType eb_vp9_handle_incomplete_picture_window_map(PictureDecisionContext *context_ptr,
-                                                        EncodeContext          *encode_context_ptr) {
+static EbErrorType eb_vp9_handle_incomplete_picture_window_map(PictureDecisionContext *context_ptr,
+                                                               EncodeContext          *encode_context_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     if (context_ptr->total_number_of_mini_gops == 0) {
@@ -674,8 +440,8 @@ static EbErrorType generate_mini_gop_rps(PictureDecisionContext *context_ptr, En
 * Set the default subPel enble/disable flag for each frame
 ****************************************************************************/
 
-uint8_t picture_level_sub_pel_settings_oq(uint8_t input_resolution, uint8_t enc_mode, uint8_t temporal_layer_index,
-                                          bool is_used_as_reference_flag) {
+static uint8_t picture_level_sub_pel_settings_oq(uint8_t input_resolution, uint8_t enc_mode,
+                                                 uint8_t temporal_layer_index, bool is_used_as_reference_flag) {
     uint8_t sub_pel_mode;
 
     if (enc_mode <= ENC_MODE_8) {
@@ -697,7 +463,8 @@ uint8_t picture_level_sub_pel_settings_oq(uint8_t input_resolution, uint8_t enc_
     return sub_pel_mode;
 }
 
-uint8_t picture_level_sub_pel_settings_vmaf(uint8_t input_resolution, uint8_t enc_mode, uint8_t temporal_layer_index) {
+static uint8_t picture_level_sub_pel_settings_vmaf(uint8_t input_resolution, uint8_t enc_mode,
+                                                   uint8_t temporal_layer_index) {
     uint8_t sub_pel_mode;
 
     if (enc_mode <= ENC_MODE_8) {
@@ -713,8 +480,8 @@ uint8_t picture_level_sub_pel_settings_vmaf(uint8_t input_resolution, uint8_t en
     return sub_pel_mode;
 }
 
-uint8_t picture_level_sub_pel_settings_sq(uint8_t input_resolution, uint8_t enc_mode, uint8_t temporal_layer_index,
-                                          bool is_used_as_reference_flag) {
+static uint8_t picture_level_sub_pel_settings_sq(uint8_t input_resolution, uint8_t enc_mode,
+                                                 uint8_t temporal_layer_index, bool is_used_as_reference_flag) {
     uint8_t sub_pel_mode;
 
     if (input_resolution >= INPUT_SIZE_4K_RANGE) {
@@ -747,7 +514,7 @@ uint8_t picture_level_sub_pel_settings_sq(uint8_t input_resolution, uint8_t enc_
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_multi_processes_sq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_multi_processes_sq(SequenceControlSet      *sequence_control_set_ptr,
                                                         PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -821,7 +588,7 @@ EbErrorType eb_vp9_signal_derivation_multi_processes_sq(SequenceControlSet      
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_multi_processes_oq(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_multi_processes_oq(SequenceControlSet      *sequence_control_set_ptr,
                                                         PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -872,7 +639,7 @@ EbErrorType eb_vp9_signal_derivation_multi_processes_oq(SequenceControlSet      
 Input   : encoder mode and tune
 Output  : Multi-Processes signal(s)
 ******************************************************/
-EbErrorType eb_vp9_signal_derivation_multi_processes_vmaf(SequenceControlSet      *sequence_control_set_ptr,
+static EbErrorType signal_derivation_multi_processes_vmaf(SequenceControlSet      *sequence_control_set_ptr,
                                                           PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -935,8 +702,8 @@ This miniGOP has P frames with predStruct=LDP, and the last frame=I with pred st
 predStruct=LDP, and the last frame=I with pred struct=RA.
 *
 *************************************************/
-void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, PictureDecisionContext *context_ptr,
-                       uint32_t picture_index, uint32_t mini_gop_index) {
+static void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, PictureDecisionContext *context_ptr,
+                              uint32_t picture_index, uint32_t mini_gop_index) {
     RpsNode *rps = &picture_control_set_ptr->ref_signal;
 
     // Set restrictRefMvsDerivation
@@ -1891,14 +1658,12 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                             // ME Kernel Multi-Processes Signal(s) derivation
                             if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
-                                eb_vp9_signal_derivation_multi_processes_sq(sequence_control_set_ptr,
-                                                                            picture_control_set_ptr);
+                                signal_derivation_multi_processes_sq(sequence_control_set_ptr, picture_control_set_ptr);
                             } else if (sequence_control_set_ptr->static_config.tune == TUNE_VMAF) {
-                                eb_vp9_signal_derivation_multi_processes_vmaf(sequence_control_set_ptr,
-                                                                              picture_control_set_ptr);
+                                signal_derivation_multi_processes_vmaf(sequence_control_set_ptr,
+                                                                       picture_control_set_ptr);
                             } else {
-                                eb_vp9_signal_derivation_multi_processes_oq(sequence_control_set_ptr,
-                                                                            picture_control_set_ptr);
+                                signal_derivation_multi_processes_oq(sequence_control_set_ptr, picture_control_set_ptr);
                             }
 
                             // Update the Dependant List Count - If there was an I-frame or Scene Change, then cleanup the Picture Decision PA Reference Queue Dependent Counts
@@ -2297,12 +2062,4 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
     }
 
     return NULL;
-}
-void unused_variable_void_func_pic_decision() {
-    (void)n_x_m_sad_kernel_func_ptr_array;
-    (void)nx_m_sad_loop_kernel_func_ptr_array;
-    (void)nx_m_sad_averaging_kernel_func_ptr_array;
-    (void)eb_vp9_sad_calculation_8x8_16x16_func_ptr_array;
-    (void)eb_vp9_sad_calculation_32x32_64x64_func_ptr_array;
-    (void)eb_vp9_initialize_buffer_32bits_func_ptr_array;
 }

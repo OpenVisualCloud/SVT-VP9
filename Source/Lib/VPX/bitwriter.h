@@ -29,6 +29,8 @@ typedef struct VpxWriter {
 void eb_vp9_start_encode(VpxWriter *bc, uint8_t *buffer);
 void eb_vp9_stop_encode(VpxWriter *bc);
 
+DECLARE_ALIGNED(16, extern const uint8_t, eb_vp9_norm[256]);
+
 static inline void vpx_write(VpxWriter *br, int bit, int probability) {
     unsigned int split;
     int          count    = br->count;

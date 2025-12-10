@@ -141,9 +141,4 @@ typedef struct EbEncHandle {
 
 } EbEncHandle;
 
-/**************************************
- * EbBufferHeaderType Constructor
- **************************************/
-extern EbErrorType eb_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
-
 #endif // EbEncHandle_h

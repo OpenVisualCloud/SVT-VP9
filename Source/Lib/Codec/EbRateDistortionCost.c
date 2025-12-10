@@ -172,7 +172,7 @@ static inline int mv_cost(const MV *mv, const int *joint_cost, int *const comp_c
     return joint_cost[vp9_get_mv_joint(mv)] + comp_cost[0][mv->row] + comp_cost[1][mv->col];
 }
 
-int eb_vp9_mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost, int *mvcost[2], int weight) {
+static int mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost, int *mvcost[2], int weight) {
     const MV diff = {mv->row - ref->row, mv->col - ref->col};
     return ROUND_POWER_OF_TWO(mv_cost(&diff, mvjcost, mvcost) * weight, 7);
 }
@@ -278,24 +278,24 @@ int64_t inter_fast_cost(PictureControlSet *picture_control_set_ptr, int has_uv, 
 
     if (this_mode == NEWMV) {
         if (comp_pred) {
-            rate_mv = eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
-                                         &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
-                                         x->nmvjointcost,
-                                         x->mvcost,
-                                         MV_COST_WEIGHT);
+            rate_mv = mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
+                                  &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
+                                  x->nmvjointcost,
+                                  x->mvcost,
+                                  MV_COST_WEIGHT);
 
-            rate_mv += eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[1].as_mv,
-                                          &mbmi_ext->ref_mvs[refs[1]][0].as_mv,
-                                          x->nmvjointcost,
-                                          x->mvcost,
-                                          MV_COST_WEIGHT);
+            rate_mv += mv_bit_cost(&candidate_ptr->mode_info->mv[1].as_mv,
+                                   &mbmi_ext->ref_mvs[refs[1]][0].as_mv,
+                                   x->nmvjointcost,
+                                   x->mvcost,
+                                   MV_COST_WEIGHT);
 
         } else {
-            rate_mv = eb_vp9_mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
-                                         &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
-                                         x->nmvjointcost,
-                                         x->mvcost,
-                                         MV_COST_WEIGHT);
+            rate_mv = mv_bit_cost(&candidate_ptr->mode_info->mv[0].as_mv,
+                                  &mbmi_ext->ref_mvs[refs[0]][0].as_mv,
+                                  x->nmvjointcost,
+                                  x->mvcost,
+                                  MV_COST_WEIGHT);
         }
     }
 

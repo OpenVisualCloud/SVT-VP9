@@ -46,18 +46,7 @@ EbErrorType eb_vp9_packetization_context_ctor(PacketizationContext **context_dbl
     return EB_ErrorNone;
 }
 
-void ivf_write_frame_header(EbByte write_byte_ptr, uint32_t *write_location, size_t frame_size, uint64_t pts,
-                            uint32_t *output_buffer_index) {
-    mem_put_le32(&write_byte_ptr[*write_location], (int)frame_size);
-    *write_location = *write_location + 4;
-    mem_put_le32(&write_byte_ptr[*write_location], (int)(pts & 0xFFFFFFFF));
-    *write_location = *write_location + 4;
-    mem_put_le32(&write_byte_ptr[*write_location], (int)(pts >> 32));
-    *write_location = *write_location + 4;
-    *output_buffer_index += 12;
-}
-
-void eb_vp9_update_rc_rate_tables(PictureControlSet  *picture_control_set_ptr,
+static void update_rc_rate_tables(PictureControlSet  *picture_control_set_ptr,
                                   SequenceControlSet *sequence_control_set_ptr) {
     EncodeContext *encode_context_ptr = (EncodeContext *)sequence_control_set_ptr->encode_context_ptr;
 
@@ -456,7 +445,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         queue_entry_ptr->total_num_bits = picture_control_set_ptr->parent_pcs_ptr->total_num_bits;
 
         // update the rate tables used in RC based on the encoded bits of each sb
-        eb_vp9_update_rc_rate_tables(picture_control_set_ptr, sequence_control_set_ptr);
+        update_rc_rate_tables(picture_control_set_ptr, sequence_control_set_ptr);
 
         queue_entry_ptr->frame_type = picture_control_set_ptr->parent_pcs_ptr->cpi->common.frame_type;
         queue_entry_ptr->intra_only = picture_control_set_ptr->parent_pcs_ptr->cpi->common.intra_only;

@@ -12,84 +12,6 @@
 #include "vpx_dsp_rtcd.h"
 #include "inv_txfm.h"
 
-void eb_vp9_iwht4x4_16_add_c(const tran_low_t *input, uint8_t *dest, int stride) {
-    /* 4-point reversible, orthonormal inverse Walsh-Hadamard in 3.5 adds,
-     0.5 shifts per pixel. */
-    int               i;
-    tran_low_t        output[16];
-    tran_high_t       a1, b1, c1, d1, e1;
-    const tran_low_t *ip = input;
-    tran_low_t       *op = output;
-
-    for (i = 0; i < 4; i++) {
-        a1 = ip[0] >> UNIT_QUANT_SHIFT;
-        c1 = ip[1] >> UNIT_QUANT_SHIFT;
-        d1 = ip[2] >> UNIT_QUANT_SHIFT;
-        b1 = ip[3] >> UNIT_QUANT_SHIFT;
-        a1 += c1;
-        d1 -= b1;
-        e1 = (a1 - d1) >> 1;
-        b1 = e1 - b1;
-        c1 = e1 - c1;
-        a1 -= b1;
-        d1 += c1;
-        op[0] = (int16_t)WRAPLOW(a1);
-        op[1] = (int16_t)WRAPLOW(b1);
-        op[2] = (int16_t)WRAPLOW(c1);
-        op[3] = (int16_t)WRAPLOW(d1);
-        ip += 4;
-        op += 4;
-    }
-
-    ip = output;
-    for (i = 0; i < 4; i++) {
-        a1 = ip[4 * 0];
-        c1 = ip[4 * 1];
-        d1 = ip[4 * 2];
-        b1 = ip[4 * 3];
-        a1 += c1;
-        d1 -= b1;
-        e1 = (a1 - d1) >> 1;
-        b1 = e1 - b1;
-        c1 = e1 - c1;
-        a1 -= b1;
-        d1 += c1;
-        dest[stride * 0] = clip_pixel_add(dest[stride * 0], WRAPLOW(a1));
-        dest[stride * 1] = clip_pixel_add(dest[stride * 1], WRAPLOW(b1));
-        dest[stride * 2] = clip_pixel_add(dest[stride * 2], WRAPLOW(c1));
-        dest[stride * 3] = clip_pixel_add(dest[stride * 3], WRAPLOW(d1));
-
-        ip++;
-        dest++;
-    }
-}
-
-void eb_vp9_iwht4x4_1_add_c(const tran_low_t *in, uint8_t *dest, int stride) {
-    int               i;
-    tran_high_t       a1, e1;
-    tran_low_t        tmp[4];
-    const tran_low_t *ip = in;
-    tran_low_t       *op = tmp;
-
-    a1 = ip[0] >> UNIT_QUANT_SHIFT;
-    e1 = a1 >> 1;
-    a1 -= e1;
-    op[0] = (tran_low_t)WRAPLOW(a1);
-    op[1] = op[2] = op[3] = (tran_low_t)WRAPLOW(e1);
-
-    ip = tmp;
-    for (i = 0; i < 4; i++) {
-        e1               = ip[0] >> 1;
-        a1               = ip[0] - e1;
-        dest[stride * 0] = clip_pixel_add(dest[stride * 0], a1);
-        dest[stride * 1] = clip_pixel_add(dest[stride * 1], e1);
-        dest[stride * 2] = clip_pixel_add(dest[stride * 2], e1);
-        dest[stride * 3] = clip_pixel_add(dest[stride * 3], e1);
-        ip++;
-        dest++;
-    }
-}
-
 void eb_vp9_iadst4_c(const tran_low_t *input, tran_low_t *output) {
     tran_high_t s0, s1, s2, s3, s4, s5, s6, s7;
     tran_low_t  x0 = input[0];
@@ -794,7 +716,7 @@ void eb_vp9_idct16x16_1_add_c(const tran_low_t *input, uint8_t *dest, int stride
     }
 }
 
-void eb_vp9_idct32_c(const tran_low_t *input, tran_low_t *output) {
+static void idct32_c(const tran_low_t *input, tran_low_t *output) {
     int16_t     step1[32], step2[32];
     tran_high_t temp1, temp2;
 
@@ -1173,7 +1095,7 @@ void eb_vp9_idct32x32_1024_add_c(const tran_low_t *input, uint8_t *dest, int str
         for (j = 0; j < 32; ++j) zero_coeff |= input[j];
 
         if (zero_coeff)
-            eb_vp9_idct32_c(input, out_ptr);
+            idct32_c(input, out_ptr);
         else
             memset(out_ptr, 0, sizeof(tran_low_t) * 32);
         input += 32;
@@ -1183,7 +1105,7 @@ void eb_vp9_idct32x32_1024_add_c(const tran_low_t *input, uint8_t *dest, int str
     // Columns
     for (i = 0; i < 32; ++i) {
         for (j = 0; j < 32; ++j) temp_in[j] = out[j * 32 + i];
-        eb_vp9_idct32_c(temp_in, temp_out);
+        idct32_c(temp_in, temp_out);
         for (j = 0; j < 32; ++j) {
             dest[j * stride + i] = clip_pixel_add(dest[j * stride + i], ROUND_POWER_OF_TWO(temp_out[j], 6));
         }
@@ -1199,7 +1121,7 @@ void eb_vp9_idct32x32_135_add_c(const tran_low_t *input, uint8_t *dest, int stri
     // Rows
     // Only upper-left 16x16 has non-zero coeff
     for (i = 0; i < 16; ++i) {
-        eb_vp9_idct32_c(input, out_ptr);
+        idct32_c(input, out_ptr);
         input += 32;
         out_ptr += 32;
     }
@@ -1207,7 +1129,7 @@ void eb_vp9_idct32x32_135_add_c(const tran_low_t *input, uint8_t *dest, int stri
     // Columns
     for (i = 0; i < 32; ++i) {
         for (j = 0; j < 32; ++j) temp_in[j] = out[j * 32 + i];
-        eb_vp9_idct32_c(temp_in, temp_out);
+        idct32_c(temp_in, temp_out);
         for (j = 0; j < 32; ++j) {
             dest[j * stride + i] = clip_pixel_add(dest[j * stride + i], ROUND_POWER_OF_TWO(temp_out[j], 6));
         }
@@ -1223,7 +1145,7 @@ void eb_vp9_idct32x32_34_add_c(const tran_low_t *input, uint8_t *dest, int strid
     // Rows
     // Only upper-left 8x8 has non-zero coeff
     for (i = 0; i < 8; ++i) {
-        eb_vp9_idct32_c(input, out_ptr);
+        idct32_c(input, out_ptr);
         input += 32;
         out_ptr += 32;
     }
@@ -1231,7 +1153,7 @@ void eb_vp9_idct32x32_34_add_c(const tran_low_t *input, uint8_t *dest, int strid
     // Columns
     for (i = 0; i < 32; ++i) {
         for (j = 0; j < 32; ++j) temp_in[j] = out[j * 32 + i];
-        eb_vp9_idct32_c(temp_in, temp_out);
+        idct32_c(temp_in, temp_out);
         for (j = 0; j < 32; ++j) {
             dest[j * stride + i] = clip_pixel_add(dest[j * stride + i], ROUND_POWER_OF_TWO(temp_out[j], 6));
         }

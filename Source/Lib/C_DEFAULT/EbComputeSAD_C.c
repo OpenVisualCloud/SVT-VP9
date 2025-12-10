@@ -58,52 +58,6 @@ uint32_t compute8x4_sad_kernel(uint8_t *src, // input parameter, source samples 
     return sad_block8x4;
 }
 
-void eb_vp9_sad_loop_kernel_sparse(uint8_t  *src, // input parameter, source samples Ptr
-                                   uint32_t  src_stride, // input parameter, source stride
-                                   uint8_t  *ref, // input parameter, reference samples Ptr
-                                   uint32_t  ref_stride, // input parameter, reference stride
-                                   uint32_t  height, // input parameter, block height (M)
-                                   uint32_t  width, // input parameter, block width (N)
-                                   uint64_t *best_sad, int16_t *x_search_center, int16_t *y_search_center,
-                                   uint32_t src_stride_raw, // input parameter, source stride (no line skipping)
-                                   int16_t search_area_width, int16_t search_area_height) {
-    int16_t x_search_index;
-    int16_t y_search_index;
-
-    *best_sad = 0xffffff;
-
-    for (y_search_index = 0; y_search_index < search_area_height; y_search_index++) {
-        for (x_search_index = 0; x_search_index < search_area_width; x_search_index++) {
-            uint8_t  doThisPoint = 0;
-            uint32_t group       = (x_search_index / 8);
-            if ((group & 1) == (y_search_index & 1))
-                doThisPoint = 1;
-
-            if (doThisPoint) {
-                uint32_t x, y;
-                uint32_t sad = 0;
-
-                for (y = 0; y < height; y++) {
-                    for (x = 0; x < width; x++) {
-                        sad += EB_ABS_DIFF(src[y * src_stride + x], ref[x_search_index + y * ref_stride + x]);
-                    }
-                }
-
-                // Update results
-                if (sad < *best_sad) {
-                    *best_sad        = sad;
-                    *x_search_center = x_search_index;
-                    *y_search_center = y_search_index;
-                }
-            }
-        }
-
-        ref += src_stride_raw;
-    }
-
-    return;
-}
-
 /*******************************************
 *   returns NxM Sum of Absolute Differences
 Note: moved from picture operators.

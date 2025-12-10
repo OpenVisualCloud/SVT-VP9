@@ -10,13 +10,16 @@
  * Includes
  **************************************/
 
-// Defining _GNU_SOURCE is needed for CPU_ZERO macro and needs to be set before any other includes
-#ifdef __linux__
+#ifndef __USE_GNU
+#define __USE_GNU
+#endif
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "EbDefinitions.h"
 #include "EbSvtVp9Enc.h"
@@ -66,7 +69,6 @@
 #ifdef __linux__
 #include <sched.h>
 #include <pthread.h>
-#include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #endif
@@ -149,22 +151,81 @@ uint32_t         *memory_map_index;
 uint64_t         *total_lib_memory;
 
 uint32_t lib_malloc_count    = 0;
-uint32_t lib_thread_count    = 0;
 uint32_t lib_semaphore_count = 0;
 uint32_t lib_mutex_count     = 0;
 
-uint8_t eb_vp9_num_groups = 0;
+static uint8_t eb_vp9_num_groups = 0;
 #ifdef _WIN32
-GROUP_AFFINITY eb_vp9_group_affinity;
-bool           eb_vp9_alternate_groups = 0;
+static GROUP_AFFINITY group_affinity;
+static bool           alternate_groups = 0;
 #elif defined(__linux__)
-cpu_set_t eb_vp9_group_affinity;
-typedef struct logicalProcessorGroup {
+static cpu_set_t group_affinity;
+#define MAX_PROCESSOR_GROUP 16
+static struct processorGroup {
     uint32_t num;
     uint32_t group[1024];
-} processorGroup;
-#define MAX_PROCESSOR_GROUP 16
-processorGroup eb_vp9_lp_group[MAX_PROCESSOR_GROUP];
+} eb_vp9_lp_group[MAX_PROCESSOR_GROUP];
+#endif
+
+#ifdef _WIN32
+
+#define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
+    pointer = eb_vp9_create_thread(thread_function, thread_context);                               \
+    if (pointer == (type)NULL) {                                                                   \
+        return EB_ErrorInsufficientResources;                                                      \
+    } else {                                                                                       \
+        memory_map[*(memory_map_index)].ptr_type = pointer_class;                                  \
+        memory_map[(*(memory_map_index))++].ptr  = pointer;                                        \
+        if (n_elements % 8 == 0) {                                                                 \
+            *total_lib_memory += (n_elements);                                                     \
+        } else {                                                                                   \
+            *total_lib_memory += ((n_elements) + (8 - ((n_elements) % 8)));                        \
+        }                                                                                          \
+        if (eb_vp9_num_groups == 2 && alternate_groups) {                                          \
+            group_affinity.Group = 1 - group_affinity.Group;                                       \
+            SetThreadGroupAffinity(pointer, &group_affinity, NULL);                                \
+        } else if (eb_vp9_num_groups == 2 && !alternate_groups) {                                  \
+            SetThreadGroupAffinity(pointer, &group_affinity, NULL);                                \
+        }                                                                                          \
+    }                                                                                              \
+    if (*(memory_map_index) >= MAX_NUM_PTR) {                                                      \
+        return EB_ErrorInsufficientResources;                                                      \
+    }
+#elif defined(__linux__)
+#define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
+    pointer = eb_vp9_create_thread(thread_function, thread_context);                               \
+    if (pointer == (type)NULL) {                                                                   \
+        return EB_ErrorInsufficientResources;                                                      \
+    } else {                                                                                       \
+        pthread_setaffinity_np(*((pthread_t *)pointer), sizeof(cpu_set_t), &group_affinity);       \
+        memory_map[*(memory_map_index)].ptr_type = pointer_class;                                  \
+        memory_map[(*(memory_map_index))++].ptr  = pointer;                                        \
+        if (n_elements % 8 == 0) {                                                                 \
+            *total_lib_memory += (n_elements);                                                     \
+        } else {                                                                                   \
+            *total_lib_memory += ((n_elements) + (8 - ((n_elements) % 8)));                        \
+        }                                                                                          \
+    }                                                                                              \
+    if (*(memory_map_index) >= MAX_NUM_PTR) {                                                      \
+        return EB_ErrorInsufficientResources;                                                      \
+    }
+#else
+#define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
+    pointer = eb_vp9_create_thread(thread_function, thread_context);                               \
+    if (pointer == (type)NULL) {                                                                   \
+        return EB_ErrorInsufficientResources;                                                      \
+    } else {                                                                                       \
+        memory_map[*(memory_map_index)].ptr_type = pointer_class;                                  \
+        memory_map[(*(memory_map_index))++].ptr  = pointer;                                        \
+        if (n_elements % 8 == 0) {                                                                 \
+            *total_lib_memory += (n_elements);                                                     \
+        } else {                                                                                   \
+            *total_lib_memory += ((n_elements) + (8 - ((n_elements) % 8)));                        \
+        }                                                                                          \
+    }                                                                                              \
+    if (*(memory_map_index) >= MAX_NUM_PTR) {                                                      \
+        return EB_ErrorInsufficientResources;                                                      \
+    }
 #endif
 
 /**************************************
@@ -174,22 +235,21 @@ processorGroup eb_vp9_lp_group[MAX_PROCESSOR_GROUP];
 #ifdef _WIN32
 #include <intrin.h>
 #endif
-void run_cpuid(uint32_t eax, uint32_t ecx, int *abcd) {
+static void run_cpuid(uint32_t eax, uint32_t ecx, int *abcd) {
 #ifdef _WIN32
     __cpuidex(abcd, eax, ecx);
 #else
     uint32_t ebx, edx;
 #if defined(__i386__) && defined(__PIC__)
     /* in case of PIC under 32-bit EBX cannot be clobbered */
-    __asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi"
-            : "=D"(ebx),
+    __asm__(
+        "movl %%ebx, %%edi \n"
+        "\t cpuid \n"
+        "\t xchgl %%ebx, %%edi"
+        : "=D"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
 #else
-    __asm__("cpuid"
-            : "=b"(ebx),
+    __asm__("cpuid" : "=b"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
 #endif
-              "+a"(eax),
-              "+c"(ecx),
-              "=d"(edx));
     abcd[0] = eax;
     abcd[1] = ebx;
     abcd[2] = ecx;
@@ -197,7 +257,7 @@ void run_cpuid(uint32_t eax, uint32_t ecx, int *abcd) {
 #endif
 }
 
-int check_xcr0_ymm() {
+static int check_xcr0_ymm() {
     uint32_t xcr0;
 #ifdef _WIN32
     xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
@@ -206,7 +266,8 @@ int check_xcr0_ymm() {
 #endif
     return ((xcr0 & 6) == 6); /* checking if xmm and ymm state are enabled in XCR0 */
 }
-int32_t check4th_gen_intel_core_features() {
+
+static int32_t check4th_gen_intel_core_features() {
     int abcd[4];
     int fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
     int avx2_bmi12_mask        = (1 << 5) | (1 << 3) | (1 << 8);
@@ -241,7 +302,7 @@ static int32_t can_use_intel_core4th_gen_features() {
     return the_4th_gen_features_available;
 }
 
-int check_xcr0_zmm() {
+static int check_xcr0_zmm() {
     uint32_t xcr0;
     uint32_t zmm_ymm_xmm = (7 << 5) | (1 << 2) | (1 << 1);
 #ifdef _WIN32
@@ -265,7 +326,7 @@ static int32_t can_use_intel_avx512() {
         | (1 << 17) // AVX-512DQ
         | (1 << 28) // AVX-512CD
         | (1 << 30) // AVX-512BW
-        | (1 << 31); // AVX-512VL
+        | (1u << 31); // AVX-512VL
 
     // ensure OS supports ZMM registers (and YMM, and XMM)
     if (!check_xcr0_zmm())
@@ -283,7 +344,7 @@ static int32_t can_use_intel_avx512() {
 
 // Returns ASM Type based on system configuration. AVX512 - 111, AVX2 - 011, NONAVX2 - 001, C - 000
 // Using bit-fields, the fastest function will always be selected based on the available functions in the function arrays
-uint32_t get_cpu_asm_type() {
+static uint32_t get_cpu_asm_type() {
     uint32_t asm_type = 0;
 
     if (can_use_intel_avx512() == 1)
@@ -297,7 +358,7 @@ uint32_t get_cpu_asm_type() {
 }
 
 //Get Number of logical processors
-uint32_t get_num_cores() {
+static uint32_t get_num_cores() {
 #ifdef _WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
@@ -386,10 +447,10 @@ static uint32_t enc_dec_port_total_count(void) {
     return total_count;
 }
 
-EbErrorType init_thread_managment_params() {
+static EbErrorType init_thread_managment_params() {
 #ifdef _WIN32
-    // Initialize eb_vp9_group_affinity structure with Current thread info
-    GetThreadGroupAffinity(GetCurrentThread(), &eb_vp9_group_affinity);
+    // Initialize group_affinity structure with Current thread info
+    GetThreadGroupAffinity(GetCurrentThread(), &group_affinity);
     eb_vp9_num_groups = (uint8_t)GetActiveProcessorGroupCount();
 #else
     const char *PROCESSORID      = "processor";
@@ -434,7 +495,7 @@ EbErrorType init_thread_managment_params() {
 /**********************************
 * Encoder Error Handling
 **********************************/
-void lib_svt_vp9_encoder_send_error_exit(EbPtr h_component, uint32_t error_code) {
+static void lib_svt_vp9_encoder_send_error_exit(EbPtr h_component, uint32_t error_code) {
     EbComponentType    *svt_enc_component = (EbComponentType *)h_component;
     EbEncHandle        *p_enc_comp_data   = (EbEncHandle *)svt_enc_component->p_component_private;
     EbObjectWrapper    *eb_wrapper_ptr    = NULL;
@@ -471,7 +532,6 @@ static EbErrorType eb_enc_handle_ctor(EbEncHandle **enc_handle_dbl_ptr, EbHandle
     memory_map          = enc_handle_ptr->memory_map;
     memory_map_index    = &enc_handle_ptr->memory_map_index;
     lib_malloc_count    = 0;
-    lib_thread_count    = 0;
     lib_mutex_count     = 0;
     lib_semaphore_count = 0;
 
@@ -616,46 +676,46 @@ static void eb_set_thread_management_parameters(EbSvtVp9EncConfiguration *config
     // For system with a single processor group(no more than 64 logic processors all together)
     // Affinity of the thread can be set to one or more logical processors
     if (eb_vp9_num_groups == 1) {
-        uint32_t lps               = config_ptr->logical_processors == 0            ? num_logical_processors
-                          : config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors
-                                                                                    : num_logical_processors;
-        eb_vp9_group_affinity.Mask = get_affinity_mask(lps);
+        uint32_t lps        = config_ptr->logical_processors == 0            ? num_logical_processors
+                   : config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors
+                                                                             : num_logical_processors;
+        group_affinity.Mask = get_affinity_mask(lps);
     } else if (eb_vp9_num_groups > 1) { // For system with multiple processor group
         if (config_ptr->logical_processors == 0) {
             if (config_ptr->target_socket != -1)
-                eb_vp9_group_affinity.Group = config_ptr->target_socket;
+                group_affinity.Group = config_ptr->target_socket;
         } else {
             uint32_t num_lp_per_group = num_logical_processors / eb_vp9_num_groups;
             if (config_ptr->target_socket == -1) {
                 if (config_ptr->logical_processors > num_lp_per_group) {
-                    eb_vp9_alternate_groups = true;
+                    alternate_groups = true;
                     SVT_LOG("SVT [WARNING]: -lp(logical processors) setting is ignored. Run on both sockets. \n");
                 } else
-                    eb_vp9_group_affinity.Mask = get_affinity_mask(config_ptr->logical_processors);
+                    group_affinity.Mask = get_affinity_mask(config_ptr->logical_processors);
             } else {
-                uint32_t lps                = config_ptr->logical_processors == 0      ? num_lp_per_group
-                                   : config_ptr->logical_processors < num_lp_per_group ? config_ptr->logical_processors
-                                                                                       : num_lp_per_group;
-                eb_vp9_group_affinity.Mask  = get_affinity_mask(lps);
-                eb_vp9_group_affinity.Group = config_ptr->target_socket;
+                uint32_t lps         = config_ptr->logical_processors == 0      ? num_lp_per_group
+                            : config_ptr->logical_processors < num_lp_per_group ? config_ptr->logical_processors
+                                                                                : num_lp_per_group;
+                group_affinity.Mask  = get_affinity_mask(lps);
+                group_affinity.Group = config_ptr->target_socket;
             }
         }
     }
 #elif defined(__linux__)
 
-    CPU_ZERO(&eb_vp9_group_affinity);
+    CPU_ZERO(&group_affinity);
 
     if (eb_vp9_num_groups == 1) {
         uint32_t lps = config_ptr->logical_processors == 0            ? num_logical_processors
             : config_ptr->logical_processors < num_logical_processors ? config_ptr->logical_processors
                                                                       : num_logical_processors;
-        for (uint32_t i = 0; i < lps; i++) CPU_SET(eb_vp9_lp_group[0].group[i], &eb_vp9_group_affinity);
+        for (uint32_t i = 0; i < lps; i++) CPU_SET(eb_vp9_lp_group[0].group[i], &group_affinity);
     } else if (eb_vp9_num_groups > 1) {
         uint32_t num_lp_per_group = num_logical_processors / eb_vp9_num_groups;
         if (config_ptr->logical_processors == 0) {
             if (config_ptr->target_socket != -1) {
                 for (uint32_t i = 0; i < eb_vp9_lp_group[config_ptr->target_socket].num; i++)
-                    CPU_SET(eb_vp9_lp_group[config_ptr->target_socket].group[i], &eb_vp9_group_affinity);
+                    CPU_SET(eb_vp9_lp_group[config_ptr->target_socket].group[i], &group_affinity);
             }
         } else {
             if (config_ptr->target_socket == -1) {
@@ -664,25 +724,26 @@ static void eb_set_thread_management_parameters(EbSvtVp9EncConfiguration *config
                                                                               : num_logical_processors;
                 if (lps > num_lp_per_group) {
                     for (uint32_t i = 0; i < eb_vp9_lp_group[0].num; i++)
-                        CPU_SET(eb_vp9_lp_group[0].group[i], &eb_vp9_group_affinity);
+                        CPU_SET(eb_vp9_lp_group[0].group[i], &group_affinity);
                     for (uint32_t i = 0; i < (lps - eb_vp9_lp_group[0].num); i++)
-                        CPU_SET(eb_vp9_lp_group[1].group[i], &eb_vp9_group_affinity);
+                        CPU_SET(eb_vp9_lp_group[1].group[i], &group_affinity);
                 } else {
-                    for (uint32_t i = 0; i < lps; i++) CPU_SET(eb_vp9_lp_group[0].group[i], &eb_vp9_group_affinity);
+                    for (uint32_t i = 0; i < lps; i++) CPU_SET(eb_vp9_lp_group[0].group[i], &group_affinity);
                 }
             } else {
                 uint32_t lps = config_ptr->logical_processors == 0      ? num_lp_per_group
                     : config_ptr->logical_processors < num_lp_per_group ? config_ptr->logical_processors
                                                                         : num_lp_per_group;
                 for (uint32_t i = 0; i < lps; i++)
-                    CPU_SET(eb_vp9_lp_group[config_ptr->target_socket].group[i], &eb_vp9_group_affinity);
+                    CPU_SET(eb_vp9_lp_group[config_ptr->target_socket].group[i], &group_affinity);
             }
         }
     }
 #endif
 }
 
-EbErrorType lib_allocate_frame_buffer(SequenceControlSet *sequence_control_set_ptr, EbBufferHeaderType *input_buffer) {
+static EbErrorType lib_allocate_frame_buffer(SequenceControlSet *sequence_control_set_ptr,
+                                             EbBufferHeaderType *input_buffer) {
     EbErrorType                 return_error = EB_ErrorNone;
     EbPictureBufferDescInitData input_picture_buffer_desc_init_data;
     EbSvtVp9EncConfiguration   *config  = &sequence_control_set_ptr->static_config;
@@ -717,7 +778,7 @@ EbErrorType lib_allocate_frame_buffer(SequenceControlSet *sequence_control_set_p
 /**************************************
 * EbBufferHeaderType Constructor
 **************************************/
-static EbErrorType eb_input_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
+static EbErrorType input_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
     EbBufferHeaderType *input_buffer;
     SequenceControlSet *sequence_control_set_ptr = (SequenceControlSet *)object_init_data_ptr;
     EB_MALLOC(EbBufferHeaderType *, input_buffer, sizeof(EbBufferHeaderType), EB_N_PTR);
@@ -731,7 +792,7 @@ static EbErrorType eb_input_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr obje
 
     return EB_ErrorNone;
 }
-EbErrorType eb_output_recon_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
+static EbErrorType output_recon_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
     EbBufferHeaderType *recon_buffer;
     SequenceControlSet *sequence_control_set_ptr = (SequenceControlSet *)object_init_data_ptr;
     const uint32_t      luma_size = sequence_control_set_ptr->luma_width * sequence_control_set_ptr->luma_height;
@@ -757,7 +818,7 @@ EbErrorType eb_output_recon_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr obje
 /**************************************
 * EbBufferHeaderType Constructor
 **************************************/
-static EbErrorType eb_output_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
+static EbErrorType output_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
     EbSvtVp9EncConfiguration *config = (EbSvtVp9EncConfiguration *)object_init_data_ptr;
     uint32_t size = (uint32_t)(EB_OUTPUTSTREAMBUFFERSIZE_MACRO(config->source_width * config->source_height)); //TBC
     EbBufferHeaderType *out_buf_ptr;
@@ -1066,7 +1127,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                &enc_handle_ptr->input_buffer_producer_fifo_ptr_array,
                                                &enc_handle_ptr->input_buffer_consumer_fifo_ptr_array,
                                                true,
-                                               eb_input_buffer_header_ctor,
+                                               input_buffer_header_ctor,
                                                scs_ptr);
 
     if (return_error == EB_ErrorInsufficientResources) {
@@ -1093,7 +1154,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                &enc_handle_ptr->output_stream_buffer_producer_fifo_ptr_dbl_array[0],
                                                &enc_handle_ptr->output_stream_buffer_consumer_fifo_ptr_dbl_array[0],
                                                true,
-                                               eb_output_buffer_header_ctor,
+                                               output_buffer_header_ctor,
                                                &scs_ptr->static_config);
 
     if (return_error == EB_ErrorInsufficientResources) {
@@ -1121,7 +1182,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    &enc_handle_ptr->output_recon_buffer_producer_fifo_ptr_dbl_array[0],
                                                    &enc_handle_ptr->output_recon_buffer_consumer_fifo_ptr_dbl_array[0],
                                                    true,
-                                                   eb_output_recon_buffer_header_ctor,
+                                                   output_recon_buffer_header_ctor,
                                                    scs_ptr);
         if (return_error == EB_ErrorInsufficientResources) {
             return EB_ErrorInsufficientResources;
@@ -1759,7 +1820,7 @@ EB_API void eb_vp9_svt_release_out_buffer(EbBufferHeaderType **p_buffer) {
 /**********************************
 Set Default Library Params
 **********************************/
-EbErrorType eb_vp9_svt_enc_init_parameter(EbSvtVp9EncConfiguration *config_ptr) {
+static EbErrorType enc_init_parameter(EbSvtVp9EncConfiguration *config_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     if (!config_ptr) {
@@ -1849,7 +1910,7 @@ eb_vp9_svt_init_handle(EbComponentType **p_handle, // Function to be called in t
         SVT_LOG("Error: Component Struct Malloc Failed\n");
         return_error = EB_ErrorInsufficientResources;
     }
-    return_error = eb_vp9_svt_enc_init_parameter(config_ptr);
+    return_error = enc_init_parameter(config_ptr);
 
     return return_error;
 }
@@ -1889,7 +1950,7 @@ EB_API EbErrorType eb_vp9_deinit_handle(EbComponentType *svt_enc_component) {
     return return_error;
 }
 
-uint32_t eb_vp9_set_parent_pcs(EbSvtVp9EncConfiguration *config) {
+static uint32_t set_parent_pcs(EbSvtVp9EncConfiguration *config) {
     uint32_t fps = (uint32_t)((config->frame_rate > 1000) ? config->frame_rate >> 16 : config->frame_rate);
 
     fps = fps > 120 ? 120 : fps;
@@ -1898,13 +1959,13 @@ uint32_t eb_vp9_set_parent_pcs(EbSvtVp9EncConfiguration *config) {
     return ((fps * 5) >> 2); // 1.25 sec worth of internal buffering
 }
 
-void eb_vp9_load_default_buffer_configuration_settings(SequenceControlSet *sequence_control_set_ptr) {
+static void load_default_buffer_configuration_settings(SequenceControlSet *sequence_control_set_ptr) {
     uint32_t me_seg_h = (((sequence_control_set_ptr->max_input_luma_height + 32) / MAX_SB_SIZE) < 6) ? 1 : 6;
     uint32_t me_seg_w = (((sequence_control_set_ptr->max_input_luma_width + 32) / MAX_SB_SIZE) < 10) ? 1 : 10;
 
     uint32_t enc_dec_seg_h = ((sequence_control_set_ptr->max_input_luma_height + 32) / MAX_SB_SIZE);
     uint32_t enc_dec_seg_w = ((sequence_control_set_ptr->max_input_luma_width + 32) / MAX_SB_SIZE);
-    uint32_t input_pic     = eb_vp9_set_parent_pcs(&sequence_control_set_ptr->static_config);
+    uint32_t input_pic     = set_parent_pcs(&sequence_control_set_ptr->static_config);
 
     unsigned int lp_count   = get_num_cores();
     unsigned int core_count = lp_count;
@@ -2686,7 +2747,7 @@ EB_API EbErrorType eb_vp9_svt_enc_set_parameter(EbComponentType          *svt_en
         scs_ptr->max_ref_count,
         scs_ptr->max_temporal_layers);
 
-    eb_vp9_load_default_buffer_configuration_settings(scs_ptr);
+    load_default_buffer_configuration_settings(scs_ptr);
 
     print_lib_params(scs_ptr);
 
@@ -2897,19 +2958,6 @@ static void switch_to_real_time() {
         SVT_LOG("\n[WARNING] For best speed performance, run with sudo privileges !\n\n");
 
 #endif
-}
-
-/**************************************
- * EbBufferHeaderType Constructor
- **************************************/
-EbErrorType eb_buffer_header_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr) {
-    *object_dbl_ptr      = (EbPtr)NULL;
-    object_init_data_ptr = (EbPtr)NULL;
-
-    (void)object_dbl_ptr;
-    (void)object_init_data_ptr;
-
-    return EB_ErrorNone;
 }
 
 #if defined(__linux__) || defined(__APPLE__)

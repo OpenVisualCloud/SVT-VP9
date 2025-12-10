@@ -11,7 +11,7 @@
 /**************************************************
  * Reset Mode Decision Neighbor Arrays
  *************************************************/
-void eb_vp9_reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_ptr) {
+static void reset_mode_decision_neighbor_arrays(PictureControlSet *picture_control_set_ptr) {
     VP9_COMP         *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     VP9_COMMON *const cm  = &cpi->common;
     int               neighbor_array_count;
@@ -75,7 +75,7 @@ void eb_vp9_reset_mode_decision(EncDecContext *context_ptr, PictureControlSet *p
 
     // Reset Neighbor Arrays at start of new Segment / Picture
     if (segment_index == 0) {
-        eb_vp9_reset_mode_decision_neighbor_arrays(picture_control_set_ptr);
+        reset_mode_decision_neighbor_arrays(picture_control_set_ptr);
     }
 
     return;

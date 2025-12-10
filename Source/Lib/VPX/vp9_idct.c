@@ -115,14 +115,7 @@ void eb_vp9_idct4x4_add(const tran_low_t *input, uint8_t *dest, int stride, int 
         eb_vpx_idct4x4_1_add(input, dest, stride);
 }
 
-void eb_vp9_iwht4x4_add(const tran_low_t *input, uint8_t *dest, int stride, int eob) {
-    if (eob > 1)
-        eb_vpx_iwht4x4_16_add(input, dest, stride);
-    else
-        eb_vpx_iwht4x4_1_add(input, dest, stride);
-}
-
-void eb_vp9_idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride, int eob) {
+static void idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride, int eob) {
     // If dc is 1, then input[0] is the reconstructed value, do not need
     // dequantization. Also, when dc is 1, dc is counted in eobs, namely eobs >=1.
 
@@ -137,7 +130,7 @@ void eb_vp9_idct8x8_add(const tran_low_t *input, uint8_t *dest, int stride, int 
         eb_vp9_idct8x8_64_add(input, dest, stride);
 }
 
-void eb_vp9_idct16x16_add(const tran_low_t *input, uint8_t *dest, int stride, int eob) {
+static void idct16x16_add(const tran_low_t *input, uint8_t *dest, int stride, int eob) {
     /* The calculation can be simplified if there are not many non-zero dct
    * coefficients. Use eobs to separate different cases. */
     if (eob == 1) /* DC only DCT coefficient. */
@@ -163,17 +156,9 @@ void eb_vp9_idct32x32_add(const tran_low_t *input, uint8_t *dest, int stride, in
         eb_vp9_idct32x32_1024_add(input, dest, stride);
 }
 
-// iht
-void eb_vp9_iht4x4_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest, int stride, int eob) {
-    if (tx_type == DCT_DCT)
-        eb_vp9_idct4x4_add(input, dest, stride, eob);
-    else
-        eb_vp9_iht4x4_16_add(input, dest, stride, tx_type);
-}
-
 void eb_vp9_iht8x8_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest, int stride, int eob) {
     if (tx_type == DCT_DCT) {
-        eb_vp9_idct8x8_add(input, dest, stride, eob);
+        idct8x8_add(input, dest, stride, eob);
     } else {
         eb_vp9_iht8x8_64_add(input, dest, stride, tx_type);
     }
@@ -181,7 +166,7 @@ void eb_vp9_iht8x8_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest, 
 
 void eb_vp9_iht16x16_add(TX_TYPE tx_type, const tran_low_t *input, uint8_t *dest, int stride, int eob) {
     if (tx_type == DCT_DCT) {
-        eb_vp9_idct16x16_add(input, dest, stride, eob);
+        idct16x16_add(input, dest, stride, eob);
     } else {
         eb_vp9_iht16x16_256_add(input, dest, stride, tx_type);
     }

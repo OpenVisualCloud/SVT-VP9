@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "EbAvcStyleMcp_AVX2.h"
+#include "EbAvcStyleMcp_C.h"
+#include "EbAvcStyleMcp_SSE2.h"
 #include "EbDefinitions.h"
 
 #include "EbPictureControlSet.h"
@@ -15,7 +18,6 @@
 
 #include "EbComputeSAD.h"
 #include "EbReferenceObject.h"
-#include "EbAvcStyleMcp.h"
 #include "EbMeSadCalculation.h"
 
 #include <math.h>
@@ -49,8 +51,28 @@
 
 #define MAX_SAD_VALUE 64 * 64 * 255
 
-uint32_t eb_vp9_tab32x32[16] = {0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15};
-uint32_t eb_vp9_tab8x8[64]   = {0,  1,  4,  5,  16, 17, 20, 21, 2,  3,  6,  7,  18, 19, 22, 23, 8,  9,  12, 13, 24, 25,
+typedef void (*AvcStyleInterpolationFilterNew)(EbByte ref_pic, uint32_t src_stride, EbByte dst, uint32_t dst_stride,
+                                               uint32_t pu_width, uint32_t pu_height, EbByte temp_buf,
+                                               uint32_t frac_pos);
+
+static const AvcStyleInterpolationFilterNew FUNC_TABLE
+    avc_style_uni_pred_luma_if_function_ptr_array[ASM_TYPE_TOTAL][3] = {
+        // C_DEFAULT
+        {
+            avc_style_copy_new, //copy
+            eb_vp9_avc_style_luma_interpolation_filter_horizontal, //a
+            eb_vp9_avc_style_luma_interpolation_filter_vertical, //d
+        },
+        // AVX2
+        {
+            eb_vp9_avc_style_copy_sse2, //copy
+            eb_vp9_avc_style_luma_interpolation_filter_horizontal_avx2_intrin, //a
+            eb_vp9_avc_style_luma_interpolation_filter_vertical_avx2_intrin, //d
+
+        }};
+
+static uint32_t tab32x32[16] = {0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15};
+static uint32_t tab8x8[64]   = {0,  1,  4,  5,  16, 17, 20, 21, 2,  3,  6,  7,  18, 19, 22, 23, 8,  9,  12, 13, 24, 25,
                                 28, 29, 10, 11, 14, 15, 26, 27, 30, 31, 32, 33, 36, 37, 48, 49, 52, 53, 34, 35, 38, 39,
                                 50, 51, 54, 55, 40, 41, 44, 45, 56, 57, 60, 61, 42, 43, 46, 47, 58, 59, 62, 63};
 
@@ -990,7 +1012,7 @@ static void full_pel_search_sb(MeContext *context_ptr, uint32_t list_index, int1
  *   F1: {-4, 36, 36, -4}
  *   F2: {-2, 16, 54, -4}
  ********************************************/
-void interpolate_search_region_avc(
+static void interpolate_search_region_avc(
     MeContext *context_ptr, // input/output parameter, ME context ptr, used to get/set interpolated search area Ptr
     uint32_t   list_index, // reference picture list index
     uint8_t   *search_region_buffer, // input parameter, search region index, used to point to reference samples
@@ -1563,7 +1585,7 @@ static void pu_half_pel_refinement(
  * half_pel_search_sb
  *   performs Half Pel refinement for the 85 PUs
  *******************************************/
-void half_pel_search_sb(
+static void half_pel_search_sb(
     SequenceControlSet *sequence_control_set_ptr, // input parameter, Sequence control set Ptr
     MeContext          *context_ptr, // input/output parameter, ME context Ptr, used to get/update ME results
     uint8_t *ref_buffer, uint32_t ref_stride,
@@ -1635,7 +1657,7 @@ void half_pel_search_sb(
     if (enable_half_pel16x16) {
         // 16x16 [16 partitions]
         for (pu_index = 0; pu_index < 16; ++pu_index) {
-            idx = eb_vp9_tab32x32[pu_index]; //TODO bitwise this
+            idx = tab32x32[pu_index]; //TODO bitwise this
 
             pu_shift_x_index = (pu_index & 0x03) << 4;
             pu_shift_y_index = (pu_index >> 2) << 4;
@@ -1667,7 +1689,7 @@ void half_pel_search_sb(
         // 8x8   [64 partitions]
         if (!disable8x8_cu_in_me_flag) {
             for (pu_index = 0; pu_index < 64; ++pu_index) {
-                idx = eb_vp9_tab8x8[pu_index]; //TODO bitwise this
+                idx = tab8x8[pu_index]; //TODO bitwise this
 
                 pu_shift_x_index = (pu_index & 0x07) << 3;
                 pu_shift_y_index = (pu_index >> 3) << 3;
@@ -1705,7 +1727,7 @@ void half_pel_search_sb(
 * eb_vp9_combined_averaging_ssd
 *
 *******************************************/
-uint32_t eb_vp9_combined_averaging_ssd(uint8_t *src, uint32_t src_stride, uint8_t *ref1, uint32_t ref1_stride,
+static uint32_t combined_averaging_ssd(uint8_t *src, uint32_t src_stride, uint8_t *ref1, uint32_t ref1_stride,
                                        uint8_t *ref2, uint32_t ref2_stride, uint32_t height, uint32_t width) {
     uint32_t x, y;
     uint32_t ssd = 0;
@@ -1723,6 +1745,51 @@ uint32_t eb_vp9_combined_averaging_ssd(uint8_t *src, uint32_t src_stride, uint8_
 
     return ssd;
 }
+
+typedef uint32_t (*EbSadavgkernelNxMType)(uint8_t *src, uint32_t src_stride, uint8_t *ref1, uint32_t ref1_stride,
+                                          uint8_t *ref2, uint32_t ref2_stride, uint32_t height, uint32_t width);
+
+static uint32_t nx_m_sad_avg_kernel_void_func(uint8_t *src, uint32_t src_stride, uint8_t *ref1, uint32_t ref1_stride,
+                                              uint8_t *ref2, uint32_t ref2_stride, uint32_t height, uint32_t width) {
+    (void)src;
+    (void)src_stride;
+    (void)ref1;
+    (void)ref1_stride;
+    (void)ref2;
+    (void)ref2_stride;
+    (void)height;
+    (void)width;
+    return 0;
+}
+
+static EbSadavgkernelNxMType FUNC_TABLE
+    nx_m_sad_averaging_kernel_func_ptr_array[ASM_TYPE_TOTAL][9] = // [eb_vp9_ASM_TYPES][SAD - block height]
+    {
+        // C_DEFAULT
+        {
+            /*0 4xM  */ eb_vp9_combined_averaging_sad,
+            /*1 8xM  */ eb_vp9_combined_averaging_sad,
+            /*2 16xM */ eb_vp9_combined_averaging_sad,
+            /*3 24xM */ eb_vp9_combined_averaging_sad,
+            /*4 32xM */ eb_vp9_combined_averaging_sad,
+            /*5      */ nx_m_sad_avg_kernel_void_func,
+            /*6 48xM */ eb_vp9_combined_averaging_sad,
+            /*7      */ nx_m_sad_avg_kernel_void_func,
+            /*8 64xM */ eb_vp9_combined_averaging_sad,
+        },
+        // AVX2
+        {
+            /*0 4xM  */ eb_vp9_combined_averaging4x_msad_sse2_intrin,
+            /*1 8xM  */ eb_vp9_combined_averaging8x_msad_avx2_intrin,
+            /*2 16xM */ eb_vp9_combined_averaging16x_msad_avx2_intrin,
+            /*3 24xM */ eb_vp9_combined_averaging24x_msad_avx2_intrin,
+            /*4 32xM */ eb_vp9_combined_averaging32x_msad_avx2_intrin,
+            /*5      */ nx_m_sad_avg_kernel_void_func,
+            /*6 48xM */ eb_vp9_combined_averaging48x_msad_avx2_intrin,
+            /*7      */ nx_m_sad_avg_kernel_void_func,
+            /*8 64xM */ eb_vp9_combined_averaging64x_msad_avx2_intrin,
+        },
+};
 
 /*******************************************
 * pu_quarter_pel_refinement_on_the_fly
@@ -1820,14 +1887,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[0] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[0] + search_region_index1,
-                                                buf1_stride[0],
-                                                buf2[0] + search_region_index2,
-                                                buf2_stride[0],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[0] + search_region_index1,
+                                         buf1_stride[0],
+                                         buf2[0] + search_region_index2,
+                                         buf2_stride[0],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -1878,14 +1945,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[1] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[1] + search_region_index1,
-                                                buf1_stride[1],
-                                                buf2[1] + search_region_index2,
-                                                buf2_stride[1],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[1] + search_region_index1,
+                                         buf1_stride[1],
+                                         buf2[1] + search_region_index2,
+                                         buf2_stride[1],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -1936,14 +2003,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[2] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[2] + search_region_index1,
-                                                buf1_stride[2],
-                                                buf2[2] + search_region_index2,
-                                                buf2_stride[2],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[2] + search_region_index1,
+                                         buf1_stride[2],
+                                         buf2[2] + search_region_index2,
+                                         buf2_stride[2],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -1994,14 +2061,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[3] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[3] + search_region_index1,
-                                                buf1_stride[3],
-                                                buf2[3] + search_region_index2,
-                                                buf2_stride[3],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[3] + search_region_index1,
+                                         buf1_stride[3],
+                                         buf2[3] + search_region_index2,
+                                         buf2_stride[3],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -2052,14 +2119,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[4] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[4] + search_region_index1,
-                                                buf1_stride[4],
-                                                buf2[4] + search_region_index2,
-                                                buf2_stride[4],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[4] + search_region_index1,
+                                         buf1_stride[4],
+                                         buf2[4] + search_region_index2,
+                                         buf2_stride[4],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -2110,14 +2177,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[5] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[5] + search_region_index1,
-                                                buf1_stride[5],
-                                                buf2[5] + search_region_index2,
-                                                buf2_stride[5],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[5] + search_region_index1,
+                                         buf1_stride[5],
+                                         buf2[5] + search_region_index2,
+                                         buf2_stride[5],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -2168,14 +2235,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[6] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[6] + search_region_index1,
-                                                buf1_stride[6],
-                                                buf2[6] + search_region_index2,
-                                                buf2_stride[6],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[6] + search_region_index1,
+                                         buf1_stride[6],
+                                         buf2[6] + search_region_index2,
+                                         buf2_stride[6],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -2226,14 +2293,14 @@ static void pu_quarter_pel_refinement_on_the_fly(
             search_region_index2 = (int32_t)x_search_index + (int32_t)buf2_stride[7] * (int32_t)y_search_index;
 
             dist = (context_ptr->fractional_search_method == SSD_SEARCH)
-                ? eb_vp9_combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
-                                                MAX_SB_SIZE,
-                                                buf1[7] + search_region_index1,
-                                                buf1_stride[7],
-                                                buf2[7] + search_region_index2,
-                                                buf2_stride[7],
-                                                pu_height,
-                                                pu_width)
+                ? combined_averaging_ssd(&(context_ptr->sb_buffer[pu_sb_buffer_index]),
+                                         MAX_SB_SIZE,
+                                         buf1[7] + search_region_index1,
+                                         buf1_stride[7],
+                                         buf2[7] + search_region_index2,
+                                         buf2_stride[7],
+                                         pu_height,
+                                         pu_width)
                 : (context_ptr->fractional_search_method == SUB_SAD_SEARCH)
                 ? (nx_m_sad_averaging_kernel_func_ptr_array[(eb_vp9_ASM_TYPES & PREAVX2_MASK) && 1][pu_width >> 3](
                       &(context_ptr->sb_buffer[pu_sb_buffer_index]),
@@ -2592,7 +2659,7 @@ static void quarter_pel_search_sb(
     if (enable_quarter_pel && enable_half_pel16x16) {
         // 16x16 [16 partitions]
         for (pu_index = 0; pu_index < 16; ++pu_index) {
-            n_idx = eb_vp9_tab32x32[pu_index];
+            n_idx = tab32x32[pu_index];
 
             x_mv = _MVXT(context_ptr->p_best_mv16x16[n_idx]);
             y_mv = _MVYT(context_ptr->p_best_mv16x16[n_idx]);
@@ -2653,7 +2720,7 @@ static void quarter_pel_search_sb(
         // 8x8   [64 partitions]
         if (!disable8x8_cu_in_me_flag) {
             for (pu_index = 0; pu_index < 64; ++pu_index) {
-                n_idx = eb_vp9_tab8x8[pu_index];
+                n_idx = tab8x8[pu_index];
 
                 x_mv = _MVXT(context_ptr->p_best_mv8x8[n_idx]);
                 y_mv = _MVYT(context_ptr->p_best_mv8x8[n_idx]);
@@ -2714,7 +2781,7 @@ static void quarter_pel_search_sb(
     return;
 }
 
-void single_hme_quadrant_level0(
+static void single_hme_quadrant_level0(
     MeContext           *context_ptr, // input/output parameter, ME context Ptr, used to get/update ME results
     int16_t              origin_x, // input parameter, LCU position in the horizontal direction- sixteenth resolution
     int16_t              origin_y, // input parameter, LCU position in the vertical direction- sixteenth resolution
@@ -2869,7 +2936,7 @@ void single_hme_quadrant_level0(
     return;
 }
 
-void hme_level0(
+static void hme_level0(
     MeContext           *context_ptr, // input/output parameter, ME context Ptr, used to get/update ME results
     int16_t              origin_x, // input parameter, LCU position in the horizontal direction- sixteenth resolution
     int16_t              origin_y, // input parameter, LCU position in the vertical direction- sixteenth resolution
@@ -3055,7 +3122,7 @@ void hme_level0(
     return;
 }
 
-void hme_level1(
+static void hme_level1(
     MeContext           *context_ptr, // input/output parameter, ME context Ptr, used to get/update ME results
     int16_t              origin_x, // input parameter, LCU position in the horizontal direction - quarter resolution
     int16_t              origin_y, // input parameter, LCU position in the vertical direction - quarter resolution
@@ -3180,7 +3247,7 @@ void hme_level1(
     return;
 }
 
-void hme_level2(
+static void hme_level2(
     MeContext           *context_ptr, // input/output parameter, ME context Ptr, used to get/update ME results
     int16_t              origin_x, // input parameter, LCU position in the horizontal direction
     int16_t              origin_y, // input parameter, LCU position in the vertical direction
@@ -3355,6 +3422,16 @@ static void select_buffer(uint32_t  pu_index, //[IN]
     return;
 }
 
+typedef void (*PictureAverage)(EbByte src0, uint32_t src0_stride, EbByte src1, uint32_t src1_stride, EbByte dst,
+                               uint32_t dst_stride, uint32_t area_width, uint32_t area_height);
+
+static const PictureAverage FUNC_TABLE picture_average_array[ASM_TYPE_TOTAL] = {
+    // C_DEFAULT
+    eb_vp9_picture_average_kernel,
+    // AVX2
+    eb_vp9_picture_average_kernel_avx2_intrin,
+};
+
 static void quarter_pel_compensation(uint32_t pu_index, //[IN]
                                      uint8_t  frac_position, //[IN]
                                      uint32_t pu_width, //[IN] reference picture list index
@@ -3463,14 +3540,14 @@ static void quarter_pel_compensation(uint32_t pu_index, //[IN]
  * Requirement (x86 only): dst->stride_y   % 16 = 0 when pu_width %16 = 0
  * Requirement (x86 only): dst->chromaStride % 16 = 0 when pu_width %32 = 0
  *******************************************************************************/
-uint32_t bi_pred_averging(MeContext *context_ptr, MePredUnit *me_candidate, uint32_t pu_index, uint8_t *source_pic,
-                          uint32_t luma_stride, uint8_t first_frac_pos, uint8_t second_frac_pos, uint32_t pu_width,
-                          uint32_t pu_height, uint8_t *first_ref_integer, uint8_t *first_ref_pos_b,
-                          uint8_t *first_ref_pos_h, uint8_t *first_ref_pos_j, uint8_t *second_ref_integer,
-                          uint8_t *second_ref_pos_b, uint8_t *second_ref_pos_h, uint8_t *second_ref_pos_j,
-                          uint32_t ref_buffer_stride, uint32_t ref_buffer_full_list0_stride,
-                          uint32_t ref_buffer_full_list1_stride, uint8_t *first_ref_temp_dst,
-                          uint8_t *second_ref_temp_dst) {
+static uint32_t bi_pred_averging(MeContext *context_ptr, MePredUnit *me_candidate, uint32_t pu_index,
+                                 uint8_t *source_pic, uint32_t luma_stride, uint8_t first_frac_pos,
+                                 uint8_t second_frac_pos, uint32_t pu_width, uint32_t pu_height,
+                                 uint8_t *first_ref_integer, uint8_t *first_ref_pos_b, uint8_t *first_ref_pos_h,
+                                 uint8_t *first_ref_pos_j, uint8_t *second_ref_integer, uint8_t *second_ref_pos_b,
+                                 uint8_t *second_ref_pos_h, uint8_t *second_ref_pos_j, uint32_t ref_buffer_stride,
+                                 uint32_t ref_buffer_full_list0_stride, uint32_t ref_buffer_full_list1_stride,
+                                 uint8_t *first_ref_temp_dst, uint8_t *second_ref_temp_dst) {
     uint8_t *ptr_list0, *ptr_list1;
     uint32_t ptr_list0_stride, ptr_list1_stride;
 
@@ -3565,9 +3642,9 @@ uint32_t bi_pred_averging(MeContext *context_ptr, MePredUnit *me_candidate, uint
  *   List1 Candidates and then compute the
  *   average
  *******************************************/
-EbErrorType bi_prediction_compensation(MeContext *context_ptr, uint32_t pu_index, MePredUnit *me_candidate,
-                                       uint32_t first_list, uint32_t first_ref_mv, uint32_t second_list,
-                                       uint32_t second_ref_mv) {
+static EbErrorType bi_prediction_compensation(MeContext *context_ptr, uint32_t pu_index, MePredUnit *me_candidate,
+                                              uint32_t first_list, uint32_t first_ref_mv, uint32_t second_list,
+                                              uint32_t second_ref_mv) {
     EbErrorType return_error = EB_ErrorNone;
 
     int16_t first_ref_pos_x;
@@ -3656,8 +3733,8 @@ EbErrorType bi_prediction_compensation(MeContext *context_ptr, uint32_t pu_index
     second_search_region_index_posj = (int32_t)(xsecond_search_index + (ME_FILTER_TAP >> 1) - 1) +
         (int32_t)context_ptr->interpolated_stride * (int32_t)(ysecond_search_index + (ME_FILTER_TAP >> 1) - 1);
 
-    uint32_t n_index = pu_index > 20 ? eb_vp9_tab8x8[pu_index - 21] + 21
-        : pu_index > 4               ? eb_vp9_tab32x32[pu_index - 5] + 5
+    uint32_t n_index = pu_index > 20 ? tab8x8[pu_index - 21] + 21
+        : pu_index > 4               ? tab32x32[pu_index - 5] + 5
                                      : pu_index;
     context_ptr->p_sb_bipred_sad[n_index] =
 
@@ -3692,17 +3769,18 @@ EbErrorType bi_prediction_compensation(MeContext *context_ptr, uint32_t pu_index
  *   performs Bi-Prediction Search (LCU)
  *******************************************/
 // This function enables all 16 Bipred candidates when MRP is ON
-EbErrorType bi_prediction_search(MeContext *context_ptr, uint32_t pu_index, uint8_t candidate_index,
-                                 uint32_t active_ref_pic_first_lis_num, uint32_t active_ref_pic_second_lis_num,
-                                 uint8_t *total_me_candidate_index, PictureParentControlSet *picture_control_set_ptr) {
+static EbErrorType bi_prediction_search(MeContext *context_ptr, uint32_t pu_index, uint8_t candidate_index,
+                                        uint32_t active_ref_pic_first_lis_num, uint32_t active_ref_pic_second_lis_num,
+                                        uint8_t                 *total_me_candidate_index,
+                                        PictureParentControlSet *picture_control_set_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t first_list_ref_pictdx;
     uint32_t second_list_ref_pictdx;
 
     (void)picture_control_set_ptr;
-    uint32_t n_index = pu_index > 20 ? eb_vp9_tab8x8[pu_index - 21] + 21
-        : pu_index > 4               ? eb_vp9_tab32x32[pu_index - 5] + 5
+    uint32_t n_index = pu_index > 20 ? tab8x8[pu_index - 21] + 21
+        : pu_index > 4               ? tab32x32[pu_index - 5] + 5
                                      : pu_index;
     for (first_list_ref_pictdx = 0; first_list_ref_pictdx < active_ref_pic_first_lis_num; first_list_ref_pictdx++) {
         for (second_list_ref_pictdx = 0; second_list_ref_pictdx < active_ref_pic_second_lis_num;
@@ -3731,7 +3809,9 @@ EbErrorType bi_prediction_search(MeContext *context_ptr, uint32_t pu_index, uint
     (me_pu_result)->distortion_direction[(num)].distortion = (dist); \
     (me_pu_result)->distortion_direction[(num)].direction  = (dir);
 
-int8_t sort3_elements(uint32_t a, uint32_t b, uint32_t c) {
+enum sort_order { a_b_c, a_c_b, b_a_c, b_c_a, c_a_b, c_b_a };
+
+static enum sort_order sort3_elements(uint32_t a, uint32_t b, uint32_t c) {
     uint8_t sortCode = 0;
     if (a <= b && a <= c) {
         if (b <= c) {
@@ -3755,9 +3835,9 @@ int8_t sort3_elements(uint32_t a, uint32_t b, uint32_t c) {
     return sortCode;
 }
 
-EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *context_ptr, uint32_t sb_origin_x,
-                                   uint32_t sb_origin_y, uint32_t sb_width, uint32_t sb_height,
-                                   int16_t *x_search_center, int16_t *y_search_center)
+static EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *context_ptr,
+                                          uint32_t sb_origin_x, uint32_t sb_origin_y, uint32_t sb_width,
+                                          uint32_t sb_height, int16_t *x_search_center, int16_t *y_search_center)
 
 {
     EbErrorType return_error = EB_ErrorNone;
@@ -3816,9 +3896,9 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
     return return_error;
 }
 
-EbErrorType su_pel_enable(MeContext *context_ptr, PictureParentControlSet *picture_control_set_ptr, uint32_t list_index,
-                          uint32_t ref_pic_index, bool *enable_half_pel32x32, bool *enable_half_pel16x16,
-                          bool *enable_half_pel8x8) {
+static EbErrorType su_pel_enable(MeContext *context_ptr, PictureParentControlSet *picture_control_set_ptr,
+                                 uint32_t list_index, uint32_t ref_pic_index, bool *enable_half_pel32x32,
+                                 bool *enable_half_pel16x16, bool *enable_half_pel8x8) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t mv_mag32x32  = 0;
@@ -5108,8 +5188,8 @@ EbErrorType motion_estimate_sb(
     // Bi-Prediction motion estimation loop
     for (pu_index = 0; pu_index < max_number_of_pus_per_sb; ++pu_index) {
         candidate_index = 0;
-        uint32_t n_idx  = pu_index > 20 ? eb_vp9_tab8x8[pu_index - 21] + 21
-             : pu_index > 4             ? eb_vp9_tab32x32[pu_index - 5] + 5
+        uint32_t n_idx  = pu_index > 20 ? tab8x8[pu_index - 21] + 21
+             : pu_index > 4             ? tab32x32[pu_index - 5] + 5
                                         : pu_index;
 
         for (list_index = REF_LIST_0; list_index <= num_of_list_to_search; ++list_index) { candidate_index++; }

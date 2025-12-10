@@ -115,49 +115,6 @@ EbHandle eb_vp9_create_thread(void *thread_function(void *), void *thread_contex
 }
 
 /****************************************
- * eb_start_thread
- ****************************************/
-EbErrorType eb_start_thread(EbHandle thread_handle) {
-    EbErrorType error_return = EB_ErrorNone;
-
-    /* Note JMJ 9/6/2011
-        The thread Pause/Resume functionality is being removed.  The main reason is that
-        POSIX Threads (aka pthreads) does not support this functionality.  The destructor
-        and deinit code is safe as along as when EbDestropyThread is called on a thread,
-        the thread is immediately destroyed and its stack cleared.
-
-        The Encoder Start/Stop functionality, which previously used the thread Pause/Resume
-        functions could be implemented with mutex checks either at the head of the pipeline,
-        or throughout the code if a more responsive Pause is needed.
-    */
-
-#ifdef _WIN32
-    //error_return = ResumeThread((HANDLE) thread_handle) ? EB_ErrorThreadUnresponsive : EB_ErrorNone;
-#elif __linux__
-#endif // _WIN32
-
-    error_return = (thread_handle) ? EB_ErrorNone : EB_ErrorNullThread;
-
-    return error_return;
-}
-
-/****************************************
- * eb_stop_thread
- ****************************************/
-EbErrorType eb_stop_thread(EbHandle thread_handle) {
-    EbErrorType error_return = EB_ErrorNone;
-
-#ifdef _WIN32
-    //error_return = SuspendThread((HANDLE) thread_handle) ? EB_ErrorThreadUnresponsive : EB_ErrorNone;
-#elif __linux__
-#endif // _WIN32
-
-    error_return = (thread_handle) ? EB_ErrorNone : EB_ErrorNullThread;
-
-    return error_return;
-}
-
-/****************************************
  * eb_vp9_destroy_thread
  ****************************************/
 EbErrorType eb_vp9_destroy_thread(EbHandle thread_handle) {
@@ -294,22 +251,6 @@ EbErrorType eb_vp9_block_on_mutex(EbHandle mutex_handle) {
     return_error = WaitForSingleObject((HANDLE)mutex_handle, INFINITE) ? EB_ErrorMutexUnresponsive : EB_ErrorNone;
 #elif __linux__
     return_error = pthread_mutex_lock((pthread_mutex_t *)mutex_handle) ? EB_ErrorMutexUnresponsive : EB_ErrorNone;
-#endif // _WIN32
-
-    return return_error;
-}
-
-/***************************************
- * eb_vp9_block_on_mutex_timeout
- ***************************************/
-EbErrorType eb_vp9_block_on_mutex_timeout(EbHandle mutex_handle, uint32_t timeout) {
-    EbErrorType return_error = EB_ErrorNone;
-
-#ifdef _WIN32
-    WaitForSingleObject((HANDLE)mutex_handle, timeout);
-#elif __linux__
-    return_error = pthread_mutex_lock((pthread_mutex_t *)mutex_handle) ? EB_ErrorMutexUnresponsive : EB_ErrorNone;
-    (void)timeout;
 #endif // _WIN32
 
     return return_error;
