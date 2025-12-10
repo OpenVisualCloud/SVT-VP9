@@ -110,37 +110,3 @@ void eb_vp9_iht8x8_64_add_sse2(const tran_low_t *input, uint8_t *dest, int strid
     recon_and_store(in[6], dest + 6 * stride);
     recon_and_store(in[7], dest + 7 * stride);
 }
-
-static INLINE void load_buffer_8x16(const tran_low_t *const input, const int stride, __m128i *const in) {
-    load_buffer_8x8(input + 0 * 16, stride, in + 0);
-    load_buffer_8x8(input + 8 * 16, stride, in + 8);
-}
-
-static INLINE void write_buffer_16x1(const __m128i in0, const __m128i in1, uint8_t *const dest) {
-    const __m128i final_rounding = _mm_set1_epi16(1 << 5);
-    const __m128i d0             = _mm_adds_epi16(in0, final_rounding);
-    const __m128i d1             = _mm_adds_epi16(in1, final_rounding);
-    const __m128i d2             = _mm_srai_epi16(d0, 6);
-    const __m128i d3             = _mm_srai_epi16(d1, 6);
-    recon_and_store_16(d2, d3, dest);
-}
-
-static INLINE void write_buffer_16x16(__m128i *const in0, __m128i *const in1, uint8_t *const dest, const int stride) {
-    // Final rounding and shift
-    write_buffer_16x1(in0[0], in1[0], dest + 0 * stride);
-    write_buffer_16x1(in0[1], in1[1], dest + 1 * stride);
-    write_buffer_16x1(in0[2], in1[2], dest + 2 * stride);
-    write_buffer_16x1(in0[3], in1[3], dest + 3 * stride);
-    write_buffer_16x1(in0[4], in1[4], dest + 4 * stride);
-    write_buffer_16x1(in0[5], in1[5], dest + 5 * stride);
-    write_buffer_16x1(in0[6], in1[6], dest + 6 * stride);
-    write_buffer_16x1(in0[7], in1[7], dest + 7 * stride);
-    write_buffer_16x1(in0[8], in1[8], dest + 8 * stride);
-    write_buffer_16x1(in0[9], in1[9], dest + 9 * stride);
-    write_buffer_16x1(in0[10], in1[10], dest + 10 * stride);
-    write_buffer_16x1(in0[11], in1[11], dest + 11 * stride);
-    write_buffer_16x1(in0[12], in1[12], dest + 12 * stride);
-    write_buffer_16x1(in0[13], in1[13], dest + 13 * stride);
-    write_buffer_16x1(in0[14], in1[14], dest + 14 * stride);
-    write_buffer_16x1(in0[15], in1[15], dest + 15 * stride);
-}

@@ -20,6 +20,7 @@
 
 #include <math.h>
 #include "EbPictureOperators.h"
+#include "EbComputeSAD_SadLoopKernel_AVX512.h"
 
 /********************************************
  * Macros

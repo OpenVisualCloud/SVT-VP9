@@ -40,12 +40,6 @@ void eb_vp9_sad_loop_kernel(uint8_t  *src, // input parameter, source samples Pt
 * Requirement: height <= 64
 * Requirement: height % 2 = 0 when width = 4 or 8
 *******************************************************************************/
-#if (                    \
-    defined(__GNUC__) && \
-    (__GNUC__ <          \
-     7)) // 512-bit ver of eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin is crashing -O0 GCC builds before GCC 7.x so forcing opt level
-__attribute__((optimize(2)))
-#endif
 #ifndef DISABLE_AVX512
 AVX512_FUNC_TARGET void eb_vp9_sad_loop_kernel_avx512_hme_l0_intrin(
     uint8_t  *src, // input parameter, source samples Ptr

@@ -138,109 +138,60 @@ EbErrorType eb_vp9_sequence_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object
  * Sequence Control Set Copy
  ************************************************/
 EbErrorType eb_vp9_copy_sequence_control_set(SequenceControlSet *dst, SequenceControlSet *src) {
-    uint32_t write_count   = 0;
     uint32_t segment_index = 0;
 
-    dst->static_config = src->static_config;
-    write_count += sizeof(EbSvtVp9EncConfiguration);
-    dst->encode_context_ptr = src->encode_context_ptr;
-    write_count += sizeof(EncodeContext *);
-    dst->level_idc = src->level_idc;
-    write_count += sizeof(uint32_t);
-    dst->hierarchical_levels = src->hierarchical_levels;
-    write_count += sizeof(uint32_t);
-    dst->look_ahead_distance = src->look_ahead_distance;
-    write_count += sizeof(uint32_t);
-    dst->max_temporal_layers = src->max_temporal_layers;
-    write_count += sizeof(uint32_t);
-    dst->max_input_luma_width = src->max_input_luma_width;
-    write_count += sizeof(uint32_t);
-    dst->max_input_luma_height = src->max_input_luma_height;
-    write_count += sizeof(uint32_t);
+    dst->static_config           = src->static_config;
+    dst->encode_context_ptr      = src->encode_context_ptr;
+    dst->level_idc               = src->level_idc;
+    dst->hierarchical_levels     = src->hierarchical_levels;
+    dst->look_ahead_distance     = src->look_ahead_distance;
+    dst->max_temporal_layers     = src->max_temporal_layers;
+    dst->max_input_luma_width    = src->max_input_luma_width;
+    dst->max_input_luma_height   = src->max_input_luma_height;
     dst->max_input_chroma_height = src->max_input_chroma_height;
-    write_count += sizeof(uint32_t);
-    dst->max_input_chroma_width = src->max_input_chroma_width;
-    write_count += sizeof(uint32_t);
-    dst->max_input_pad_right = src->max_input_pad_right;
-    write_count += sizeof(uint32_t);
-    dst->max_input_pad_bottom = src->max_input_pad_bottom;
-    write_count += sizeof(uint32_t);
-    dst->luma_width = src->luma_width;
-    write_count += sizeof(uint32_t);
-    dst->luma_height = src->luma_height;
-    write_count += sizeof(uint32_t);
-    dst->chroma_width = src->chroma_width;
-    write_count += sizeof(uint32_t);
-    dst->chroma_height = src->chroma_height;
-    write_count += sizeof(uint32_t);
-    dst->pad_right = src->pad_right;
-    write_count += sizeof(uint32_t);
-    dst->pad_bottom = src->pad_bottom;
-    write_count += sizeof(uint32_t);
-    dst->cropping_right_offset = src->cropping_right_offset;
-    write_count += sizeof(int32_t);
-    dst->cropping_bottom_offset = src->cropping_bottom_offset;
-    write_count += sizeof(int32_t);
-    dst->frame_rate = src->frame_rate;
-    write_count += sizeof(uint32_t);
-    dst->input_bit_depth = src->input_bit_depth;
-    write_count += sizeof(EbBitDepth);
-    dst->output_bitdepth = src->output_bitdepth;
-    write_count += sizeof(EbBitDepth);
-    dst->pred_struct_ptr = src->pred_struct_ptr;
-    write_count += sizeof(PredictionStructure *);
-    dst->intra_period = src->intra_period;
-    write_count += sizeof(int32_t);
-    dst->max_ref_count = src->max_ref_count;
-    write_count += sizeof(uint32_t);
-    dst->target_bit_rate = src->target_bit_rate;
-    write_count += sizeof(uint32_t);
-    dst->available_bandwidth = src->available_bandwidth;
-    write_count += sizeof(uint32_t);
-    dst->qp = src->qp;
-    write_count += sizeof(uint32_t);
-    dst->enable_qp_scaling_flag = src->enable_qp_scaling_flag;
-    write_count += sizeof(EB_BOOL);
-    dst->left_padding = src->left_padding;
-    write_count += sizeof(uint16_t);
-    dst->right_padding = src->right_padding;
-    write_count += sizeof(uint16_t);
-    dst->top_padding = src->top_padding;
-    write_count += sizeof(uint16_t);
-    dst->bot_padding = src->bot_padding;
-    write_count += sizeof(uint16_t);
-    dst->enable_denoise_flag = src->enable_denoise_flag;
-    write_count += sizeof(EB_BOOL);
-    dst->max_enc_mode = src->max_enc_mode;
-    write_count += sizeof(uint8_t);
+    dst->max_input_chroma_width  = src->max_input_chroma_width;
+    dst->max_input_pad_right     = src->max_input_pad_right;
+    dst->max_input_pad_bottom    = src->max_input_pad_bottom;
+    dst->luma_width              = src->luma_width;
+    dst->luma_height             = src->luma_height;
+    dst->chroma_width            = src->chroma_width;
+    dst->chroma_height           = src->chroma_height;
+    dst->pad_right               = src->pad_right;
+    dst->pad_bottom              = src->pad_bottom;
+    dst->cropping_right_offset   = src->cropping_right_offset;
+    dst->cropping_bottom_offset  = src->cropping_bottom_offset;
+    dst->frame_rate              = src->frame_rate;
+    dst->input_bit_depth         = src->input_bit_depth;
+    dst->output_bitdepth         = src->output_bitdepth;
+    dst->pred_struct_ptr         = src->pred_struct_ptr;
+    dst->intra_period            = src->intra_period;
+    dst->max_ref_count           = src->max_ref_count;
+    dst->target_bit_rate         = src->target_bit_rate;
+    dst->available_bandwidth     = src->available_bandwidth;
+    dst->qp                      = src->qp;
+    dst->enable_qp_scaling_flag  = src->enable_qp_scaling_flag;
+    dst->left_padding            = src->left_padding;
+    dst->right_padding           = src->right_padding;
+    dst->top_padding             = src->top_padding;
+    dst->bot_padding             = src->bot_padding;
+    dst->enable_denoise_flag     = src->enable_denoise_flag;
+    dst->max_enc_mode            = src->max_enc_mode;
 
     // Segments
     for (segment_index = 0; segment_index < MAX_TEMPORAL_LAYERS; ++segment_index) {
-        dst->me_segment_column_count_array[segment_index] = src->me_segment_column_count_array[segment_index];
-        write_count += sizeof(uint32_t);
-        dst->me_segment_row_count_array[segment_index] = src->me_segment_row_count_array[segment_index];
-        write_count += sizeof(uint32_t);
+        dst->me_segment_column_count_array[segment_index]   = src->me_segment_column_count_array[segment_index];
+        dst->me_segment_row_count_array[segment_index]      = src->me_segment_row_count_array[segment_index];
         dst->enc_dec_segment_col_count_array[segment_index] = src->enc_dec_segment_col_count_array[segment_index];
-        write_count += sizeof(uint32_t);
         dst->enc_dec_segment_row_count_array[segment_index] = src->enc_dec_segment_row_count_array[segment_index];
-        write_count += sizeof(uint32_t);
     }
 
     memcpy(&dst->buffering_period, &src->buffering_period, sizeof(AppBufferingPeriodSei));
 
-    write_count += sizeof(AppBufferingPeriodSei);
-
     memcpy(&dst->recovery_point, &src->recovery_point, sizeof(AppRecoveryPoint));
-
-    write_count += sizeof(AppRecoveryPoint);
 
     memcpy(&dst->pic_timing_sei, &src->pic_timing_sei, sizeof(AppPictureTimingSei));
 
-    write_count += sizeof(AppPictureTimingSei);
-
     eb_video_usability_info_copy(dst->video_usability_info_ptr, src->video_usability_info_ptr);
-
-    write_count += sizeof(AppVideoUsabilityInfo *);
 
     return EB_ErrorNone;
 }

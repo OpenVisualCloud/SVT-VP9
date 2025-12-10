@@ -142,54 +142,6 @@ EbErrorType eb_vp9_mode_decision_configuration_context_ctor(ModeDecisionConfigur
     return EB_ErrorNone;
 }
 
-/******************************************************
-* Detect complex/non-flat/moving LCU in a non-complex area (used to refine MDC depth control)
-******************************************************/
-void complex_non_flat_moving_sb(SequenceControlSet *sequence_control_set_ptr,
-                                PictureControlSet *picture_control_set_ptr, uint32_t picture_width_in_sb) {
-    SbUnit  *sb_ptr;
-    uint32_t sb_index;
-
-    if (picture_control_set_ptr->parent_pcs_ptr->non_moving_average_score != INVALID_NON_MOVING_SCORE &&
-        picture_control_set_ptr->parent_pcs_ptr->non_moving_average_score >= 10 &&
-        picture_control_set_ptr->temporal_layer_index <= 2) {
-        // Determine deltaQP and assign QP value for each leaf
-        for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
-            SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
-
-            sb_ptr = picture_control_set_ptr->sb_ptr_array[sb_index];
-
-            EB_BOOL condition = EB_FALSE;
-
-            if (!picture_control_set_ptr->parent_pcs_ptr->similar_colocated_sb_array[sb_index] &&
-                sb_ptr->picture_control_set_ptr->parent_pcs_ptr->edge_results_ptr[sb_index].edge_block_num > 0) {
-                condition = EB_TRUE;
-            }
-
-            if (condition) {
-                uint32_t counter = 0;
-
-                if (!sb_params->is_edge_sb) {
-                    // Top
-                    if (picture_control_set_ptr->parent_pcs_ptr->edge_results_ptr[sb_index - picture_width_in_sb]
-                            .edge_block_num == 0)
-                        counter++;
-                    // Bottom
-                    if (picture_control_set_ptr->parent_pcs_ptr->edge_results_ptr[sb_index + picture_width_in_sb]
-                            .edge_block_num == 0)
-                        counter++;
-                    // Left
-                    if (picture_control_set_ptr->parent_pcs_ptr->edge_results_ptr[sb_index - 1].edge_block_num == 0)
-                        counter++;
-                    // right
-                    if (picture_control_set_ptr->parent_pcs_ptr->edge_results_ptr[sb_index + 1].edge_block_num == 0)
-                        counter++;
-                }
-            }
-        }
-    }
-}
-
 EB_AURA_STATUS aura_detection64x64(PictureControlSet *picture_control_set_ptr, uint8_t picture_qp, uint32_t sb_index) {
     SequenceControlSet *sequence_control_set_ptr =
         (SequenceControlSet *)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
@@ -2836,7 +2788,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
     // Output
     EbObjectWrapper *enc_dec_tasks_wrapper_ptr;
     EncDecTasks     *enc_dec_tasks_ptr;
-    uint32_t         picture_width_in_sb;
 
     for (;;) {
         // Get RateControl Results
@@ -2855,7 +2806,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
             eb_vp9_signal_derivation_mode_decision_config_kernel_oq_vmaf(picture_control_set_ptr, context_ptr);
         }
 
-#if VP9_RD
         // Initialize the rd cost
         // Hsan: should be done after QP generation (to clean up)
         cal_nmvjointsadcost(picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvjointsadcost);
@@ -2892,7 +2842,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
             picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.mvsadcost =
                 picture_control_set_ptr->parent_pcs_ptr->cpi->td.mb.nmvsadcost;
         }
-#endif
 
 #if SEG_SUPPORT
 #if BEA
@@ -2929,7 +2878,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
         }
 #endif
 #endif
-        picture_width_in_sb = (sequence_control_set_ptr->luma_width + MAX_SB_SIZE_MINUS_1) / MAX_SB_SIZE;
 
         context_ptr->qp = picture_control_set_ptr->picture_qp;
 
@@ -2960,9 +2908,6 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
 
         // Aura Detection: uses the picture QP to derive aura thresholds, therefore it could not move to the open loop
         aura_detection(sequence_control_set_ptr, picture_control_set_ptr);
-
-        // Detect complex/non-flat/moving LCU in a non-complex area (used to refine MDC depth control)
-        complex_non_flat_moving_sb(sequence_control_set_ptr, picture_control_set_ptr, picture_width_in_sb);
 
         if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
             eb_vp9_derive_sb_md_mode(sequence_control_set_ptr, picture_control_set_ptr, context_ptr);

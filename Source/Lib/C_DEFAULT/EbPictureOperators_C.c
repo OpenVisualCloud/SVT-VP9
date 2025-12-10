@@ -5,6 +5,7 @@
 
 #include "EbPictureOperators_C.h"
 #include <string.h>
+#include "EbDefinitions.h"
 #include "EbUtility.h"
 
 /*********************************
@@ -318,6 +319,7 @@ EB_EXTERN void full_distortion_kernel_eob_zero32bit(int16_t *coeff, uint32_t coe
     uint32_t column_index;
     uint32_t row_index             = 0;
     uint32_t prediction_distortion = 0;
+    UNUSED(recon_coeff);
 
     while (row_index < area_height) {
         column_index = 0;

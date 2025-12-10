@@ -47,19 +47,15 @@ void eb_vp9_compute_depth_costs(PictureControlSet *picture_control_set_ptr, SbUn
             context_ptr->enc_dec_local_block_array[current_depth_idx_mds - 2 * step]->cost +
             context_ptr->enc_dec_local_block_array[current_depth_idx_mds - 3 * step]->cost;
     } else {
-#if VP9_RD
         get_partition_cost(picture_control_set_ptr,
                            context_ptr,
                            parent_depth_bsize,
                            PARTITION_NONE,
                            sb_ptr->coded_block_array_ptr[parent_depth_idx_mds]->partition_context,
                            &parent_depth_part_cost);
-#endif
         *parent_depth_cost = (context_ptr->enc_dec_local_block_array[parent_depth_idx_mds]->cost == MAX_BLOCK_COST)
             ? MAX_BLOCK_COST
             : context_ptr->enc_dec_local_block_array[parent_depth_idx_mds]->cost + parent_depth_part_cost;
-
-#if VP9_RD
 
         get_partition_cost(picture_control_set_ptr,
                            context_ptr,
@@ -67,7 +63,6 @@ void eb_vp9_compute_depth_costs(PictureControlSet *picture_control_set_ptr, SbUn
                            PARTITION_SPLIT,
                            sb_ptr->coded_block_array_ptr[parent_depth_idx_mds]->partition_context,
                            &current_depth_part_cost);
-#endif
 
         *current_depth_cost = context_ptr->enc_dec_local_block_array[current_depth_idx_mds]->cost +
             context_ptr->enc_dec_local_block_array[current_depth_idx_mds - 1 * step]->cost +
@@ -774,10 +769,8 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
 
     int tufull_distortion[3][DIST_CALC_TOTAL];
 
-#if VP9_RD
     VP9_COMP     *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
     RD_OPT *const rd  = &cpi->rd;
-#endif
 #if INTER_INTRA_BIAS
     const int intra_cost_penalty = vp9_get_intra_cost_penalty(
         context_ptr->ep_block_stats_ptr->bsize,
@@ -876,7 +869,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                 0,
                 0);
 
-#if VP9_RD
             // Luma Distortion and Rate Calculation
             perform_dist_rate_calc(
                 context_ptr,
@@ -902,7 +894,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
             yfull_distortion[DIST_CALC_RESIDUAL] += tufull_distortion[0][DIST_CALC_RESIDUAL];
             yfull_distortion[DIST_CALC_PREDICTION] += tufull_distortion[0][DIST_CALC_PREDICTION];
             y_coeff_bits += tu_coeff_bits;
-#endif
         }
 
         if ((context_ptr->chroma_level == CHROMA_LEVEL_0 || context_ptr->chroma_level == CHROMA_LEVEL_1) &&
@@ -933,7 +924,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                 0,
                 0);
 
-#if VP9_RD
             // Cb Distortion and Rate Calculation
             perform_dist_rate_calc(
                 context_ptr,
@@ -954,7 +944,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                 candidate_buffer->candidate_ptr->mode_info->mode,
                 &cbfull_distortion[0],
                 &cb_coeff_bits);
-#endif
 
             // Cr Coding Loop
             perform_coding_loop(
@@ -982,7 +971,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                 0,
                 0);
 
-#if VP9_RD
             // Cr Distortion and Rate Calculation
             perform_dist_rate_calc(
                 context_ptr,
@@ -1076,7 +1064,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
                     }
                 }
             }
-#endif
         }
 
         // Derive skip flag
@@ -1093,7 +1080,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
             }
         }
 
-#if VP9_RD
         full_cost_func_table[candidate_ptr->mode_info->mode <= TM_PRED](context_ptr,
                                                                         candidate_buffer,
                                                                         yfull_distortion,
@@ -1107,7 +1093,6 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
         if (picture_control_set_ptr->slice_type != I_SLICE && candidate_ptr->mode_info->mode <= TM_PRED &&
             candidate_ptr->mode_info->mode != DC_PRED && candidate_ptr->mode_info->mode != TM_PRED)
             *candidate_buffer->full_cost_ptr += intra_cost_penalty;
-#endif
 #endif
         if (context_ptr->full_loop_escape) {
             if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -1999,13 +1984,11 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
 
     // Mode Info Array
     context_ptr->mode_info_array = picture_control_set_ptr->mode_info_array;
-#if VP9_RD
-    VP9_COMP          *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-    VP9_COMMON *const  cm  = &cpi->common;
-    MACROBLOCKD *const xd  = context_ptr->e_mbd;
+    VP9_COMP          *cpi       = picture_control_set_ptr->parent_pcs_ptr->cpi;
+    VP9_COMMON *const  cm        = &cpi->common;
+    MACROBLOCKD *const xd        = context_ptr->e_mbd;
 
     set_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
-#endif
 
     uint16_t mdc_block_index = 0;
 #if 0 // Hsan - to do
@@ -2090,11 +2073,9 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                 skip_sub_blocks = check_skip_sub_blocks(
                     sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
 
-#if VP9_RD
                 // Set context for the rate of cus
                 set_block_rate_context(picture_control_set_ptr, context_ptr, xd);
 
-#endif
                 // Set the number full loop candidates
                 set_nfl(picture_control_set_ptr, context_ptr, sb_ptr);
 
@@ -2265,132 +2246,8 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                 picture_control_set_ptr, input_picture_ptr, context_ptr, sb_ptr, candidate_buffer, 2);
                         }
 
-#if VP9_RD
                         // Update context for the rate of cus
                         update_block_rate_context(context_ptr, xd);
-#endif
-
-#if !VP9_PERFORM_EP
-                        // copy coeff
-                        {
-                            int j;
-
-                            //Y
-                            {
-                                int16_t *src_ptr = &(
-                                    ((int16_t *)candidate_buffer->residual_quant_coeff_ptr->buffer_y)
-                                        [0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
-                                int16_t *dst_ptr = &(
-                                    ((int16_t *)context_ptr->sb_ptr->quantized_coeff
-                                         ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x +
-                                                     context_ptr->ep_block_stats_ptr->origin_y *
-                                                         context_ptr->sb_ptr->quantized_coeff->stride_y]);
-
-                                for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                    memcpy(
-                                        dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size * sizeof(int16_t));
-                                    src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size;
-                                    dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_y;
-                                }
-                            }
-
-                            if (context_ptr->ep_block_stats_ptr->has_uv) {
-                                //Cb
-                                {
-                                    int16_t *src_ptr = &(
-                                        ((int16_t *)candidate_buffer->residual_quant_coeff_ptr->buffer_cb)
-                                            [0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
-                                    int16_t *dst_ptr = &(
-                                        ((int16_t *)context_ptr->sb_ptr->quantized_coeff
-                                             ->buffer_cb)[(ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1) +
-                                                          (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) *
-                                                              context_ptr->sb_ptr->quantized_coeff->stride_cb]);
-
-                                    for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                        memcpy(dst_ptr,
-                                               src_ptr,
-                                               context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                        src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                                        dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_cb;
-                                    }
-                                }
-
-                                //Cr
-                                {
-                                    int16_t *src_ptr = &(
-                                        ((int16_t *)candidate_buffer->residual_quant_coeff_ptr->buffer_cr)
-                                            [0]); // Hsan - does not match block location (i.e. stride not used) - kept as is to do not change WebM kernels
-                                    int16_t *dst_ptr = &(
-                                        ((int16_t *)context_ptr->sb_ptr->quantized_coeff
-                                             ->buffer_cr)[(ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x) >> 1) +
-                                                          (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) >> 1) *
-                                                              context_ptr->sb_ptr->quantized_coeff->stride_cr]);
-
-                                    for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                        memcpy(dst_ptr,
-                                               src_ptr,
-                                               context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                        src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                                        dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_cr;
-                                    }
-                                }
-                            }
-                        }
-
-                        // copy recon
-                        {
-                            EbPictureBufferDesc *recon_buffer = context_ptr->recon_buffer;
-
-                            int      j;
-                            uint32_t recLumaOffset = context_ptr->ep_block_stats_ptr->origin_x +
-                                context_ptr->ep_block_stats_ptr->origin_y * candidate_buffer->recon_ptr->stride_y;
-                            uint8_t *src_ptr = candidate_buffer->recon_ptr->buffer_y + recLumaOffset;
-                            uint8_t *dst_ptr = recon_buffer->buffer_y + recon_buffer->origin_x +
-                                context_ptr->block_origin_x +
-                                (recon_buffer->origin_y + context_ptr->block_origin_y) * recon_buffer->stride_y;
-
-                            for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size);
-                                src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_y;
-                                dst_ptr = dst_ptr + recon_buffer->stride_y;
-                            }
-
-                            if (context_ptr->ep_block_stats_ptr->has_uv) {
-                                uint32_t recCbOffset = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) *
-                                                            candidate_buffer->recon_ptr->stride_cb +
-                                                        ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x)) >>
-                                    1;
-                                uint32_t recCrOffset = (ROUND_UV(context_ptr->ep_block_stats_ptr->origin_y) *
-                                                            candidate_buffer->recon_ptr->stride_cr +
-                                                        ROUND_UV(context_ptr->ep_block_stats_ptr->origin_x)) >>
-                                    1;
-
-                                src_ptr = candidate_buffer->recon_ptr->buffer_cb + recCbOffset;
-                                dst_ptr = recon_buffer->buffer_cb + (recon_buffer->origin_x >> 1) +
-                                    (ROUND_UV(context_ptr->block_origin_x) >> 1) +
-                                    ((recon_buffer->origin_y >> 1) + (ROUND_UV(context_ptr->block_origin_y) >> 1)) *
-                                        recon_buffer->stride_cb;
-
-                                for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                    memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
-                                    src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_cb;
-                                    dst_ptr = dst_ptr + recon_buffer->stride_cb;
-                                }
-
-                                src_ptr = candidate_buffer->recon_ptr->buffer_cr + recCrOffset;
-                                dst_ptr = recon_buffer->buffer_cr + (recon_buffer->origin_x >> 1) +
-                                    (ROUND_UV(context_ptr->block_origin_x) >> 1) +
-                                    ((recon_buffer->origin_y >> 1) + (ROUND_UV(context_ptr->block_origin_y) >> 1)) *
-                                        recon_buffer->stride_cr;
-
-                                for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                    memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
-                                    src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_cr;
-                                    dst_ptr = dst_ptr + recon_buffer->stride_cr;
-                                }
-                            }
-                        }
-#endif
                     }
                 }
 
@@ -2573,11 +2430,9 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                 // Initialize Fast Loop
                 coding_loop_init_fast_loop(context_ptr);
 
-#if VP9_RD
                 // Set context for the rate of cus
                 set_block_rate_context(picture_control_set_ptr, context_ptr, xd);
 
-#endif
                 // Set the number full loop candidates
                 set_nfl(picture_control_set_ptr, context_ptr, sb_ptr);
 
@@ -2696,10 +2551,8 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                         // Update neighbor sample arrays
                         update_recon_neighbor_arrays(input_picture_ptr, context_ptr, sb_ptr, candidate_buffer, 0);
 
-#if VP9_RD
                         // Update context for the rate of cus
                         update_block_rate_context(context_ptr, xd);
-#endif
                     }
 
                     // Keep track of pillar recon buffer as might be used @ bdp_8x8_refinement_sb
@@ -2760,13 +2613,11 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
     // Mode Info Array
     context_ptr->mode_info_array = picture_control_set_ptr->mode_info_array;
-#if VP9_RD
-    VP9_COMP          *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-    VP9_COMMON *const  cm  = &cpi->common;
-    MACROBLOCKD *const xd  = context_ptr->e_mbd;
+    VP9_COMP          *cpi       = picture_control_set_ptr->parent_pcs_ptr->cpi;
+    VP9_COMMON *const  cm        = &cpi->common;
+    MACROBLOCKD *const xd        = context_ptr->e_mbd;
 
     set_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
-#endif
 
     // Hsan: context variables derivation could be simplified as always 64x64
     uint16_t ep_block_index = 0;
@@ -2826,11 +2677,9 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
         // Initialize Fast Loop
         coding_loop_init_fast_loop(context_ptr);
 
-#if VP9_RD
         // Set context for the rate of cus
         set_block_rate_context(picture_control_set_ptr, context_ptr, xd);
 
-#endif
         // Set the number full loop candidates
         set_nfl(picture_control_set_ptr, context_ptr, sb_ptr);
 
@@ -2915,28 +2764,24 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
             uint64_t depth_n_plus_one_cost      = 0;
 
             // Compute depth N cost (64x64)
-#if VP9_RD
             get_partition_cost(picture_control_set_ptr,
                                context_ptr,
                                BLOCK_64X64,
                                PARTITION_NONE,
                                sb_ptr->coded_block_array_ptr[0]->partition_context,
                                &depth_n_part_cost);
-#endif
 
             depth_n_cost = (context_ptr->enc_dec_local_block_array[0]->cost == MAX_BLOCK_COST)
                 ? MAX_BLOCK_COST
                 : context_ptr->enc_dec_local_block_array[0]->cost + depth_n_part_cost;
 
             // Compute depth N+1 cost (32x32)
-#if VP9_RD
             get_partition_cost(picture_control_set_ptr,
                                context_ptr,
                                BLOCK_64X64,
                                PARTITION_SPLIT,
                                sb_ptr->coded_block_array_ptr[0]->partition_context,
                                &depth_n_plus_one_part_cost);
-#endif
 
             depth_n_plus_one_cost = context_ptr->enc_dec_local_block_array[5]->cost +
                 context_ptr->enc_dec_local_block_array[174]->cost + context_ptr->enc_dec_local_block_array[343]->cost +
@@ -2984,11 +2829,8 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                 // Update neighbor sample arrays
                 update_recon_neighbor_arrays(input_picture_ptr, context_ptr, sb_ptr, candidate_buffer, 0);
 
-#if VP9_RD
                 // Update context for the rate of cus
                 update_block_rate_context(context_ptr, xd);
-
-#endif
             }
 
             if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
@@ -3034,13 +2876,11 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
     // Mode Info Array
     context_ptr->mode_info_array = picture_control_set_ptr->mode_info_array;
-#if VP9_RD
-    VP9_COMP          *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-    VP9_COMMON *const  cm  = &cpi->common;
-    MACROBLOCKD *const xd  = context_ptr->e_mbd;
+    VP9_COMP          *cpi       = picture_control_set_ptr->parent_pcs_ptr->cpi;
+    VP9_COMMON *const  cm        = &cpi->common;
+    MACROBLOCKD *const xd        = context_ptr->e_mbd;
 
     set_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
-#endif
 
     uint16_t ep_block_index = 0;
 
@@ -3134,11 +2974,9 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                     // Initialize Fast Loop
                     coding_loop_init_fast_loop(context_ptr);
 
-#if VP9_RD
                     // Set context for the rate of cus
                     set_block_rate_context(picture_control_set_ptr, context_ptr, xd);
 
-#endif
                     // Set the number full loop candidates
                     set_nfl(picture_control_set_ptr, context_ptr, sb_ptr);
 
@@ -3226,14 +3064,12 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                         uint64_t depth_n_plus_one_cost      = 0;
 
                         // Compute depth N cost (16x16)
-#if VP9_RD
                         get_partition_cost(picture_control_set_ptr,
                                            context_ptr,
                                            BLOCK_16X16,
                                            PARTITION_NONE,
                                            sb_ptr->coded_block_array_ptr[ep_block_index]->partition_context,
                                            &depth_n_part_cost);
-#endif
 
                         depth_n_cost = (context_ptr->enc_dec_local_block_array[ep_block_index]->cost == MAX_BLOCK_COST)
                             ? MAX_BLOCK_COST
@@ -3241,14 +3077,12 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
                         // Compute depth N+1 cost
 
-#if VP9_RD
                         get_partition_cost(picture_control_set_ptr,
                                            context_ptr,
                                            BLOCK_16X16,
                                            PARTITION_SPLIT,
                                            sb_ptr->coded_block_array_ptr[ep_block_index]->partition_context,
                                            &depth_n_plus_one_part_cost);
-#endif
 
                         depth_n_plus_one_cost =
                             context_ptr->enc_dec_local_block_array[ep_8x8_block_index_array[0]]->cost +
@@ -3313,10 +3147,8 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                                                          sb_ptr,
                                                          candidate_buffer,
                                                          last_block_index == ep_block_index);
-#if VP9_RD
                             // Update context for the rate of cus
                             update_block_rate_context(context_ptr, xd);
-#endif
                         }
                     }
                 }
@@ -3366,13 +3198,11 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
 
     // Mode Info Array
     context_ptr->mode_info_array = picture_control_set_ptr->mode_info_array;
-#if VP9_RD
-    VP9_COMP          *cpi = picture_control_set_ptr->parent_pcs_ptr->cpi;
-    VP9_COMMON *const  cm  = &cpi->common;
-    MACROBLOCKD *const xd  = context_ptr->e_mbd;
+    VP9_COMP          *cpi       = picture_control_set_ptr->parent_pcs_ptr->cpi;
+    VP9_COMMON *const  cm        = &cpi->common;
+    MACROBLOCKD *const xd        = context_ptr->e_mbd;
 
     set_sb_rate_context(picture_control_set_ptr, context_ptr, xd);
-#endif
 
     uint16_t ep_block_index = 0;
 
@@ -3433,11 +3263,9 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
             // Initialize Fast Loop
             coding_loop_init_fast_loop(context_ptr);
 
-#if VP9_RD
             // Set context for the rate of cus
             set_block_rate_context(picture_control_set_ptr, context_ptr, xd);
 
-#endif
             // Set the number full loop candidates
             set_nfl(picture_control_set_ptr, context_ptr, sb_ptr);
 
@@ -3548,11 +3376,8 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
                     update_bdp_recon_neighbor_arrays(
                         picture_control_set_ptr, input_picture_ptr, context_ptr, sb_ptr, candidate_buffer, 2);
 
-#if VP9_RD
                     // Update context for the rate of cus
                     update_block_rate_context(context_ptr, xd);
-
-#endif
                 }
             }
             ep_block_index += ep_intra_depth_offset[ep_raster_scan_block_depth[ep_scan_to_raster_scan[ep_block_index]]];
@@ -3599,7 +3424,6 @@ EB_BOOL is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
     return EB_FALSE;
 }
 
-#if VP9_PERFORM_EP
 /*******************************************
         * Encode Pass
         *
@@ -3666,11 +3490,9 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
             sizeof(*picture_control_set_ptr->ep_left_context) * MAX_MB_PLANE * 2 * mi_cols_aligned_to_sb(cm->mi_rows));
     }
 
-#if VP9_PERFORM_EP
     // Reset Quantized Coeff Buffer CU Offsets
     sb_ptr->quantized_coeff_buffer_block_offset[0]     = sb_ptr->quantized_coeff_buffer_block_offset[1] =
         sb_ptr->quantized_coeff_buffer_block_offset[2] = 0;
-#endif
 
     uint16_t ep_block_index = 0;
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
@@ -4234,7 +4056,6 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
 
     return return_error;
 }
-#endif
 
 /******************************************************
          * Enc Dec Context Constructor
@@ -4471,7 +4292,6 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
     EB_MALLOC(MACROBLOCKD *, context_ptr->e_mbd, sizeof(MACROBLOCKD), EB_N_PTR);
     EB_MALLOC(ModeInfo **, context_ptr->e_mbd->mi, sizeof(ModeInfo *), EB_N_PTR);
 
-#if VP9_RD
     EB_MALLOC(ENTROPY_CONTEXT *, context_ptr->e_mbd->plane[0].above_context, sizeof(ENTROPY_CONTEXT) * 16, EB_N_PTR);
     EB_MALLOC(ENTROPY_CONTEXT *, context_ptr->e_mbd->plane[0].left_context, sizeof(ENTROPY_CONTEXT) * 16, EB_N_PTR);
 
@@ -4480,7 +4300,6 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
 
     EB_MALLOC(ENTROPY_CONTEXT *, context_ptr->e_mbd->plane[2].above_context, sizeof(ENTROPY_CONTEXT) * 16, EB_N_PTR);
     EB_MALLOC(ENTROPY_CONTEXT *, context_ptr->e_mbd->plane[2].left_context, sizeof(ENTROPY_CONTEXT) * 16, EB_N_PTR);
-#endif
 
     EB_MALLOC(EncDecBlockUnit **,
               context_ptr->enc_dec_local_block_array,
@@ -5575,7 +5394,6 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         context_ptr->depth_part_stage = 0;
                         bdp_nearest_near_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
                     }
-#if VP9_PERFORM_EP
 #if USE_SRC_REF
                     // Set valid ref_frame
                     if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -5611,7 +5429,6 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
 
                     // Encode Pass
                     encode_pass_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
-#endif
                 }
                 x_sb_start_index = (x_sb_start_index > 0) ? x_sb_start_index - 1 : 0;
             }

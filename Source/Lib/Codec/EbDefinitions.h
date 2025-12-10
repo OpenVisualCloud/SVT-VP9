@@ -110,10 +110,6 @@ typedef __int64 Off64;
 #define NEW_PRED_STRUCT 1
 // DEV MACROS
 #define DISABLE_AVX512
-#define NEW_API 1
-#define VP9_RD 1
-#define VP9_PERFORM_EP 1
-#define CHROMA_QP_OFFSET 1 // Turn on to change default from DC/AC = -15/-15
 
 #define HME_ENHANCED_CENTER_SEARCH 1
 #define ADP_STATS_PER_LAYER 0 // Lossless: ADP stats

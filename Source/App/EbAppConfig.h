@@ -49,10 +49,6 @@ API.  This is a 32 bit pointer and is aligned on a 32 bit word boundary.
 */
 typedef void *EB_PTR;
 
-/** The NULL type is used to define the C style NULL pointer.
-*/
-#define NULL ((void *)0)
-
 // memory map to be removed and replaced by malloc / free
 typedef enum EbPtrType {
     EB_N_PTR     = 0, // malloc'd pointer

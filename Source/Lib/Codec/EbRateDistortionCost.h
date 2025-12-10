@@ -17,10 +17,8 @@
 extern "C" {
 #endif
 
-#if VP9_RD
 extern void estimate_ref_frame_costs(const VP9_COMMON *cm, const MACROBLOCKD *xd, int segment_id,
                                      uint32_t *ref_costs_single, uint32_t *ref_costs_comp, vpx_prob *comp_mode_p);
-#endif
 
 extern int64_t inter_fast_cost(PictureControlSet *picture_control_set_ptr, int has_uv, int rd_mult_sad,
                                MbModeInfoExt *mbmi_ext, MACROBLOCKD *e_mbd, uint32_t *ref_costs_single,

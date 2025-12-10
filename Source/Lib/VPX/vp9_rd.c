@@ -280,12 +280,10 @@ void eb_vp9_initialize_rd_consts(VP9_COMP *cpi) {
 #if 0
   vpx_clear_system_state();
 #endif
-    rd->RDDIV  = RDDIV_BITS; // In bits (to multiply D by 128).
-    rd->RDMULT = eb_vp9_compute_rd_mult(cpi, cm->base_qindex + cm->y_dc_delta_q);
-#if VP9_RD
+    rd->RDDIV       = RDDIV_BITS; // In bits (to multiply D by 128).
+    rd->RDMULT      = eb_vp9_compute_rd_mult(cpi, cm->base_qindex + cm->y_dc_delta_q);
     rd->rd_mult_sad = (int)MAX(round(sqrtf((float)rd->RDMULT / 128) * 128), 1);
 
-#endif
     set_error_per_bit(x, rd->RDMULT);
 
     x->select_tx_size = (/*cpi->sf.tx_size_search_method == USE_LARGESTALL &&*/

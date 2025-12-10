@@ -22,7 +22,6 @@
 #include "vp9_scan.h"
 #include "vp9_pred_common.h"
 
-#if VP9_RD
 // Note that the context is not pointing to the right CU.
 EbErrorType get_partition_cost(PictureControlSet *picture_control_set_ptr, EncDecContext *context_ptr, BLOCK_SIZE bsize,
                                PARTITION_TYPE partition_type, int partition_context, uint64_t *partition_cost) {
@@ -181,7 +180,6 @@ int eb_vp9_mv_bit_cost(const MV *mv, const MV *ref, const int *mvjcost, int *mvc
     const MV diff = {mv->row - ref->row, mv->col - ref->col};
     return ROUND_POWER_OF_TWO(mv_cost(&diff, mvjcost, mvcost) * weight, 7);
 }
-#endif
 
 EbErrorType inter_full_cost(struct EncDecContext *context_ptr, struct ModeDecisionCandidateBuffer *candidate_buffer_ptr,
                             int *y_distortion, int *cb_distortion, int *cr_distortion, int *y_coeff_bits,

@@ -3726,8 +3726,6 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
         }
 
     } else if (picture_control_set_ptr->pic_noise_class == PIC_NOISE_CLASS_2) {
-        uint32_t new_tot_fn = 0;
-
         //for each LCU ,re check the FN information for only the FNdecim ones
         for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
             SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
@@ -3754,22 +3752,11 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
                                            denoised_picture_ptr, input_luma_origin_index, denoiseBlkVar32x32) >>
                     16;
 
-                uint64_t noiseBlkVarTh;
-                uint64_t denBlkVarTh = FLAT_MAX_VAR;
+                const uint64_t noiseBlkVarTh = picture_control_set_ptr->noise_detection_th == 1 ? NOISE_MIN_LEVEL_0
+                                                                                                : NOISE_MIN_LEVEL_1;
 
-                if (picture_control_set_ptr->noise_detection_th == 1)
-                    noiseBlkVarTh = NOISE_MIN_LEVEL_0;
-                else
-                    noiseBlkVarTh = NOISE_MIN_LEVEL_1;
-
-                if (den_blk_var < denBlkVarTh && noiseBlkVar > noiseBlkVarTh) {
-                    picture_control_set_ptr->sb_flat_noise_array[sb_index] = 1;
-                    //SVT_LOG("POC %i (%i,%i) den_blk_var: %i  noiseBlkVar :%i\n", picture_control_set_ptr->picture_number,sb_origin_x,sb_origin_y, den_blk_var, noiseBlkVar);
-                    new_tot_fn++;
-
-                } else {
-                    picture_control_set_ptr->sb_flat_noise_array[sb_index] = 0;
-                }
+                picture_control_set_ptr->sb_flat_noise_array[sb_index] = den_blk_var < FLAT_MAX_VAR &&
+                    noiseBlkVar > noiseBlkVarTh;
             }
         }
 
@@ -4559,7 +4546,6 @@ void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentC
     EB_BOOL   high_variance_sb_flag;
 
     uint32_t raster_scan_block_index = 0;
-    uint32_t number_of_edge_sb       = 0;
     EB_BOOL  high_intensity_sb_flag;
 
     uint64_t neighbour_sb_mean;
@@ -4644,10 +4630,6 @@ void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentC
                     }
                 }
             }
-
-            if (high_variance_sb_flag) {
-                number_of_edge_sb += edge_results_ptr[sb_index].edge_block_num;
-            }
         }
     }
 
@@ -4662,7 +4644,6 @@ static void determine_homogeneous_region_in_picture(SequenceControlSet      *seq
     uint32_t  sb_index;
 
     uint32_t cu_num, cu_size, block_index_offset, cu_h, cu_w;
-    uint64_t null_var_cnt     = 0;
     uint64_t very_low_var_cnt = 0;
     uint64_t var_sb_cnt       = 0;
     uint32_t sb_total_count   = picture_control_set_ptr->sb_total_count;
@@ -4681,8 +4662,6 @@ static void determine_homogeneous_region_in_picture(SequenceControlSet      *seq
         variance_ptr = picture_control_set_ptr->variance[sb_index];
 
         if (sb_params->is_complete_sb) {
-            null_var_cnt += (variance_ptr[ME_TIER_ZERO_PU_64x64] == 0) ? 1 : 0;
-
             var_sb_cnt++;
 
             very_low_var_cnt += ((variance_ptr[ME_TIER_ZERO_PU_64x64]) < SB_LOW_VAR_TH) ? 1 : 0;

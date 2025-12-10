@@ -4420,7 +4420,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
         queue_entry_index_temp = current_ind;
 
         /* Loop over the planned future frames. */
-        for (int32_t j = 0; buffer_fill_cur >= 0; j++) {
+        while (buffer_fill_cur >= 0) {
             queue_entry_index_temp2 = (queue_entry_index_temp > HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH - 1)
                 ? queue_entry_index_temp - HIGH_LEVEL_RATE_CONTROL_HISTOGRAM_QUEUE_MAX_DEPTH
                 : queue_entry_index_temp;
@@ -4495,8 +4495,6 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
     RateControlResults *rate_control_results_ptr;
 
     RateControlLayerContext *rate_control_layer_ptr;
-
-    uint64_t total_number_of_fb_frames = 0;
 
     RateControlTaskTypes task_type;
 
@@ -5088,7 +5086,6 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 }
             }
 #endif
-            total_number_of_fb_frames++;
 
             // Release the SequenceControlSet
             eb_vp9_release_object(parentpicture_control_set_ptr->sequence_control_set_wrapper_ptr);

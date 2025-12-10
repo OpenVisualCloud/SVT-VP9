@@ -103,10 +103,8 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
         memset(xd->left_seg_context, 0, sizeof(xd->left_seg_context));
         set_partition_probs(cm, xd);
     }
-#if VP9_PERFORM_EP
     sb_ptr->quantized_coeff_buffer_block_offset[0]     = sb_ptr->quantized_coeff_buffer_block_offset[1] =
         sb_ptr->quantized_coeff_buffer_block_offset[2] = 0;
-#endif
     do {
         context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[block_index];
         context_ptr->ep_block_stats_ptr = ep_get_block_stats(block_index);
@@ -214,7 +212,6 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                 }
 
                 // From SVT to WebM (coeff)
-#if VP9_PERFORM_EP
                 cpi->td.mb.plane[0].qcoeff = &(
                     ((int16_t *)sb_ptr->quantized_coeff_buffer[0])[sb_ptr->quantized_coeff_buffer_block_offset[0]]);
                 cpi->td.mb.plane[1].qcoeff = &(
@@ -230,149 +227,6 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                 sb_ptr->quantized_coeff_buffer_block_offset[2] += (context_ptr->ep_block_stats_ptr->sq_size *
                                                                    context_ptr->ep_block_stats_ptr->sq_size) >>
                     2;
-#else
-                if (xd->mi[0]->skip == EB_FALSE) {
-                    if (xd->mi[0]->sb_type < BLOCK_8X8) {
-                        // Y: 1st mbi
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x +
-                                                                  context_ptr->ep_block_stats_ptr->origin_y *
-                                                                      sb_ptr->quantized_coeff->stride_y]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[0]);
-
-                            for (int j = 0; j < 4; j++) {
-                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
-                                dst_ptr = dst_ptr + 4;
-                            }
-                        }
-
-                        // Y: 2nd mbi
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x + 4 +
-                                                                  context_ptr->ep_block_stats_ptr->origin_y *
-                                                                      sb_ptr->quantized_coeff->stride_y]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[16]);
-
-                            for (int j = 0; j < 4; j++) {
-                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
-                                dst_ptr = dst_ptr + 4;
-                            }
-                        }
-
-                        // Y: 3rd mbi
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x +
-                                                                  (context_ptr->ep_block_stats_ptr->origin_y + 4) *
-                                                                      sb_ptr->quantized_coeff->stride_y]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[32]);
-
-                            for (int j = 0; j < 4; j++) {
-                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
-                                dst_ptr = dst_ptr + 4;
-                            }
-                        }
-
-                        // Y: 4th mbi
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x + 4 +
-                                                                  (context_ptr->ep_block_stats_ptr->origin_y + 4) *
-                                                                      sb_ptr->quantized_coeff->stride_y]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[48]);
-
-                            for (int j = 0; j < 4; j++) {
-                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
-                                dst_ptr = dst_ptr + 4;
-                            }
-                        }
-
-#if 1
-                        //Cb
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_cb)[(context_ptr->ep_block_stats_ptr->origin_x >> 1) +
-                                                                   (context_ptr->ep_block_stats_ptr->origin_y >> 1) *
-                                                                       sb_ptr->quantized_coeff->stride_cb]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[1].qcoeff)[0]);
-
-                            for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cb;
-                                dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                            }
-                        }
-
-                        //Cr
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_cr)[(context_ptr->ep_block_stats_ptr->origin_x >> 1) +
-                                                                   (context_ptr->ep_block_stats_ptr->origin_y >> 1) *
-                                                                       sb_ptr->quantized_coeff->stride_cr]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[2].qcoeff)[0]);
-
-                            for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cr;
-                                dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                            }
-                        }
-#endif
-
-                    } else {
-                        //Y
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_y)[context_ptr->ep_block_stats_ptr->origin_x +
-                                                                  context_ptr->ep_block_stats_ptr->origin_y *
-                                                                      sb_ptr->quantized_coeff->stride_y]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[0]);
-
-                            for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
-                                dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size;
-                            }
-                        }
-
-                        //Cb
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_cb)[(context_ptr->ep_block_stats_ptr->origin_x >> 1) +
-                                                                   (context_ptr->ep_block_stats_ptr->origin_y >> 1) *
-                                                                       sb_ptr->quantized_coeff->stride_cb]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[1].qcoeff)[0]);
-
-                            for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cb;
-                                dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                            }
-                        }
-
-                        //Cr
-                        {
-                            int16_t    *src_ptr = &(((int16_t *)sb_ptr->quantized_coeff
-                                                      ->buffer_cr)[(context_ptr->ep_block_stats_ptr->origin_x >> 1) +
-                                                                   (context_ptr->ep_block_stats_ptr->origin_y >> 1) *
-                                                                       sb_ptr->quantized_coeff->stride_cr]);
-                            tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[2].qcoeff)[0]);
-
-                            for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
-                                src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cr;
-                                dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
-                            }
-                        }
-                    }
-                }
-#endif
 
                 // Set skip context
                 set_skip_context(xd, context_ptr->mi_row, context_ptr->mi_col);

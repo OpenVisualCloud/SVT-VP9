@@ -107,14 +107,12 @@ typedef struct ModeDecisionConfigurationContext {
 
     PaBlockStats *block_stats;
 
-#if VP9_RD
     MbModeInfoExt         *mbmi_ext;
     uint32_t               ref_costs_single[MAX_REF_FRAMES];
     uint32_t               ref_costs_comp[MAX_REF_FRAMES];
     vpx_prob               comp_mode_p;
     ModeDecisionCandidate *candidate_ptr;
     MACROBLOCKD           *e_mbd;
-#endif
 #if SEG_SUPPORT
     int qindex_delta[MAX_SEGMENTS];
 #endif

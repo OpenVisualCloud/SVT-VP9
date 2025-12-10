@@ -639,7 +639,6 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         picture_control_set_ptr->cpi->common.frame_parallel_decoding_mode = 1;
         picture_control_set_ptr->cpi->common.frame_context_idx            = 0;
         picture_control_set_ptr->cpi->common.y_dc_delta_q                 = 0;
-#if CHROMA_QP_OFFSET
         if (sequence_control_set_ptr->static_config.tune == TUNE_OQ) {
             picture_control_set_ptr->cpi->common.uv_dc_delta_q = -15;
             picture_control_set_ptr->cpi->common.uv_ac_delta_q = -15;
@@ -647,10 +646,6 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
             picture_control_set_ptr->cpi->common.uv_dc_delta_q = 0;
             picture_control_set_ptr->cpi->common.uv_ac_delta_q = 0;
         }
-#else
-        picture_control_set_ptr->cpi->common.uv_dc_delta_q = 0;
-        picture_control_set_ptr->cpi->common.uv_ac_delta_q = 0;
-#endif
         picture_control_set_ptr->cpi->common.seg.enabled    = 0;
         picture_control_set_ptr->cpi->common.seg.update_map = 0;
         picture_control_set_ptr->cpi->common.log2_tile_cols = 0;

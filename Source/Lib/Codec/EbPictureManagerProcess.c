@@ -113,18 +113,11 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
     PictureManagerReorderEntry *queue_entry_ptr;
     int32_t                     queue_entry_index;
 
-    // Debug
-    uint32_t loop_count = 0;
-
     for (;;) {
         // Get Input Full Object
         eb_vp9_get_full_object(context_ptr->picture_input_fifo_ptr, &input_picture_demux_wrapper_ptr);
 
         input_picture_demux_ptr = (PictureDemuxResults *)input_picture_demux_wrapper_ptr->object_ptr;
-
-        // *Note - This should be overhauled and/or replaced when we
-        //   need hierarchical support.
-        loop_count++;
 
         switch (input_picture_demux_ptr->picture_type) {
         case EB_PIC_INPUT:

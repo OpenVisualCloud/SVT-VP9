@@ -15,42 +15,10 @@
 #include "fwd_txfm_sse2.h"
 #include "txfm_common_sse2.h"
 
-#if DCT_HIGH_BIT_DEPTH
-#define ADD_EPI16 _mm_adds_epi16
-#define SUB_EPI16 _mm_subs_epi16
-#define ADD_EPI16_AVX2 _mm256_adds_epi16
-#define SUB_EPI16_AVX2 _mm256_subs_epi16
-#else
 #define ADD_EPI16 _mm_add_epi16
 #define SUB_EPI16 _mm_sub_epi16
 #define ADD_EPI16_AVX2 _mm256_add_epi16
 #define SUB_EPI16_AVX2 _mm256_sub_epi16
-#endif
-
-static INLINE int check_epi16_overflow_x1_avx2(const __m256i reg) {
-    const __m256i max_overflow = _mm256_set1_epi16(0x7fff);
-    const __m256i min_overflow = _mm256_set1_epi16((short)0x8000);
-    const __m256i cmp = _mm256_or_si256(_mm256_cmpeq_epi16(reg, max_overflow), _mm256_cmpeq_epi16(reg, min_overflow));
-    return _mm256_movemask_epi8(cmp);
-}
-
-static INLINE int check_epi16_overflow_x2_avx2(const __m256i *const preg) {
-    const int res0 = check_epi16_overflow_x1_avx2(preg[0]);
-    const int res1 = check_epi16_overflow_x1_avx2(preg[1]);
-    return res0 + res1;
-}
-
-static INLINE int check_epi16_overflow_x4_avx2(const __m256i *const preg) {
-    const int res0 = check_epi16_overflow_x2_avx2(preg + 0);
-    const int res1 = check_epi16_overflow_x2_avx2(preg + 4);
-    return res0 + res1;
-}
-
-static INLINE int check_epi16_overflow_x8_avx2(const __m256i *const preg) {
-    const int res0 = check_epi16_overflow_x4_avx2(preg + 0);
-    const int res1 = check_epi16_overflow_x4_avx2(preg + 4);
-    return res0 + res1;
-}
 
 static INLINE void transpose_16bit_fdct_8x8_avx2(const __m256i *const in, __m256i *const out) {
     const __m256i idx_transform0 = _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7);
@@ -90,19 +58,6 @@ static INLINE void transpose_16bit_fdct_8x8_avx2(const __m256i *const in, __m256
     out[1] = _mm256_permutevar8x32_epi32(b1, idx_transform0);
     out[2] = _mm256_permutevar8x32_epi32(b2, idx_transform1);
     out[3] = _mm256_permutevar8x32_epi32(b3, idx_transform1);
-}
-
-static INLINE void store_output_8x2_avx2(const __m256i output, tran_low_t *const dst_ptr, const int stride) {
-#if CONFIG_VP9_HIGHBITDEPTH
-    const __m256i sign_bits = _mm256_srai_epi16(output, 15);
-    const __m256i out       = _mm256_permute4x64_epi64(output, 0xD8);
-    const __m256i out0      = _mm256_unpacklo_epi16(out, sign_bits);
-    const __m256i out1      = _mm256_unpackhi_epi16(out, sign_bits);
-    _mm256_store_si256((__m256i *)(dst_ptr + 0 * stride), out0);
-    _mm256_store_si256((__m256i *)(dst_ptr + 1 * stride), out1);
-#else
-    store16bit_signed_8x2_avx2(output, dst_ptr, stride);
-#endif // CONFIG_VP9_HIGHBITDEPTH
 }
 
 static INLINE void store_output_avx2(const __m256i output, tran_low_t *const dst_ptr) {
@@ -294,12 +249,7 @@ static int fdct8_overflow_avx2(__m256i *const in, const int pass) {
     highbd_add_sub_8x8x2_avx2(in, s);
     highbd_add_sub_8x4x2_avx2(s, x);
 
-#if DCT_HIGH_BIT_DEPTH
-    overflow |= (pass == 1) && check_epi16_overflow_x4_avx2(s);
-    overflow |= check_epi16_overflow_x2_avx2(x);
-#else
     (void)pass;
-#endif // DCT_HIGH_BIT_DEPTH
 
     dual_fdct8_kernel_avx2(x[0], x[1], k__cospi_p16_p16_p08_p24, k__cospi_p16_m16_p24_m08, &in[0], &in[1]);
 
@@ -316,12 +266,6 @@ static int fdct8_overflow_avx2(__m256i *const in, const int pass) {
     // stage 4
     dual_fdct8_kernel_avx2(x[0], x[1], k__cospi_p04_p28_p12_m20, k__cospi_p28_m04_p20_p12, &in[2], &in[3]);
     in[3] = _mm256_permute4x64_epi64(in[3], 0x4E);
-
-#if DCT_HIGH_BIT_DEPTH
-    overflow |= check_epi16_overflow_x4_avx2(in);
-    overflow |= check_epi16_overflow_x1_avx2(t);
-    overflow |= check_epi16_overflow_x2_avx2(x);
-#endif // DCT_HIGH_BIT_DEPTH
 
     // transpose
     transpose_16bit_fdct_8x8_avx2(in, in);
@@ -460,13 +404,7 @@ void eb_vp9_fdct8x8_avx2(const int16_t *input, tran_low_t *output, int stride) {
     overflow |= fdct8_overflow_avx2(in, 1);
     right_shift_write_buffer_8x8(in, output);
 
-#if DCT_HIGH_BIT_DEPTH
-    if (overflow) {
-        vpx_highbd_fdct8x8_c(input, output, stride);
-    }
-#else
     (void)overflow;
-#endif // DCT_HIGH_BIT_DEPTH
 }
 
 void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
@@ -510,13 +448,7 @@ void eb_vp9_fht8x8_avx2(const int16_t *input, tran_low_t *output, int stride, in
 
     right_shift_write_buffer_8x8(in, output);
 
-#if DCT_HIGH_BIT_DEPTH
-    if (overflow) {
-        vpx_highbd_fdct8x8_c(input, output, stride);
-    }
-#else
     (void)overflow;
-#endif // DCT_HIGH_BIT_DEPTH
 }
 
 //------------------------------------------------------------------------------
@@ -563,24 +495,6 @@ static INLINE void add_sub_16x8_avx2(const __m256i *const in, __m256i *const out
     out[5] = _mm256_sub_epi16(in[2], in[5]);
     out[6] = _mm256_sub_epi16(in[1], in[6]);
     out[7] = _mm256_sub_epi16(in[0], in[7]);
-}
-
-static INLINE void highbd_add_sub_16x4_avx2(const __m256i *const in, __m256i *const out) {
-    out[0] = ADD_EPI16_AVX2(in[0], in[3]);
-    out[1] = ADD_EPI16_AVX2(in[1], in[2]);
-    out[2] = SUB_EPI16_AVX2(in[1], in[2]);
-    out[3] = SUB_EPI16_AVX2(in[0], in[3]);
-}
-
-static INLINE void highbd_add_sub_16x8_avx2(const __m256i *const in, __m256i *const out) {
-    out[0] = ADD_EPI16_AVX2(in[0], in[7]);
-    out[1] = ADD_EPI16_AVX2(in[1], in[6]);
-    out[2] = ADD_EPI16_AVX2(in[2], in[5]);
-    out[3] = ADD_EPI16_AVX2(in[3], in[4]);
-    out[4] = SUB_EPI16_AVX2(in[3], in[4]);
-    out[5] = SUB_EPI16_AVX2(in[2], in[5]);
-    out[6] = SUB_EPI16_AVX2(in[1], in[6]);
-    out[7] = SUB_EPI16_AVX2(in[0], in[7]);
 }
 
 // right shift and rounding
@@ -812,111 +726,6 @@ static void fdct16_avx2(__m256i *const in) {
     transpose_16bit_16x16_avx2(in, in);
 }
 
-static int fdct16_overflow_avx2(__m256i *const in) {
-    int     overflow = 0;
-    __m256i in_high[8], step1[8], step2[8], step3[8], s[8], t[4], x[4];
-
-    // Calculate input for the first 8 results.
-    in_high[0] = ADD_EPI16_AVX2(in[0], in[15]);
-    in_high[1] = ADD_EPI16_AVX2(in[1], in[14]);
-    in_high[2] = ADD_EPI16_AVX2(in[2], in[13]);
-    in_high[3] = ADD_EPI16_AVX2(in[3], in[12]);
-    in_high[4] = ADD_EPI16_AVX2(in[4], in[11]);
-    in_high[5] = ADD_EPI16_AVX2(in[5], in[10]);
-    in_high[6] = ADD_EPI16_AVX2(in[6], in[9]);
-    in_high[7] = ADD_EPI16_AVX2(in[7], in[8]);
-
-    // Calculate input for the next 8 results.
-    step1[0] = SUB_EPI16_AVX2(in[7], in[8]);
-    step1[1] = SUB_EPI16_AVX2(in[6], in[9]);
-    step1[2] = SUB_EPI16_AVX2(in[5], in[10]);
-    step1[3] = SUB_EPI16_AVX2(in[4], in[11]);
-    step1[4] = SUB_EPI16_AVX2(in[3], in[12]);
-    step1[5] = SUB_EPI16_AVX2(in[2], in[13]);
-    step1[6] = SUB_EPI16_AVX2(in[1], in[14]);
-    step1[7] = SUB_EPI16_AVX2(in[0], in[15]);
-
-    // Work on the first eight values; fdct8(input, even_results);
-
-    // stage 1
-    highbd_add_sub_16x8_avx2(in_high, s);
-    highbd_add_sub_16x4_avx2(s, x);
-
-    butterfly_avx2(x[0], x[1], cospi_16_64, cospi_16_64, &in[8], &in[0]);
-    butterfly_avx2(x[2], x[3], cospi_24_64, -cospi_8_64, &in[4], &in[12]);
-
-    // stage 2
-    butterfly_avx2(s[6], s[5], cospi_16_64, cospi_16_64, &t[2], &t[3]);
-
-#if DCT_HIGH_BIT_DEPTH
-    overflow |= check_epi16_overflow_x8_avx2(in_high);
-    overflow |= check_epi16_overflow_x8_avx2(step1);
-    overflow |= check_epi16_overflow_x8_avx2(s);
-    overflow |= check_epi16_overflow_x4_avx2(x);
-    overflow |= check_epi16_overflow_x2_avx2(t);
-#endif // DCT_HIGH_BIT_DEPTH
-
-    // stage 3
-    x[0] = ADD_EPI16_AVX2(s[4], t[2]);
-    x[1] = SUB_EPI16_AVX2(s[4], t[2]);
-    x[2] = SUB_EPI16_AVX2(s[7], t[3]);
-    x[3] = ADD_EPI16_AVX2(s[7], t[3]);
-
-    // stage 4
-    butterfly_avx2(x[3], x[0], cospi_28_64, cospi_4_64, &in[14], &in[2]);
-    butterfly_avx2(x[2], x[1], cospi_12_64, cospi_20_64, &in[6], &in[10]);
-
-    // Work on the next eight values; step1 -> odd_results
-
-    // step 2
-    butterfly_avx2(step1[5], step1[2], cospi_16_64, cospi_16_64, &step2[2], &step2[5]);
-    butterfly_avx2(step1[4], step1[3], cospi_16_64, cospi_16_64, &step2[3], &step2[4]);
-
-    // step 3
-    step3[0] = ADD_EPI16_AVX2(step1[0], step2[3]);
-    step3[1] = ADD_EPI16_AVX2(step1[1], step2[2]);
-    step3[2] = SUB_EPI16_AVX2(step1[1], step2[2]);
-    step3[3] = SUB_EPI16_AVX2(step1[0], step2[3]);
-    step3[4] = SUB_EPI16_AVX2(step1[7], step2[4]);
-    step3[5] = SUB_EPI16_AVX2(step1[6], step2[5]);
-    step3[6] = ADD_EPI16_AVX2(step1[6], step2[5]);
-    step3[7] = ADD_EPI16_AVX2(step1[7], step2[4]);
-
-    // step 4
-    butterfly_avx2(step3[1], step3[6], cospi_24_64, -cospi_8_64, &step2[6], &step2[1]);
-    butterfly_avx2(step3[2], step3[5], cospi_8_64, cospi_24_64, &step2[5], &step2[2]);
-
-    // step 5
-    step1[0] = ADD_EPI16_AVX2(step3[0], step2[1]);
-    step1[1] = SUB_EPI16_AVX2(step3[0], step2[1]);
-    step1[2] = ADD_EPI16_AVX2(step3[3], step2[2]);
-    step1[3] = SUB_EPI16_AVX2(step3[3], step2[2]);
-    step1[4] = SUB_EPI16_AVX2(step3[4], step2[5]);
-    step1[5] = ADD_EPI16_AVX2(step3[4], step2[5]);
-    step1[6] = SUB_EPI16_AVX2(step3[7], step2[6]);
-    step1[7] = ADD_EPI16_AVX2(step3[7], step2[6]);
-
-    // step 6
-    butterfly_avx2(step1[0], step1[7], cospi_30_64, -cospi_2_64, &in[1], &in[15]);
-    butterfly_avx2(step1[1], step1[6], cospi_14_64, -cospi_18_64, &in[9], &in[7]);
-    butterfly_avx2(step1[2], step1[5], cospi_22_64, -cospi_10_64, &in[5], &in[11]);
-    butterfly_avx2(step1[3], step1[4], cospi_6_64, -cospi_26_64, &in[13], &in[3]);
-
-#if DCT_HIGH_BIT_DEPTH
-    overflow |= check_epi16_overflow_x4_avx2(x);
-    overflow |= check_epi16_overflow_x8_avx2(in + 0);
-    overflow |= check_epi16_overflow_x8_avx2(in + 8);
-    overflow |= check_epi16_overflow_x8_avx2(step1);
-    overflow |= check_epi16_overflow_x8_avx2(step2);
-    overflow |= check_epi16_overflow_x8_avx2(step3);
-#endif // DCT_HIGH_BIT_DEPTH
-
-    // transpose
-    transpose_16bit_16x16_avx2(in, in);
-
-    return overflow;
-}
-
 static void fadst16_avx2(__m256i *const in) {
     const __m256i kZero = _mm256_set1_epi16(0);
     __m256i       s[16], x[16];
@@ -987,34 +796,20 @@ static void fadst16_avx2(__m256i *const in) {
 }
 
 void eb_vpx_fdct16x16_avx2(const int16_t *input, tran_low_t *output, int stride) {
-    int     overflow;
     __m256i in[16];
 
     load_buffer_left_shift2_16x16_avx2(input, stride, in);
-    overflow = fdct16_overflow_avx2(in);
     right_shift_fdct_16x16_avx2(in);
-    overflow |= fdct16_overflow_avx2(in);
     write_buffer_16x16_avx2(in, output, 16);
-
-#if DCT_HIGH_BIT_DEPTH
-    if (overflow) {
-        vpx_highbd_fdct16x16_c(input, output, stride);
-    }
-#endif // DCT_HIGH_BIT_DEPTH
 }
 
 void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, int tx_type) {
-    int     overflow = 0;
     __m256i in[16];
 
     load_buffer_left_shift2_16x16_avx2(input, stride, in);
 
     switch (tx_type) {
-    case DCT_DCT:
-        overflow = fdct16_overflow_avx2(in);
-        right_shift_fdct_16x16_avx2(in);
-        overflow |= fdct16_overflow_avx2(in);
-        break;
+    case DCT_DCT: right_shift_fdct_16x16_avx2(in); break;
 
     case ADST_DCT:
         fadst16_avx2(in);
@@ -1037,12 +832,4 @@ void eb_vp9_fht16x16_avx2(const int16_t *input, tran_low_t *output, int stride, 
     }
 
     write_buffer_16x16_avx2(in, output, 16);
-
-#if DCT_HIGH_BIT_DEPTH
-    if (overflow) {
-        vpx_highbd_fdct16x16_c(input, output, stride);
-    }
-#else
-    (void)overflow;
-#endif // DCT_HIGH_BIT_DEPTH
 }

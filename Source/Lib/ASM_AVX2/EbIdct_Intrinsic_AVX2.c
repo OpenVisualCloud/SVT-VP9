@@ -26,11 +26,6 @@ static INLINE __m256i load_input_data16_avx2(const tran_low_t *const data) {
 #endif
 }
 
-static INLINE void load_buffer_8x16(const tran_low_t *const input, const int stride, __m128i *const in) {
-    load_buffer_8x8(input + 0 * 16, stride, in + 0);
-    load_buffer_8x8(input + 8 * 16, stride, in + 8);
-}
-
 static INLINE void load_buffer_16x16_avx2(const tran_low_t *const input, const int stride, __m256i *const in) {
     in[0]  = load_input_data16_avx2(input + 0 * stride);
     in[1]  = load_input_data16_avx2(input + 1 * stride);
@@ -70,13 +65,6 @@ static INLINE void write_buffer_16x1_avx2(const __m256i in, uint8_t *const dest)
     out = _mm256_adds_epi16(in, final_rounding);
     out = _mm256_srai_epi16(out, 6);
     recon_and_store_avx2(out, dest);
-}
-
-static INLINE void write_buffer_16_avx2(const __m256i in, uint8_t *const dest) {
-    const __m256i final_rounding = _mm256_set1_epi16(1 << 5);
-    const __m256i d0             = _mm256_adds_epi16(in, final_rounding);
-    const __m256i d1             = _mm256_srai_epi16(d0, 6);
-    recon_and_store_avx2(d1, dest);
 }
 
 static INLINE void write_buffer_16x16_avx2(__m256i *const in, uint8_t *const dest, const int stride) {

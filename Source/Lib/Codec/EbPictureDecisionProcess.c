@@ -1466,8 +1466,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
     uint32_t                 entry_index;
     PictureParentControlSet *parent_pcs_window[FUTURE_WINDOW_WIDTH + 2];
     UNUSED(parent_pcs_window);
-    // Debug
-    uint64_t loop_count = 0;
 
     for (;;) {
         // Get Input Full Object
@@ -1479,8 +1477,6 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
         sequence_control_set_ptr = (SequenceControlSet *)
                                        picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
         encode_context_ptr = (EncodeContext *)sequence_control_set_ptr->encode_context_ptr;
-
-        loop_count++;
 
         // Input Picture Analysis Results into the Picture Decision Reordering Queue
         // P.S. Since the prior Picture Analysis processes stage is multithreaded, inputs to the Picture Decision Process

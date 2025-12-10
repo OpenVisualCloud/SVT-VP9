@@ -119,8 +119,6 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
 
     EB_BOOL sb_grass_flag = EB_FALSE;
 
-    uint32_t grass_sb_inrange;
-    uint32_t processed_cus;
     uint32_t raster_scan_block_index;
 
     SbParams *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
@@ -128,9 +126,7 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
 
     _mm_prefetch((const char *)sb_stat_ptr, _MM_HINT_T0);
 
-    sb_grass_flag    = EB_FALSE;
-    grass_sb_inrange = 0;
-    processed_cus    = 0;
+    sb_grass_flag = EB_FALSE;
 
     for (raster_scan_block_index = PA_RASTER_SCAN_CU_INDEX_16x16_0;
          raster_scan_block_index <= PA_RASTER_SCAN_CU_INDEX_16x16_15;
@@ -155,9 +151,6 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
             grass_condition += (y_mean > Y_MEAN_RANGE_02 && y_mean < Y_MEAN_RANGE_01) ? 1 : 0;
             grass_condition += (cb_mean > CB_MEAN_RANGE_00 && cb_mean < CB_MEAN_RANGE_02) ? 2 : 0;
             grass_condition += (cr_mean > CR_MEAN_RANGE_00 && cr_mean < CR_MEAN_RANGE_02) ? 4 : 0;
-
-            grass_sb_inrange += (grass_condition == perfect_condition) ? 1 : 0;
-            processed_cus++;
 
             sb_grass_flag = grass_condition == perfect_condition ? EB_TRUE : sb_grass_flag;
 

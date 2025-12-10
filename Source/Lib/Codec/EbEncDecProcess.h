@@ -172,13 +172,11 @@ typedef struct EncDecContext {
     struct scale_factors *sf;
     int                   use_ref_mvs_flag[MAX_REF_FRAMES];
 
-#if VP9_RD
     uint32_t        ref_costs_single[MAX_REF_FRAMES];
     uint32_t        ref_costs_comp[MAX_REF_FRAMES];
     vpx_prob        comp_mode_p;
     ENTROPY_CONTEXT t_above[3][16];
     ENTROPY_CONTEXT t_left[3][16];
-#endif
 
     EB_BOOL skip_eob_zero_mode_ep;
     EB_BOOL eob_zero_mode;

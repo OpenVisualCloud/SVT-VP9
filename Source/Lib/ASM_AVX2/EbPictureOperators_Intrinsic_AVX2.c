@@ -1548,6 +1548,8 @@ void full_distortion_kernel_eob_zero16_mxn_32bit_bt_avx2(int16_t *coeff, uint32_
     int32_t row_count, col_count;
     __m256i sum = _mm256_setzero_si256();
     __m128i temp1, temp2;
+    UNUSED(recon_coeff);
+    UNUSED(recon_coeff_stride);
 
     col_count = area_width;
     do {
@@ -1574,7 +1576,6 @@ void full_distortion_kernel_eob_zero16_mxn_32bit_bt_avx2(int16_t *coeff, uint32_
     temp2 = _mm256_extracti128_si256(sum, 1);
     temp1 = _mm_add_epi32(temp1, temp2);
     _mm_storeu_si128((__m128i *)distortion_result, _mm_unpacklo_epi32(temp1, _mm_setzero_si128()));
-    (void)recon_coeff_stride;
 }
 
 void full_distortion_kernel_4x4_32bit_bt_avx2(int16_t *coeff, uint32_t coeff_stride, int16_t *recon_coeff,

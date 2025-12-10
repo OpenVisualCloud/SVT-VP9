@@ -58,13 +58,9 @@ typedef struct SbUnit {
     uint32_t sb_total_bits;
 
     // Quantized Coefficients
-#if VP9_PERFORM_EP
     int16_t *quantized_coeff_buffer[MAX_MB_PLANE];
 
     int quantized_coeff_buffer_block_offset[MAX_MB_PLANE];
-#else
-    EbPictureBufferDesc *quantized_coeff;
-#endif
 
 #if BEA
     int8_t segment_id;

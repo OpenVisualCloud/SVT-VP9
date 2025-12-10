@@ -242,7 +242,6 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
         return EB_ErrorInsufficientResources;
     }
 
-#if VP9_RD
     for (uint8_t depth = 0; depth < NEIGHBOR_ARRAY_TOTAL_COUNT; depth++) {
         EB_MALLOC(PARTITION_CONTEXT *,
                   object_ptr->md_above_seg_context[depth],
@@ -270,7 +269,6 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
               object_ptr->ep_left_context,
               sizeof(ENTROPY_CONTEXT) * MAX_MB_PLANE * 2 * mi_cols_aligned_to_sb(mi_rows),
               EB_N_PTR);
-#endif
 
     // Segments
     return_error = eb_vp9_enc_dec_segments_ctor(
@@ -322,7 +320,6 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
     EB_MALLOC(
         tran_low_t *, object_ptr->cpi->td.mb.plane[2].qcoeff, sizeof(tran_low_t) * MAX_CU_SIZE * MAX_CU_SIZE, EB_N_PTR);
 
-#if VP9_RD
     EB_MALLOC(int *, object_ptr->cpi->nmvcosts[0], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvcosts[1], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvcosts_hp[0], sizeof(int) * MV_VALS, EB_N_PTR);
@@ -331,7 +328,6 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts[1], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts_hp[0], sizeof(int) * MV_VALS, EB_N_PTR);
     EB_MALLOC(int *, object_ptr->cpi->nmvsadcosts_hp[1], sizeof(int) * MV_VALS, EB_N_PTR);
-#endif
 #if SEG_SUPPORT
     EB_MALLOC(uint8_t *,
               object_ptr->cpi->segmentation_map,
