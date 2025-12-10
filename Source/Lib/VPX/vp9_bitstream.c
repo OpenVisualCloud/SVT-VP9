@@ -1281,7 +1281,7 @@ static void write_uncompressed_header(PictureControlSet *picture_control_set_ptr
     encode_loopfilter(&cm->lf, wb);
     encode_quantization(cm, wb);
 #if 1
-    encode_segmentation(cm, (MACROBLOCKD *)EB_NULL, wb);
+    encode_segmentation(cm, (MACROBLOCKD *)NULL, wb);
 #else
     encode_segmentation(cm, xd, wb);
 #endif
@@ -1402,7 +1402,7 @@ void eb_vp9_pack_bitstream(PictureControlSet *picture_control_set_ptr, VP9_COMP 
         (OutputBitstreamUnit *)picture_control_set_ptr->entropy_coder_ptr->ec_output_bitstream_ptr;
 
     // Copy from EC stream to frame stream
-    EB_MEMCPY(data, ec_output_bitstream_ptr->buffer_begin, ecOutputBitstreamSize);
+    memcpy(data, ec_output_bitstream_ptr->buffer_begin, ecOutputBitstreamSize);
     data += ecOutputBitstreamSize;
 #else
     data += encode_tiles(cpi, data);

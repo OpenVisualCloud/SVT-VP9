@@ -4,6 +4,7 @@
 */
 
 #include "EbPictureOperators_C.h"
+#include <string.h>
 #include "EbUtility.h"
 
 /*********************************
@@ -41,7 +42,7 @@ void eb_vp9_picture_copy_kernel(EbByte src, uint32_t src_stride, EbByte dst, uin
     dst_stride *= bytes_per_sample;
 
     while (sample_count < sample_total_count) {
-        EB_MEMCPY(dst, src, copy_length);
+        memcpy(dst, src, copy_length);
         src += src_stride;
         dst += dst_stride;
         sample_count += area_width;
@@ -119,7 +120,7 @@ void copy_kernel8_bit(EbByte src, uint32_t src_stride, EbByte dst, uint32_t dst_
     dst_stride *= bytes_per_sample;
 
     while (sample_count < sample_total_count) {
-        EB_MEMCPY(dst, src, copy_length);
+        memcpy(dst, src, copy_length);
         src += src_stride;
         dst += dst_stride;
         sample_count += area_width;
@@ -142,7 +143,7 @@ void copy_kernel16_bit(EbByte src, uint32_t src_stride, EbByte dst, uint32_t dst
     dst_stride *= bytes_per_sample;
 
     while (sample_count < sample_total_count) {
-        EB_MEMCPY(dst, src, copy_length);
+        memcpy(dst, src, copy_length);
         src += src_stride;
         dst += dst_stride;
         sample_count += area_width;

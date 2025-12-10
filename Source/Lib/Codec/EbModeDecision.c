@@ -78,7 +78,7 @@ EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(ModeDecisionCandidateBuff
     double_width_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
 
     // Candidate Ptr
-    buffer_ptr->candidate_ptr = (ModeDecisionCandidate *)EB_NULL;
+    buffer_ptr->candidate_ptr = (ModeDecisionCandidate *)NULL;
 
     // Video Buffers
     return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(buffer_ptr->prediction_ptr),
@@ -649,7 +649,7 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
             context_ptr,
             &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
             context_ptr->e_mbd,
-            (ModeInfo *)EB_NULL,
+            (ModeInfo *)NULL,
             LAST_FRAME,
             candidates,
             context_ptr->mi_row,
@@ -663,7 +663,7 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
                 context_ptr,
                 &picture_control_set_ptr->parent_pcs_ptr->cpi->common,
                 context_ptr->e_mbd,
-                (ModeInfo *)EB_NULL,
+                (ModeInfo *)NULL,
                 ALTREF_FRAME,
                 candidates,
                 context_ptr->mi_row,
@@ -802,9 +802,9 @@ uint8_t full_mode_decision(struct EncDecContext *context_ptr, ModeDecisionCandid
 
     candidate_ptr->mode_info->tx_size = context_ptr->ep_block_stats_ptr->tx_size;
 
-    EB_MEMCPY(&(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
-              candidate_ptr->mode_info,
-              sizeof(ModeInfo));
+    memcpy(&(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
+           candidate_ptr->mode_info,
+           sizeof(ModeInfo));
 
     // Copy eobs
     for (uint8_t tu_index = 0; tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);

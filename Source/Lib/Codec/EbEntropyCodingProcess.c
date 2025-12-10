@@ -242,7 +242,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[0]);
 
                             for (int j = 0; j < 4; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, 4 * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
                                 dst_ptr = dst_ptr + 4;
                             }
@@ -257,7 +257,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[16]);
 
                             for (int j = 0; j < 4; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, 4 * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
                                 dst_ptr = dst_ptr + 4;
                             }
@@ -272,7 +272,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[32]);
 
                             for (int j = 0; j < 4; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, 4 * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
                                 dst_ptr = dst_ptr + 4;
                             }
@@ -287,7 +287,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[48]);
 
                             for (int j = 0; j < 4; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, 4 * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, 4 * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
                                 dst_ptr = dst_ptr + 4;
                             }
@@ -303,8 +303,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[1].qcoeff)[0]);
 
                             for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                EB_MEMCPY(
-                                    dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cb;
                                 dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                             }
@@ -319,8 +318,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[2].qcoeff)[0]);
 
                             for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                EB_MEMCPY(
-                                    dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cr;
                                 dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                             }
@@ -337,7 +335,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[0].qcoeff)[0]);
 
                             for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_y;
                                 dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size;
                             }
@@ -352,8 +350,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[1].qcoeff)[0]);
 
                             for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                EB_MEMCPY(
-                                    dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cb;
                                 dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                             }
@@ -368,8 +365,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                             tran_low_t *dst_ptr = &(((tran_low_t *)cpi->td.mb.plane[2].qcoeff)[0]);
 
                             for (int j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                EB_MEMCPY(
-                                    dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                 src_ptr = src_ptr + sb_ptr->quantized_coeff->stride_cr;
                                 dst_ptr = dst_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                             }
@@ -404,7 +400,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
                 eb_vp9_write_modes_b(context_ptr,
                                      cpi,
                                      xd,
-                                     (TileInfo *)EB_NULL,
+                                     (TileInfo *)NULL,
                                      residual_bc,
                                      &context_ptr->tok,
                                      context_ptr->tok_end,
@@ -609,7 +605,7 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
                             // Work out probability tree for coding segments without prediction
                             calc_segtree_probs(picture_control_set_ptr->segment_counts, no_pred_tree);
                             seg->temporal_update = 0;
-                            EB_MEMCPY(seg->tree_probs, no_pred_tree, sizeof(no_pred_tree));
+                            memcpy(seg->tree_probs, no_pred_tree, sizeof(no_pred_tree));
                         }
                     }
 #endif
@@ -657,7 +653,7 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
                         // Release the List 0 Reference Pictures
                         for (ref_idx = 0; ref_idx < picture_control_set_ptr->parent_pcs_ptr->ref_list0_count;
                              ++ref_idx) {
-                            if (picture_control_set_ptr->ref_pic_ptr_array[0] != EB_NULL) {
+                            if (picture_control_set_ptr->ref_pic_ptr_array[0] != NULL) {
                                 eb_vp9_release_object(picture_control_set_ptr->ref_pic_ptr_array[0]);
                             }
                         }
@@ -665,7 +661,7 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
                         // Release the List 1 Reference Pictures
                         for (ref_idx = 0; ref_idx < picture_control_set_ptr->parent_pcs_ptr->ref_list1_count;
                              ++ref_idx) {
-                            if (picture_control_set_ptr->ref_pic_ptr_array[1] != EB_NULL) {
+                            if (picture_control_set_ptr->ref_pic_ptr_array[1] != NULL) {
                                 eb_vp9_release_object(picture_control_set_ptr->ref_pic_ptr_array[1]);
                             }
                         }
@@ -690,5 +686,5 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
         eb_vp9_release_object(enc_dec_results_wrapper_ptr);
     }
 
-    return EB_NULL;
+    return NULL;
 }

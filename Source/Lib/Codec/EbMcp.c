@@ -31,8 +31,8 @@ void eb_vp9_generate_padding(
     temp_src_pic0 = src_pic + padding_width + padding_height * src_stride;
     while (vertical_idx) {
         // horizontal padding
-        EB_MEMSET(temp_src_pic0 - padding_width, *temp_src_pic0, padding_width);
-        EB_MEMSET(temp_src_pic0 + original_src_width, *(temp_src_pic0 + original_src_width - 1), padding_width);
+        memset(temp_src_pic0 - padding_width, *temp_src_pic0, padding_width);
+        memset(temp_src_pic0 + original_src_width, *(temp_src_pic0 + original_src_width - 1), padding_width);
 
         temp_src_pic0 += src_stride;
         --vertical_idx;
@@ -47,10 +47,10 @@ void eb_vp9_generate_padding(
     while (vertical_idx) {
         // top part data copy
         temp_src_pic2 -= src_stride;
-        EB_MEMCPY(temp_src_pic2, temp_src_pic0, sizeof(uint8_t) * src_stride); // uint8_t to be modified
+        memcpy(temp_src_pic2, temp_src_pic0, sizeof(uint8_t) * src_stride); // uint8_t to be modified
         // bottom part data copy
         temp_src_pic3 += src_stride;
-        EB_MEMCPY(temp_src_pic3, temp_src_pic1, sizeof(uint8_t) * src_stride); // uint8_t to be modified
+        memcpy(temp_src_pic3, temp_src_pic1, sizeof(uint8_t) * src_stride); // uint8_t to be modified
         --vertical_idx;
     }
 
@@ -76,7 +76,7 @@ void eb_vp9_generate_padding_16bit(
     temp_src_pic0 = src_pic + padding_width + padding_height * src_stride;
     while (vertical_idx) {
         // horizontal padding
-        //EB_MEMSET(temp_src_pic0 - padding_width, temp_src_pic0, padding_width);
+        //memset(temp_src_pic0 - padding_width, temp_src_pic0, padding_width);
         eb_vp9_memset16bit(
             (uint16_t *)(temp_src_pic0 - padding_width), ((uint16_t *)(temp_src_pic0))[0], padding_width >> 1);
         eb_vp9_memset16bit((uint16_t *)(temp_src_pic0 + original_src_width),
@@ -96,10 +96,10 @@ void eb_vp9_generate_padding_16bit(
     while (vertical_idx) {
         // top part data copy
         temp_src_pic2 -= src_stride;
-        EB_MEMCPY(temp_src_pic2, temp_src_pic0, sizeof(uint8_t) * src_stride); // uint8_t to be modified
+        memcpy(temp_src_pic2, temp_src_pic0, sizeof(uint8_t) * src_stride); // uint8_t to be modified
         // bottom part data copy
         temp_src_pic3 += src_stride;
-        EB_MEMCPY(temp_src_pic3, temp_src_pic1, sizeof(uint8_t) * src_stride); // uint8_t to be modified
+        memcpy(temp_src_pic3, temp_src_pic1, sizeof(uint8_t) * src_stride); // uint8_t to be modified
         --vertical_idx;
     }
 
@@ -127,7 +127,7 @@ void eb_vp9_pad_input_picture(
         temp_src_pic0 = src_pic;
 
         while (vertical_idx) {
-            EB_MEMSET(temp_src_pic0 + original_src_width, *(temp_src_pic0 + original_src_width - 1), pad_right);
+            memset(temp_src_pic0 + original_src_width, *(temp_src_pic0 + original_src_width - 1), pad_right);
             temp_src_pic0 += src_stride;
             --vertical_idx;
         }
@@ -141,7 +141,7 @@ void eb_vp9_pad_input_picture(
 
         while (vertical_idx) {
             temp_src_pic1 += src_stride;
-            EB_MEMCPY(temp_src_pic1, temp_src_pic0, sizeof(uint8_t) * (original_src_width + pad_right));
+            memcpy(temp_src_pic1, temp_src_pic0, sizeof(uint8_t) * (original_src_width + pad_right));
             --vertical_idx;
         }
     }

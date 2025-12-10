@@ -39,13 +39,13 @@ EbErrorType eb_vp9_neighbor_array_unit_ctor(NeighborArrayUnit **na_unit_dbl_ptr,
     if (na_unit_ptr->left_array_size) {
         EB_MALLOC(uint8_t *, na_unit_ptr->left_array, na_unit_ptr->unit_size * na_unit_ptr->left_array_size, EB_N_PTR);
     } else {
-        na_unit_ptr->left_array = (uint8_t *)EB_NULL;
+        na_unit_ptr->left_array = (uint8_t *)NULL;
     }
 
     if (na_unit_ptr->top_array_size) {
         EB_MALLOC(uint8_t *, na_unit_ptr->top_array, na_unit_ptr->unit_size * na_unit_ptr->top_array_size, EB_N_PTR);
     } else {
-        na_unit_ptr->top_array = (uint8_t *)EB_NULL;
+        na_unit_ptr->top_array = (uint8_t *)NULL;
     }
 
     if (na_unit_ptr->top_left_array_size) {
@@ -54,7 +54,7 @@ EbErrorType eb_vp9_neighbor_array_unit_ctor(NeighborArrayUnit **na_unit_dbl_ptr,
                   na_unit_ptr->unit_size * na_unit_ptr->top_left_array_size,
                   EB_N_PTR);
     } else {
-        na_unit_ptr->top_left_array = (uint8_t *)EB_NULL;
+        na_unit_ptr->top_left_array = (uint8_t *)NULL;
     }
 
     return EB_ErrorNone;
@@ -65,15 +65,15 @@ EbErrorType eb_vp9_neighbor_array_unit_ctor(NeighborArrayUnit **na_unit_dbl_ptr,
  *************************************************/
 void eb_vp9_neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr) {
     if (na_unit_ptr->left_array) {
-        EB_MEMSET(na_unit_ptr->left_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->left_array_size);
+        memset(na_unit_ptr->left_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->left_array_size);
     }
 
     if (na_unit_ptr->top_array) {
-        EB_MEMSET(na_unit_ptr->top_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->top_array_size);
+        memset(na_unit_ptr->top_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->top_array_size);
     }
 
     if (na_unit_ptr->top_left_array) {
-        EB_MEMSET(na_unit_ptr->top_left_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->top_left_array_size);
+        memset(na_unit_ptr->top_left_array, ~0, na_unit_ptr->unit_size * na_unit_ptr->top_left_array_size);
     }
 
     return;
@@ -216,7 +216,7 @@ void eb_vp9_neighbor_array_unit_sample_write(NeighborArrayUnit *na_unit_ptr, uin
             eb_vp9_get_neighbor_array_unit_top_left_index(na_unit_ptr, picorigin_x, picorigin_y + (block_width - 1)) *
                 na_unit_ptr->unit_size;
 
-        EB_MEMCPY(dst_ptr, read_ptr, block_width);
+        memcpy(dst_ptr, read_ptr, block_width);
 
         // Reset read_ptr to the right-column
         read_ptr = src_ptr + (block_width - 1);
@@ -432,7 +432,7 @@ void eb_vp9_neighbor_array_unit_mode_write(NeighborArrayUnit *na_unit_ptr, uint8
         count = block_width >> na_unit_ptr->granularity_normal_log2;
 
         for (idx = 0; idx < count; ++idx) {
-            EB_MEMCPY(dst_ptr, value, na_unit_size);
+            memcpy(dst_ptr, value, na_unit_size);
 
             dst_ptr += na_unit_size;
         }
@@ -462,7 +462,7 @@ void eb_vp9_neighbor_array_unit_mode_write(NeighborArrayUnit *na_unit_ptr, uint8
         count = block_height >> na_unit_ptr->granularity_normal_log2;
 
         for (idx = 0; idx < count; ++idx) {
-            EB_MEMCPY(dst_ptr, value, na_unit_size);
+            memcpy(dst_ptr, value, na_unit_size);
 
             dst_ptr += na_unit_size;
         }
@@ -497,7 +497,7 @@ void eb_vp9_neighbor_array_unit_mode_write(NeighborArrayUnit *na_unit_ptr, uint8
         count = ((block_width + block_height) >> na_unit_ptr->granularity_top_left_log2) - 1;
 
         for (idx = 0; idx < count; ++idx) {
-            EB_MEMCPY(dst_ptr, value, na_unit_size);
+            memcpy(dst_ptr, value, na_unit_size);
 
             dst_ptr += na_unit_size;
         }
@@ -537,7 +537,7 @@ void neighbor_array_unit_intra_write( //NeighborArrayUnitDepthWrite(
 
     dst_ptr = na_unit_top_array + (origin_x >> 2);
     count   = block_size >> 2;
-    EB_MEMSET(dst_ptr, *value, count);
+    memset(dst_ptr, *value, count);
 
     //   Left Neighbor Array
     //
@@ -556,7 +556,7 @@ void neighbor_array_unit_intra_write( //NeighborArrayUnitDepthWrite(
     //  Index = origin_y
 
     dst_ptr = na_unit_left_array + (origin_y >> 2);
-    EB_MEMSET(dst_ptr, *value, count);
+    memset(dst_ptr, *value, count);
 
     return;
 }
@@ -596,7 +596,7 @@ void neighbor_array_unit_mode_type_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     dst_ptr   = na_unit_top_array + na_offset;
     count     = block_size >> 2;
 
-    EB_MEMSET(dst_ptr, *value, count);
+    memset(dst_ptr, *value, count);
 
     //   Left Neighbor Array
     //
@@ -617,7 +617,7 @@ void neighbor_array_unit_mode_type_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     na_offset = origin_y >> 2;
     dst_ptr   = na_unit_left_array + na_offset;
 
-    EB_MEMSET(dst_ptr, *value, count);
+    memset(dst_ptr, *value, count);
 
     /*
     //   Top-left Neighbor Array
@@ -645,7 +645,7 @@ void neighbor_array_unit_mode_type_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     dst_ptr = na_unit_top_left_array + na_offset;
     count   = ((block_size + block_size) >> 2) - 1;
 
-    EB_MEMSET(dst_ptr, *value, count);
+    memset(dst_ptr, *value, count);
 
     return;
 }
@@ -693,7 +693,7 @@ void eb_vp9_neighbor_array_unit_mv_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     count = block_size >> 2;
 
     for (idx = 0; idx < count; ++idx) {
-        EB_MEMCPY(dst_ptr, value, na_unit_size);
+        memcpy(dst_ptr, value, na_unit_size);
 
         dst_ptr += na_unit_size;
     }
@@ -719,7 +719,7 @@ void eb_vp9_neighbor_array_unit_mv_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     dst_ptr = na_unit_left_array + na_offset * na_unit_size;
 
     for (idx = 0; idx < count; ++idx) {
-        EB_MEMCPY(dst_ptr, value, na_unit_size);
+        memcpy(dst_ptr, value, na_unit_size);
 
         dst_ptr += na_unit_size;
     }
@@ -752,7 +752,7 @@ void eb_vp9_neighbor_array_unit_mv_write(NeighborArrayUnit *na_unit_ptr, uint8_t
     count = ((block_size + block_size) >> 2) - 1;
 
     for (idx = 0; idx < count; ++idx) {
-        EB_MEMCPY(dst_ptr, value, na_unit_size);
+        memcpy(dst_ptr, value, na_unit_size);
 
         dst_ptr += na_unit_size;
     }

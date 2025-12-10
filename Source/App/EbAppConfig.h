@@ -49,9 +49,9 @@ API.  This is a 32 bit pointer and is aligned on a 32 bit word boundary.
 */
 typedef void *EB_PTR;
 
-/** The EB_NULL type is used to define the C style NULL pointer.
+/** The NULL type is used to define the C style NULL pointer.
 */
-#define EB_NULL ((void *)0)
+#define NULL ((void *)0)
 
 // memory map to be removed and replaced by malloc / free
 typedef enum EbPtrType {
@@ -76,7 +76,7 @@ extern uint32_t          app_malloc_count;
 
 #define EB_APP_MALLOC(type, pointer, nElements, pointerClass, returnType) \
     pointer = (type)malloc(nElements);                                    \
-    if (pointer == (type)EB_NULL) {                                       \
+    if (pointer == (type)NULL) {                                          \
         return returnType;                                                \
     } else {                                                              \
         app_memory_map[*(app_memory_map_index)].ptr_type = pointerClass;  \
@@ -95,7 +95,7 @@ extern uint32_t          app_malloc_count;
 #define EB_APP_MALLOC_NR(type, pointer, nElements, pointerClass, returnType) \
     (void)returnType;                                                        \
     pointer = (type)malloc(nElements);                                       \
-    if (pointer == (type)EB_NULL) {                                          \
+    if (pointer == (type)NULL) {                                             \
         returnType = EB_ErrorInsufficientResources;                          \
         SVT_LOG("Malloc has failed due to insuffucient resources");          \
         return;                                                              \
@@ -114,23 +114,6 @@ extern uint32_t          app_malloc_count;
         return;                                                              \
     }                                                                        \
     app_malloc_count++;
-
-/* string copy */
-extern errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src);
-
-/* fitted string copy */
-extern errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen);
-
-/* string length */
-extern rsize_t eb_vp9_strnlen_ss(const char *s, rsize_t smax);
-
-#define EB_STRNCPY(dst, src, count) strncpy_ss(dst, sizeof(dst), src, count)
-
-#define EB_STRCPY(dst, size, src) strcpy_ss(dst, size, src)
-
-#define EB_STRCMP(target, token) strcmp(target, token)
-
-#define EB_STRLEN(target, max_size) eb_vp9_strnlen_ss(target, max_size)
 
 #define EB_APP_MEMORY()                                                \
     SVT_LOG("Total Number of Mallocs in App: %d\n", app_malloc_count); \

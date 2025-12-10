@@ -53,10 +53,10 @@ EbErrorType eb_vp9_sequence_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object
     }
 
     // Encode Context
-    if (scs_init_data != EB_NULL) {
+    if (scs_init_data != NULL) {
         sequence_control_set_ptr->encode_context_ptr = scs_init_data->encode_context_ptr;
     } else {
-        sequence_control_set_ptr->encode_context_ptr = (EncodeContext *)EB_NULL;
+        sequence_control_set_ptr->encode_context_ptr = (EncodeContext *)NULL;
     }
 
     // Profile & ID
@@ -226,15 +226,15 @@ EbErrorType eb_vp9_copy_sequence_control_set(SequenceControlSet *dst, SequenceCo
         write_count += sizeof(uint32_t);
     }
 
-    EB_MEMCPY(&dst->buffering_period, &src->buffering_period, sizeof(AppBufferingPeriodSei));
+    memcpy(&dst->buffering_period, &src->buffering_period, sizeof(AppBufferingPeriodSei));
 
     write_count += sizeof(AppBufferingPeriodSei);
 
-    EB_MEMCPY(&dst->recovery_point, &src->recovery_point, sizeof(AppRecoveryPoint));
+    memcpy(&dst->recovery_point, &src->recovery_point, sizeof(AppRecoveryPoint));
 
     write_count += sizeof(AppRecoveryPoint);
 
-    EB_MEMCPY(&dst->pic_timing_sei, &src->pic_timing_sei, sizeof(AppPictureTimingSei));
+    memcpy(&dst->pic_timing_sei, &src->pic_timing_sei, sizeof(AppPictureTimingSei));
 
     write_count += sizeof(AppPictureTimingSei);
 
@@ -250,7 +250,7 @@ EbErrorType eb_vp9_sequence_control_set_instance_ctor(EbSequenceControlSetInstan
     EbErrorType                  return_error = EB_ErrorNone;
     EB_MALLOC(EbSequenceControlSetInstance *, *object_dbl_ptr, sizeof(EbSequenceControlSetInstance), EB_N_PTR);
 
-    return_error = eb_vp9_encode_context_ctor((void **)&(*object_dbl_ptr)->encode_context_ptr, EB_NULL);
+    return_error = eb_vp9_encode_context_ctor((void **)&(*object_dbl_ptr)->encode_context_ptr, NULL);
     if (return_error == EB_ErrorInsufficientResources) {
         return EB_ErrorInsufficientResources;
     }

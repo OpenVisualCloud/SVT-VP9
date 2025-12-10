@@ -13,7 +13,7 @@ EbErrorType eb_vp9_rate_control_tasks_ctor(EbPtr *object_dbl_ptr, EbPtr object_i
     EB_MALLOC(RateControlTasks *, context_ptr, sizeof(RateControlTasks), EB_N_PTR);
 
     *object_dbl_ptr      = (EbPtr)context_ptr;
-    object_init_data_ptr = EB_NULL;
+    object_init_data_ptr = NULL;
 
     (void)object_init_data_ptr;
 

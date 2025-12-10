@@ -6,6 +6,8 @@
 #ifndef EBAVCSTYLEMCP_SSSE3_H
 #define EBAVCSTYLEMCP_SSSE3_H
 
+#include <emmintrin.h>
+#include <tmmintrin.h>
 #include "bitops.h"
 #include "EbDefinitions.h"
 #include "EbDefinitions.h"

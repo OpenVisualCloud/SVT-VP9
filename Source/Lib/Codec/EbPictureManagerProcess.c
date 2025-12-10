@@ -159,7 +159,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                 encode_context_ptr
                     ->picture_manager_reorder_queue[encode_context_ptr->picture_manager_reorder_queue_head_index];
 
-            while (queue_entry_ptr->parent_pcs_wrapper_ptr != EB_NULL) {
+            while (queue_entry_ptr->parent_pcs_wrapper_ptr != NULL) {
                 picture_control_set_ptr = (PictureParentControlSet *)
                                               queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr;
 
@@ -491,7 +491,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
 
                 } else if (picture_control_set_ptr->idr_flag == EB_TRUE) {
                     // Set Reference Entry pointer
-                    reference_entry_ptr = (ReferenceQueueEntry *)EB_NULL;
+                    reference_entry_ptr = (ReferenceQueueEntry *)NULL;
                 }
 
                 // Check if the EnhancedPictureQueue is full.
@@ -501,7 +501,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     (encode_context_ptr->input_picture_queue_head_index !=
                      encode_context_ptr->input_picture_queue_tail_index) ||
                         (encode_context_ptr->input_picture_queue[encode_context_ptr->input_picture_queue_head_index]
-                             ->input_object_ptr == EB_NULL),
+                             ->input_object_ptr == NULL),
                     encode_context_ptr->app_callback_ptr,
                     EB_ENC_PM_ERROR2);
 
@@ -532,7 +532,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                      encode_context_ptr->reference_picture_queue_tail_index) ||
                         (encode_context_ptr
                              ->reference_picture_queue[encode_context_ptr->reference_picture_queue_head_index]
-                             ->reference_object_ptr == EB_NULL),
+                             ->reference_object_ptr == NULL),
                     encode_context_ptr->app_callback_ptr,
                     EB_ENC_PM_ERROR3);
 
@@ -540,7 +540,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                 reference_entry_ptr =
                     encode_context_ptr->reference_picture_queue[encode_context_ptr->reference_picture_queue_tail_index];
                 reference_entry_ptr->picture_number            = picture_control_set_ptr->picture_number;
-                reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)EB_NULL;
+                reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)NULL;
                 reference_entry_ptr->release_enable            = EB_TRUE;
                 reference_entry_ptr->reference_available       = EB_FALSE;
                 reference_entry_ptr->feedback_arrived          = EB_FALSE;
@@ -578,11 +578,11 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                 if (picture_control_set_ptr->is_used_as_reference_flag == EB_FALSE) {
                     // Release the nominal live_count value
                     eb_vp9_release_object(picture_control_set_ptr->reference_picture_wrapper_ptr);
-                    picture_control_set_ptr->reference_picture_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+                    picture_control_set_ptr->reference_picture_wrapper_ptr = (EbObjectWrapper *)NULL;
                 }
 
                 // Release the Picture Manager Reorder Queue
-                queue_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+                queue_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)NULL;
                 queue_entry_ptr->picture_number += PICTURE_MANAGER_REORDER_QUEUE_MAX_DEPTH;
 
                 // Increment the Picture Manager Reorder Queue
@@ -651,8 +651,8 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
 
             CHECK_REPORT_ERROR_NC(encode_context_ptr->app_callback_ptr, EB_ENC_PM_ERROR7);
 
-            picture_control_set_ptr = (PictureParentControlSet *)EB_NULL;
-            encode_context_ptr      = (EncodeContext *)EB_NULL;
+            picture_control_set_ptr = (PictureParentControlSet *)NULL;
+            encode_context_ptr      = (EncodeContext *)NULL;
 
             break;
         }
@@ -662,12 +662,12 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
         // *************************************
 
         // Walk the input queue and start all ready pictures.  Mark entry as null after started.  Increment the head as you go.
-        if (encode_context_ptr != (EncodeContext *)EB_NULL) {
+        if (encode_context_ptr != (EncodeContext *)NULL) {
             input_queue_index = encode_context_ptr->input_picture_queue_head_index;
             while (input_queue_index != encode_context_ptr->input_picture_queue_tail_index) {
                 input_entry_ptr = encode_context_ptr->input_picture_queue[input_queue_index];
 
-                if (input_entry_ptr->input_object_ptr != EB_NULL) {
+                if (input_entry_ptr->input_object_ptr != NULL) {
                     entry_picture_control_set_ptr = (PictureParentControlSet *)
                                                         input_entry_ptr->input_object_ptr->object_ptr;
                     entrysequence_control_set_ptr = (SequenceControlSet *)entry_picture_control_set_ptr
@@ -821,7 +821,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                         }
 
 #if SEG_SUPPORT
-                        EB_MEMSET(&child_picture_control_set_ptr->segment_counts[0], 0, MAX_SEGMENTS * sizeof(int));
+                        memset(&child_picture_control_set_ptr->segment_counts[0], 0, MAX_SEGMENTS * sizeof(int));
 #endif
                         // is_low_delay
                         child_picture_control_set_ptr->is_low_delay =
@@ -831,11 +831,11 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                                           ->positive_ref_pics_total_count == 0);
 
                         // Reset the Reference Lists
-                        EB_MEMSET(child_picture_control_set_ptr->ref_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
+                        memset(child_picture_control_set_ptr->ref_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
 
-                        EB_MEMSET(child_picture_control_set_ptr->ref_pic_qp_array, 0, 2 * sizeof(uint8_t));
+                        memset(child_picture_control_set_ptr->ref_pic_qp_array, 0, 2 * sizeof(uint8_t));
 
-                        EB_MEMSET(child_picture_control_set_ptr->ref_slice_type_array, 0, 2 * sizeof(EB_SLICE));
+                        memset(child_picture_control_set_ptr->ref_slice_type_array, 0, 2 * sizeof(EB_SLICE));
 
                         // Configure List0
                         if ((entry_picture_control_set_ptr->slice_type == P_SLICE) ||
@@ -927,7 +927,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                         eb_vp9_post_full_object(output_wrapper_ptr);
 
                         // Remove the Input Entry from the Input Queue
-                        input_entry_ptr->input_object_ptr = (EbObjectWrapper *)EB_NULL;
+                        input_entry_ptr->input_object_ptr = (EbObjectWrapper *)NULL;
                     }
                 }
 
@@ -955,7 +955,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     // Release the nominal live_count value
                     eb_vp9_release_object(reference_entry_ptr->reference_object_ptr);
 
-                    reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)EB_NULL;
+                    reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)NULL;
                     reference_entry_ptr->reference_available       = EB_FALSE;
                     reference_entry_ptr->is_used_as_reference_flag = EB_FALSE;
                 }
@@ -989,5 +989,5 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
         // Release the Input Picture Demux Results
         eb_vp9_release_object(input_picture_demux_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }

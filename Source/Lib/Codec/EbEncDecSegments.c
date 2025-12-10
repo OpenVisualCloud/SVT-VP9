@@ -3,11 +3,9 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
+#include "EbEncDecSegments.h"
 #include <stdlib.h>
 #include <string.h>
-
-#include "EbEncDecSegments.h"
-#include "EbThreads.h"
 #include "EbDefinitions.h"
 
 EbErrorType eb_vp9_enc_dec_segments_ctor(EncDecSegments **segments_dbl_ptr, uint32_t segment_col_count,
@@ -66,10 +64,10 @@ void eb_vp9_enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t seg_col
     segments_ptr->segment_band_count  = BAND_TOTAL_COUNT(seg_row_count, seg_col_count);
     segments_ptr->segment_total_count = segments_ptr->segment_row_count * segments_ptr->segment_band_count;
 
-    //EB_MEMSET(segments_ptr->inputMap.inputDependencyMap, 0, sizeof(uint16_t) * segments_ptr->segment_total_count);
-    EB_MEMSET(segments_ptr->valid_sb_count_array, 0, sizeof(uint16_t) * segments_ptr->segment_total_count);
-    EB_MEMSET(segments_ptr->x_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_total_count);
-    EB_MEMSET(segments_ptr->y_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_total_count);
+    //memset(segments_ptr->inputMap.inputDependencyMap, 0, sizeof(uint16_t) * segments_ptr->segment_total_count);
+    memset(segments_ptr->valid_sb_count_array, 0, sizeof(uint16_t) * segments_ptr->segment_total_count);
+    memset(segments_ptr->x_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_total_count);
+    memset(segments_ptr->y_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_total_count);
 
     // Initialize the per-LCU input availability map & Start Arrays
     for (y = 0; y < pic_height_sb; ++y) {
@@ -107,7 +105,7 @@ void eb_vp9_enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t seg_col
     }
 
     // Initialize the per-segment dependency map
-    EB_MEMSET(segments_ptr->dep_map.dependency_map, 0, sizeof(uint8_t) * segments_ptr->segment_total_count);
+    memset(segments_ptr->dep_map.dependency_map, 0, sizeof(uint8_t) * segments_ptr->segment_total_count);
     for (row_index = 0; row_index < segments_ptr->segment_row_count; ++row_index) {
         for (segment_index = segments_ptr->row_array[row_index].starting_seg_index;
              segment_index <= segments_ptr->row_array[row_index].ending_seg_index;

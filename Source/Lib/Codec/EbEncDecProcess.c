@@ -1179,13 +1179,13 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
 
     if (plane == 0) {
         if (context_ptr->block_origin_y != 0)
-            EB_MEMCPY(context_ptr->intra_above_ref + 1,
-                      context_ptr->luma_recon_neighbor_array->top_array + context_ptr->block_origin_x,
-                      context_ptr->ep_block_stats_ptr->sq_size << 1);
+            memcpy(context_ptr->intra_above_ref + 1,
+                   context_ptr->luma_recon_neighbor_array->top_array + context_ptr->block_origin_x,
+                   context_ptr->ep_block_stats_ptr->sq_size << 1);
         if (context_ptr->block_origin_x != 0)
-            EB_MEMCPY(context_ptr->intra_left_ref + 1,
-                      context_ptr->luma_recon_neighbor_array->left_array + context_ptr->block_origin_y,
-                      context_ptr->ep_block_stats_ptr->sq_size << 1);
+            memcpy(context_ptr->intra_left_ref + 1,
+                   context_ptr->luma_recon_neighbor_array->left_array + context_ptr->block_origin_y,
+                   context_ptr->ep_block_stats_ptr->sq_size << 1);
         if (context_ptr->block_origin_y != 0 && context_ptr->block_origin_x != 0)
             context_ptr->intra_above_ref[0] = context_ptr->intra_left_ref[0] =
                 context_ptr->luma_recon_neighbor_array
@@ -1193,13 +1193,13 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
                                      context_ptr->block_origin_y];
     } else if (plane == 1) {
         if ((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0)
-            EB_MEMCPY(context_ptr->intra_above_ref + 1,
-                      context_ptr->cb_recon_neighbor_array->top_array + (ROUND_UV(context_ptr->block_origin_x) >> 1),
-                      context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
+            memcpy(context_ptr->intra_above_ref + 1,
+                   context_ptr->cb_recon_neighbor_array->top_array + (ROUND_UV(context_ptr->block_origin_x) >> 1),
+                   context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
         if ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0)
-            EB_MEMCPY(context_ptr->intra_left_ref + 1,
-                      context_ptr->cb_recon_neighbor_array->left_array + (ROUND_UV(context_ptr->block_origin_y) >> 1),
-                      context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
+            memcpy(context_ptr->intra_left_ref + 1,
+                   context_ptr->cb_recon_neighbor_array->left_array + (ROUND_UV(context_ptr->block_origin_y) >> 1),
+                   context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
         if (((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0) && ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0))
             context_ptr->intra_above_ref[0] = context_ptr->intra_left_ref[0] =
                 context_ptr->cb_recon_neighbor_array
@@ -1207,13 +1207,13 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
                                      (ROUND_UV(context_ptr->block_origin_y) >> 1)];
     } else {
         if ((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0)
-            EB_MEMCPY(context_ptr->intra_above_ref + 1,
-                      context_ptr->cr_recon_neighbor_array->top_array + (ROUND_UV(context_ptr->block_origin_x) >> 1),
-                      context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
+            memcpy(context_ptr->intra_above_ref + 1,
+                   context_ptr->cr_recon_neighbor_array->top_array + (ROUND_UV(context_ptr->block_origin_x) >> 1),
+                   context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
         if ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0)
-            EB_MEMCPY(context_ptr->intra_left_ref + 1,
-                      context_ptr->cr_recon_neighbor_array->left_array + (ROUND_UV(context_ptr->block_origin_y) >> 1),
-                      context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
+            memcpy(context_ptr->intra_left_ref + 1,
+                   context_ptr->cr_recon_neighbor_array->left_array + (ROUND_UV(context_ptr->block_origin_y) >> 1),
+                   context_ptr->ep_block_stats_ptr->sq_size_uv << 1);
         if (((ROUND_UV(context_ptr->block_origin_y) >> 1) > 0) && ((ROUND_UV(context_ptr->block_origin_x) >> 1) > 0))
             context_ptr->intra_above_ref[0] = context_ptr->intra_left_ref[0] =
                 context_ptr->cr_recon_neighbor_array
@@ -1249,10 +1249,10 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
         if (xd->mb_to_right_edge < 0) {
             /* slower path if the block needs border extension */
             if (x0 + bs <= frame_width) {
-                EB_MEMCPY(above_row, (void *)above_ref, bs);
+                memcpy(above_row, (void *)above_ref, bs);
             } else if (x0 <= frame_width) {
                 const int r = frame_width - x0;
-                EB_MEMCPY(above_row, (void *)above_ref, r);
+                memcpy(above_row, (void *)above_ref, r);
                 memset(above_row + r, above_row[r - 1], x0 + bs - frame_width);
             }
         } else {
@@ -1260,7 +1260,7 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
             if (bs == 4 && have_right && have_left) {
                 context_ptr->const_above_row[plane] = above_ref;
             } else {
-                EB_MEMCPY(above_row, (void *)above_ref, bs);
+                memcpy(above_row, (void *)above_ref, bs);
             }
         }
         above_row[-1] = have_left ? above_ref[-1] : 129;
@@ -1277,23 +1277,23 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
             /* slower path if the block needs border extension */
             if (x0 + 2 * bs <= frame_width) {
                 if (have_right && bs == 4) {
-                    EB_MEMCPY(above_row, (void *)above_ref, 2 * bs);
+                    memcpy(above_row, (void *)above_ref, 2 * bs);
                 } else {
-                    EB_MEMCPY(above_row, (void *)above_ref, bs);
+                    memcpy(above_row, (void *)above_ref, bs);
                     memset(above_row + bs, above_row[bs - 1], bs);
                 }
             } else if (x0 + bs <= frame_width) {
                 const int r = frame_width - x0;
                 if (have_right && bs == 4) {
-                    EB_MEMCPY(above_row, (void *)above_ref, r);
+                    memcpy(above_row, (void *)above_ref, r);
                     memset(above_row + r, above_row[r - 1], x0 + 2 * bs - frame_width);
                 } else {
-                    EB_MEMCPY(above_row, (void *)above_ref, bs);
+                    memcpy(above_row, (void *)above_ref, bs);
                     memset(above_row + bs, above_row[bs - 1], bs);
                 }
             } else if (x0 <= frame_width) {
                 const int r = frame_width - x0;
-                EB_MEMCPY(above_row, (void *)above_ref, r);
+                memcpy(above_row, (void *)above_ref, r);
                 memset(above_row + r, above_row[r - 1], x0 + 2 * bs - frame_width);
             }
         } else {
@@ -1301,9 +1301,9 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
             if (bs == 4 && have_right && have_left) {
                 context_ptr->const_above_row[plane] = above_ref;
             } else {
-                EB_MEMCPY(above_row, (void *)above_ref, bs);
+                memcpy(above_row, (void *)above_ref, bs);
                 if (bs == 4 && have_right)
-                    EB_MEMCPY(above_row + bs, (void *)(above_ref + bs), bs);
+                    memcpy(above_row + bs, (void *)(above_ref + bs), bs);
                 else
                     memset(above_row + bs, above_row[bs - 1], bs);
             }
@@ -1516,16 +1516,15 @@ void set_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecConte
     xd->above_seg_context = context_ptr->above_seg_context;
 
     for (int i = 0; i < MAX_MB_PLANE; ++i) {
-        EB_MEMCPY(
-            &xd->left_context[i],
-            &context_ptr
-                 ->left_context[(context_ptr->sb_ptr->origin_y >> 2) +
-                                (i * sizeof(*context_ptr->left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))],
-            16);
+        memcpy(&xd->left_context[i],
+               &context_ptr
+                    ->left_context[(context_ptr->sb_ptr->origin_y >> 2) +
+                                   (i * sizeof(*context_ptr->left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))],
+               16);
     }
-    EB_MEMCPY(&xd->left_seg_context,
-              &context_ptr->left_seg_context[context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2],
-              sizeof(xd->left_seg_context));
+    memcpy(&xd->left_seg_context,
+           &context_ptr->left_seg_context[context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2],
+           sizeof(xd->left_seg_context));
 }
 
 // update context for the rate of sb
@@ -1534,16 +1533,15 @@ void update_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncDecCo
     VP9_COMMON *const cm  = &cpi->common;
 
     for (int i = 0; i < MAX_MB_PLANE; ++i) {
-        EB_MEMCPY(
-            &context_ptr
-                 ->left_context[(context_ptr->sb_ptr->origin_y >> 2) +
-                                (i * sizeof(*context_ptr->left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))],
-            &xd->left_context[i],
-            16);
+        memcpy(&context_ptr
+                    ->left_context[(context_ptr->sb_ptr->origin_y >> 2) +
+                                   (i * sizeof(*context_ptr->left_context) * 2 * mi_cols_aligned_to_sb(cm->mi_rows))],
+               &xd->left_context[i],
+               16);
     }
-    EB_MEMCPY(&context_ptr->left_seg_context[context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2],
-              &xd->left_seg_context,
-              sizeof(xd->left_seg_context));
+    memcpy(&context_ptr->left_seg_context[context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2],
+           &xd->left_seg_context,
+           sizeof(xd->left_seg_context));
 }
 
 // update the context rate for BDP pilar and refinment stages
@@ -1553,31 +1551,31 @@ void update_bdp_sb_rate_context(PictureControlSet *picture_control_set_ptr, EncD
     VP9_COMMON *const cm  = &cpi->common;
 
     for (int i = 0; i < MAX_MB_PLANE; ++i) {
-        EB_MEMCPY(&picture_control_set_ptr
-                       ->md_left_context[depth_part_stage]
-                                        [(context_ptr->sb_ptr->origin_y >> 2) +
-                                         (i * sizeof(*picture_control_set_ptr->md_left_context[depth_part_stage]) * 2 *
-                                          mi_cols_aligned_to_sb(cm->mi_rows))],
-                  &xd->left_context[i],
-                  16);
+        memcpy(&picture_control_set_ptr
+                    ->md_left_context[depth_part_stage]
+                                     [(context_ptr->sb_ptr->origin_y >> 2) +
+                                      (i * sizeof(*picture_control_set_ptr->md_left_context[depth_part_stage]) * 2 *
+                                       mi_cols_aligned_to_sb(cm->mi_rows))],
+               &xd->left_context[i],
+               16);
     }
-    EB_MEMCPY(
+    memcpy(
         &picture_control_set_ptr->md_left_seg_context[depth_part_stage][context_ptr->sb_ptr->origin_y >> MI_SIZE_LOG2],
         &xd->left_seg_context,
         sizeof(xd->left_seg_context));
 
     for (int i = 0; i < MAX_MB_PLANE; ++i) {
         struct macroblockd_plane *const pd = &xd->plane[i];
-        EB_MEMCPY(&picture_control_set_ptr
-                       ->md_above_context[depth_part_stage]
-                                         [((context_ptr->sb_ptr->origin_x >> 2) >> pd->subsampling_x) +
-                                          (i * sizeof(*picture_control_set_ptr->md_above_context[depth_part_stage]) *
-                                           2 * mi_cols_aligned_to_sb(cm->mi_cols))],
-                  &xd->above_context[i][(context_ptr->sb_ptr->origin_x >> 2) >> pd->subsampling_x],
-                  16);
+        memcpy(&picture_control_set_ptr
+                    ->md_above_context[depth_part_stage]
+                                      [((context_ptr->sb_ptr->origin_x >> 2) >> pd->subsampling_x) +
+                                       (i * sizeof(*picture_control_set_ptr->md_above_context[depth_part_stage]) * 2 *
+                                        mi_cols_aligned_to_sb(cm->mi_cols))],
+               &xd->above_context[i][(context_ptr->sb_ptr->origin_x >> 2) >> pd->subsampling_x],
+               16);
     }
 
-    EB_MEMCPY(
+    memcpy(
         &picture_control_set_ptr->md_above_seg_context[depth_part_stage][context_ptr->sb_ptr->origin_x >> MI_SIZE_LOG2],
         &xd->above_seg_context[context_ptr->sb_ptr->origin_x >> MI_SIZE_LOG2],
         8 * sizeof(*xd->above_seg_context));
@@ -2243,11 +2241,10 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                 for (mi_col_index = context_ptr->mi_col; mi_col_index < context_ptr->mi_col +
                                          ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                                      mi_col_index++) {
-                                    EB_MEMCPY(
-                                        context_ptr
-                                            ->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
-                                        &(context_ptr->enc_dec_local_block_array[last_block_index]->mode_info),
-                                        sizeof(ModeInfo));
+                                    memcpy(context_ptr
+                                               ->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
+                                           &(context_ptr->enc_dec_local_block_array[last_block_index]->mode_info),
+                                           sizeof(ModeInfo));
                                 }
                             }
                         }
@@ -2290,7 +2287,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                                          context_ptr->sb_ptr->quantized_coeff->stride_y]);
 
                                 for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                    EB_MEMCPY(
+                                    memcpy(
                                         dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size * sizeof(int16_t));
                                     src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size;
                                     dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_y;
@@ -2310,9 +2307,9 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                                               context_ptr->sb_ptr->quantized_coeff->stride_cb]);
 
                                     for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                        EB_MEMCPY(dst_ptr,
-                                                  src_ptr,
-                                                  context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                        memcpy(dst_ptr,
+                                               src_ptr,
+                                               context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                         src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                                         dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_cb;
                                     }
@@ -2330,9 +2327,9 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                                               context_ptr->sb_ptr->quantized_coeff->stride_cr]);
 
                                     for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                        EB_MEMCPY(dst_ptr,
-                                                  src_ptr,
-                                                  context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
+                                        memcpy(dst_ptr,
+                                               src_ptr,
+                                               context_ptr->ep_block_stats_ptr->sq_size_uv * sizeof(int16_t));
                                         src_ptr = src_ptr + context_ptr->ep_block_stats_ptr->sq_size_uv;
                                         dst_ptr = dst_ptr + context_ptr->sb_ptr->quantized_coeff->stride_cr;
                                     }
@@ -2353,7 +2350,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                 (recon_buffer->origin_y + context_ptr->block_origin_y) * recon_buffer->stride_y;
 
                             for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size; j++) {
-                                EB_MEMCPY(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size);
+                                memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size);
                                 src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_y;
                                 dst_ptr = dst_ptr + recon_buffer->stride_y;
                             }
@@ -2375,7 +2372,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                         recon_buffer->stride_cb;
 
                                 for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                    EB_MEMCPY(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
+                                    memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
                                     src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_cb;
                                     dst_ptr = dst_ptr + recon_buffer->stride_cb;
                                 }
@@ -2387,7 +2384,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                         recon_buffer->stride_cr;
 
                                 for (j = 0; j < context_ptr->ep_block_stats_ptr->sq_size_uv; j++) {
-                                    EB_MEMCPY(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
+                                    memcpy(dst_ptr, src_ptr, context_ptr->ep_block_stats_ptr->sq_size_uv);
                                     src_ptr = src_ptr + candidate_buffer->recon_ptr->stride_cr;
                                     dst_ptr = dst_ptr + recon_buffer->stride_cr;
                                 }
@@ -2689,7 +2686,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                             for (mi_col_index = context_ptr->mi_col; mi_col_index <
                                  context_ptr->mi_col + ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                                  mi_col_index++) {
-                                EB_MEMCPY(
+                                memcpy(
                                     context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
                                     &(context_ptr->enc_dec_local_block_array[last_block_index]->mode_info),
                                     sizeof(ModeInfo));
@@ -2978,9 +2975,9 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                     for (mi_col_index = context_ptr->mi_col; mi_col_index <
                          context_ptr->mi_col + ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                          mi_col_index++) {
-                        EB_MEMCPY(context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
-                                  &(context_ptr->enc_dec_local_block_array[0]->mode_info),
-                                  sizeof(ModeInfo));
+                        memcpy(context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
+                               &(context_ptr->enc_dec_local_block_array[0]->mode_info),
+                               sizeof(ModeInfo));
                     }
                 }
 
@@ -3303,11 +3300,10 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                                 for (mi_col_index = context_ptr->mi_col; mi_col_index < context_ptr->mi_col +
                                          ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                                      mi_col_index++) {
-                                    EB_MEMCPY(
-                                        context_ptr
-                                            ->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
-                                        &(context_ptr->enc_dec_local_block_array[last_block_index]->mode_info),
-                                        sizeof(ModeInfo));
+                                    memcpy(context_ptr
+                                               ->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
+                                           &(context_ptr->enc_dec_local_block_array[last_block_index]->mode_info),
+                                           sizeof(ModeInfo));
                                 }
                             }
 
@@ -3533,10 +3529,9 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
                         for (mi_col_index = context_ptr->mi_col; mi_col_index <
                              context_ptr->mi_col + ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                              mi_col_index++) {
-                            EB_MEMCPY(
-                                context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
-                                &(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
-                                sizeof(ModeInfo));
+                            memcpy(context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
+                                   &(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
+                                   sizeof(ModeInfo));
                         }
                     }
 
@@ -3746,7 +3741,7 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
             }
 
             for (int i = 0; i < MAX_MB_PLANE; ++i) {
-                EB_MEMCPY(
+                memcpy(
                     &xd->left_context[i],
                     &picture_control_set_ptr->ep_left_context[(sb_ptr->origin_y >> 2) +
                                                               (i * sizeof(*picture_control_set_ptr->ep_left_context) *
@@ -4117,9 +4112,9 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
                     for (mi_col_index = context_ptr->mi_col; mi_col_index <
                          context_ptr->mi_col + ((int)context_ptr->ep_block_stats_ptr->bwidth >> MI_SIZE_LOG2);
                          mi_col_index++) {
-                        EB_MEMCPY(context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
-                                  &(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
-                                  sizeof(ModeInfo));
+                        memcpy(context_ptr->mode_info_array[mi_col_index + mi_row_index * context_ptr->mi_stride],
+                               &(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info),
+                               sizeof(ModeInfo));
                     }
                 }
                 if (do_recon) {
@@ -4217,12 +4212,12 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
                 }
                 // Amir-Hsan: per sb or per block
                 for (int i = 0; i < MAX_MB_PLANE; ++i) {
-                    EB_MEMCPY(&picture_control_set_ptr
-                                   ->ep_left_context[(sb_ptr->origin_y >> 2) +
-                                                     (i * sizeof(*picture_control_set_ptr->ep_left_context) * 2 *
-                                                      mi_cols_aligned_to_sb(cm->mi_rows))],
-                              &xd->left_context[i],
-                              16);
+                    memcpy(&picture_control_set_ptr
+                                ->ep_left_context[(sb_ptr->origin_y >> 2) +
+                                                  (i * sizeof(*picture_control_set_ptr->ep_left_context) * 2 *
+                                                   mi_cols_aligned_to_sb(cm->mi_rows))],
+                           &xd->left_context[i],
+                           16);
                 }
             }
 
@@ -5388,7 +5383,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                 context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)reference_object->reference_picture;
 #endif
             } else {
-                context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)EB_NULL;
+                context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)NULL;
             }
 
             if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
@@ -5402,7 +5397,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                 context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)reference_object->reference_picture;
 #endif
             } else {
-                context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)EB_NULL;
+                context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)NULL;
             }
         }
 
@@ -5595,7 +5590,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                                                                         reference_object->reference_picture;
 
                         } else {
-                            context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)EB_NULL;
+                            context_ptr->ref_pic_list[REF_LIST_0] = (EbPictureBufferDesc *)NULL;
                         }
 
                         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode ==
@@ -5607,7 +5602,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                                 ? (EbPictureBufferDesc *)reference_object->ref_den_src_picture
                                 : (EbPictureBufferDesc *)reference_object->reference_picture;
                         } else {
-                            context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)EB_NULL;
+                            context_ptr->ref_pic_list[REF_LIST_1] = (EbPictureBufferDesc *)NULL;
                         }
                     }
 #endif
@@ -5719,22 +5714,19 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                 uint16_t vertical_idx;
 
                 for (vertical_idx = 0; vertical_idx < ref_den_pic->height; ++vertical_idx) {
-                    EB_MEMCPY(
-                        ref_den_pic->buffer_y + ref_luma_off_set + vertical_idx * ref_den_pic->stride_y,
-                        input_picture_ptr->buffer_y + src_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
-                        input_picture_ptr->width);
+                    memcpy(ref_den_pic->buffer_y + ref_luma_off_set + vertical_idx * ref_den_pic->stride_y,
+                           input_picture_ptr->buffer_y + src_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
+                           input_picture_ptr->width);
                 }
 
                 for (vertical_idx = 0; vertical_idx < input_picture_ptr->height / 2; ++vertical_idx) {
-                    EB_MEMCPY(
-                        ref_den_pic->buffer_cb + ref_cb_offset + vertical_idx * ref_den_pic->stride_cb,
-                        input_picture_ptr->buffer_cb + src_cb_offset + vertical_idx * input_picture_ptr->stride_cb,
-                        input_picture_ptr->width / 2);
+                    memcpy(ref_den_pic->buffer_cb + ref_cb_offset + vertical_idx * ref_den_pic->stride_cb,
+                           input_picture_ptr->buffer_cb + src_cb_offset + vertical_idx * input_picture_ptr->stride_cb,
+                           input_picture_ptr->width / 2);
 
-                    EB_MEMCPY(
-                        ref_den_pic->buffer_cr + ref_cr_offset + vertical_idx * ref_den_pic->stride_cr,
-                        input_picture_ptr->buffer_cr + src_cr_offset + vertical_idx * input_picture_ptr->stride_cr,
-                        input_picture_ptr->width / 2);
+                    memcpy(ref_den_pic->buffer_cr + ref_cr_offset + vertical_idx * ref_den_pic->stride_cr,
+                           input_picture_ptr->buffer_cr + src_cr_offset + vertical_idx * input_picture_ptr->stride_cr,
+                           input_picture_ptr->width / 2);
                 }
 
                 eb_vp9_generate_padding(ref_den_pic->buffer_y,
@@ -5802,5 +5794,5 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
         // Release Mode Decision Results
         eb_vp9_release_object(enc_dec_tasks_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }

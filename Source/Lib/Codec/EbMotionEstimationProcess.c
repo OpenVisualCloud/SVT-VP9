@@ -153,7 +153,7 @@ void *set_me_hme_params_sq(MeContext *me_context_ptr, PictureParentControlSet *p
         }
     }
 
-    return EB_NULL;
+    return NULL;
 };
 
 /************************************************
@@ -247,7 +247,7 @@ void *eb_vp9_set_me_hme_params_oq(MeContext *me_context_ptr, PictureParentContro
         }
     }
 
-    return EB_NULL;
+    return NULL;
 };
 
 /************************************************
@@ -310,7 +310,7 @@ void *set_me_hme_params_vmaf(MeContext *me_context_ptr, PictureParentControlSet 
 
     // HME Level0 adjustment for low frame rate contents (frame rate <= 30)
 
-    return EB_NULL;
+    return NULL;
 };
 
 /************************************************
@@ -320,7 +320,7 @@ void *eb_vp9_set_me_hme_params_from_confi(SequenceControlSet *sequence_control_s
     me_context_ptr->search_area_width  = (uint8_t)sequence_control_set_ptr->static_config.search_area_width;
     me_context_ptr->search_area_height = (uint8_t)sequence_control_set_ptr->static_config.search_area_height;
 
-    return EB_NULL;
+    return NULL;
 }
 
 /************************************************
@@ -982,9 +982,9 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                     context_ptr->me_context_ptr->hme_search_type = HME_RECTANGULAR;
 
                     for (sb_row = 0; sb_row < MAX_SB_SIZE; sb_row++) {
-                        EB_MEMCPY(&(context_ptr->me_context_ptr->sb_buffer[sb_row * MAX_SB_SIZE]),
-                                  &(input_picture_ptr->buffer_y[buffer_index + sb_row * input_picture_ptr->stride_y]),
-                                  MAX_SB_SIZE * sizeof(uint8_t));
+                        memcpy(&(context_ptr->me_context_ptr->sb_buffer[sb_row * MAX_SB_SIZE]),
+                               &(input_picture_ptr->buffer_y[buffer_index + sb_row * input_picture_ptr->stride_y]),
+                               MAX_SB_SIZE * sizeof(uint8_t));
                     }
 
                     uint8_t *src_ptr = &input_padded_picture_ptr->buffer_y[buffer_index];
@@ -1006,13 +1006,12 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                             quarter_decimated_picture_ptr->origin_x + (sb_origin_x >> 1);
 
                         for (sb_row = 0; sb_row < (sb_height >> 1); sb_row++) {
-                            EB_MEMCPY(
-                                &(context_ptr->me_context_ptr
-                                      ->quarter_sb_buffer[sb_row *
-                                                          context_ptr->me_context_ptr->quarter_sb_buffer_stride]),
-                                &(quarter_decimated_picture_ptr
-                                      ->buffer_y[buffer_index + sb_row * quarter_decimated_picture_ptr->stride_y]),
-                                (sb_width >> 1) * sizeof(uint8_t));
+                            memcpy(&(context_ptr->me_context_ptr
+                                         ->quarter_sb_buffer[sb_row *
+                                                             context_ptr->me_context_ptr->quarter_sb_buffer_stride]),
+                                   &(quarter_decimated_picture_ptr
+                                         ->buffer_y[buffer_index + sb_row * quarter_decimated_picture_ptr->stride_y]),
+                                   (sb_width >> 1) * sizeof(uint8_t));
                         }
                     }
 
@@ -1027,7 +1026,7 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
                             uint8_t *local_ptr = context_ptr->me_context_ptr->sixteenth_sb_buffer;
 
                             for (sb_row = 0; sb_row < (sb_height >> 2); sb_row += 2) {
-                                EB_MEMCPY(local_ptr, frame_ptr, (sb_width >> 2) * sizeof(uint8_t));
+                                memcpy(local_ptr, frame_ptr, (sb_width >> 2) * sizeof(uint8_t));
                                 local_ptr += 16;
                                 frame_ptr += sixteenth_decimated_picture_ptr->stride_y << 1;
                             }
@@ -1248,5 +1247,5 @@ void *eb_vp9_motion_estimation_kernel(void *input_ptr) {
         // Post the Full Results Object
         eb_vp9_post_full_object(output_results_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }

@@ -3395,9 +3395,9 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
 
         //copy Luma
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height; ++vertical_idx) {
-            EB_MEMCPY(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
-                      denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
-                      sizeof(uint8_t) * input_picture_ptr->width);
+            memcpy(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
+                   denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
+                   sizeof(uint8_t) * input_picture_ptr->width);
         }
 
         //copy chroma
@@ -3419,12 +3419,12 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
 
         //copy chroma
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height / 2; ++vertical_idx) {
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cb + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cb,
                 denoised_picture_ptr->buffer_cb + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cb,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
 
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cr + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cr,
                 denoised_picture_ptr->buffer_cr + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cr,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
@@ -3441,9 +3441,9 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
             denoised_picture_ptr->origin_y / 2 * denoised_picture_ptr->stride_cb;
 
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height; ++vertical_idx) {
-            EB_MEMCPY(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
-                      denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
-                      sizeof(uint8_t) * input_picture_ptr->width);
+            memcpy(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
+                   denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
+                   sizeof(uint8_t) * input_picture_ptr->width);
         }
 
         //copy chroma
@@ -3464,12 +3464,12 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
         }
 
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height / 2; ++vertical_idx) {
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cb + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cb,
                 denoised_picture_ptr->buffer_cb + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cb,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
 
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cr + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cr,
                 denoised_picture_ptr->buffer_cr + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cr,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
@@ -3496,11 +3496,10 @@ static EbErrorType denoise_input_picture(PictureAnalysisContext  *context_ptr,
 
             if (picture_control_set_ptr->sb_flat_noise_array[sb_index] == 1) {
                 for (vertical_idx = 0; vertical_idx < sb_height; ++vertical_idx) {
-                    EB_MEMCPY(
-                        input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
-                        denoised_picture_ptr->buffer_y + den_luma_off_set +
-                            vertical_idx * denoised_picture_ptr->stride_y,
-                        sizeof(uint8_t) * sb_width);
+                    memcpy(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
+                           denoised_picture_ptr->buffer_y + den_luma_off_set +
+                               vertical_idx * denoised_picture_ptr->stride_y,
+                           sizeof(uint8_t) * sb_width);
                 }
             }
         }
@@ -3691,9 +3690,9 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
 
         //copy luma
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height; ++vertical_idx) {
-            EB_MEMCPY(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
-                      denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
-                      sizeof(uint8_t) * input_picture_ptr->width);
+            memcpy(input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
+                   denoised_picture_ptr->buffer_y + den_luma_off_set + vertical_idx * denoised_picture_ptr->stride_y,
+                   sizeof(uint8_t) * input_picture_ptr->width);
         }
 
         //filter chroma
@@ -3715,12 +3714,12 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
 
         //copy chroma
         for (vertical_idx = 0; vertical_idx < input_picture_ptr->height / 2; ++vertical_idx) {
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cb + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cb,
                 denoised_picture_ptr->buffer_cb + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cb,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
 
-            EB_MEMCPY(
+            memcpy(
                 input_picture_ptr->buffer_cr + in_chroma_off_set + vertical_idx * input_picture_ptr->stride_cr,
                 denoised_picture_ptr->buffer_cr + den_chroma_off_set + vertical_idx * denoised_picture_ptr->stride_cr,
                 sizeof(uint8_t) * input_picture_ptr->width / 2);
@@ -3793,7 +3792,7 @@ static EbErrorType sub_sample_filter_noise(SequenceControlSet      *sequence_con
                         (denoised_picture_ptr->origin_y + sb_origin_y) * denoised_picture_ptr->stride_y;
 
                     for (vertical_idx = 0; vertical_idx < sb_height; ++vertical_idx) {
-                        EB_MEMCPY(
+                        memcpy(
                             input_picture_ptr->buffer_y + in_luma_off_set + vertical_idx * input_picture_ptr->stride_y,
                             denoised_picture_ptr->buffer_y + den_luma_off_set +
                                 vertical_idx * denoised_picture_ptr->stride_y,
@@ -4442,7 +4441,7 @@ void edge_detection_mean_luma_chroma16x16(SequenceControlSet      *sequence_cont
         for (sb_index = 0; sb_index < total_sb_count; sb_index++) {
             SbStat *sb_stat_ptr = &picture_control_set_ptr->sb_stat_array[sb_index];
 
-            EB_MEMSET(sb_stat_ptr, 0, sizeof(SbStat));
+            memset(sb_stat_ptr, 0, sizeof(SbStat));
             SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
             if (sb_params->potential_logo_sb && sb_params->is_complete_sb)
 
@@ -4534,7 +4533,7 @@ void edge_detection_mean_luma_chroma16x16(SequenceControlSet      *sequence_cont
         for (sb_index = 0; sb_index < total_sb_count; sb_index++) {
             SbStat *sb_stat_ptr = &picture_control_set_ptr->sb_stat_array[sb_index];
 
-            EB_MEMSET(sb_stat_ptr, 0, sizeof(SbStat));
+            memset(sb_stat_ptr, 0, sizeof(SbStat));
         }
     }
 }
@@ -5192,7 +5191,7 @@ void *eb_vp9_picture_analysis_kernel(void *input_ptr) {
         // Post the Full Results Object
         eb_vp9_post_full_object(output_results_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }
 
 void unused_variablevoid_func_pa() {

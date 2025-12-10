@@ -64,10 +64,10 @@ EbErrorType eb_vp9_me_context_ctor(MeContext **object_dbl_ptr) {
 
     (*object_dbl_ptr)->hme_buffer_stride = MAX_SEARCH_AREA_WIDTH;
 
-    EB_MEMSET((*object_dbl_ptr)->sb_buffer, 0, sizeof(uint8_t) * MAX_SB_SIZE * (*object_dbl_ptr)->sb_buffer_stride);
-    EB_MEMSET((*object_dbl_ptr)->hme_sb_buffer,
-              0,
-              sizeof(uint8_t) * (MAX_SB_SIZE + HME_DECIM_FILTER_TAP - 1) * (*object_dbl_ptr)->hme_sb_buffer_stride);
+    memset((*object_dbl_ptr)->sb_buffer, 0, sizeof(uint8_t) * MAX_SB_SIZE * (*object_dbl_ptr)->sb_buffer_stride);
+    memset((*object_dbl_ptr)->hme_sb_buffer,
+           0,
+           sizeof(uint8_t) * (MAX_SB_SIZE + HME_DECIM_FILTER_TAP - 1) * (*object_dbl_ptr)->hme_sb_buffer_stride);
 
     // 15 intermediate buffers to retain the interpolated reference samples
 

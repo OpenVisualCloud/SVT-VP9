@@ -19,7 +19,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     *object_dbl_ptr = (EbPtr)encode_context_ptr;
 
     // Callback Functions
-    encode_context_ptr->app_callback_ptr = (EbCallback *)EB_NULL;
+    encode_context_ptr->app_callback_ptr = (EbCallback *)NULL;
 
     // Port Active State
     encode_context_ptr->recon_port_active = EB_FALSE;
@@ -29,13 +29,13 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
 
     encode_context_ptr->total_number_of_recon_frames = 0;
     // Output Buffer Fifos
-    encode_context_ptr->stream_output_fifo_ptr = (EbFifo *)EB_NULL;
-    encode_context_ptr->recon_output_fifo_ptr  = (EbFifo *)EB_NULL;
+    encode_context_ptr->stream_output_fifo_ptr = (EbFifo *)NULL;
+    encode_context_ptr->recon_output_fifo_ptr  = (EbFifo *)NULL;
 
     // Picture Buffer Fifos
-    encode_context_ptr->input_picture_pool_fifo_ptr        = (EbFifo *)EB_NULL;
-    encode_context_ptr->reference_picture_pool_fifo_ptr    = (EbFifo *)EB_NULL;
-    encode_context_ptr->pa_reference_picture_pool_fifo_ptr = (EbFifo *)EB_NULL;
+    encode_context_ptr->input_picture_pool_fifo_ptr        = (EbFifo *)NULL;
+    encode_context_ptr->reference_picture_pool_fifo_ptr    = (EbFifo *)NULL;
+    encode_context_ptr->pa_reference_picture_pool_fifo_ptr = (EbFifo *)NULL;
 
     // Picture Decision Reordering Queue
     encode_context_ptr->picture_decision_reorder_queue_head_index = 0;
@@ -84,7 +84,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
               EB_N_PTR);
 
     for (picture_index = 0; picture_index < PRE_ASSIGNMENT_MAX_DEPTH; ++picture_index) {
-        encode_context_ptr->pre_assignment_buffer[picture_index] = (EbObjectWrapper *)EB_NULL;
+        encode_context_ptr->pre_assignment_buffer[picture_index] = (EbObjectWrapper *)NULL;
     }
 
     // Picture Manager Input Queue
@@ -194,7 +194,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     encode_context_ptr->terminating_sequence_flag_received = EB_FALSE;
 
     // Prediction Structure Group
-    encode_context_ptr->prediction_structure_group_ptr = (PredictionStructureGroup *)EB_NULL;
+    encode_context_ptr->prediction_structure_group_ptr = (PredictionStructureGroup *)NULL;
 
     // Rate Control
     encode_context_ptr->available_target_bitrate         = 10000000;
@@ -228,7 +228,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     encode_context_ptr->max_coded_poc_selected_ref_qp = 32;
 
     encode_context_ptr->shared_reference_mutex = eb_vp9_create_mutex();
-    if (encode_context_ptr->shared_reference_mutex == (EbHandle)EB_NULL) {
+    if (encode_context_ptr->shared_reference_mutex == (EbHandle)NULL) {
         return EB_ErrorInsufficientResources;
     } else {
         memory_map[*(memory_map_index)].ptr_type = EB_MUTEX;

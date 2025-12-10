@@ -637,7 +637,7 @@ static const PredictionStructureConfig prediction_structure_config_array[] = {
     {8, four_level_hierarchical_pred_struct},
     {16, five_level_hierarchical_pred_struct},
     {32, six_level_hierarchical_pred_struct},
-    {0, (PredictionStructureConfigEntry *)EB_NULL} // Terminating Code, must always come last!
+    {0, (PredictionStructureConfigEntry *)NULL} // Terminating Code, must always come last!
 };
 
 /************************************************
@@ -851,7 +851,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
     PredictionStructure *prediction_structure_ptr;
     EB_MALLOC(PredictionStructure *, prediction_structure_ptr, sizeof(PredictionStructure), EB_N_PTR);
     *prediction_structure_dbl_ptr = prediction_structure_ptr;
-    EB_MEMSET(prediction_structure_ptr, 0, sizeof(PredictionStructure));
+    memset(prediction_structure_ptr, 0, sizeof(PredictionStructure));
 
     prediction_structure_ptr->pred_type = pred_type;
 
@@ -938,8 +938,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                   prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index],
                   sizeof(PredictionStructureEntry),
                   EB_N_PTR);
-        EB_MEMSET(
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index], 0, sizeof(PredictionStructureEntry));
+        memset(prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index], 0, sizeof(PredictionStructureEntry));
     }
 
     // Find the Max Temporal Layer Index
@@ -1248,7 +1247,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
     //
     //        // Null out List 1
     //        prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list_count = 0;
-    //        prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = (int32_t*) EB_NULL;
+    //        prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list = (int32_t*) NULL;
     //
     //        // Set the Temporal Layer Index
     //        prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->temporal_layer_index = prediction_structure_config_ptr->entry_array[config_entry_index].temporal_layer_index;
@@ -1326,7 +1325,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                               prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list0.list_count,
                           EB_N_PTR);
             } else {
-                prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list0.list = (int32_t *)EB_NULL;
+                prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list0.list = (int32_t *)NULL;
             }
         }
 
@@ -1457,7 +1456,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                               prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list1.list_count,
                           EB_N_PTR);
             } else {
-                prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list1.list = (int32_t *)EB_NULL;
+                prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list1.list = (int32_t *)NULL;
             }
         }
 
@@ -1572,7 +1571,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
             prediction_structure_ptr->pred_struct_entry_count + prediction_structure_ptr->maximum_extent,
             prediction_structure_ptr->pred_struct_entry_count);
         EB_MALLOC(EB_BOOL *, timeline_map, sizeof(EB_BOOL) * SQR(timeline_size), EB_N_PTR);
-        EB_MEMSET(timeline_map, 0, sizeof(EB_BOOL) * SQR(timeline_size));
+        memset(timeline_map, 0, sizeof(EB_BOOL) * SQR(timeline_size));
 
         // Construct the Decode & Display Order
         EB_MALLOC(int32_t *, decode_order_table, sizeof(int32_t) * decode_order_table_size, EB_N_PTR);

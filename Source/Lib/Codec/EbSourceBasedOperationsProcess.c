@@ -1079,5 +1079,5 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
         // Post the Full Results Object
         eb_vp9_post_full_object(output_results_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }

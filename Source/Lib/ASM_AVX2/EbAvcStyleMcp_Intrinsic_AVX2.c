@@ -4,6 +4,7 @@
 */
 
 #include <assert.h>
+#include <immintrin.h>
 #include "EbAvcStyleMcp_AVX2.h"
 #include "EbAvcStyleMcp_SSSE3.h"
 #include "EbDefinitions.h"

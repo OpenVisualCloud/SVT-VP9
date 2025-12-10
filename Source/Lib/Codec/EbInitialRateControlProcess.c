@@ -302,7 +302,7 @@ static void eb_vp9_ReleasePaReferenceObjects(PictureParentControlSet *picture_co
         // List Loop
         for (list_index = REF_LIST_0; list_index <= num_of_list_to_search; ++list_index) {
             // Release PA Reference Pictures
-            if (picture_control_set_ptr->ref_pa_pic_ptr_array[list_index] != EB_NULL) {
+            if (picture_control_set_ptr->ref_pa_pic_ptr_array[list_index] != NULL) {
                 eb_vp9_release_object(
                     ((EbPaReferenceObject *)picture_control_set_ptr->ref_pa_pic_ptr_array[list_index]->object_ptr)
                         ->p_pcs_ptr->p_pcs_wrapper_ptr);
@@ -311,7 +311,7 @@ static void eb_vp9_ReleasePaReferenceObjects(PictureParentControlSet *picture_co
         }
     }
 
-    if (picture_control_set_ptr->pareference_picture_wrapper_ptr != EB_NULL) {
+    if (picture_control_set_ptr->pareference_picture_wrapper_ptr != NULL) {
         eb_vp9_release_object(picture_control_set_ptr->p_pcs_wrapper_ptr);
         eb_vp9_release_object(picture_control_set_ptr->pareference_picture_wrapper_ptr);
     }
@@ -718,13 +718,13 @@ static void get_histogram_queue_data(SequenceControlSet *sequence_control_set_pt
     histogram_queue_entry_ptr->is_coded             = EB_FALSE;
     histogram_queue_entry_ptr->total_num_bitsCoded  = 0;
     histogram_queue_entry_ptr->frames_in_sw         = 0;
-    EB_MEMCPY(histogram_queue_entry_ptr->me_distortion_histogram,
-              picture_control_set_ptr->me_distortion_histogram,
-              sizeof(uint16_t) * NUMBER_OF_SAD_INTERVALS);
+    memcpy(histogram_queue_entry_ptr->me_distortion_histogram,
+           picture_control_set_ptr->me_distortion_histogram,
+           sizeof(uint16_t) * NUMBER_OF_SAD_INTERVALS);
 
-    EB_MEMCPY(histogram_queue_entry_ptr->ois_distortion_histogram,
-              picture_control_set_ptr->ois_distortion_histogram,
-              sizeof(uint16_t) * NUMBER_OF_INTRA_SAD_INTERVALS);
+    memcpy(histogram_queue_entry_ptr->ois_distortion_histogram,
+           picture_control_set_ptr->ois_distortion_histogram,
+           sizeof(uint16_t) * NUMBER_OF_INTRA_SAD_INTERVALS);
 
     eb_vp9_release_mutex(sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     //SVT_LOG("Test1 POC: %d\t POC: %d\t life_count: %d\n", histogram_queue_entry_ptr->picture_number, picture_control_set_ptr->picture_number,  histogram_queue_entry_ptr->life_count);
@@ -864,7 +864,7 @@ void *eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr) {
                 // Check if the sliding window condition is valid
                 queue_entry_index_temp = encode_context_ptr->initial_rate_control_reorder_queue_head_index;
                 if (encode_context_ptr->initial_rate_control_reorder_queue[queue_entry_index_temp]
-                        ->parent_pcs_wrapper_ptr != EB_NULL) {
+                        ->parent_pcs_wrapper_ptr != NULL) {
                     end_of_sequence_flag =
                         ((PictureParentControlSet *)(encode_context_ptr
                                                          ->initial_rate_control_reorder_queue[queue_entry_index_temp]
@@ -890,9 +890,9 @@ void *eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr) {
                     move_slide_wondow_flag =
                         (EB_BOOL)(move_slide_wondow_flag &&
                                   (encode_context_ptr->initial_rate_control_reorder_queue[queue_entry_index_temp2]
-                                       ->parent_pcs_wrapper_ptr != EB_NULL));
+                                       ->parent_pcs_wrapper_ptr != NULL));
                     if (encode_context_ptr->initial_rate_control_reorder_queue[queue_entry_index_temp2]
-                            ->parent_pcs_wrapper_ptr != EB_NULL) {
+                            ->parent_pcs_wrapper_ptr != NULL) {
                         // check if it is the last frame. If we have reached the last frame, we would output the buffered frames in the Queue.
                         end_of_sequence_flag =
                             ((PictureParentControlSet
@@ -1031,7 +1031,7 @@ void *eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr) {
 
                     // Reset the Reorder Queue Entry
                     queue_entry_ptr->picture_number += INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH;
-                    queue_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+                    queue_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)NULL;
 
                     // Increment the Reorder Queue head Ptr
                     encode_context_ptr->initial_rate_control_reorder_queue_head_index =
@@ -1049,5 +1049,5 @@ void *eb_vp9_initial_eb_vp9_rate_control_kernel(void *input_ptr) {
         // Release the Input Results
         eb_vp9_release_object(input_results_wrapper_ptr);
     }
-    return EB_NULL;
+    return NULL;
 }

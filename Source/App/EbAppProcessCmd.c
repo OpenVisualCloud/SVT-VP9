@@ -464,7 +464,7 @@ AppExitConditionType process_input_buffer(EbConfig *config, EbAppContext *app_ca
 
         // Update the context parameters
         config->processed_byte_count += header_ptr->n_filled_len;
-        header_ptr->p_app_private = (EbPtr)EB_NULL;
+        header_ptr->p_app_private = (EbPtr)NULL;
         ++config->processed_frame_count;
 
         // Configuration parameters changed on the fly

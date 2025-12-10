@@ -5,6 +5,8 @@
 
 #include "EbDefinitions.h"
 #include "EbComputeSAD_SadLoopKernel_AVX512.h"
+#include <emmintrin.h>
+#include <immintrin.h>
 #include "stdint.h"
 
 #define UPDATE_BEST(s, k, offset)       \

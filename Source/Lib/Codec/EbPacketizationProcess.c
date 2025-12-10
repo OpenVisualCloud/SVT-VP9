@@ -439,7 +439,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
 
                 // Frame Data: 12+-byte
 #if COPY_STREAM
-                EB_MEMCPY(write_byte_ptr + write_location, read_byte_ptr, size);
+                memcpy(write_byte_ptr + write_location, read_byte_ptr, size);
 #else
                 while (read_location < size) {
                     if ((*output_buffer_index) < (*output_buffer_size)) {
@@ -465,7 +465,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         queue_entry_ptr->frame_type = picture_control_set_ptr->parent_pcs_ptr->cpi->common.frame_type;
         queue_entry_ptr->intra_only = picture_control_set_ptr->parent_pcs_ptr->cpi->common.intra_only;
         queue_entry_ptr->poc        = picture_control_set_ptr->picture_number;
-        EB_MEMCPY(&queue_entry_ptr->ref_signal, &picture_control_set_ptr->parent_pcs_ptr->ref_signal, sizeof(RpsNode));
+        memcpy(&queue_entry_ptr->ref_signal, &picture_control_set_ptr->parent_pcs_ptr->ref_signal, sizeof(RpsNode));
 
         queue_entry_ptr->slice_type    = picture_control_set_ptr->slice_type;
         queue_entry_ptr->ref_poc_list0 = picture_control_set_ptr->parent_pcs_ptr->ref_pic_poc_array[REF_LIST_0];
@@ -508,7 +508,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         queue_entry_ptr =
             encode_context_ptr->packetization_reorder_queue[encode_context_ptr->packetization_reorder_queue_head_index];
 
-        while (queue_entry_ptr->output_stream_wrapper_ptr != EB_NULL) {
+        while (queue_entry_ptr->output_stream_wrapper_ptr != NULL) {
             output_stream_wrapper_ptr = queue_entry_ptr->output_stream_wrapper_ptr;
             output_stream_ptr         = (EbBufferHeaderType *)output_stream_wrapper_ptr->object_ptr;
 
@@ -564,7 +564,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
                         context_ptr->disp_order_continuity_count++;
                     else {
                         SVT_LOG("SVT [ERROR]: disp_order_continuity_count Error1 POC:%i\n", (int)queue_entry_ptr->poc);
-                        return EB_NULL;
+                        return NULL;
                     }
                 }
 
@@ -574,7 +574,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
                         context_ptr->disp_order_continuity_count += 4;
                     else {
                         SVT_LOG("SVT [ERROR]: disp_order_continuity_count Error2 POC:%i\n", (int)queue_entry_ptr->poc);
-                        return EB_NULL;
+                        return NULL;
                     }
                 }
 
@@ -648,14 +648,14 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
 
                         if (queue_entry_ptr->ref_poc_list0 != context_ptr->dpb_disp_order[LASTrefIdx]) {
                             SVT_LOG("SVT [ERROR]: L0 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
-                            return EB_NULL;
+                            return NULL;
                         }
 
                         if (sequence_control_set_ptr->hierarchical_levels == 3 &&
                             queue_entry_ptr->slice_type == B_SLICE &&
                             queue_entry_ptr->ref_poc_list1 != context_ptr->dpb_disp_order[BWDrefIdx]) {
                             SVT_LOG("SVT [ERROR]: L1 MISMATCH POC:%i\n", (int)queue_entry_ptr->poc);
-                            return EB_NULL;
+                            return NULL;
                         }
 
                     } else {
@@ -708,7 +708,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
             eb_vp9_post_full_object(output_stream_wrapper_ptr);
             // Reset the Reorder Queue Entry
             queue_entry_ptr->picture_number += PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;
-            queue_entry_ptr->output_stream_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+            queue_entry_ptr->output_stream_wrapper_ptr = (EbObjectWrapper *)NULL;
 
             // Increment the Reorder Queue head Ptr
             encode_context_ptr->packetization_reorder_queue_head_index =
@@ -722,5 +722,5 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
                     ->packetization_reorder_queue[encode_context_ptr->packetization_reorder_queue_head_index];
         }
     }
-    return EB_NULL;
+    return NULL;
 }

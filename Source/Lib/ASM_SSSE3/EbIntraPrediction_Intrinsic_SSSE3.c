@@ -47,8 +47,8 @@ static INLINE void d117_pred(uint8_t *dst, ptrdiff_t stride, int bs,
 
     // store
     for (int i = 0; i < bs / 2; ++i) {
-        EB_MEMCPY(dst + (2 * i + 0) * stride, border0 + bs / 2 - 1 - i, bs);
-        EB_MEMCPY(dst + (2 * i + 1) * stride, border1 + bs / 2 - 1 - i, bs);
+        memcpy(dst + (2 * i + 0) * stride, border0 + bs / 2 - 1 - i, bs);
+        memcpy(dst + (2 * i + 1) * stride, border1 + bs / 2 - 1 - i, bs);
     }
 }
 
@@ -75,7 +75,7 @@ static void d135_pred(uint8_t *dst, ptrdiff_t stride, int bs,
 
     // store
     for (int i = 0; i < bs; ++i) {
-        EB_MEMCPY(dst + i * stride, border + bs - 1 - i, bs);
+        memcpy(dst + i * stride, border + bs - 1 - i, bs);
     }
 }
 #endif

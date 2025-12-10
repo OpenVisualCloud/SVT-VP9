@@ -60,7 +60,7 @@ void eb_video_usability_info_copy(AppVideoUsabilityInfo *dst_vui_ptr, AppVideoUs
     dst_vui_ptr->log2_max_mv_length_horizontal = src_vui_ptr->log2_max_mv_length_horizontal;
     dst_vui_ptr->log2_max_mv_length_vertical   = src_vui_ptr->log2_max_mv_length_vertical;
 
-    EB_MEMCPY(dst_vui_ptr->hrd_parameters_ptr, src_vui_ptr->hrd_parameters_ptr, sizeof(AppHrdParameters));
+    memcpy(dst_vui_ptr->hrd_parameters_ptr, src_vui_ptr->hrd_parameters_ptr, sizeof(AppHrdParameters));
 
     return;
 }
@@ -144,30 +144,28 @@ EbErrorType eb_video_usability_info_ctor(AppVideoUsabilityInfo *vui_ptr) {
     hrd_param_ptr->au_cpb_removal_delay_length_minus1      = 0;
     hrd_param_ptr->dpb_output_delay_length_minus1          = 0;
 
-    EB_MEMSET(hrd_param_ptr->fixed_pic_rate_general_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
+    memset(hrd_param_ptr->fixed_pic_rate_general_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
 
-    EB_MEMSET(hrd_param_ptr->fixed_pic_rate_within_cvs_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
+    memset(hrd_param_ptr->fixed_pic_rate_within_cvs_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
 
-    EB_MEMSET(hrd_param_ptr->elemental_duration_tc_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS);
+    memset(hrd_param_ptr->elemental_duration_tc_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS);
 
-    EB_MEMSET(hrd_param_ptr->low_delay_hrd_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
+    memset(hrd_param_ptr->low_delay_hrd_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS);
 
-    EB_MEMSET(hrd_param_ptr->cpb_count_minus1, 0, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS);
+    memset(hrd_param_ptr->cpb_count_minus1, 0, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS);
     //hrd_param_ptr->cpb_count_minus1[0] = 2;
 
-    EB_MEMSET(
-        hrd_param_ptr->bit_rate_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
+    memset(hrd_param_ptr->bit_rate_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
 
-    EB_MEMSET(
-        hrd_param_ptr->cpb_size_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
+    memset(hrd_param_ptr->cpb_size_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
 
-    EB_MEMSET(
+    memset(
         hrd_param_ptr->bit_rate_du_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
 
-    EB_MEMSET(
+    memset(
         hrd_param_ptr->cpb_size_du_value_minus1, EB_FALSE, sizeof(uint32_t) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
 
-    EB_MEMSET(hrd_param_ptr->cbr_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
+    memset(hrd_param_ptr->cbr_flag, EB_FALSE, sizeof(EB_BOOL) * MAX_TEMPORAL_LAYERS * 2 * MAX_CPB_COUNT);
 
     hrd_param_ptr->cpb_dpb_delays_present_flag = (EB_BOOL)((hrd_param_ptr->nal_hrd_parameters_present_flag ||
                                                             hrd_param_ptr->vcl_hrd_parameters_present_flag) &&
@@ -188,7 +186,7 @@ void eb_picture_timeing_sei_ctor(AppPictureTimingSei *pic_timing_ptr) {
     pic_timing_ptr->du_common_cpb_removal_delay_minus1 = 0;
     pic_timing_ptr->num_nalus_in_du_minus1             = 0;
 
-    EB_MEMSET(pic_timing_ptr->du_cpb_removal_delay_minus1, 0, sizeof(uint32_t) * MAX_DECODING_UNIT_COUNT);
+    memset(pic_timing_ptr->du_cpb_removal_delay_minus1, 0, sizeof(uint32_t) * MAX_DECODING_UNIT_COUNT);
 
     return;
 }
@@ -201,10 +199,10 @@ void eb_buffering_period_sei_ctor(AppBufferingPeriodSei *buffering_period_ptr) {
     buffering_period_ptr->cpb_delay_offset                  = 0;
     buffering_period_ptr->dpb_delay_offset                  = 0;
 
-    EB_MEMSET(buffering_period_ptr->initial_cpb_removal_delay, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
-    EB_MEMSET(buffering_period_ptr->initial_cpb_removal_delay_offset, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
-    EB_MEMSET(buffering_period_ptr->initial_alt_cpb_removal_delay, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
-    EB_MEMSET(buffering_period_ptr->initial_alt_cpb_removal_delay_offset, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
+    memset(buffering_period_ptr->initial_cpb_removal_delay, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
+    memset(buffering_period_ptr->initial_cpb_removal_delay_offset, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
+    memset(buffering_period_ptr->initial_alt_cpb_removal_delay, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
+    memset(buffering_period_ptr->initial_alt_cpb_removal_delay_offset, 0, sizeof(uint32_t) * 2 * MAX_CPB_COUNT);
 
     return;
 }

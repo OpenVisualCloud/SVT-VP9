@@ -180,7 +180,7 @@ static void set_cfg_tune(const char *value, EbConfig *cfg) { cfg->tune = (uint8_
 static void set_profile(const char *value, EbConfig *cfg) { cfg->profile = strtol(value, NULL, 0); };
 
 static void set_level(const char *value, EbConfig *cfg) {
-    if (strtoul(value, NULL, 0) != 0 || EB_STRCMP(value, "0") == 0)
+    if (strtoul(value, NULL, 0) != 0 || strcmp(value, "0") == 0)
         cfg->level = (uint32_t)(10 * strtod(value, NULL));
     else
         cfg->level = 9999999;
@@ -470,7 +470,7 @@ static void set_config_value(EbConfig *config, char *name, char *value) {
     int i = 0;
 
     while (config_entry[i].name != NULL) {
-        if (EB_STRCMP(config_entry[i].name, name) == 0) {
+        if (strcmp(config_entry[i].name, name) == 0) {
             (*config_entry[i].scf)((const char *)value, config);
         }
         ++i;
@@ -513,7 +513,7 @@ static void parse_config_file(EbConfig *config, char *buffer, int size) {
                 // Cap the length of the variable name
                 arg_len[0] = (arg_len[0] > CONFIG_FILE_MAX_VAR_LEN - 1) ? CONFIG_FILE_MAX_VAR_LEN - 1 : arg_len[0];
                 // Copy the variable name
-                EB_STRNCPY(var_name, argv[0], arg_len[0]);
+                strncpy(var_name, argv[0], arg_len[0]);
                 // Null terminate the variable name
                 var_name[arg_len[0]] = CONFIG_FILE_NULL_CHAR;
 
@@ -524,7 +524,7 @@ static void parse_config_file(EbConfig *config, char *buffer, int size) {
                         ? CONFIG_FILE_MAX_VAR_LEN - 1
                         : arg_len[value_index + 2];
                     // Copy the variable name
-                    EB_STRNCPY(var_value[value_index], argv[value_index + 2], arg_len[value_index + 2]);
+                    strncpy(var_value[value_index], argv[value_index + 2], arg_len[value_index + 2]);
                     // Null terminate the variable name
                     var_value[value_index][arg_len[value_index + 2]] = CONFIG_FILE_NULL_CHAR;
 
@@ -548,9 +548,9 @@ static int find_token(int argc, char *const argv[], char const *token, char *con
     int return_error = -1;
 
     while ((argc > 0) && (return_error != 0)) {
-        return_error = EB_STRCMP(argv[--argc], token);
+        return_error = strcmp(argv[--argc], token);
         if (return_error == 0) {
-            EB_STRCPY(config_str, COMMAND_LINE_MAX_SIZE, argv[argc + 1]);
+            strcpy(config_str, argv[argc + 1]);
         }
     }
 
@@ -676,28 +676,27 @@ int find_token_multiple_inputs(int argc, char *const argv[], const char *token, 
     int return_error = -1;
     int done         = 0;
     while ((argc > 0) && (return_error != 0)) {
-        return_error = EB_STRCMP(argv[--argc], token);
+        return_error = strcmp(argv[--argc], token);
         if (return_error == 0) {
             int count;
             for (count = 0; count < MAX_CHANNEL_NUMBER; ++count) {
                 if (done == 0) {
                     if (argv[argc + count + 1]) {
-                        if (strtoul(argv[argc + count + 1], NULL, 0) != 0 ||
-                            EB_STRCMP(argv[argc + count + 1], "0") == 0) {
-                            EB_STRCPY(config_str[count], COMMAND_LINE_MAX_SIZE, argv[argc + count + 1]);
+                        if (strtoul(argv[argc + count + 1], NULL, 0) != 0 || strcmp(argv[argc + count + 1], "0") == 0) {
+                            strcpy(config_str[count], argv[argc + count + 1]);
                         } else if (argv[argc + count + 1][0] != '-') {
-                            EB_STRCPY(config_str[count], COMMAND_LINE_MAX_SIZE, argv[argc + count + 1]);
+                            strcpy(config_str[count], argv[argc + count + 1]);
                         } else {
-                            EB_STRCPY(config_str[count], COMMAND_LINE_MAX_SIZE, " ");
+                            strcpy(config_str[count], " ");
                             done = 1;
                         }
                     } else {
-                        EB_STRCPY(config_str[count], COMMAND_LINE_MAX_SIZE, " ");
+                        strcpy(config_str[count], " ");
                         done = 1;
                         //return return_error;
                     }
                 } else
-                    EB_STRCPY(config_str[count], COMMAND_LINE_MAX_SIZE, " ");
+                    strcpy(config_str[count], " ");
             }
         }
     }
@@ -712,7 +711,7 @@ static int count_channels_input(int argc, char *const argv[]) {
     uint32_t count        = 0;
     uint32_t argc_max     = (uint32_t)argc;
     while ((argc > 0) && (return_error != 0)) {
-        return_error = EB_STRCMP(argv[--argc], "-c");
+        return_error = strcmp(argv[--argc], "-c");
         if (return_error == 0) {
             while (((argc + count + 1) < argc_max) && (count < MAX_CHANNEL_NUMBER) &&
                    (argv[argc + count + 1][0] != '-')) {
@@ -780,7 +779,7 @@ uint32_t get_number_of_channels(int argc, char *const argv[]) {
 void mark_token_as_read(const char *token, char *cmd_copy[], int *cmd_token_cnt) {
     int cmd_copy_index;
     for (cmd_copy_index = 0; cmd_copy_index < *(cmd_token_cnt); ++cmd_copy_index) {
-        if (!EB_STRCMP(cmd_copy[cmd_copy_index], token)) {
+        if (!strcmp(cmd_copy[cmd_copy_index], token)) {
             cmd_copy[cmd_copy_index] = cmd_copy[--(*cmd_token_cnt)];
         }
     }
@@ -828,7 +827,7 @@ EbErrorType read_command_line(int argc, char *const argv[], EbConfig **configs, 
     }
 
     // Copy tokens (except for CHANNEL_NUMBER_TOKEN ) into a temp token buffer hosting all tokens that are passed through the command line
-    size_t len = EB_STRLEN(CHANNEL_NUMBER_TOKEN, COMMAND_LINE_MAX_SIZE);
+    size_t len = strlen(CHANNEL_NUMBER_TOKEN);
     for (token_index = 0; token_index < argc; ++token_index) {
         if ((argv[token_index][0] == '-') && strncmp(argv[token_index], CHANNEL_NUMBER_TOKEN, len)) {
             cmd_copy[cmd_token_cnt++] = argv[token_index];
@@ -869,7 +868,7 @@ EbErrorType read_command_line(int argc, char *const argv[], EbConfig **configs, 
 
                 // Fill up the values corresponding to each channel
                 for (index = 0; index < num_channels; ++index) {
-                    if (EB_STRCMP(config_strings[index], " ")) {
+                    if (strcmp(config_strings[index], " ")) {
                         (*config_entry[token_index].scf)(config_strings[index], configs[index]);
                     } else {
                         break;

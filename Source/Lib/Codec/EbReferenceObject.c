@@ -3,7 +3,6 @@
 * SPDX - License - Identifier: BSD - 2 - Clause - Patent
 */
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "EbPictureBufferDesc.h"
@@ -17,11 +16,11 @@ static void initialize_samples_neighboring_reference_picture16_bit(EbByte recon_
 
     // 1. Zero out the top row
     recon_samples_ptr = (uint16_t *)recon_samples_buffer_ptr + (top_padding - 1) * stride + left_padding - 1;
-    EB_MEMSET((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
+    memset((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
 
     // 2. Zero out the bottom row
     recon_samples_ptr = (uint16_t *)recon_samples_buffer_ptr + (top_padding + recon_height) * stride + left_padding - 1;
-    EB_MEMSET((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
+    memset((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
 
     // 3. Zero out the left column
     recon_samples_ptr = (uint16_t *)recon_samples_buffer_ptr + top_padding * stride + left_padding - 1;
@@ -44,11 +43,11 @@ static void initialize_samples_neighboring_reference_picture8_bit(EbByte recon_s
 
     // 1. Zero out the top row
     recon_samples_ptr = recon_samples_buffer_ptr + (top_padding - 1) * stride + left_padding - 1;
-    EB_MEMSET(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
+    memset(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
 
     // 2. Zero out the bottom row
     recon_samples_ptr = recon_samples_buffer_ptr + (top_padding + recon_height) * stride + left_padding - 1;
-    EB_MEMSET(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
+    memset(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
 
     // 3. Zero out the left column
     recon_samples_ptr = recon_samples_buffer_ptr + top_padding * stride + left_padding - 1;
@@ -193,7 +192,7 @@ EbErrorType eb_vp9_pa_reference_object_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     }
 
     // Quarter Decim reference picture constructor
-    pa_reference_object->quarter_decimated_picture_ptr = (EbPictureBufferDesc *)EB_NULL;
+    pa_reference_object->quarter_decimated_picture_ptr = (EbPictureBufferDesc *)NULL;
     return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(pa_reference_object->quarter_decimated_picture_ptr),
                                                    (EbPtr)(picture_buffer_desc_init_data_ptr + 1));
     if (return_error == EB_ErrorInsufficientResources) {
@@ -201,7 +200,7 @@ EbErrorType eb_vp9_pa_reference_object_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     }
 
     // Sixteenth Decim reference picture constructor
-    pa_reference_object->sixteenth_decimated_picture_ptr = (EbPictureBufferDesc *)EB_NULL;
+    pa_reference_object->sixteenth_decimated_picture_ptr = (EbPictureBufferDesc *)NULL;
     return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(pa_reference_object->sixteenth_decimated_picture_ptr),
                                                    (EbPtr)(picture_buffer_desc_init_data_ptr + 2));
     if (return_error == EB_ErrorInsufficientResources) {

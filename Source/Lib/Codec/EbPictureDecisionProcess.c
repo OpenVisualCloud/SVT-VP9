@@ -353,7 +353,7 @@ static EbErrorType release_prev_picture_from_reorder_queue(EncodeContext *encode
         // Reset the Picture Decision Reordering Queue Entry
         // P.S. The reset of the Picture Decision Reordering Queue Entry could not be done before running the Scene Change Detector
         queue_previous_entry_ptr->picture_number += PICTURE_DECISION_REORDER_QUEUE_MAX_DEPTH;
-        queue_previous_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+        queue_previous_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)NULL;
     }
 
     return return_error;
@@ -1510,7 +1510,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
             encode_context_ptr
                 ->picture_decision_reorder_queue[encode_context_ptr->picture_decision_reorder_queue_head_index];
 
-        while (queue_entry_ptr->parent_pcs_wrapper_ptr != EB_NULL) {
+        while (queue_entry_ptr->parent_pcs_wrapper_ptr != NULL) {
             if (queue_entry_ptr->picture_number == 0 ||
                 ((PictureParentControlSet *)(queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr))
                         ->end_of_sequence_flag == EB_TRUE) {
@@ -2014,7 +2014,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                             } else if (picture_control_set_ptr->idr_flag == EB_TRUE) {
                                 // Set the Picture Decision PA Reference Entry pointer
-                                input_entry_ptr = (PaReferenceQueueEntry *)EB_NULL;
+                                input_entry_ptr = (PaReferenceQueueEntry *)NULL;
                             }
 
                             // Place Picture in Picture Decision PA Reference Queue
@@ -2039,7 +2039,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                     (encode_context_ptr
                                          ->picture_decision_pa_reference_queue
                                              [encode_context_ptr->picture_decision_pa_reference_queue_head_index]
-                                         ->input_object_ptr == EB_NULL),
+                                         ->input_object_ptr == NULL),
                                 encode_context_ptr->app_callback_ptr,
                                 EB_ENC_PD_ERROR4);
 
@@ -2101,9 +2101,9 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                 EB_ENC_PD_ERROR5);
 
                             // Reset the PA Reference Lists
-                            EB_MEMSET(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
+                            memset(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
 
-                            EB_MEMSET(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(uint32_t));
+                            memset(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(uint32_t));
                         }
 
                         // 2nd Loop over Pictures in the Pre-Assignment Buffer
@@ -2138,9 +2138,9 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                 EB_ENC_PD_ERROR6);
 
                             // Reset the PA Reference Lists
-                            EB_MEMSET(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
+                            memset(picture_control_set_ptr->ref_pa_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
 
-                            EB_MEMSET(picture_control_set_ptr->ref_pic_poc_array, 0, 2 * sizeof(uint64_t));
+                            memset(picture_control_set_ptr->ref_pic_poc_array, 0, 2 * sizeof(uint64_t));
 
                             // Configure List0
                             if ((picture_control_set_ptr->slice_type == P_SLICE) ||
@@ -2286,7 +2286,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                         eb_vp9_release_object(input_entry_ptr->p_pcs_ptr->p_pcs_wrapper_ptr);
                         // Release the nominal live_count value
                         eb_vp9_release_object(input_entry_ptr->input_object_ptr);
-                        input_entry_ptr->input_object_ptr = (EbObjectWrapper *)EB_NULL;
+                        input_entry_ptr->input_object_ptr = (EbObjectWrapper *)NULL;
                     }
 
                     // Increment the head_index if the head is null
@@ -2306,7 +2306,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                            (encode_context_ptr
                                                 ->picture_decision_pa_reference_queue
                                                     [encode_context_ptr->picture_decision_pa_reference_queue_head_index]
-                                                ->input_object_ptr == EB_NULL),
+                                                ->input_object_ptr == NULL),
                                        encode_context_ptr->app_callback_ptr,
                                        EB_ENC_PD_ERROR4);
 
@@ -2336,7 +2336,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
         eb_vp9_release_object(input_results_wrapper_ptr);
     }
 
-    return EB_NULL;
+    return NULL;
 }
 void unused_variable_void_func_pic_decision() {
     (void)n_x_m_sad_kernel_func_ptr_array;

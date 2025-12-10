@@ -5119,5 +5119,5 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
             break;
         }
     }
-    return EB_NULL;
+    return NULL;
 }

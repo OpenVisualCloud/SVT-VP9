@@ -14,21 +14,22 @@
 #include <emmintrin.h> // SSE2
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include "EbDefinitions.h"
 
 #define INLINE __inline
 //#include "./vpx_config.h"
 
-static INLINE void storeu_uint32(void *dst, uint32_t v) { EB_MEMCPY(dst, &v, sizeof(v)); }
+static INLINE void storeu_uint32(void *dst, uint32_t v) { memcpy(dst, &v, sizeof(v)); }
 
 static INLINE uint32_t loadu_uint32(const void *src) {
     uint32_t v;
-    EB_MEMCPY(&v, (void *)src, sizeof(v));
+    memcpy(&v, (void *)src, sizeof(v));
     return v;
 }
 
-#define mm_storelu(dst, v) EB_MEMCPY((dst), (char *)&(v), 8)
-#define mm_storehu(dst, v) EB_MEMCPY((dst), (char *)&(v) + 8, 8)
+#define mm_storelu(dst, v) memcpy((dst), (char *)&(v), 8)
+#define mm_storehu(dst, v) memcpy((dst), (char *)&(v) + 8, 8)
 
 static INLINE __m128i loadh_epi64(const __m128i s, const void *const src) {
     return _mm_castps_si128(_mm_loadh_pi(_mm_castsi128_ps(s), (const __m64 *)src));

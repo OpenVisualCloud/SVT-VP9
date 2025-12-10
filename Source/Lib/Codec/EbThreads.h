@@ -52,7 +52,7 @@ extern uint64_t         *total_lib_memory; // library Memory malloc'd
 
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
     pointer = eb_vp9_create_thread(thread_function, thread_context);                               \
-    if (pointer == (type)EB_NULL) {                                                                \
+    if (pointer == (type)NULL) {                                                                   \
         return EB_ErrorInsufficientResources;                                                      \
     } else {                                                                                       \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;                                  \
@@ -76,7 +76,7 @@ extern uint64_t         *total_lib_memory; // library Memory malloc'd
 #elif defined(__linux__)
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context)  \
     pointer = eb_vp9_create_thread(thread_function, thread_context);                                \
-    if (pointer == (type)EB_NULL) {                                                                 \
+    if (pointer == (type)NULL) {                                                                    \
         return EB_ErrorInsufficientResources;                                                       \
     } else {                                                                                        \
         pthread_setaffinity_np(*((pthread_t *)pointer), sizeof(cpu_set_t), &eb_vp9_group_affinity); \
@@ -95,7 +95,7 @@ extern uint64_t         *total_lib_memory; // library Memory malloc'd
 #else
 #define EB_CREATETHREAD(type, pointer, n_elements, pointer_class, thread_function, thread_context) \
     pointer = eb_vp9_create_thread(thread_function, thread_context);                               \
-    if (pointer == (type)EB_NULL) {                                                                \
+    if (pointer == (type)NULL) {                                                                   \
         return EB_ErrorInsufficientResources;                                                      \
     } else {                                                                                       \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;                                  \

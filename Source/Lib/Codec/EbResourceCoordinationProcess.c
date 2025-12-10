@@ -563,7 +563,7 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
             // Disable releaseFlag of new SequenceControlSet
             eb_vp9_object_release_disable(context_ptr->sequence_control_set_active_array[instance_index]);
 
-            if (previoussequence_control_set_wrapper_ptr != EB_NULL) {
+            if (previoussequence_control_set_wrapper_ptr != NULL) {
                 // Enable releaseFlag of old SequenceControlSet
                 eb_vp9_object_release_enable(previoussequence_control_set_wrapper_ptr);
 
@@ -735,8 +735,8 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         // Rate Control
         // Set the ME Distortion and OIS Historgrams to zero
         if (sequence_control_set_ptr->static_config.rate_control_mode) {
-            EB_MEMSET(picture_control_set_ptr->me_distortion_histogram, 0, NUMBER_OF_SAD_INTERVALS * sizeof(uint16_t));
-            EB_MEMSET(
+            memset(picture_control_set_ptr->me_distortion_histogram, 0, NUMBER_OF_SAD_INTERVALS * sizeof(uint16_t));
+            memset(
                 picture_control_set_ptr->ois_distortion_histogram, 0, NUMBER_OF_INTRA_SAD_INTERVALS * sizeof(uint16_t));
         }
         picture_control_set_ptr->full_sb_count = 0;
@@ -789,5 +789,5 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         prev_picture_control_set_wrapper_ptr = picture_control_set_wrapper_ptr;
     }
 
-    return EB_NULL;
+    return NULL;
 }

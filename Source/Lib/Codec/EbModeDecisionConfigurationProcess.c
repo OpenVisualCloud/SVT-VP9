@@ -136,7 +136,7 @@ EbErrorType eb_vp9_mode_decision_configuration_context_ctor(ModeDecisionConfigur
     EB_MALLOC(MACROBLOCKD *, context_ptr->e_mbd, sizeof(MACROBLOCKD), EB_N_PTR);
 
     EB_MALLOC(MbModeInfoExt *, context_ptr->mbmi_ext, sizeof(MbModeInfoExt), EB_N_PTR);
-    EB_MEMSET(
+    memset(
         context_ptr->mbmi_ext, 0, sizeof(MbModeInfoExt)); // Hsan: reference MVs not generated @ MDC (i.e. always (0,0))
 
     return EB_ErrorNone;
@@ -992,12 +992,12 @@ void eb_vp9_configure_adp(PictureControlSet *picture_control_set_ptr, ModeDecisi
             ref_obj_l0 = (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_0]->object_ptr;
             ref_obj_l1 = (picture_control_set_ptr->parent_pcs_ptr->slice_type == B_SLICE)
                 ? (EbReferenceObject *)picture_control_set_ptr->ref_pic_ptr_array[REF_LIST_1]->object_ptr
-                : (EbReferenceObject *)EB_NULL;
+                : (EbReferenceObject *)NULL;
             luminosity_change =
                 ((ABS(picture_control_set_ptr->parent_pcs_ptr->average_intensity[0] - ref_obj_l0->average_intensity) >=
                   adp_luminosity_change_th_array[picture_control_set_ptr->parent_pcs_ptr->hierarchical_levels]
                                                 [picture_control_set_ptr->temporal_layer_index]) ||
-                 (ref_obj_l1 != EB_NULL &&
+                 (ref_obj_l1 != NULL &&
                   ABS(picture_control_set_ptr->parent_pcs_ptr->average_intensity[0] - ref_obj_l1->average_intensity) >=
                       adp_luminosity_change_th_array[picture_control_set_ptr->parent_pcs_ptr->hierarchical_levels]
                                                     [picture_control_set_ptr->temporal_layer_index]));
@@ -3012,5 +3012,5 @@ void *eb_vp9_mode_decision_configuration_kernel(void *input_ptr) {
         eb_vp9_release_object(rate_control_results_wrapper_ptr);
     }
 
-    return EB_NULL;
+    return NULL;
 }

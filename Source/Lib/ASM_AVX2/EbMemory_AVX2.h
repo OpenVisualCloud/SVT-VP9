@@ -6,6 +6,7 @@
 #ifndef EbMemory_AVX2_h
 #define EbMemory_AVX2_h
 
+#include <immintrin.h>
 #include "EbDefinitions.h"
 #include "vpx_dsp_rtcd.h"
 

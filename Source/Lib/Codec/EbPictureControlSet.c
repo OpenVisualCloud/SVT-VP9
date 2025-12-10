@@ -66,10 +66,10 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
 
     *object_dbl_ptr = (EbPtr)object_ptr;
 
-    object_ptr->sequence_control_set_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
+    object_ptr->sequence_control_set_wrapper_ptr = (EbObjectWrapper *)NULL;
 
-    object_ptr->recon_picture_16bit_ptr = (EbPictureBufferDesc *)EB_NULL;
-    object_ptr->recon_picture_ptr       = (EbPictureBufferDesc *)EB_NULL;
+    object_ptr->recon_picture_16bit_ptr = (EbPictureBufferDesc *)NULL;
+    object_ptr->recon_picture_ptr       = (EbPictureBufferDesc *)NULL;
 
     // Reconstructed Picture Buffer
     if (init_data_ptr->is16bit == EB_TRUE) {
@@ -358,9 +358,9 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
 
     *object_dbl_ptr = (EbPtr)object_ptr;
 
-    object_ptr->sequence_control_set_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
-    object_ptr->input_picture_wrapper_ptr        = (EbObjectWrapper *)EB_NULL;
-    object_ptr->reference_picture_wrapper_ptr    = (EbObjectWrapper *)EB_NULL;
+    object_ptr->sequence_control_set_wrapper_ptr = (EbObjectWrapper *)NULL;
+    object_ptr->input_picture_wrapper_ptr        = (EbObjectWrapper *)NULL;
+    object_ptr->reference_picture_wrapper_ptr    = (EbObjectWrapper *)NULL;
 
     // GOP
     object_ptr->pred_struct_index    = 0;

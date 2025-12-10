@@ -294,12 +294,6 @@ static const uint32_t me2_nx2_n_offset[4] = {0, 1, 5, 21};
 #define WP_SHIFT_10BIT 4 // 14 - 10
 #define WP_BI_SHIFT_10BIT 5
 
-// Will contain the EbEncApi which will live in the EncHandle class
-// Modifiable during encode time.
-typedef struct EbH265DynEncConfiguration {
-    uint32_t available_target_bitrate;
-} EbH265DynEncConfiguration;
-
 #ifdef __GNUC__
 #define EB_ALIGN(n) __attribute__((__aligned__(n)))
 #elif defined(_MSC_VER)
@@ -350,10 +344,6 @@ The pointer is word aligned and the buffer is byte aligned.
 */
 typedef uint8_t* EbByte;
 
-/** The EB_NULL type is used to define the C style NULL pointer.
-*/
-#define EB_NULL ((void*)0)
-
 typedef enum EbPtrType {
     EB_N_PTR     = 0, // malloc'd pointer
     EB_A_PTR     = 1, // malloc'd pointer aligned
@@ -369,92 +359,6 @@ typedef struct EbMemoryMapEntry {
 
 // Display Total Memory at the end of the memory allocations
 #define DISPLAY_MEMORY 0
-
-// TODO EbUtility.h is probably a better place for it, would require including EbUtility.h
-
-/********************************************************************************************
-* faster memcopy for <= 64B blocks, great w/ inlining and size known at compile time (or w/ PGO)
-* THIS NEEDS TO STAY IN A HEADER FOR BEST PERFORMANCE
-********************************************************************************************/
-
-#include <immintrin.h>
-
-#if !defined(__clang__) && !defined(__INTEL_COMPILER) && defined(__GNUC__)
-__attribute__((optimize("unroll-loops")))
-#endif
-FORCE_INLINE void eb_memcpy_small(void* dst_ptr, void const* src_ptr, size_t size) {
-    const char* src = (const char*)src_ptr;
-    char*       dst = (char*)dst_ptr;
-    size_t      i   = 0;
-
-#ifdef _INTEL_COMPILER
-#pragma unroll
-#endif
-    while ((i + 16) <= size) {
-        _mm_storeu_ps((float*)(dst + i), _mm_loadu_ps((const float*)(src + i)));
-        i += 16;
-    }
-
-    if ((i + 8) <= size) {
-        _mm_store_sd((double*)(dst + i), _mm_load_sd((const double*)(src + i)));
-        i += 8;
-    }
-
-    for (; i < size; ++i) dst[i] = src[i];
-}
-
-FORCE_INLINE void eb_memcpy_sse(void* dst_ptr, void const* src_ptr, size_t size) {
-    const char* src       = (const char*)src_ptr;
-    char*       dst       = (char*)dst_ptr;
-    size_t      i         = 0;
-    size_t      align_cnt = EB_MIN(64 - ((size_t)dst & 63), size);
-
-    // align dest to a $line
-    if (align_cnt != 64) {
-        eb_memcpy_small(dst, src, align_cnt);
-        dst += align_cnt;
-        src += align_cnt;
-        size -= align_cnt;
-    }
-
-    // copy a $line at a time
-    // dst aligned to a $line
-    size_t cline_cnt = (size & ~(size_t)63);
-    for (i = 0; i < cline_cnt; i += 64) {
-        __m128 c0 = _mm_loadu_ps((const float*)(src + i));
-        __m128 c1 = _mm_loadu_ps((const float*)(src + i + sizeof(c0)));
-        __m128 c2 = _mm_loadu_ps((const float*)(src + i + sizeof(c0) * 2));
-        __m128 c3 = _mm_loadu_ps((const float*)(src + i + sizeof(c0) * 3));
-
-        _mm_storeu_ps((float*)(dst + i), c0);
-        _mm_storeu_ps((float*)(dst + i + sizeof(c0)), c1);
-        _mm_storeu_ps((float*)(dst + i + sizeof(c0) * 2), c2);
-        _mm_storeu_ps((float*)(dst + i + sizeof(c0) * 3), c3);
-    }
-
-    // copy the remainder
-    if (i < size)
-        eb_memcpy_small(dst + i, src + i, size - i);
-}
-
-FORCE_INLINE void eb_memcpy(void* dst_ptr, void* src_ptr, size_t size) {
-    if (size > 64) {
-        eb_memcpy_sse(dst_ptr, src_ptr, size);
-    } else {
-        eb_memcpy_small(dst_ptr, src_ptr, size);
-    }
-}
-
-#define EB_MEMCPY(dst, src, size) eb_memcpy(dst, src, size)
-
-#define EB_MEMSET(dst, val, count) memset(dst, val, count)
-
-#define EB_STRCMP(target, token) strcmp(target, token)
-
-/* string length */
-EB_API rsize_t eb_vp9_strnlen_ss(const char* s, rsize_t smax);
-
-#define EB_STRLEN(target, max_size) eb_vp9_strnlen_ss(target, max_size)
 
 #define MAX_NUM_PTR \
     (0x1312D00 << 2) //0x4C4B4000            // Maximum number of pointers to be allocated for the library
@@ -473,7 +377,7 @@ extern uint32_t lib_mutex_count;
 #ifdef _WIN32
 #define EB_ALLIGN_MALLOC(type, pointer, n_elements, pointer_class)          \
     pointer = (type)_aligned_malloc(n_elements, ALVALUE);                   \
-    if (pointer == (type)EB_NULL) {                                         \
+    if (pointer == (type)NULL) {                                            \
         return EB_ErrorInsufficientResources;                               \
     } else {                                                                \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;           \
@@ -518,7 +422,7 @@ extern uint32_t lib_mutex_count;
 
 #define EB_MALLOC(type, pointer, n_elements, pointer_class)                 \
     pointer = (type)malloc(n_elements);                                     \
-    if (pointer == (type)EB_NULL) {                                         \
+    if (pointer == (type)NULL) {                                            \
         return EB_ErrorInsufficientResources;                               \
     } else {                                                                \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;           \
@@ -536,7 +440,7 @@ extern uint32_t lib_mutex_count;
 
 #define EB_CALLOC(type, pointer, count, size, pointer_class)      \
     pointer = (type)calloc(count, size);                          \
-    if (pointer == (type)EB_NULL) {                               \
+    if (pointer == (type)NULL) {                                  \
         return EB_ErrorInsufficientResources;                     \
     } else {                                                      \
         memory_map[*(memory_map_index)].ptr_type = pointer_class; \
@@ -554,7 +458,7 @@ extern uint32_t lib_mutex_count;
 
 #define EB_CREATESEMAPHORE(type, pointer, n_elements, pointer_class, initial_count, max_count) \
     pointer = eb_vp9_create_semaphore(initial_count, max_count);                               \
-    if (pointer == (type)EB_NULL) {                                                            \
+    if (pointer == (type)NULL) {                                                               \
         return EB_ErrorInsufficientResources;                                                  \
     } else {                                                                                   \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;                              \
@@ -572,7 +476,7 @@ extern uint32_t lib_mutex_count;
 
 #define EB_CREATEMUTEX(type, pointer, n_elements, pointer_class)            \
     pointer = eb_vp9_create_mutex();                                        \
-    if (pointer == (type)EB_NULL) {                                         \
+    if (pointer == (type)NULL) {                                            \
         return EB_ErrorInsufficientResources;                               \
     } else {                                                                \
         memory_map[*(memory_map_index)].ptr_type = pointer_class;           \
