@@ -50,7 +50,7 @@ typedef struct ResourceCoordinationContext {
 
     uint64_t first_in_pic_arrived_time_seconds;
     uint64_t first_in_pic_arrived_timeu_seconds;
-    EB_BOOL  start_flag;
+    bool     start_flag;
 
 } ResourceCoordinationContext;
 

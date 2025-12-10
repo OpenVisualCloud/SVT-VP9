@@ -395,7 +395,7 @@ void send_qp_on_the_fly(EbConfig *config, EbBufferHeaderType *header_ptr) {
         } while (tmp_qp == 0 || ((tmp_qp == -1) && (qpReadFromFile != 0)));
 
         if (tmp_qp == -1) {
-            config->use_qp_file = EB_FALSE;
+            config->use_qp_file = false;
             printf("\nWarning: QP File did not contain any valid QPs");
         }
 
@@ -459,7 +459,7 @@ AppExitConditionType process_input_buffer(EbConfig *config, EbAppContext *app_ca
         : total_bytes_to_process_count - (int64_t)config->processed_byte_count;
 
     // If there are bytes left to encode, configure the header
-    if (remaining_byte_count != 0 && config->stop_encoder == EB_FALSE) {
+    if (remaining_byte_count != 0 && config->stop_encoder == false) {
         read_input_frames(config, is16bit, header_ptr);
 
         // Update the context parameters
@@ -472,7 +472,7 @@ AppExitConditionType process_input_buffer(EbConfig *config, EbAppContext *app_ca
             send_qp_on_the_fly(config, header_ptr);
 
         if (keep_running == 0 && !config->stop_encoder) {
-            config->stop_encoder = EB_TRUE;
+            config->stop_encoder = true;
         }
 
         // Fill in Buffers Header control data

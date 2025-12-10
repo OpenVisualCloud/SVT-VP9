@@ -65,7 +65,7 @@ EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(ModeDecisionCandidateBuff
     picture_buffer_desc_init_data.right_padding      = 0;
     picture_buffer_desc_init_data.top_padding        = 0;
     picture_buffer_desc_init_data.bot_padding        = 0;
-    picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    picture_buffer_desc_init_data.split_mode         = false;
 
     double_width_picture_buffer_desc_init_data.max_width          = sb_max_size;
     double_width_picture_buffer_desc_init_data.max_height         = sb_max_size;
@@ -75,7 +75,7 @@ EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(ModeDecisionCandidateBuff
     double_width_picture_buffer_desc_init_data.right_padding      = 0;
     double_width_picture_buffer_desc_init_data.top_padding        = 0;
     double_width_picture_buffer_desc_init_data.bot_padding        = 0;
-    double_width_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    double_width_picture_buffer_desc_init_data.split_mode         = false;
 
     // Candidate Ptr
     buffer_ptr->candidate_ptr = (ModeDecisionCandidate *)NULL;
@@ -121,7 +121,7 @@ EbErrorType eb_vp9_mode_decision_candidate_buffer_ctor(ModeDecisionCandidateBuff
 ***************************************/
 EbErrorType pre_mode_decision(uint32_t buffer_total_count, ModeDecisionCandidateBuffer **buffer_ptr_array,
                               uint32_t *full_candidate_total_count_ptr, uint8_t *best_candidate_index_array,
-                              EB_BOOL same_fast_full_candidate) {
+                              bool same_fast_full_candidate) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t full_recon_candidate_count;
@@ -194,7 +194,7 @@ void new_mv_candidates_injection(PictureControlSet *picture_control_set_ptr, Enc
     }
 
     // Set distortion ready
-    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = EB_TRUE;
+    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = true;
 
     // Derive target direction
     uint32_t target_direction = (ref_frame_0 == LAST_FRAME && ref_frame_1 == ALTREF_FRAME) ? BI_PRED
@@ -242,7 +242,7 @@ void list_1_to_last_inter_candidates_injection(PictureControlSet *picture_contro
         &picture_control_set_ptr->parent_pcs_ptr->me_results[sb_ptr->sb_index][me_2nx2n_table_offset];
 
     // Set distortion ready
-    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = EB_TRUE;
+    context_ptr->fast_candidate_array[*can_total_cnt].distortion_ready = true;
 
     // Derive target direction
     uint32_t target_direction = UNI_PRED_LIST_1;
@@ -522,9 +522,9 @@ void intra_candidates_injection_mi(PictureControlSet *picture_control_set_ptr, E
 
     PREDICTION_MODE mode;
 
-    const EB_BOOL is_left_cu      = context_ptr->ep_block_stats_ptr->origin_x == 0;
-    const EB_BOOL is_top_cu       = context_ptr->ep_block_stats_ptr->origin_y == 0;
-    const EB_BOOL limit_intra     = context_ptr->limit_intra;
+    const bool    is_left_cu      = context_ptr->ep_block_stats_ptr->origin_x == 0;
+    const bool    is_top_cu       = context_ptr->ep_block_stats_ptr->origin_y == 0;
+    const bool    limit_intra     = context_ptr->limit_intra;
     const uint8_t limit_left_mode = V_PRED;
     const uint8_t limit_top_mode  = H_PRED;
 
@@ -574,7 +574,7 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
         pa_get_block_stats(ep_to_pa_cu_index[context_ptr->ep_block_index])->cu_num_in_depth +
         me2_nx2_n_offset[context_ptr->ep_block_stats_ptr->depth];
     uint32_t can_total_cnt                     = 0;
-    EB_BOOL  spatial_reference_mv_present_flag = EB_TRUE;
+    bool     spatial_reference_mv_present_flag = true;
 
     //----------------------
     // Inter
@@ -618,7 +618,7 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
         // Hsan: ZERO_MV only (that does not use reference MVs table) when the reference MVs table will not have spatial information.
         if (picture_control_set_ptr->parent_pcs_ptr->cpi->common.reference_mode == REFERENCE_MODE_SELECT) {
             if (context_ptr->use_ref_mvs_flag[LAST_FRAME] == 0 && context_ptr->use_ref_mvs_flag[ALTREF_FRAME] == 0) {
-                spatial_reference_mv_present_flag = EB_FALSE;
+                spatial_reference_mv_present_flag = false;
 
                 zero_mv_candidates_injection(
                     picture_control_set_ptr, context_ptr, LAST_FRAME, ALTREF_FRAME, &can_total_cnt);
@@ -653,7 +653,7 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
 
         } else {
             if (context_ptr->use_ref_mvs_flag[LAST_FRAME] == 0) {
-                spatial_reference_mv_present_flag = EB_FALSE;
+                spatial_reference_mv_present_flag = false;
 
                 zero_mv_candidates_injection(
                     picture_control_set_ptr, context_ptr, LAST_FRAME, INTRA_FRAME, &can_total_cnt);
@@ -685,16 +685,16 @@ EbErrorType prepare_fast_loop_candidates(PictureControlSet *picture_control_set_
     // Intra
     //----------------------
     if (context_ptr->ep_block_stats_ptr->sq_size <= 32) { // No INTRA injection for 64x64 (INTRA_64x64 not supported)
-        if (context_ptr->restrict_intra_global_motion == EB_FALSE ||
+        if (context_ptr->restrict_intra_global_motion == false ||
             can_total_cnt == 0) { // No INTRA injection if restrict_intra_global_motion TRUE unless no INTER candidates
-            if (spatial_reference_mv_present_flag == EB_TRUE ||
+            if (spatial_reference_mv_present_flag == true ||
                 sb_ptr->sb_index > 0) { //  No INTRA injection @ 1st SB if no spatial reference MVs
                 if (context_ptr->ep_block_stats_ptr->bsize < BLOCK_8X8) {
                     intra_candidates_injection_bmi(picture_control_set_ptr, context_ptr, &can_total_cnt);
                 } else {
-                    const EB_BOOL is_left_cu        = context_ptr->ep_block_stats_ptr->origin_x == 0;
-                    const EB_BOOL is_top_cu         = context_ptr->ep_block_stats_ptr->origin_y == 0;
-                    EB_BOOL       limitIntraTopLeft = context_ptr->limit_intra == EB_TRUE && is_left_cu && is_top_cu;
+                    const bool is_left_cu        = context_ptr->ep_block_stats_ptr->origin_x == 0;
+                    const bool is_top_cu         = context_ptr->ep_block_stats_ptr->origin_y == 0;
+                    bool       limitIntraTopLeft = context_ptr->limit_intra == true && is_left_cu && is_top_cu;
                     if (limitIntraTopLeft == 0) {
                         intra_candidates_injection_mi(picture_control_set_ptr, context_ptr, &can_total_cnt);
                     }

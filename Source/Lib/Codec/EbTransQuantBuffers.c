@@ -19,7 +19,7 @@ EbErrorType eb_vp9_trans_quant_buffers_ctor(EbTransQuantBuffers *trans_quant_buf
     trans_coeff_init_array.right_padding      = 0;
     trans_coeff_init_array.top_padding        = 0;
     trans_coeff_init_array.bot_padding        = 0;
-    trans_coeff_init_array.split_mode         = EB_FALSE;
+    trans_coeff_init_array.split_mode         = false;
 
     return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(trans_quant_buffers_ptr->tu_trans_coeff2_nx2_n_ptr),
                                                    (EbPtr)&trans_coeff_init_array);

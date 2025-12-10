@@ -76,11 +76,11 @@ uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit
     uint32_t last_block_index;
     uint64_t parent_depth_cost = 0, current_depth_cost = 0;
 
-    EB_BOOL             last_depth_flag;
+    bool                last_depth_flag;
     const EpBlockStats *ep_block_stats_ptr;
     BLOCK_SIZE          parent_depth_bsize;
 
-    last_depth_flag = sb_ptr->coded_block_array_ptr[blk_mds]->split_flag == EB_FALSE ? EB_TRUE : EB_FALSE;
+    last_depth_flag = sb_ptr->coded_block_array_ptr[blk_mds]->split_flag == false ? true : false;
 
     last_block_index   = blk_mds;
     ep_block_stats_ptr = ep_get_block_stats(blk_mds);
@@ -108,7 +108,7 @@ uint32_t inter_depth_decision(PictureControlSet *picture_control_set_ptr, SbUnit
                                        &current_depth_cost);
 
             if (parent_depth_cost <= current_depth_cost) {
-                sb_ptr->coded_block_array_ptr[parent_depth_idx_mds]->split_flag    = EB_FALSE;
+                sb_ptr->coded_block_array_ptr[parent_depth_idx_mds]->split_flag    = false;
                 context_ptr->enc_dec_local_block_array[parent_depth_idx_mds]->cost = parent_depth_cost;
                 last_block_index                                                   = parent_depth_idx_mds;
             } else {
@@ -190,7 +190,7 @@ void perform_fast_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
     uint64_t first_best_candidate_cost  = MAX_BLOCK_COST;
     int32_t  first_best_candidate_index = INVALID_FAST_CANDIDATE_INDEX;
     (void)sb_ptr;
-    if (context_ptr->single_fast_loop_flag == EB_FALSE) {
+    if (context_ptr->single_fast_loop_flag == false) {
         // First Fast-Cost Search Candidate Loop
         fast_loop_candidate_index = fast_candidate_total_count - 1;
         do {
@@ -363,7 +363,7 @@ void perform_coding_loop(EncDecContext *context_ptr, int16_t *residual_quant_coe
                          int16_t *recon_coeff_buffer, EbByte recon_buffer, uint16_t recon_stride,
                          const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr,
                          const int16_t *quant_shift_ptr, int16_t *dequant_ptr, uint16_t *eob, TX_SIZE tx_size,
-                         int plane, EB_BOOL is_encode_pass, EB_BOOL do_recon) {
+                         int plane, bool is_encode_pass, bool do_recon) {
     TX_TYPE tx_type = DCT_DCT;
 
     MACROBLOCKD *const xd    = context_ptr->e_mbd;
@@ -1028,14 +1028,14 @@ void perform_full_loop(PictureControlSet *picture_control_set_ptr, EncDecContext
         }
 
         // Derive skip flag
-        candidate_ptr->mode_info->skip = EB_TRUE;
+        candidate_ptr->mode_info->skip = true;
         if (candidate_buffer->candidate_ptr->eob[1][0] || candidate_buffer->candidate_ptr->eob[2][0]) {
-            candidate_ptr->mode_info->skip = EB_FALSE;
+            candidate_ptr->mode_info->skip = false;
         } else {
             for (uint8_t tu_index = 0; tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);
                  tu_index++) {
                 if (candidate_buffer->candidate_ptr->eob[0][tu_index]) {
-                    candidate_ptr->mode_info->skip = EB_FALSE;
+                    candidate_ptr->mode_info->skip = false;
                     break;
                 }
             }
@@ -1259,7 +1259,7 @@ void generate_intra_reference_samples(SequenceControlSet *sequence_control_set_p
 // use input or recon buffer to construct neighbor sample arrays
 void update_recon_neighbor_arrays(EbPictureBufferDesc *input_picture_ptr, EncDecContext *context_ptr, SbUnit *sb_ptr,
                                   ModeDecisionCandidateBuffer *candidate_buffer,
-                                  EB_BOOL recon_location) { // 0: candidate buffer ot 1: scratch buffer
+                                  bool recon_location) { // 0: candidate buffer ot 1: scratch buffer
     (void)sb_ptr;
     if (context_ptr->intra_md_open_loop_flag) {
         // Input Samples - Luma
@@ -1653,13 +1653,13 @@ void update_scratch_recon_buffer(EncDecContext *context_ptr, EbPictureBufferDesc
     }
 }
 
-EB_BOOL check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
-                              EncDecContext *context_ptr, SbUnit *sb_ptr) {
+bool check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                           EncDecContext *context_ptr, SbUnit *sb_ptr) {
     SbParams *sb_params_ptr = &sequence_control_set_ptr->sb_params_array[sb_ptr->sb_index];
 
     // Only if complete SB, if both neighbors are available, and if current block will be further splitted
     if (sb_params_ptr->is_complete_sb && context_ptr->e_mbd->left_mi != NULL && context_ptr->e_mbd->above_mi != NULL &&
-        context_ptr->block_ptr->split_flag == EB_TRUE) {
+        context_ptr->block_ptr->split_flag == true) {
         // Only for open loop depth partitioning cases (SB_LIGHT_AVC_DEPTH_MODE, SB_PRED_OPEN_LOOP_DEPTH_MOD, SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE are not considered as already 1 partitioning scheme
         if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_OPEN_LOOP_DEPTH_MODE ||
             (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE &&
@@ -1673,19 +1673,19 @@ EB_BOOL check_skip_sub_blocks(SequenceControlSet *sequence_control_set_ptr, Pict
                         .stationary_edge_over_time_flag == 0) {
                 if ((context_ptr->e_mbd->left_mi->sb_type == context_ptr->ep_block_stats_ptr->bsize) &&
                     (context_ptr->e_mbd->above_mi->sb_type == context_ptr->ep_block_stats_ptr->bsize)) {
-                    context_ptr->block_ptr->split_flag = EB_FALSE;
-                    return (EB_TRUE);
+                    context_ptr->block_ptr->split_flag = false;
+                    return (true);
                 }
             }
         }
     }
-    return (EB_FALSE);
+    return (false);
 }
 
-void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, EB_BOOL skip_sub_blocks, uint16_t *mdc_block_index) {
+void next_mdc_block_index(MdcSbData *mdc_sb_data_ptr, bool skip_sub_blocks, uint16_t *mdc_block_index) {
     PartBlockData *part_block_data_ptr = &mdc_sb_data_ptr->block_data_array[*mdc_block_index];
 
-    if (skip_sub_blocks == EB_TRUE) {
+    if (skip_sub_blocks == true) {
         uint16_t  origin_x = ep_get_block_stats(part_block_data_ptr->block_index)->origin_x;
         uint16_t  origin_y = ep_get_block_stats(part_block_data_ptr->block_index)->origin_y;
         const int size     = ep_get_block_stats(part_block_data_ptr->block_index)->sq_size;
@@ -1908,11 +1908,11 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
 
     uint16_t mdc_block_index = 0;
     uint16_t ep_block_index  = 0;
-    EB_BOOL  skip_sub_blocks;
+    bool     skip_sub_blocks;
 
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
         if (ep_get_block_stats(ep_block_index)->shape == PART_N) {
-            skip_sub_blocks = EB_FALSE;
+            skip_sub_blocks = false;
 
             context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[ep_block_index];
             context_ptr->ep_block_index     = ep_block_index;
@@ -2032,7 +2032,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                     candidate_buffer_ptr_array,
                     &full_candidate_total_count,
                     context_ptr->best_candidate_index_array,
-                    (EB_BOOL)(second_fast_candidate_total_count == buffer_total_count));
+                    (bool)(second_fast_candidate_total_count == buffer_total_count));
 
                 perform_full_loop(picture_control_set_ptr,
                                   context_ptr,
@@ -2052,8 +2052,8 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
 
                 best_candidate_buffers[context_ptr->ep_block_stats_ptr->depth] = candidate_buffer;
 
-                if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-                    if (context_ptr->spatial_sse_full_loop == EB_FALSE) {
+                if (context_ptr->intra_md_open_loop_flag == false) {
+                    if (context_ptr->spatial_sse_full_loop == false) {
                         context_ptr->e_mbd->mi[0] = &(
                             context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info);
                         perform_inverse_transform_recon(context_ptr, candidate_buffer);
@@ -2064,7 +2064,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                 last_block_index = inter_depth_decision(
                     picture_control_set_ptr, sb_ptr, context_ptr, context_ptr->ep_block_stats_ptr->sqi_mds);
 
-                if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == EB_FALSE) {
+                if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == false) {
                     // Get the settings of the best partition
                     context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[last_block_index];
                     context_ptr->ep_block_index     = last_block_index;
@@ -2107,12 +2107,12 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                                 // Derive skip flag
                                 context_ptr->mode_info_array[mi_index]->skip =
                                     context_ptr->enc_dec_local_block_array[last_block_index - 3]->mode_info.skip ==
-                                        EB_TRUE &&
+                                        true &&
                                     context_ptr->enc_dec_local_block_array[last_block_index - 2]->mode_info.skip ==
-                                        EB_TRUE &&
+                                        true &&
                                     context_ptr->enc_dec_local_block_array[last_block_index - 1]->mode_info.skip ==
-                                        EB_TRUE &&
-                                    context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.skip == EB_TRUE;
+                                        true &&
+                                    context_ptr->enc_dec_local_block_array[last_block_index]->mode_info.skip == true;
                             }
 
                         } else {
@@ -2157,7 +2157,7 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
                 next_mdc_block_index(mdc_sb_data_ptr, skip_sub_blocks, &mdc_block_index);
 
             } else {
-                context_ptr->block_ptr->split_flag = EB_TRUE;
+                context_ptr->block_ptr->split_flag = true;
             }
         }
         ep_block_index++;
@@ -2177,43 +2177,43 @@ void eb_vp9_mode_decision_sb(SequenceControlSet *sequence_control_set_ptr, Pictu
 void construct_pillar_block_data_array(SequenceControlSet *sequence_control_set_ptr, EncDecContext *context_ptr,
                                        SbUnit *sb_ptr) {
     uint16_t  block_index = 0;
-    EB_BOOL   split_flag;
+    bool      split_flag;
     SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_ptr->sb_index];
 
     context_ptr->bdp_block_data.block_count = 0;
 
     while (block_index < EP_BLOCK_MAX_COUNT) {
-        split_flag = EB_TRUE;
+        split_flag = true;
 
         const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             if (depth == 0) {
-                split_flag = EB_TRUE;
+                split_flag = true;
             }
 
             else if (depth == 1) {
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].split_flag =
-                    split_flag = EB_TRUE;
+                    split_flag = true;
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].block_index =
                     block_index;
                 context_ptr->bdp_block_data.block_count++;
             } else if (depth == 2) {
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].split_flag =
-                    split_flag = EB_FALSE;
+                    split_flag = false;
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].block_index =
                     block_index;
                 context_ptr->bdp_block_data.block_count++;
             } else if (depth == 3) {
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].split_flag =
-                    split_flag = EB_FALSE;
+                    split_flag = false;
                 context_ptr->bdp_block_data.block_data_array[context_ptr->bdp_block_data.block_count].block_index =
                     block_index;
                 context_ptr->bdp_block_data.block_count++;
             }
         }
 
-        block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+        block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
     }
 }
 
@@ -2381,7 +2381,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                     candidate_buffer_ptr_array,
                     &full_candidate_total_count,
                     context_ptr->best_candidate_index_array,
-                    (EB_BOOL)(second_fast_candidate_total_count == buffer_total_count));
+                    (bool)(second_fast_candidate_total_count == buffer_total_count));
 
                 perform_full_loop(picture_control_set_ptr,
                                   context_ptr,
@@ -2401,8 +2401,8 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
 
                 best_candidate_buffers[context_ptr->ep_block_stats_ptr->depth] = candidate_buffer;
 
-                if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-                    if (context_ptr->spatial_sse_full_loop == EB_FALSE) {
+                if (context_ptr->intra_md_open_loop_flag == false) {
+                    if (context_ptr->spatial_sse_full_loop == false) {
                         context_ptr->e_mbd->mi[0] = &(
                             context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info);
                         perform_inverse_transform_recon(context_ptr, candidate_buffer);
@@ -2413,7 +2413,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                 last_block_index = inter_depth_decision(
                     picture_control_set_ptr, sb_ptr, context_ptr, context_ptr->ep_block_stats_ptr->sqi_mds);
 
-                if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == EB_FALSE) {
+                if (sb_ptr->coded_block_array_ptr[last_block_index]->split_flag == false) {
                     // Get the settings of the best partition
                     context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[last_block_index];
                     context_ptr->ep_block_index     = last_block_index;
@@ -2454,7 +2454,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                     }
 
                     // Keep track of pillar recon buffer as might be used @ bdp_8x8_refinement_sb
-                    if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
+                    if (context_ptr->intra_md_open_loop_flag == false) {
                         update_scratch_recon_buffer(context_ptr,
                                                     candidate_buffer->recon_ptr,
                                                     context_ptr->bdp_pillar_scratch_recon_buffer,
@@ -2463,7 +2463,7 @@ void bdp_pillar_sb(SequenceControlSet *sequence_control_set_ptr, PictureControlS
                 }
                 bdp_block_index++;
             } else {
-                context_ptr->block_ptr->split_flag = EB_TRUE;
+                context_ptr->block_ptr->split_flag = true;
             }
         }
         ep_block_index++;
@@ -2623,7 +2623,7 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                           candidate_buffer_ptr_array,
                           &full_candidate_total_count,
                           context_ptr->best_candidate_index_array,
-                          (EB_BOOL)(second_fast_candidate_total_count == buffer_total_count));
+                          (bool)(second_fast_candidate_total_count == buffer_total_count));
 
         perform_full_loop(picture_control_set_ptr,
                           context_ptr,
@@ -2643,8 +2643,8 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
         best_candidate_buffers[context_ptr->ep_block_stats_ptr->depth] = candidate_buffer;
 
-        if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-            if (context_ptr->spatial_sse_full_loop == EB_FALSE) {
+        if (context_ptr->intra_md_open_loop_flag == false) {
+            if (context_ptr->spatial_sse_full_loop == false) {
                 context_ptr->e_mbd->mi[0] = &(context_ptr->enc_dec_local_block_array[0]->mode_info);
                 perform_inverse_transform_recon(context_ptr, candidate_buffer);
             }
@@ -2686,11 +2686,11 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                 // If the cost is low enough to warrant not spliting further:
                 // 1. set the split flag of the candidate pu for merging to false
                 // 2. update the last pu index
-                sb_ptr->coded_block_array_ptr[0]->split_flag = EB_FALSE;
+                sb_ptr->coded_block_array_ptr[0]->split_flag = false;
             }
         }
 
-        if (sb_ptr->coded_block_array_ptr[0]->split_flag == EB_FALSE) {
+        if (sb_ptr->coded_block_array_ptr[0]->split_flag == false) {
             // Get the settings of the best partition
             context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[0];
             context_ptr->ep_block_index     = 0;
@@ -2727,7 +2727,7 @@ void bdp_64x64_vs_32x32_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                 update_block_rate_context(context_ptr, xd);
             }
 
-            if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
+            if (context_ptr->intra_md_open_loop_flag == false) {
                 update_scratch_recon_buffer(
                     context_ptr, candidate_buffer->recon_ptr, context_ptr->bdp_pillar_scratch_recon_buffer, sb_ptr);
             }
@@ -2779,10 +2779,10 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
     uint16_t ep_block_index = 0;
 
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
-        if (sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag == EB_FALSE) {
+        if (sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag == false) {
             context_ptr->ep_block_index     = ep_block_index;
             context_ptr->ep_block_stats_ptr = ep_get_block_stats(ep_block_index);
-            EB_BOOL cu16x16RefinementFlag;
+            bool cu16x16RefinementFlag;
             if (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_LIGHT_BDP_DEPTH_MODE ||
                 (picture_control_set_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE &&
                  (picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_ptr->sb_index] ==
@@ -2794,7 +2794,7 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
             }
 
             if (cu16x16RefinementFlag) {
-                sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag = EB_TRUE;
+                sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag = true;
 
                 uint16_t ep_8x8_block_index_array[4];
                 uint16_t ep_8x8_block_index;
@@ -2806,7 +2806,7 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
                 for (int block_index = 0; block_index < 4; block_index++) {
                     ep_8x8_block_index = ep_8x8_block_index_array[block_index];
-                    sb_ptr->coded_block_array_ptr[ep_8x8_block_index]->split_flag = EB_FALSE;
+                    sb_ptr->coded_block_array_ptr[ep_8x8_block_index]->split_flag = false;
                     context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[ep_8x8_block_index];
                     context_ptr->ep_block_index     = ep_8x8_block_index;
                     context_ptr->ep_block_stats_ptr = ep_get_block_stats(ep_8x8_block_index);
@@ -2921,7 +2921,7 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                         candidate_buffer_ptr_array,
                         &full_candidate_total_count,
                         context_ptr->best_candidate_index_array,
-                        (EB_BOOL)(second_fast_candidate_total_count == buffer_total_count));
+                        (bool)(second_fast_candidate_total_count == buffer_total_count));
 
                     perform_full_loop(picture_control_set_ptr,
                                       context_ptr,
@@ -2941,8 +2941,8 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
 
                     best_candidate_buffers[context_ptr->ep_block_stats_ptr->depth] = candidate_buffer;
 
-                    if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-                        if (context_ptr->spatial_sse_full_loop == EB_FALSE) {
+                    if (context_ptr->intra_md_open_loop_flag == false) {
+                        if (context_ptr->spatial_sse_full_loop == false) {
                             context_ptr->e_mbd->mi[0] = &(
                                 context_ptr->enc_dec_local_block_array[ep_8x8_block_index]->mode_info);
                             perform_inverse_transform_recon(context_ptr, candidate_buffer);
@@ -2990,7 +2990,7 @@ void bdp_8x8_refinement_sb(SequenceControlSet *sequence_control_set_ptr, Picture
                             // If the cost is low enough to warrant not spliting further:
                             // 1. set the split flag of the candidate pu for merging to false
                             // 2. update the last pu index
-                            sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag    = EB_FALSE;
+                            sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag    = false;
                             context_ptr->enc_dec_local_block_array[ep_block_index]->cost = depth_n_cost;
                             last_block_index                                             = ep_block_index;
                         } else {
@@ -3101,7 +3101,7 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
     uint16_t ep_block_index = 0;
 
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
-        if (sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag == EB_FALSE) {
+        if (sb_ptr->coded_block_array_ptr[ep_block_index]->split_flag == false) {
             context_ptr->block_ptr          = sb_ptr->coded_block_array_ptr[ep_block_index];
             context_ptr->ep_block_index     = ep_block_index;
             context_ptr->ep_block_stats_ptr = ep_get_block_stats(ep_block_index);
@@ -3210,7 +3210,7 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
                 candidate_buffer_ptr_array,
                 &full_candidate_total_count,
                 context_ptr->best_candidate_index_array,
-                (EB_BOOL)(second_fast_candidate_total_count == buffer_total_count));
+                (bool)(second_fast_candidate_total_count == buffer_total_count));
 
             perform_full_loop(picture_control_set_ptr,
                               context_ptr,
@@ -3230,8 +3230,8 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
 
             best_candidate_buffers[context_ptr->ep_block_stats_ptr->depth] = candidate_buffer;
 
-            if (context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-                if (context_ptr->spatial_sse_full_loop == EB_FALSE) {
+            if (context_ptr->intra_md_open_loop_flag == false) {
+                if (context_ptr->spatial_sse_full_loop == false) {
                     context_ptr->e_mbd->mi[0] = &(context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info);
                     perform_inverse_transform_recon(context_ptr, candidate_buffer);
                 }
@@ -3300,13 +3300,13 @@ void bdp_nearest_near_sb(SequenceControlSet *sequence_control_set_ptr, PictureCo
         this function checks whether any intra
         block is present in the current SB
         *************************************/
-EB_BOOL is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
+bool is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
     uint16_t block_index = 0;
     while (block_index < EP_BLOCK_MAX_COUNT) {
         CodingUnit *const block_ptr = sb_ptr->coded_block_array_ptr[block_index];
-        if (block_ptr->split_flag == EB_FALSE) {
+        if (block_ptr->split_flag == false) {
             if (context_ptr->enc_dec_local_block_array[block_index]->mode_info.mode <= TM_PRED)
-                return EB_TRUE;
+                return true;
             block_index += ep_intra_depth_offset[ep_raster_scan_block_depth[ep_scan_to_raster_scan[block_index]]];
         } else {
             block_index += (uint16_t)((ep_raster_scan_block_depth[ep_scan_to_raster_scan[block_index]] < 4)
@@ -3315,7 +3315,7 @@ EB_BOOL is_intra_present(EncDecContext *context_ptr, SbUnit *sb_ptr) {
                                                 [ep_raster_scan_block_depth[ep_scan_to_raster_scan[block_index]]]);
         }
     }
-    return EB_FALSE;
+    return false;
 }
 
 /*******************************************
@@ -3363,11 +3363,11 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
     // Mode Info Array
     context_ptr->mode_info_array = picture_control_set_ptr->mode_info_array;
 
-    const EB_BOOL is_intra_sb = context_ptr->limit_intra ? is_intra_present(context_ptr, sb_ptr) : EB_TRUE;
+    const bool is_intra_sb = context_ptr->limit_intra ? is_intra_present(context_ptr, sb_ptr) : true;
 
-    EB_BOOL do_recon = (EB_BOOL)((context_ptr->limit_intra == 0 || is_intra_sb == 1) ||
-                                 picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag ||
-                                 sequence_control_set_ptr->static_config.recon_file);
+    bool do_recon = (bool)((context_ptr->limit_intra == 0 || is_intra_sb == 1) ||
+                           picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag ||
+                           sequence_control_set_ptr->static_config.recon_file);
 
     // Reset above context @ the 1st SB
     if (sb_ptr->sb_index == 0) {
@@ -3392,7 +3392,7 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
     while (ep_block_index < EP_BLOCK_MAX_COUNT) {
         context_ptr->block_ptr = sb_ptr->coded_block_array_ptr[ep_block_index];
 
-        if (context_ptr->block_ptr->split_flag == EB_FALSE) {
+        if (context_ptr->block_ptr->split_flag == false) {
             context_ptr->ep_block_index     = ep_block_index;
             context_ptr->ep_block_stats_ptr = ep_get_block_stats(ep_block_index);
             context_ptr->block_origin_x     = (uint16_t)sb_ptr->origin_x + context_ptr->ep_block_stats_ptr->origin_x;
@@ -3772,16 +3772,16 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
             }
 
             // Derive skip flag
-            context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = EB_TRUE;
+            context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = true;
             if (context_ptr->ep_block_stats_ptr->has_uv &&
                 (context_ptr->block_ptr->eob[1][0] || context_ptr->block_ptr->eob[2][0])) {
-                context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = EB_FALSE;
+                context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = false;
             } else {
                 for (uint8_t tu_index = 0;
                      tu_index < ((context_ptr->ep_block_stats_ptr->sq_size == MAX_SB_SIZE) ? 4 : 1);
                      tu_index++) {
                     if (context_ptr->block_ptr->eob[0][tu_index]) {
-                        context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = EB_FALSE;
+                        context_ptr->enc_dec_local_block_array[ep_block_index]->mode_info.skip = false;
                         break;
                     }
                 }
@@ -3791,13 +3791,10 @@ EB_EXTERN EbErrorType encode_pass_sb(SequenceControlSet *sequence_control_set_pt
                 context_ptr->ep_block_stats_ptr->is_last_quadrant) {
                 // Derive skip flag
                 context_ptr->mode_info_array[context_ptr->mi_col + context_ptr->mi_row * context_ptr->mi_stride]->skip =
-                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 3]->mode_info.skip ==
-                        EB_TRUE &&
-                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 2]->mode_info.skip ==
-                        EB_TRUE &&
-                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 1]->mode_info.skip ==
-                        EB_TRUE &&
-                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index]->mode_info.skip == EB_TRUE;
+                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 3]->mode_info.skip == true &&
+                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 2]->mode_info.skip == true &&
+                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index - 1]->mode_info.skip == true &&
+                    context_ptr->enc_dec_local_block_array[context_ptr->ep_block_index]->mode_info.skip == true;
             }
 
             // Increment Quantized Coeff Buffer CU Offsets
@@ -3974,7 +3971,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->residual_buffer, (EbPtr)&init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -3999,7 +3996,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->prediction_buffer, (EbPtr)&init_data);
 
@@ -4020,7 +4017,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->bdp_pillar_scratch_recon_buffer,
                                                        (EbPtr)&init_data);
@@ -4042,7 +4039,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->uv_mode_search_prediction_buffer,
                                                        (EbPtr)&init_data);
@@ -4063,7 +4060,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor(
             (EbPtr *)&context_ptr->uv_mode_search_residual_quant_coeff_buffer, (EbPtr)&init_data);
@@ -4084,7 +4081,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->uv_mode_search_recon_coeff_buffer,
                                                        (EbPtr)&init_data);
@@ -4105,7 +4102,7 @@ EbErrorType eb_vp9_enc_dec_context_ctor(EncDecContext **context_dbl_ptr,
         init_data.right_padding      = 0;
         init_data.top_padding        = 0;
         init_data.bot_padding        = 0;
-        init_data.split_mode         = EB_FALSE;
+        init_data.split_mode         = false;
 
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&context_ptr->uv_mode_search_recon_buffer,
                                                        (EbPtr)&init_data);
@@ -4218,7 +4215,7 @@ static void reset_encode_pass_neighbor_arrays(PictureControlSet *picture_control
          **************************************************/
 static void reset_enc_dec(EncDecContext *context_ptr, PictureControlSet *picture_control_set_ptr,
                           SequenceControlSet *sequence_control_set_ptr, uint32_t segment_index) {
-    context_ptr->is16bit = (EB_BOOL)(sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
+    context_ptr->is16bit = (bool)(sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
     if (segment_index == 0) {
         reset_encode_pass_neighbor_arrays(picture_control_set_ptr);
@@ -4266,9 +4263,9 @@ static void reset_enc_dec(EncDecContext *context_ptr, PictureControlSet *picture
          *   of the segment-row (B) as this would block other
          *   threads from performing an update (A).
          ******************************************************/
-static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *segment_in_out_index,
-                                       EncDecTasks *task_ptr, EbFifo *srm_fifo_ptr) {
-    EB_BOOL          continue_processing_flag = EB_FALSE;
+static bool assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *segment_in_out_index, EncDecTasks *task_ptr,
+                                    EbFifo *srm_fifo_ptr) {
+    bool             continue_processing_flag = false;
     EbObjectWrapper *wrapper_ptr;
     EncDecTasks     *feedback_task_ptr;
 
@@ -4279,7 +4276,7 @@ static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *se
 
     int16_t feedback_row_index = -1;
 
-    uint32_t self_assigned = EB_FALSE;
+    uint32_t self_assigned = false;
 
     //static FILE *trace = 0;
     //
@@ -4297,7 +4294,7 @@ static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *se
         *segment_in_out_index = segment_ptr->row_array[0].current_seg_index;
         task_ptr->input_type  = ENCDEC_TASKS_CONTINUE;
         ++segment_ptr->row_array[0].current_seg_index;
-        continue_processing_flag = EB_TRUE;
+        continue_processing_flag = true;
 
         //fprintf(trace, "Start  Pic: %u Seg: %u\n",
         //    (unsigned) ((PictureControlSet  *) task_ptr->picture_control_set_wrapper_ptr->object_ptr)->picture_number,
@@ -4314,7 +4311,7 @@ static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *se
         *segment_in_out_index = segment_ptr->row_array[task_ptr->enc_dec_segment_row].current_seg_index;
         task_ptr->input_type  = ENCDEC_TASKS_CONTINUE;
         ++segment_ptr->row_array[task_ptr->enc_dec_segment_row].current_seg_index;
-        continue_processing_flag = EB_TRUE;
+        continue_processing_flag = true;
 
         //fprintf(trace, "Start  Pic: %u Seg: %u\n",
         //    (unsigned) ((PictureControlSet  *) task_ptr->picture_control_set_wrapper_ptr->object_ptr)->picture_number,
@@ -4340,8 +4337,8 @@ static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *se
             if (segment_ptr->dep_map.dependency_map[right_segment_index] == 0) {
                 *segment_in_out_index = segment_ptr->row_array[row_segment_index].current_seg_index;
                 ++segment_ptr->row_array[row_segment_index].current_seg_index;
-                self_assigned            = EB_TRUE;
-                continue_processing_flag = EB_TRUE;
+                self_assigned            = true;
+                continue_processing_flag = true;
 
                 //fprintf(trace, "Start  Pic: %u Seg: %u\n",
                 //    (unsigned) ((PictureControlSet  *) task_ptr->picture_control_set_wrapper_ptr->object_ptr)->picture_number,
@@ -4359,13 +4356,13 @@ static EB_BOOL assign_enc_dec_segments(EncDecSegments *segment_ptr, uint16_t *se
             --segment_ptr->dep_map.dependency_map[bottom_left_segment_index];
 
             if (segment_ptr->dep_map.dependency_map[bottom_left_segment_index] == 0) {
-                if (self_assigned == EB_TRUE) {
+                if (self_assigned == true) {
                     feedback_row_index = (int16_t)row_segment_index + 1;
                 } else {
                     *segment_in_out_index = segment_ptr->row_array[row_segment_index + 1].current_seg_index;
                     ++segment_ptr->row_array[row_segment_index + 1].current_seg_index;
-                    self_assigned            = EB_TRUE;
-                    continue_processing_flag = EB_TRUE;
+                    self_assigned            = true;
+                    continue_processing_flag = true;
 
                     //fprintf(trace, "Start  Pic: %u Seg: %u\n",
                     //    (unsigned) ((PictureControlSet  *) task_ptr->picture_control_set_wrapper_ptr->object_ptr)->picture_number,
@@ -4395,7 +4392,7 @@ static void recon_output(PictureControlSet *picture_control_set_ptr, SequenceCon
     EbObjectWrapper    *outputReconWrapperPtr;
     EbBufferHeaderType *outputReconPtr;
     EncodeContext      *encode_context_ptr = sequence_control_set_ptr->encode_context_ptr;
-    EbBool              is16bit            = (sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
+    bool                is16bit            = (sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
     // The totalNumberOfReconFrames counter has to be write/read protected as
     //   it is used to determine the end of the stream.  If it is not protected
     //   the encoder might not properly terminate.
@@ -4426,7 +4423,7 @@ static void recon_output(PictureControlSet *picture_control_set_ptr, SequenceCon
 
         EbPictureBufferDesc *reconPtr;
         {
-            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 reconPtr = is16bit
                     ? ((EbReferenceObject *)
                            picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr->object_ptr)
@@ -4526,7 +4523,7 @@ static void pad_ref_and_set_flags(PictureControlSet  *picture_control_set_ptr,
         (EbReferenceObject *)picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr->object_ptr;
     EbPictureBufferDesc *ref_pic_ptr       = (EbPictureBufferDesc *)reference_object->reference_picture;
     EbPictureBufferDesc *ref_pic16_bit_ptr = (EbPictureBufferDesc *)reference_object->reference_picture16bit;
-    EB_BOOL              is16bit           = (sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
+    bool                 is16bit           = (sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
     if (!is16bit) {
         // Y samples
@@ -4616,17 +4613,17 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_sq(SequenceControlSet *seque
     EbErrorType return_error = EB_ErrorNone;
     UNUSED(sequence_control_set_ptr);
     // Derive Open Loop INTRA @ MD
-    context_ptr->intra_md_open_loop_flag = EB_FALSE;
+    context_ptr->intra_md_open_loop_flag = false;
 
     // Derive Spatial SSE Flag
     if (picture_control_set_ptr->parent_pcs_ptr->enc_mode <= ENC_MODE_2) {
-        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-            context_ptr->spatial_sse_full_loop = EB_TRUE;
+        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == false) {
+            context_ptr->spatial_sse_full_loop = true;
         } else {
-            context_ptr->spatial_sse_full_loop = EB_FALSE;
+            context_ptr->spatial_sse_full_loop = false;
         }
     } else {
-        context_ptr->spatial_sse_full_loop = EB_FALSE;
+        context_ptr->spatial_sse_full_loop = false;
     }
 
     // Set Chroma Level
@@ -4654,47 +4651,47 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_sq(SequenceControlSet *seque
 
     // Set allow_enc_dec_mismatch
     if (picture_control_set_ptr->parent_pcs_ptr->enc_mode <= ENC_MODE_6) {
-        context_ptr->allow_enc_dec_mismatch = EB_FALSE;
+        context_ptr->allow_enc_dec_mismatch = false;
     } else {
-        context_ptr->allow_enc_dec_mismatch = (picture_control_set_ptr->temporal_layer_index > 0) ? EB_TRUE : EB_FALSE;
+        context_ptr->allow_enc_dec_mismatch = (picture_control_set_ptr->temporal_layer_index > 0) ? true : false;
     }
 
     // Set eob based Full-Loop Escape Flag
-    context_ptr->full_loop_escape = EB_TRUE;
+    context_ptr->full_loop_escape = true;
 
     // Set Fast-Loop Method
-    context_ptr->single_fast_loop_flag = EB_TRUE;
+    context_ptr->single_fast_loop_flag = true;
 
     // Set Nearest Injection Flag
-    context_ptr->nearest_injection = EB_TRUE;
+    context_ptr->nearest_injection = true;
 
     // Set Near Injection Flag
-    context_ptr->near_injection = EB_TRUE;
+    context_ptr->near_injection = true;
 
     // Set Zero Injection Flag
-    context_ptr->zero_injection = EB_TRUE;
+    context_ptr->zero_injection = true;
 
     // Set Unipred 3x3 Injection Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
-        context_ptr->unipred3x3_injection = EB_TRUE;
+        context_ptr->unipred3x3_injection = true;
     } else {
-        context_ptr->unipred3x3_injection = EB_FALSE;
+        context_ptr->unipred3x3_injection = false;
     }
 
     // Set Bipred 3x3 Injection Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_1)
-        context_ptr->bipred3x3_injection = EB_TRUE;
+        context_ptr->bipred3x3_injection = true;
     else
-        context_ptr->bipred3x3_injection = EB_FALSE;
+        context_ptr->bipred3x3_injection = false;
 
     // Set Limit INTRA Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_5) {
-        context_ptr->limit_intra = EB_FALSE;
+        context_ptr->limit_intra = false;
     } else {
-        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_FALSE) {
-            context_ptr->limit_intra = EB_TRUE;
+        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == false) {
+            context_ptr->limit_intra = true;
         } else {
-            context_ptr->limit_intra = EB_FALSE;
+            context_ptr->limit_intra = false;
         }
     }
 
@@ -4746,17 +4743,17 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_oq(SequenceControlSet *seque
     EbErrorType return_error = EB_ErrorNone;
 
     // Derive Open Loop INTRA @ MD
-    context_ptr->intra_md_open_loop_flag = EB_FALSE;
+    context_ptr->intra_md_open_loop_flag = false;
 
     // Derive Spatial SSE Flag
     if (picture_control_set_ptr->parent_pcs_ptr->enc_mode <= ENC_MODE_2) {
-        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-            context_ptr->spatial_sse_full_loop = EB_TRUE;
+        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == false) {
+            context_ptr->spatial_sse_full_loop = true;
         } else {
-            context_ptr->spatial_sse_full_loop = EB_FALSE;
+            context_ptr->spatial_sse_full_loop = false;
         }
     } else {
-        context_ptr->spatial_sse_full_loop = EB_FALSE;
+        context_ptr->spatial_sse_full_loop = false;
     }
 
     // Set Chroma Level
@@ -4784,56 +4781,56 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_oq(SequenceControlSet *seque
 
     // Set allow_enc_dec_mismatch
     if (picture_control_set_ptr->parent_pcs_ptr->enc_mode <= ENC_MODE_6) {
-        context_ptr->allow_enc_dec_mismatch = EB_FALSE;
+        context_ptr->allow_enc_dec_mismatch = false;
     } else {
-        context_ptr->allow_enc_dec_mismatch = (picture_control_set_ptr->temporal_layer_index > 0) ? EB_TRUE : EB_FALSE;
+        context_ptr->allow_enc_dec_mismatch = (picture_control_set_ptr->temporal_layer_index > 0) ? true : false;
     }
 
     // Set eob based Full-Loop Escape Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_1) {
-        context_ptr->full_loop_escape = EB_FALSE;
+        context_ptr->full_loop_escape = false;
     } else {
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
-            context_ptr->full_loop_escape = EB_FALSE;
+            context_ptr->full_loop_escape = false;
         } else {
-            context_ptr->full_loop_escape = EB_TRUE;
+            context_ptr->full_loop_escape = true;
         }
     }
 
     // Set Fast-Loop Method
-    context_ptr->single_fast_loop_flag = EB_TRUE;
+    context_ptr->single_fast_loop_flag = true;
 
     // Set Nearest Injection Flag
-    context_ptr->nearest_injection = EB_TRUE;
+    context_ptr->nearest_injection = true;
 
     // Set Near Injection Flag
-    context_ptr->near_injection = EB_TRUE;
+    context_ptr->near_injection = true;
 
     // Set Zero Injection Flag
-    context_ptr->zero_injection = EB_TRUE;
+    context_ptr->zero_injection = true;
 
     // Set Unipred 3x3 Injection Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_1) {
-        context_ptr->unipred3x3_injection = EB_TRUE;
+        context_ptr->unipred3x3_injection = true;
     } else {
-        context_ptr->unipred3x3_injection = EB_FALSE;
+        context_ptr->unipred3x3_injection = false;
     }
 
     // Set Bipred 3x3 Injection Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_1) {
-        context_ptr->bipred3x3_injection = EB_TRUE;
+        context_ptr->bipred3x3_injection = true;
     } else {
-        context_ptr->bipred3x3_injection = EB_FALSE;
+        context_ptr->bipred3x3_injection = false;
     }
 
     // Set Limit INTRA Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
-        context_ptr->limit_intra = EB_FALSE;
+        context_ptr->limit_intra = false;
     } else {
-        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_FALSE) {
-            context_ptr->limit_intra = EB_TRUE;
+        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == false) {
+            context_ptr->limit_intra = true;
         } else {
-            context_ptr->limit_intra = EB_FALSE;
+            context_ptr->limit_intra = false;
         }
     }
 
@@ -4885,21 +4882,21 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_vmaf(SequenceControlSet *seq
     EbErrorType return_error = EB_ErrorNone;
 
     // Derive Open Loop INTRA @ MD
-    context_ptr->intra_md_open_loop_flag = EB_FALSE;
+    context_ptr->intra_md_open_loop_flag = false;
 
     // Derive Spatial SSE Flag
     if (picture_control_set_ptr->parent_pcs_ptr->enc_mode <= ENC_MODE_2) {
-        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == EB_FALSE) {
-            context_ptr->spatial_sse_full_loop = EB_TRUE;
+        if (picture_control_set_ptr->slice_type == I_SLICE && context_ptr->intra_md_open_loop_flag == false) {
+            context_ptr->spatial_sse_full_loop = true;
         } else {
-            context_ptr->spatial_sse_full_loop = EB_FALSE;
+            context_ptr->spatial_sse_full_loop = false;
         }
     } else {
-        context_ptr->spatial_sse_full_loop = EB_FALSE;
+        context_ptr->spatial_sse_full_loop = false;
     }
 
     // Set Allow EncDec Mismatch Flag
-    context_ptr->allow_enc_dec_mismatch = EB_FALSE;
+    context_ptr->allow_enc_dec_mismatch = false;
 
     // Set Chroma Level
     // Level            Settings
@@ -4926,41 +4923,41 @@ EbErrorType eb_vp9_signal_derivation_enc_dec_kernel_vmaf(SequenceControlSet *seq
 
     // Set eob based Full-Loop Escape Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_1) {
-        context_ptr->full_loop_escape = EB_FALSE;
+        context_ptr->full_loop_escape = false;
     } else {
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
-            context_ptr->full_loop_escape = EB_FALSE;
+            context_ptr->full_loop_escape = false;
         } else {
-            context_ptr->full_loop_escape = EB_TRUE;
+            context_ptr->full_loop_escape = true;
         }
     }
 
     // Set Fast-Loop Method
-    context_ptr->single_fast_loop_flag = EB_TRUE;
+    context_ptr->single_fast_loop_flag = true;
 
     // Set Nearest Injection Flag
-    context_ptr->nearest_injection = EB_TRUE;
+    context_ptr->nearest_injection = true;
 
     // Set Near Injection Flag
-    context_ptr->near_injection = EB_TRUE;
+    context_ptr->near_injection = true;
 
     // Set Zero Injection Flag
-    context_ptr->zero_injection = EB_TRUE;
+    context_ptr->zero_injection = true;
 
     // Set Unipred 3x3 Injection Flag
-    context_ptr->unipred3x3_injection = (picture_control_set_ptr->enc_mode <= ENC_MODE_1) ? EB_TRUE : EB_FALSE;
+    context_ptr->unipred3x3_injection = (picture_control_set_ptr->enc_mode <= ENC_MODE_1) ? true : false;
 
     // Set Bipred 3x3 Injection Flag
-    context_ptr->bipred3x3_injection = (picture_control_set_ptr->enc_mode <= ENC_MODE_1) ? EB_TRUE : EB_FALSE;
+    context_ptr->bipred3x3_injection = (picture_control_set_ptr->enc_mode <= ENC_MODE_1) ? true : false;
 
     // Set Limit INTRA Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_4) {
-        context_ptr->limit_intra = EB_FALSE;
+        context_ptr->limit_intra = false;
     } else {
-        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_FALSE) {
-            context_ptr->limit_intra = EB_TRUE;
+        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == false) {
+            context_ptr->limit_intra = true;
         } else {
-            context_ptr->limit_intra = EB_FALSE;
+            context_ptr->limit_intra = false;
         }
     }
 
@@ -5026,8 +5023,8 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
     uint32_t  ysb_index;
     SbParams *sb_params_ptr;
 
-    EB_BOOL  last_sb_flag;
-    EB_BOOL  end_of_row_flag;
+    bool     last_sb_flag;
+    bool     end_of_row_flag;
     uint32_t sb_row_index_start;
     uint32_t sb_row_index_count;
     uint32_t picture_width_in_sb;
@@ -5054,13 +5051,13 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                                        picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
         encode_context_ptr = sequence_control_set_ptr->encode_context_ptr;
         segments_ptr       = picture_control_set_ptr->enc_dec_segment_ctrl;
-        last_sb_flag       = EB_FALSE;
+        last_sb_flag       = false;
 
         context_ptr->is16bit = !(sequence_control_set_ptr->input_bit_depth == EB_8BIT);
 
         // SB Constants
         picture_width_in_sb = (sequence_control_set_ptr->luma_width + MAX_SB_SIZE_MINUS_1) >> LOG2F_MAX_SB_SIZE;
-        end_of_row_flag     = EB_FALSE;
+        end_of_row_flag     = false;
         sb_row_index_start = sb_row_index_count = 0;
 
         // EncDec Kernel Signal(s) derivation
@@ -5096,7 +5093,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
         }
 
         // Set recon
-        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE) {
+        if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true) {
             context_ptr->recon_buffer = context_ptr->is16bit
                 ? ((EbReferenceObject *)
                        picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr->object_ptr)
@@ -5110,7 +5107,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
         }
 
         // Set eob zero mode  flags
-        context_ptr->skip_eob_zero_mode_ep = EB_TRUE;
+        context_ptr->skip_eob_zero_mode_ep = true;
 
         // Set eob zero mode flags
         context_ptr->eob_zero_mode = (sequence_control_set_ptr->static_config.tune != TUNE_SQ ||
@@ -5135,8 +5132,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
 
         // Segment-loop
         while (assign_enc_dec_segments(
-                   segments_ptr, &segment_index, enc_dec_tasks_ptr, context_ptr->enc_dec_feedback_fifo_ptr) ==
-               EB_TRUE) {
+                   segments_ptr, &segment_index, enc_dec_tasks_ptr, context_ptr->enc_dec_feedback_fifo_ptr) == true) {
             x_sb_start_index = segments_ptr->x_start_array[segment_index];
             y_sb_start_index = segments_ptr->y_start_array[segment_index];
             sb_start_index   = y_sb_start_index * picture_width_in_sb + x_sb_start_index;
@@ -5170,15 +5166,15 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                      xsb_index < picture_width_in_sb && (xsb_index + ysb_index < segment_band_size) &&
                      sb_segment_index < sb_start_index + sb_segment_count;
                      ++xsb_index, ++sb_segment_index) {
-                    sb_index           = (uint16_t)(ysb_index * picture_width_in_sb + xsb_index);
-                    sb_ptr             = picture_control_set_ptr->sb_ptr_array[sb_index];
-                    last_sb_flag       = (sb_index == picture_control_set_ptr->sb_total_count - 1) ? EB_TRUE : EB_FALSE;
-                    end_of_row_flag    = (xsb_index == picture_width_in_sb - 1) ? EB_TRUE : EB_FALSE;
-                    sb_row_index_start = (xsb_index == picture_width_in_sb - 1 && sb_row_index_count == 0)
-                        ? ysb_index
-                        : sb_row_index_start;
-                    sb_row_index_count = (xsb_index == picture_width_in_sb - 1) ? sb_row_index_count + 1
-                                                                                : sb_row_index_count;
+                    sb_index              = (uint16_t)(ysb_index * picture_width_in_sb + xsb_index);
+                    sb_ptr                = picture_control_set_ptr->sb_ptr_array[sb_index];
+                    last_sb_flag          = (sb_index == picture_control_set_ptr->sb_total_count - 1) ? true : false;
+                    end_of_row_flag       = (xsb_index == picture_width_in_sb - 1) ? true : false;
+                    sb_row_index_start    = (xsb_index == picture_width_in_sb - 1 && sb_row_index_count == 0)
+                           ? ysb_index
+                           : sb_row_index_start;
+                    sb_row_index_count    = (xsb_index == picture_width_in_sb - 1) ? sb_row_index_count + 1
+                                                                                   : sb_row_index_count;
                     context_ptr->sb_index = sb_index;
                     sb_params_ptr         = &sequence_control_set_ptr->sb_params_array[sb_index];
 
@@ -5193,10 +5189,9 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                              INTRA_GLOBAL_MOTION_DARK_SB_TH);
 
                     // Derive Interpoldation Method @ Mode Decision
-                    context_ptr->use_subpel_flag = (picture_control_set_ptr->parent_pcs_ptr->use_subpel_flag ==
-                                                    EB_FALSE)
-                        ? EB_FALSE
-                        : EB_TRUE;
+                    context_ptr->use_subpel_flag = (picture_control_set_ptr->parent_pcs_ptr->use_subpel_flag == false)
+                        ? false
+                        : true;
 
                     const int qindex    = picture_control_set_ptr->base_qindex;
                     context_ptr->RDMULT = eb_vp9_compute_rd_mult(picture_control_set_ptr->parent_pcs_ptr->cpi, qindex);
@@ -5231,13 +5226,13 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         bdp_pillar_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
 
                         // If all 4 quadrants are CU32x32, the compare the 4 CU32x32 to CU64x64
-                        EB_BOOL is_4_32x32 = (sb_params_ptr->is_complete_sb &&
-                                              (picture_control_set_ptr->temporal_layer_index > 0 ||
-                                               sequence_control_set_ptr->static_config.tune == TUNE_OQ) &&
-                                              sb_ptr->coded_block_array_ptr[5]->split_flag == EB_FALSE &&
-                                              sb_ptr->coded_block_array_ptr[174]->split_flag == EB_FALSE &&
-                                              sb_ptr->coded_block_array_ptr[343]->split_flag == EB_FALSE &&
-                                              sb_ptr->coded_block_array_ptr[512]->split_flag == EB_FALSE);
+                        bool is_4_32x32 = (sb_params_ptr->is_complete_sb &&
+                                           (picture_control_set_ptr->temporal_layer_index > 0 ||
+                                            sequence_control_set_ptr->static_config.tune == TUNE_OQ) &&
+                                           sb_ptr->coded_block_array_ptr[5]->split_flag == false &&
+                                           sb_ptr->coded_block_array_ptr[174]->split_flag == false &&
+                                           sb_ptr->coded_block_array_ptr[343]->split_flag == false &&
+                                           sb_ptr->coded_block_array_ptr[512]->split_flag == false);
 
                         // 64x64 refinement depth partitioning
                         context_ptr->depth_part_stage = 2;
@@ -5255,7 +5250,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
                         bdp_nearest_near_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
                     }
                     // Derive Interpoldation Method @ Encode Pass
-                    context_ptr->use_subpel_flag = EB_TRUE;
+                    context_ptr->use_subpel_flag = true;
 
                     // Encode Pass
                     encode_pass_sb(sequence_control_set_ptr, picture_control_set_ptr, context_ptr, sb_ptr);
@@ -5275,14 +5270,14 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
             if (sequence_control_set_ptr->static_config.loop_filter) {
                 eb_vp9_pick_filter_level(picture_control_set_ptr->parent_pcs_ptr->cpi, LPF_PICK_FROM_Q);
 
-                EB_BOOL lf_application_enable_flag;
+                bool lf_application_enable_flag;
 
-                if ((context_ptr->allow_enc_dec_mismatch == EB_TRUE ||
-                     picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_FALSE) &&
-                    sequence_control_set_ptr->static_config.recon_file == EB_FALSE) {
-                    lf_application_enable_flag = EB_FALSE;
+                if ((context_ptr->allow_enc_dec_mismatch == true ||
+                     picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == false) &&
+                    sequence_control_set_ptr->static_config.recon_file == false) {
+                    lf_application_enable_flag = false;
                 } else {
-                    lf_application_enable_flag = EB_TRUE;
+                    lf_application_enable_flag = true;
                 }
 
                 if (lf_application_enable_flag) {
@@ -5326,11 +5321,11 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
             }
 
             // Pad the reference picture and set up TMVP flag and ref POC
-            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE) {
+            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true) {
                 pad_ref_and_set_flags(picture_control_set_ptr, sequence_control_set_ptr);
             }
 
-            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE &&
+            if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true &&
                 picture_control_set_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr) {
                 EbPictureBufferDesc *input_picture_ptr =
                     (EbPictureBufferDesc *)picture_control_set_ptr->parent_pcs_ptr->enhanced_picture_ptr;
@@ -5418,7 +5413,7 @@ void *eb_vp9_enc_dec_kernel(void *input_ptr) {
         }
 
         // Send the Entropy Coder incremental updates as each LCU row becomes available
-        if (end_of_row_flag == EB_TRUE) {
+        if (end_of_row_flag == true) {
             // Get Empty EncDec Results
             eb_vp9_get_empty_object(context_ptr->enc_dec_output_fifo_ptr, &enc_dec_results_wrapper_ptr);
             enc_dec_results_ptr = (EncDecResults *)enc_dec_results_wrapper_ptr->object_ptr;

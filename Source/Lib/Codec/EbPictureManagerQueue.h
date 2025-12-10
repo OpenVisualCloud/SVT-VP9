@@ -38,14 +38,14 @@ typedef struct ReferenceQueueEntry {
     uint64_t         decode_order;
     EbObjectWrapper *reference_object_ptr;
     uint32_t         dependent_count;
-    EB_BOOL          release_enable;
-    EB_BOOL          reference_available;
+    bool             release_enable;
+    bool             reference_available;
     uint32_t         dep_list0_count;
     uint32_t         dep_list1_count;
     DependentList    list0;
     DependentList    list1;
-    EB_BOOL          is_used_as_reference_flag;
-    EB_BOOL          feedback_arrived;
+    bool             is_used_as_reference_flag;
+    bool             feedback_arrived;
 } ReferenceQueueEntry;
 
 /************************************************
@@ -55,7 +55,7 @@ typedef struct ReferenceQueueEntry {
 typedef struct RcInputQueueEntry {
     uint64_t         picture_number;
     EbObjectWrapper *input_object_ptr;
-    EB_BOOL          release_enabled;
+    bool             release_enabled;
     uint32_t         gop_index;
 
 } RcInputQueueEntry;
@@ -65,7 +65,7 @@ typedef struct RcInputQueueEntry {
  ************************************************/
 typedef struct RcFeedbackQueueEntry {
     uint64_t picture_number;
-    EB_BOOL  release_enabled;
+    bool     release_enabled;
     uint32_t gop_index;
 
 } RcFeedbackQueueEntry;

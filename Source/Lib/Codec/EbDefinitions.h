@@ -241,15 +241,6 @@ typedef void* EbHandle;
 #define INPUT_SIZE_4K_TH 0x29F630 // 2.75 Million
 #define INPUT_SIZE_8K_TH (0x29F630 << 2) // 2.75 Million
 
-/** The EB_BOOL type is intended to be used to represent a true or a false
-value when passing parameters to and from the eBrisk API.  The
-EB_BOOL is a 32 bit quantity and is aligned on a 32 bit word boundary.
-*/
-
-#define EB_BOOL uint8_t
-#define EB_FALSE 0
-#define EB_TRUE 1
-
 /** The EbHandleType type is intended to be used to pass pointers to and from the eBrisk
 API.  This is a 32 bit pointer and is aligned on a 32 bit word boundary.
 */

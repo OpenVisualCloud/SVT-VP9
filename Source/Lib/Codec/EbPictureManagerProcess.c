@@ -80,7 +80,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
     EbObjectWrapper  *output_wrapper_ptr;
     RateControlTasks *rate_control_tasks_ptr;
 
-    EB_BOOL availability_flag;
+    bool availability_flag;
 
     PredictionStructureEntry *pred_position_ptr;
 
@@ -460,7 +460,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                             if (((dep_poc >= current_input_poc) ||
                                  (((picture_control_set_ptr->pre_assignment_buffer_count !=
                                     picture_control_set_ptr->pred_struct_ptr->pred_struct_period) ||
-                                   (picture_control_set_ptr->idr_flag == EB_TRUE)) &&
+                                   (picture_control_set_ptr->idr_flag == true)) &&
                                   (dep_poc >
                                    (current_input_poc - picture_control_set_ptr->pre_assignment_buffer_count)))) &&
                                 reference_entry_ptr->list1.list[dep_idx]) {
@@ -480,7 +480,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                             : reference_queue_index + 1;
                     }
 
-                } else if (picture_control_set_ptr->idr_flag == EB_TRUE) {
+                } else if (picture_control_set_ptr->idr_flag == true) {
                     // Set Reference Entry pointer
                     reference_entry_ptr = (ReferenceQueueEntry *)NULL;
                 }
@@ -532,9 +532,9 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     encode_context_ptr->reference_picture_queue[encode_context_ptr->reference_picture_queue_tail_index];
                 reference_entry_ptr->picture_number            = picture_control_set_ptr->picture_number;
                 reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)NULL;
-                reference_entry_ptr->release_enable            = EB_TRUE;
-                reference_entry_ptr->reference_available       = EB_FALSE;
-                reference_entry_ptr->feedback_arrived          = EB_FALSE;
+                reference_entry_ptr->release_enable            = true;
+                reference_entry_ptr->reference_available       = false;
+                reference_entry_ptr->feedback_arrived          = false;
                 reference_entry_ptr->is_used_as_reference_flag = picture_control_set_ptr->is_used_as_reference_flag;
                 encode_context_ptr->reference_picture_queue_tail_index =
                     (encode_context_ptr->reference_picture_queue_tail_index == REFERENCE_QUEUE_MAX_DEPTH - 1)
@@ -566,7 +566,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                                    EB_ENC_PM_ERROR4);
 
                 // Release the Reference Buffer once we know it is not a reference
-                if (picture_control_set_ptr->is_used_as_reference_flag == EB_FALSE) {
+                if (picture_control_set_ptr->is_used_as_reference_flag == false) {
                     // Release the nominal live_count value
                     eb_vp9_release_object(picture_control_set_ptr->reference_picture_wrapper_ptr);
                     picture_control_set_ptr->reference_picture_wrapper_ptr = (EbObjectWrapper *)NULL;
@@ -613,7 +613,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     reference_entry_ptr->reference_object_ptr = input_picture_demux_ptr->reference_picture_wrapper_ptr;
 
                     // Set the reference availability
-                    reference_entry_ptr->reference_available = EB_TRUE;
+                    reference_entry_ptr->reference_available = true;
                 }
 
                 // Increment the reference_queue_index Iterator
@@ -664,7 +664,7 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     entrysequence_control_set_ptr = (SequenceControlSet *)entry_picture_control_set_ptr
                                                         ->sequence_control_set_wrapper_ptr->object_ptr;
 
-                    availability_flag = EB_TRUE;
+                    availability_flag = true;
 
                     // Check ref_list0 Availability
                     if (entry_picture_control_set_ptr->ref_list0_count) {
@@ -688,20 +688,19 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                         //    (1 << entrysequence_control_set_ptr->bitsForPictureOrderCount) :
                         //    0;
 
-                        availability_flag = (availability_flag == EB_FALSE) ? EB_FALSE
-                                                                            : // Don't update if already False
+                        availability_flag = (availability_flag == false) ? false : // Don't update if already False
                             (ref_poc > current_input_poc)
-                            ? EB_FALSE
+                            ? false
                             : // The Reference has not been received as an Input Picture yet, then its availability is false
                             (!encode_context_ptr->terminating_sequence_flag_received &&
                              (sequence_control_set_ptr->static_config.rate_control_mode &&
                               entry_picture_control_set_ptr->slice_type != I_SLICE &&
                               entry_picture_control_set_ptr->temporal_layer_index == 0 &&
                               !reference_entry_ptr->feedback_arrived))
-                            ? EB_FALSE
-                            : (reference_entry_ptr->reference_available) ? EB_TRUE
+                            ? false
+                            : (reference_entry_ptr->reference_available) ? true
                                                                          : // The Reference has been completed
-                            EB_FALSE; // The Reference has not been completed
+                            false; // The Reference has not been completed
                     }
 
                     // Check ref_list1 Availability
@@ -731,25 +730,25 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                                 //    (1 << entrysequence_control_set_ptr->bitsForPictureOrderCount) :
                                 //    0;
 
-                                availability_flag = (availability_flag == EB_FALSE) ? EB_FALSE
-                                                                                    : // Don't update if already False
+                                availability_flag = (availability_flag == false) ? false
+                                                                                 : // Don't update if already False
                                     (ref_poc > current_input_poc)
-                                    ? EB_FALSE
+                                    ? false
                                     : // The Reference has not been received as an Input Picture yet, then its availability is false
                                     (!encode_context_ptr->terminating_sequence_flag_received &&
                                      (sequence_control_set_ptr->static_config.rate_control_mode &&
                                       entry_picture_control_set_ptr->slice_type != I_SLICE &&
                                       entry_picture_control_set_ptr->temporal_layer_index == 0 &&
                                       !reference_entry_ptr->feedback_arrived))
-                                    ? EB_FALSE
-                                    : (reference_entry_ptr->reference_available) ? EB_TRUE
+                                    ? false
+                                    : (reference_entry_ptr->reference_available) ? true
                                                                                  : // The Reference has been completed
-                                    EB_FALSE; // The Reference has not been completed
+                                    false; // The Reference has not been completed
                             }
                         }
                     }
 
-                    if (availability_flag == EB_TRUE) {
+                    if (availability_flag == true) {
                         // Get New  Empty Child PCS from PCS Pool
                         eb_vp9_get_empty_object(context_ptr->picture_control_set_fifo_ptr_array[0],
                                                 &child_picture_control_set_wrapper_ptr);
@@ -804,19 +803,19 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                             child_picture_control_set_ptr->entropy_coding_current_row           = 0;
                             child_picture_control_set_ptr->entropy_coding_current_available_row = 0;
                             child_picture_control_set_ptr->entropy_coding_row_count             = picture_height_in_sb;
-                            child_picture_control_set_ptr->entropy_coding_in_progress           = EB_FALSE;
+                            child_picture_control_set_ptr->entropy_coding_in_progress           = false;
 
                             for (row_index = 0; row_index < MAX_SB_ROWS; ++row_index) {
-                                child_picture_control_set_ptr->entropy_coding_row_array[row_index] = EB_FALSE;
+                                child_picture_control_set_ptr->entropy_coding_row_array[row_index] = false;
                             }
                         }
 
                         // is_low_delay
                         child_picture_control_set_ptr->is_low_delay =
-                            (EB_BOOL)(child_picture_control_set_ptr->parent_pcs_ptr->pred_struct_ptr
-                                          ->pred_struct_entry_ptr_array[child_picture_control_set_ptr->parent_pcs_ptr
-                                                                            ->pred_struct_index]
-                                          ->positive_ref_pics_total_count == 0);
+                            (bool)(child_picture_control_set_ptr->parent_pcs_ptr->pred_struct_ptr
+                                       ->pred_struct_entry_ptr_array[child_picture_control_set_ptr->parent_pcs_ptr
+                                                                         ->pred_struct_index]
+                                       ->positive_ref_pics_total_count == 0);
 
                         // Reset the Reference Lists
                         memset(child_picture_control_set_ptr->ref_pic_ptr_array, 0, 2 * sizeof(EbObjectWrapper *));
@@ -944,21 +943,21 @@ void *eb_vp9_PictureManagerKernel(void *input_ptr) {
                     eb_vp9_release_object(reference_entry_ptr->reference_object_ptr);
 
                     reference_entry_ptr->reference_object_ptr      = (EbObjectWrapper *)NULL;
-                    reference_entry_ptr->reference_available       = EB_FALSE;
-                    reference_entry_ptr->is_used_as_reference_flag = EB_FALSE;
+                    reference_entry_ptr->reference_available       = false;
+                    reference_entry_ptr->is_used_as_reference_flag = false;
                 }
 
                 // Increment the head_index if the head is empty
                 encode_context_ptr->reference_picture_queue_head_index =
                     (encode_context_ptr->reference_picture_queue[encode_context_ptr->reference_picture_queue_head_index]
-                         ->release_enable == EB_FALSE)
+                         ->release_enable == false)
                     ? encode_context_ptr->reference_picture_queue_head_index
                     : (encode_context_ptr
                                ->reference_picture_queue[encode_context_ptr->reference_picture_queue_head_index]
-                               ->reference_available == EB_FALSE &&
+                               ->reference_available == false &&
                        encode_context_ptr
                                ->reference_picture_queue[encode_context_ptr->reference_picture_queue_head_index]
-                               ->is_used_as_reference_flag == EB_TRUE)
+                               ->is_used_as_reference_flag == true)
                     ? encode_context_ptr->reference_picture_queue_head_index
                     : (encode_context_ptr
                            ->reference_picture_queue[encode_context_ptr->reference_picture_queue_head_index]

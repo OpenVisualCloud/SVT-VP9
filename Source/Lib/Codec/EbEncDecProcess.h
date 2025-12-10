@@ -37,12 +37,11 @@ extern "C" {
 /**************************************
 * Macros
 **************************************/
-#define GROUP_OF_4_8x8_BLOCKS(origin_x, origin_y) \
-    (((origin_x >> 3) & 0x1) && ((origin_y >> 3) & 0x1) ? EB_TRUE : EB_FALSE)
+#define GROUP_OF_4_8x8_BLOCKS(origin_x, origin_y) (((origin_x >> 3) & 0x1) && ((origin_y >> 3) & 0x1) ? true : false)
 #define GROUP_OF_4_16x16_BLOCKS(origin_x, origin_y) \
-    (((((origin_x >> 3) & 0x2) == 0x2) && (((origin_y >> 3) & 0x2) == 0x2)) ? EB_TRUE : EB_FALSE)
+    (((((origin_x >> 3) & 0x2) == 0x2) && (((origin_y >> 3) & 0x2) == 0x2)) ? true : false)
 #define GROUP_OF_4_32x32_BLOCKS(origin_x, origin_y) \
-    (((((origin_x >> 3) & 0x4) == 0x4) && (((origin_y >> 3) & 0x4) == 0x4)) ? EB_TRUE : EB_FALSE)
+    (((((origin_x >> 3) & 0x4) == 0x4) && (((origin_y >> 3) & 0x4) == 0x4)) ? true : false)
 
 /**************************************
  * Coding Loop Context
@@ -87,7 +86,7 @@ typedef struct EncDecContext {
 
     uint32_t sb_index;
 
-    EB_BOOL is16bit;
+    bool    is16bit;
     EbFifo *mode_decision_configuration_input_fifo_ptr;
 
     ModeDecisionCandidate **fast_candidate_ptr_array;
@@ -124,21 +123,21 @@ typedef struct EncDecContext {
 
     EncDecBlockUnit **enc_dec_local_block_array;
 
-    EB_BOOL restrict_intra_global_motion;
+    bool    restrict_intra_global_motion;
     uint8_t use_subpel_flag;
 
     // Multi-modes signal(s)
-    EB_BOOL spatial_sse_full_loop;
-    EB_BOOL full_loop_escape;
-    EB_BOOL single_fast_loop_flag;
-    EB_BOOL nearest_injection;
-    EB_BOOL near_injection;
-    EB_BOOL zero_injection;
-    EB_BOOL unipred3x3_injection;
-    EB_BOOL bipred3x3_injection;
+    bool    spatial_sse_full_loop;
+    bool    full_loop_escape;
+    bool    single_fast_loop_flag;
+    bool    nearest_injection;
+    bool    near_injection;
+    bool    zero_injection;
+    bool    unipred3x3_injection;
+    bool    bipred3x3_injection;
     uint8_t chroma_level;
-    EB_BOOL intra_md_open_loop_flag;
-    EB_BOOL limit_intra;
+    bool    intra_md_open_loop_flag;
+    bool    limit_intra;
 
     uint8_t pf_md_level;
     uint8_t nfl_level;
@@ -178,11 +177,11 @@ typedef struct EncDecContext {
     ENTROPY_CONTEXT t_above[3][16];
     ENTROPY_CONTEXT t_left[3][16];
 
-    EB_BOOL skip_eob_zero_mode_ep;
-    EB_BOOL eob_zero_mode;
+    bool skip_eob_zero_mode_ep;
+    bool eob_zero_mode;
 
     // Multi-modes signal(s)
-    EB_BOOL allow_enc_dec_mismatch;
+    bool allow_enc_dec_mismatch;
 
     BdpSbData            bdp_block_data;
     EbPictureBufferDesc *bdp_pillar_scratch_recon_buffer;

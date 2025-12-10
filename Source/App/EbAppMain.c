@@ -87,7 +87,7 @@ int32_t main(int32_t argc, char *argv[]) {
     AppExitConditionType exit_conditions_recon[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
     AppExitConditionType exit_conditions_input[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
 
-    EbBool channel_active[MAX_CHANNEL_NUMBER];
+    bool channel_active[MAX_CHANNEL_NUMBER];
 
     EbConfig *configs[MAX_CHANNEL_NUMBER]; // Encoder Configuration
 
@@ -123,7 +123,7 @@ int32_t main(int32_t argc, char *argv[]) {
         exit_conditions_output[instance_count] = APP_ExitConditionError; // Processing loop exit condition
         exit_conditions_recon[instance_count]  = APP_ExitConditionError; // Processing loop exit condition
         exit_conditions_input[instance_count]  = APP_ExitConditionError; // Processing loop exit condition
-        channel_active[instance_count]         = EB_FALSE;
+        channel_active[instance_count]         = false;
     }
 
     // Read all configuration files.
@@ -146,7 +146,7 @@ int32_t main(int32_t argc, char *argv[]) {
                     configs[instance_count], app_callbacks[instance_count], instance_count);
                 return_error = (EbErrorType)(return_error | return_errors[instance_count]);
             } else {
-                channel_active[instance_count] = EB_FALSE;
+                channel_active[instance_count] = false;
             }
         }
 
@@ -161,7 +161,7 @@ int32_t main(int32_t argc, char *argv[]) {
                          ? APP_ExitConditionNone
                          : APP_ExitConditionError;
                     exit_conditions_input[instance_count]  = APP_ExitConditionNone;
-                    channel_active[instance_count]         = EB_TRUE;
+                    channel_active[instance_count]         = true;
                     app_svt_vp9_get_time(&configs[instance_count]->performance_context.encode_start_time[0],
                                          &configs[instance_count]->performance_context.encode_start_time[1]);
 
@@ -182,7 +182,7 @@ int32_t main(int32_t argc, char *argv[]) {
             while (exit_condition == APP_ExitConditionNone) {
                 exit_condition = APP_ExitConditionFinished;
                 for (instance_count = 0; instance_count < num_channels; ++instance_count) {
-                    if (channel_active[instance_count] == EB_TRUE) {
+                    if (channel_active[instance_count] == true) {
                         if (exit_conditions_input[instance_count] == APP_ExitConditionNone)
                             exit_conditions_input[instance_count] = process_input_buffer(configs[instance_count],
                                                                                          app_callbacks[instance_count]);
@@ -205,7 +205,7 @@ int32_t main(int32_t argc, char *argv[]) {
                               configs[instance_count]->recon_file) ||
                              exit_conditions_output[instance_count] == APP_ExitConditionError ||
                              exit_conditions_input[instance_count] == APP_ExitConditionError)) {
-                            channel_active[instance_count] = EB_FALSE;
+                            channel_active[instance_count] = false;
                             if (configs[instance_count]->recon_file)
                                 exit_conditions[instance_count] =
                                     (AppExitConditionType)(exit_conditions_recon[instance_count] |
@@ -220,7 +220,7 @@ int32_t main(int32_t argc, char *argv[]) {
                 }
                 // check if all channels are inactive
                 for (instance_count = 0; instance_count < num_channels; ++instance_count) {
-                    if (channel_active[instance_count] == EB_TRUE)
+                    if (channel_active[instance_count] == true)
                         exit_condition = APP_ExitConditionNone;
                 }
             }
@@ -267,7 +267,7 @@ int32_t main(int32_t argc, char *argv[]) {
         for (instance_count = 0; instance_count < num_channels; ++instance_count) {
             if (exit_conditions[instance_count] == APP_ExitConditionFinished &&
                 return_errors[instance_count] == EB_ErrorNone) {
-                if (configs[instance_count]->stop_encoder == EB_FALSE) {
+                if (configs[instance_count]->stop_encoder == false) {
                     printf(
                         "\nChannel %u\nAverage Speed:\t\t%.2f fps\nTotal Encoding Time:\t%.0f ms\nTotal Execution "
                         "Time:\t%.0f ms\nAverage Latency:\t%.0f ms\nMax Latency:\t\t%u ms\n",

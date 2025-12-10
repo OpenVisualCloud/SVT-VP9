@@ -27,7 +27,7 @@ typedef struct PictureAnalysisContext {
  * Extern Function Declaration
  ***************************************/
 extern EbErrorType eb_vp9_picture_analysis_context_ctor(
-    EbPictureBufferDescInitData *input_picture_buffer_desc_init_data, EB_BOOL denoise_flag,
+    EbPictureBufferDescInitData *input_picture_buffer_desc_init_data, bool denoise_flag,
     PictureAnalysisContext **context_dbl_ptr, EbFifo *resource_coordination_results_input_fifo_ptr,
     EbFifo *picture_analysis_results_output_fifo_ptr, uint16_t sb_total_count);
 

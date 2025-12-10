@@ -66,9 +66,9 @@ static const uint8_t ndp_refinement_control_islice_sub4_k[4 /*cu Size*/] = {
 
 typedef struct MdcpLocalCodingUnit {
     uint64_t early_cost;
-    EB_BOOL  early_split_flag;
-    EB_BOOL  slected_cu;
-    EB_BOOL  stop_split;
+    bool     early_split_flag;
+    bool     slected_cu;
+    bool     stop_split;
 
 } MdcpLocalCodingUnit;
 

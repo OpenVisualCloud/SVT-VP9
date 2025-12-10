@@ -29,11 +29,11 @@ extern EbErrorType eb_vp9_initial_rate_control_reorder_entry_ctor(InitialRateCon
 typedef struct HlRateControlHistogramEntry {
     uint64_t         picture_number;
     int16_t          life_count;
-    EB_BOOL          passed_to_hlrc;
-    EB_BOOL          is_coded;
+    bool             passed_to_hlrc;
+    bool             is_coded;
     uint64_t         total_num_bitsCoded;
     EbObjectWrapper *parent_pcs_wrapper_ptr;
-    EB_BOOL          end_of_sequence_flag;
+    bool             end_of_sequence_flag;
     uint64_t         pred_bits_ref_qp[MAX_REF_QP_NUM];
     EB_SLICE         slice_type;
     uint32_t         temporal_layer_index;

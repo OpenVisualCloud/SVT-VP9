@@ -187,7 +187,7 @@ EbErrorType inter_full_cost(struct EncDecContext *context_ptr, struct ModeDecisi
     int                rate         = 0;
     int                distortion   = 0;
 
-    if (candidate_buffer_ptr->candidate_ptr->mode_info->skip == EB_TRUE) {
+    if (candidate_buffer_ptr->candidate_ptr->mode_info->skip == true) {
         rate = (int)candidate_buffer_ptr->candidate_ptr->fast_luma_rate +
             (int)candidate_buffer_ptr->candidate_ptr->fast_chroma_rate +
             vp9_cost_bit(vp9_get_skip_prob(&cpi->common, xd), 1);
@@ -219,7 +219,7 @@ EbErrorType intra_full_cost(struct EncDecContext *context_ptr, struct ModeDecisi
     int                rate         = 0;
     int                distortion   = 0;
 
-    if (candidate_buffer_ptr->candidate_ptr->mode_info->skip == EB_TRUE) {
+    if (candidate_buffer_ptr->candidate_ptr->mode_info->skip == true) {
         rate = (int)candidate_buffer_ptr->candidate_ptr->fast_luma_rate +
             (int)candidate_buffer_ptr->candidate_ptr->fast_chroma_rate +
             vp9_cost_bit(vp9_get_skip_prob(&cpi->common, xd), 1);

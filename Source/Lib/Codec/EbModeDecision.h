@@ -45,7 +45,7 @@ typedef EbErrorType (*EbFullCostFunc)(struct EncDecContext               *contex
 **************************************/
 typedef struct ModeDecisionCandidate {
     uint32_t me_distortion;
-    EB_BOOL  distortion_ready;
+    bool     distortion_ready;
 
     uint64_t fast_luma_rate;
     uint64_t fast_chroma_rate;
@@ -92,7 +92,7 @@ uint8_t full_mode_decision(struct EncDecContext *context_ptr, ModeDecisionCandid
 
 EbErrorType pre_mode_decision(uint32_t buffer_total_count, ModeDecisionCandidateBuffer **buffer_ptr_array,
                               uint32_t *full_candidate_total_count_ptr, uint8_t *best_candidate_index_array,
-                              EB_BOOL same_fast_full_candidate);
+                              bool same_fast_full_candidate);
 
 struct CodingLoopContext;
 #ifdef __cplusplus

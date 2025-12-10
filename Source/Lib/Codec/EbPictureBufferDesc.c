@@ -43,9 +43,9 @@ EbErrorType eb_vp9_picture_buffer_desc_ctor(EbPtr *object_dbl_ptr, EbPtr object_
         (picture_buffer_desc_init_data_ptr->max_height + picture_buffer_desc_init_data_ptr->top_padding +
          picture_buffer_desc_init_data_ptr->bot_padding);
     picture_buffer_desc_ptr->chroma_size = picture_buffer_desc_ptr->luma_size >> 2;
-    picture_buffer_desc_ptr->packed_flag = EB_FALSE;
+    picture_buffer_desc_ptr->packed_flag = false;
 
-    if (picture_buffer_desc_init_data_ptr->split_mode == EB_TRUE) {
+    if (picture_buffer_desc_init_data_ptr->split_mode == true) {
         picture_buffer_desc_ptr->stride_bit_inc_y  = picture_buffer_desc_ptr->stride_y;
         picture_buffer_desc_ptr->stride_bit_inc_cb = picture_buffer_desc_ptr->stride_cb;
         picture_buffer_desc_ptr->stride_bit_inc_cr = picture_buffer_desc_ptr->stride_cr;
@@ -63,7 +63,7 @@ EbErrorType eb_vp9_picture_buffer_desc_ctor(EbPtr *object_dbl_ptr, EbPtr object_
                          EB_A_PTR);
         //picture_buffer_desc_ptr->buffer_y = (EbByte) EB_aligned_malloc( picture_buffer_desc_ptr->luma_size      * bytesPerPixel * sizeof(uint8_t),ALVALUE);
         picture_buffer_desc_ptr->buffer_bit_inc_y = 0;
-        if (picture_buffer_desc_init_data_ptr->split_mode == EB_TRUE) {
+        if (picture_buffer_desc_init_data_ptr->split_mode == true) {
             EB_ALLIGN_MALLOC(EbByte,
                              picture_buffer_desc_ptr->buffer_bit_inc_y,
                              picture_buffer_desc_ptr->luma_size * bytesPerPixel * sizeof(uint8_t),
@@ -82,7 +82,7 @@ EbErrorType eb_vp9_picture_buffer_desc_ctor(EbPtr *object_dbl_ptr, EbPtr object_
                          EB_A_PTR);
         //picture_buffer_desc_ptr->buffer_cb = (EbByte) EB_aligned_malloc(picture_buffer_desc_ptr->chroma_size    * bytesPerPixel * sizeof(uint8_t),ALVALUE);
         picture_buffer_desc_ptr->buffer_bit_inc_cb = 0;
-        if (picture_buffer_desc_init_data_ptr->split_mode == EB_TRUE) {
+        if (picture_buffer_desc_init_data_ptr->split_mode == true) {
             EB_ALLIGN_MALLOC(EbByte,
                              picture_buffer_desc_ptr->buffer_bit_inc_cb,
                              picture_buffer_desc_ptr->chroma_size * bytesPerPixel * sizeof(uint8_t),
@@ -101,7 +101,7 @@ EbErrorType eb_vp9_picture_buffer_desc_ctor(EbPtr *object_dbl_ptr, EbPtr object_
                          EB_A_PTR);
         //picture_buffer_desc_ptr->buffer_cr = (EbByte) EB_aligned_malloc(picture_buffer_desc_ptr->chroma_size    * bytesPerPixel * sizeof(uint8_t),ALVALUE);
         picture_buffer_desc_ptr->buffer_bit_inc_cr = 0;
-        if (picture_buffer_desc_init_data_ptr->split_mode == EB_TRUE) {
+        if (picture_buffer_desc_init_data_ptr->split_mode == true) {
             EB_ALLIGN_MALLOC(EbByte,
                              picture_buffer_desc_ptr->buffer_bit_inc_cr,
                              picture_buffer_desc_ptr->chroma_size * bytesPerPixel * sizeof(uint8_t),
@@ -152,7 +152,7 @@ EbErrorType eb_vp9_recon_picture_buffer_desc_ctor(EbPtr *object_dbl_ptr, EbPtr o
         (picture_buffer_desc_init_data_ptr->max_height + picture_buffer_desc_init_data_ptr->top_padding +
          picture_buffer_desc_init_data_ptr->bot_padding);
     picture_buffer_desc_ptr->chroma_size = picture_buffer_desc_ptr->luma_size >> 2;
-    picture_buffer_desc_ptr->packed_flag = EB_FALSE;
+    picture_buffer_desc_ptr->packed_flag = false;
 
     picture_buffer_desc_ptr->stride_bit_inc_y  = 0;
     picture_buffer_desc_ptr->stride_bit_inc_cb = 0;

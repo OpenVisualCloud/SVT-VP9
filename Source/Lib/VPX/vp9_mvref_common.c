@@ -70,7 +70,7 @@ static int find_mv_refs_idx(EncDecContext *context_ptr, const VP9_COMMON *cm, co
         }
     }
 
-    if (cm->use_prev_frame_mvs == EB_TRUE) {
+    if (cm->use_prev_frame_mvs == true) {
         // Hsan : SVT-VP9 does not support temporal MV(s) as reference MV(s)
         // If here then reference MV(s) will not be used (i.e. only ZERO_MV as INTER canidate)
         mode_context[ref_frame] = (uint8_t)counter_to_context[context_counter];
@@ -101,7 +101,7 @@ static int find_mv_refs_idx(EncDecContext *context_ptr, const VP9_COMMON *cm, co
         }
     }
 
-    //if (cm->use_prev_frame_mvs == EB_TRUE)
+    //if (cm->use_prev_frame_mvs == true)
     {
         // Hsan : SVT-VP9 does not support temporal MV(s) as reference MV(s)
         // If here then reference MV(s) will not be used (i.e. only ZERO_MV as INTER canidate)

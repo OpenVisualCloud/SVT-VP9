@@ -98,34 +98,34 @@ typedef struct PredictionStructureEntry {
     DependentList dep_list1;
     uint32_t      temporal_layer_index;
     uint32_t      decode_order;
-    EB_BOOL       is_referenced;
+    bool          is_referenced;
 
     // High-level RPS
-    EB_BOOL  short_term_rps_in_sps_flag;
+    bool     short_term_rps_in_sps_flag;
     uint32_t short_term_rps_in_sps_index;
-    EB_BOOL  inter_rps_prediction_flag;
-    EB_BOOL  long_term_rps_present_flag;
+    bool     inter_rps_prediction_flag;
+    bool     long_term_rps_present_flag;
 
     // Non-Predicted Short-Term RPS
     uint32_t negative_ref_pics_total_count;
     uint32_t positive_ref_pics_total_count;
     uint32_t delta_negative_gop_pos_minus1[MAX_NUM_OF_NEGATIVE_REF_PICS];
     uint32_t delta_positive_gop_pos_minus1[MAX_NUM_OF_POSITIVE_REF_PICS];
-    EB_BOOL  used_by_negative_curr_pic_flag[MAX_NUM_OF_NEGATIVE_REF_PICS];
-    EB_BOOL  used_by_positive_curr_pic_flag[MAX_NUM_OF_POSITIVE_REF_PICS];
+    bool     used_by_negative_curr_pic_flag[MAX_NUM_OF_NEGATIVE_REF_PICS];
+    bool     used_by_positive_curr_pic_flag[MAX_NUM_OF_POSITIVE_REF_PICS];
 
     // List Construction
-    EB_BOOL ref_pics_override_total_count_flag;
+    bool    ref_pics_override_total_count_flag;
     int32_t ref_pics_list0_total_count_minus1;
     int32_t ref_pics_list1_total_count_minus1;
-    EB_BOOL restricted_ref_pic_lists_flag; // Same list enable flag (if set,
+    bool    restricted_ref_pic_lists_flag; // Same list enable flag (if set,
     //   it implies all slices of the
     //   same type in the same picture
     //   have identical lists)
 
     // List Modification
     // *Note - This should probably be moved to the slice header since its a dynamic control - JMJ Jan 2, 2013
-    EB_BOOL list0_modification_flag;
+    bool list0_modification_flag;
 
     // Lists Combination (STUB)
 
@@ -150,9 +150,9 @@ typedef struct PredictionStructure {
     uint32_t steady_state_index;
 
     // RPS Related Entries
-    EB_BOOL  restricted_ref_pic_lists_enable_flag;
-    EB_BOOL  lists_modification_enable_flag;
-    EB_BOOL  long_term_enable_flag;
+    bool     restricted_ref_pic_lists_enable_flag;
+    bool     lists_modification_enable_flag;
+    bool     long_term_enable_flag;
     uint32_t default_ref_pics_list0_total_count_minus1;
     uint32_t default_ref_pics_list1_total_count_minus1;
 

@@ -24,7 +24,7 @@ typedef struct EbReferenceObject {
         [MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE]; //array to hold non-moving blocks in reference frames
 
     uint8_t  tmp_layer_idx;
-    EB_BOOL  is_scene_change;
+    bool     is_scene_change;
     uint16_t pic_avg_variance;
     uint8_t  average_intensity;
 

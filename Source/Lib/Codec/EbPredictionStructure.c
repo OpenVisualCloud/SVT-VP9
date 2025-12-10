@@ -1526,8 +1526,8 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
         prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->is_referenced =
             ((prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list0.list_count > 0) ||
              (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->dep_list1.list_count > 0))
-            ? EB_TRUE
-            : EB_FALSE;
+            ? true
+            : false;
     }
 
     //----------------------------------------
@@ -1548,7 +1548,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
         uint32_t  base_number;
 
         // Timeline Map Variables
-        EB_BOOL *timeline_map;
+        bool    *timeline_map;
         uint32_t timeline_size;
 
         int32_t dep_list_max;
@@ -1559,9 +1559,9 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
 
         int32_t delta_poc;
         int32_t prev_delta_poc;
-        EB_BOOL poc_in_reference_list0;
-        EB_BOOL poc_in_reference_list1;
-        EB_BOOL poc_in_timeline;
+        bool    poc_in_reference_list0;
+        bool    poc_in_reference_list1;
+        bool    poc_in_timeline;
 
         int32_t adjusted_dep_index;
 
@@ -1570,8 +1570,8 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
         decode_order_table_size = CEILING(
             prediction_structure_ptr->pred_struct_entry_count + prediction_structure_ptr->maximum_extent,
             prediction_structure_ptr->pred_struct_entry_count);
-        EB_MALLOC(EB_BOOL *, timeline_map, sizeof(EB_BOOL) * SQR(timeline_size), EB_N_PTR);
-        memset(timeline_map, 0, sizeof(EB_BOOL) * SQR(timeline_size));
+        EB_MALLOC(bool *, timeline_map, sizeof(bool) * SQR(timeline_size), EB_N_PTR);
+        memset(timeline_map, 0, sizeof(bool) * SQR(timeline_size));
 
         // Construct the Decode & Display Order
         EB_MALLOC(int32_t *, decode_order_table, sizeof(int32_t) * decode_order_table_size, EB_N_PTR);
@@ -1657,7 +1657,7 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                     for (current_poc_index = (uint32_t)lifetime_start;
                          current_poc_index < (uint32_t)(lifetime_start + lifetime_span);
                          ++current_poc_index) {
-                        timeline_map[ref_poc_index * timeline_size + display_order_table[current_poc_index]] = EB_TRUE;
+                        timeline_map[ref_poc_index * timeline_size + display_order_table[current_poc_index]] = true;
                     }
                 }
             }
@@ -1679,9 +1679,9 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
         //    be shortened...
 
         // Initialize the RPS Group
-        prediction_structure_ptr->restricted_ref_pic_lists_enable_flag      = EB_TRUE;
-        prediction_structure_ptr->lists_modification_enable_flag            = EB_FALSE;
-        prediction_structure_ptr->long_term_enable_flag                     = EB_FALSE;
+        prediction_structure_ptr->restricted_ref_pic_lists_enable_flag      = true;
+        prediction_structure_ptr->lists_modification_enable_flag            = false;
+        prediction_structure_ptr->long_term_enable_flag                     = false;
         prediction_structure_ptr->default_ref_pics_list0_total_count_minus1 = 0;
         prediction_structure_ptr->default_ref_pics_list1_total_count_minus1 = 0;
 
@@ -1691,14 +1691,14 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
             current_poc_index = entry_index;
 
             // Initialize the RPS
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->short_term_rps_in_sps_flag = EB_TRUE;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->short_term_rps_in_sps_flag = true;
             prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->short_term_rps_in_sps_index =
                 entry_index;
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->inter_rps_prediction_flag  = EB_FALSE;
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->long_term_rps_present_flag = EB_FALSE;
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->list0_modification_flag    = EB_FALSE;
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->negative_ref_pics_total_count     = 0;
-            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->positive_ref_pics_total_count     = 0;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->inter_rps_prediction_flag     = false;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->long_term_rps_present_flag    = false;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->list0_modification_flag       = false;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->negative_ref_pics_total_count = 0;
+            prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->positive_ref_pics_total_count = 0;
             prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_pics_list0_total_count_minus1 = ~0;
             prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_pics_list1_total_count_minus1 = ~0;
 
@@ -1709,34 +1709,34 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                 delta_poc = (int32_t)current_poc_index - (int32_t)ref_poc_index;
 
                 // Check to see if the delta_poc is in Reference List 0
-                poc_in_reference_list0 = EB_FALSE;
+                poc_in_reference_list0 = false;
                 for (ref_index = 0; (ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                                                      ->ref_list0.reference_list_count) &&
-                     (poc_in_reference_list0 == EB_FALSE);
+                     (poc_in_reference_list0 == false);
                      ++ref_index) {
                     // Reference List 0
                     if ((prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list0.reference_list !=
                          0) &&
                         (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list0.reference_list ==
                          delta_poc)) {
-                        poc_in_reference_list0 = EB_TRUE;
+                        poc_in_reference_list0 = true;
                         ++prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                               ->ref_pics_list0_total_count_minus1;
                     }
                 }
 
                 // Check to see if the delta_poc is in Reference List 1
-                poc_in_reference_list1 = EB_FALSE;
+                poc_in_reference_list1 = false;
                 for (ref_index = 0; (ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                                                      ->ref_list1.reference_list_count) &&
-                     (poc_in_reference_list1 == EB_FALSE);
+                     (poc_in_reference_list1 == false);
                      ++ref_index) {
                     // Reference List 1
                     if ((prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list !=
                          0) &&
                         (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list ==
                          delta_poc)) {
-                        poc_in_reference_list1 = EB_TRUE;
+                        poc_in_reference_list1 = true;
                         ++prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                               ->ref_pics_list1_total_count_minus1;
                     }
@@ -1746,12 +1746,12 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                 poc_in_timeline = timeline_map[ref_poc_index * timeline_size + current_poc_index];
 
                 // If the delta_poc is in the timeline
-                if (poc_in_timeline == EB_TRUE) {
+                if (poc_in_timeline == true) {
                     prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                         ->used_by_negative_curr_pic_flag[prediction_structure_ptr
                                                              ->pred_struct_entry_ptr_array[entry_index]
                                                              ->negative_ref_pics_total_count] =
-                        (poc_in_reference_list0 == EB_TRUE || poc_in_reference_list1 == EB_TRUE) ? EB_TRUE : EB_FALSE;
+                        (poc_in_reference_list0 == true || poc_in_reference_list1 == true) ? true : false;
                     prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                         ->delta_negative_gop_pos_minus1[prediction_structure_ptr
                                                             ->pred_struct_entry_ptr_array[entry_index]
@@ -1768,33 +1768,33 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                 delta_poc = (int32_t)current_poc_index - (int32_t)ref_poc_index;
 
                 // Check to see if the delta_poc is in Ref List 0
-                poc_in_reference_list0 = EB_FALSE;
+                poc_in_reference_list0 = false;
                 for (ref_index = 0; (ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                                                      ->ref_list0.reference_list_count) &&
-                     (poc_in_reference_list0 == EB_FALSE);
+                     (poc_in_reference_list0 == false);
                      ++ref_index) {
                     // Reference List 0
                     if ((prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list0.reference_list !=
                          0) &&
                         (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list0.reference_list ==
                          delta_poc)) {
-                        poc_in_reference_list0 = EB_TRUE;
+                        poc_in_reference_list0 = true;
                         ++prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                               ->ref_pics_list0_total_count_minus1;
                     }
                 }
 
                 // Check to see if the delta_poc is in Ref List 1
-                poc_in_reference_list1 = EB_FALSE;
+                poc_in_reference_list1 = false;
                 for (ref_index = 0; (ref_index < prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                                                      ->ref_list1.reference_list_count) &&
-                     (poc_in_reference_list1 == EB_FALSE);
+                     (poc_in_reference_list1 == false);
                      ++ref_index) {
                     if ((prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list !=
                          0) &&
                         (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]->ref_list1.reference_list ==
                          delta_poc)) {
-                        poc_in_reference_list1 = EB_TRUE;
+                        poc_in_reference_list1 = true;
                         ++prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                               ->ref_pics_list1_total_count_minus1;
                     }
@@ -1804,12 +1804,12 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                 poc_in_timeline = timeline_map[ref_poc_index * timeline_size + current_poc_index];
 
                 // If the Y-position is in the time lime
-                if (poc_in_timeline == EB_TRUE) {
+                if (poc_in_timeline == true) {
                     prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                         ->used_by_positive_curr_pic_flag[prediction_structure_ptr
                                                              ->pred_struct_entry_ptr_array[entry_index]
                                                              ->positive_ref_pics_total_count] =
-                        (poc_in_reference_list0 == EB_TRUE || poc_in_reference_list1 == EB_TRUE) ? EB_TRUE : EB_FALSE;
+                        (poc_in_reference_list0 == true || poc_in_reference_list1 == true) ? true : false;
                     prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                         ->delta_positive_gop_pos_minus1[prediction_structure_ptr
                                                             ->pred_struct_entry_ptr_array[entry_index]
@@ -1840,8 +1840,8 @@ static EbErrorType prediction_structure_ctor(PredictionStructure            **pr
                  (prediction_structure_ptr->pred_struct_entry_ptr_array[entry_index]
                       ->ref_pics_list1_total_count_minus1 !=
                   (int32_t)prediction_structure_ptr->default_ref_pics_list1_total_count_minus1))
-                ? EB_TRUE
-                : EB_FALSE;
+                ? true
+                : false;
         }
 
         // Free the decode order table

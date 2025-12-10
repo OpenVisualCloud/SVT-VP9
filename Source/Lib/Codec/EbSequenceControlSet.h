@@ -69,7 +69,7 @@ typedef struct SequenceControlSet {
 
     // Quantization
     uint32_t qp;
-    EB_BOOL  enable_qp_scaling_flag;
+    bool     enable_qp_scaling_flag;
 
     // Video Usability Info
     AppVideoUsabilityInfo *video_usability_info_ptr;
@@ -126,7 +126,7 @@ typedef struct SequenceControlSet {
     EB_INPUT_RESOLUTION input_resolution;
     EB_SCD_MODE         scd_mode;
 
-    EB_BOOL enable_denoise_flag;
+    bool enable_denoise_flag;
 
     uint8_t max_enc_mode;
     uint8_t hierarchical_levels;

@@ -6,8 +6,8 @@
 #ifndef EbSystemResource_h
 #define EbSystemResource_h
 
+#include <stdbool.h>
 #include "EbDefinitions.h"
-#include "EbThreads.h"
 #include "EbDefinitions.h"
 
 #ifdef __cplusplus
@@ -36,7 +36,7 @@ typedef struct EbObjectWrapper {
     // release_enable - a flag that enables the release of
     //   EbObjectWrapper for reuse in the encoding of subsequent
     //   pictures in the encoder pipeline.
-    EB_BOOL release_enable;
+    bool release_enable;
 
     // system_resource_ptr - a pointer to the SystemResourceManager
     //   that the object belongs to.
@@ -210,7 +210,7 @@ extern EbErrorType eb_vp9_system_resource_ctor(EbSystemResource **resource_dbl_p
                                                uint32_t  producer_process_total_count,
                                                uint32_t  consumer_process_total_count,
                                                EbFifo ***producer_fifo_ptr_array_ptr,
-                                               EbFifo ***consumer_fifo_ptr_array_ptr, EB_BOOL full_fifo_enabled,
+                                               EbFifo ***consumer_fifo_ptr_array_ptr, bool full_fifo_enabled,
                                                EB_CTOR object_ctor, EbPtr object_init_data_ptr);
 
 /*********************************************************************

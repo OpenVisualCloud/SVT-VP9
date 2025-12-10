@@ -33,7 +33,7 @@ typedef struct PacketizationReorderEntry {
     uint64_t ref_poc_list0;
     uint64_t ref_poc_list1;
     RpsNode  ref_signal;
-    EB_BOOL  show_frame;
+    bool     show_frame;
     int      show_existing_frame;
     uint8_t  show_existing_frame_index_array[4];
     uint64_t actual_bits;

@@ -379,8 +379,8 @@ typedef struct MeContext { // MV offset (search center)
     // Multi-Mode signal(s)
     uint8_t fractional_search_method;
     uint8_t fractional_search_model;
-    EB_BOOL fractional_search64x64;
-    EB_BOOL single_hme_quadrant;
+    bool    fractional_search64x64;
+    bool    single_hme_quadrant;
 
     // ME
     uint8_t search_area_width;

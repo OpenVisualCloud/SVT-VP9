@@ -21,7 +21,7 @@
  ******************************************************/
 EbErrorType eb_vp9_entropy_coding_context_ctor(EntropyCodingContext **context_dbl_ptr, EbFifo *enc_dec_input_fifo_ptr,
                                                EbFifo *packetization_output_fifo_ptr,
-                                               EbFifo *rate_control_output_fifo_ptr, EB_BOOL is16bit) {
+                                               EbFifo *rate_control_output_fifo_ptr, bool is16bit) {
     EntropyCodingContext *context_ptr;
     EB_MALLOC(EntropyCodingContext *, context_ptr, sizeof(EntropyCodingContext), EB_N_PTR);
     *context_dbl_ptr = context_ptr;
@@ -122,7 +122,7 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
             partition = PARTITION_INVALID;
         } else {
             if (valid_block_index == block_index) {
-                if (context_ptr->block_ptr->split_flag == EB_TRUE)
+                if (context_ptr->block_ptr->split_flag == true)
                     partition = PARTITION_SPLIT;
                 else
                     partition = PARTITION_NONE;
@@ -333,24 +333,24 @@ EbErrorType EntropyCodingSb(PictureControlSet *picture_control_set_ptr, EntropyC
  *   of the segment-row (B) as this would block other
  *   threads from performing an update (A).
  ******************************************************/
-static EB_BOOL update_entropy_coding_rows(PictureControlSet *picture_control_set_ptr, uint32_t *row_index,
-                                          uint32_t row_count, EB_BOOL *initial_process_call) {
-    EB_BOOL process_next_row = EB_FALSE;
+static bool update_entropy_coding_rows(PictureControlSet *picture_control_set_ptr, uint32_t *row_index,
+                                       uint32_t row_count, bool *initial_process_call) {
+    bool process_next_row = false;
 
     // Note, any writes & reads to status variables (e.g. in_progress) in MD-CTRL must be thread-safe
     eb_vp9_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
     // Update availability mask
-    if (*initial_process_call == EB_TRUE) {
+    if (*initial_process_call == true) {
         unsigned i;
 
         for (i = *row_index; i < *row_index + row_count; ++i) {
-            picture_control_set_ptr->entropy_coding_row_array[i] = EB_TRUE;
+            picture_control_set_ptr->entropy_coding_row_array[i] = true;
         }
 
         while (picture_control_set_ptr
                        ->entropy_coding_row_array[picture_control_set_ptr->entropy_coding_current_available_row] ==
-                   EB_TRUE &&
+                   true &&
                picture_control_set_ptr->entropy_coding_current_available_row <
                    picture_control_set_ptr->entropy_coding_row_count) {
             ++picture_control_set_ptr->entropy_coding_current_available_row;
@@ -358,25 +358,25 @@ static EB_BOOL update_entropy_coding_rows(PictureControlSet *picture_control_set
     }
 
     // Release in_progress token
-    if (*initial_process_call == EB_FALSE && picture_control_set_ptr->entropy_coding_in_progress == EB_TRUE) {
-        picture_control_set_ptr->entropy_coding_in_progress = EB_FALSE;
+    if (*initial_process_call == false && picture_control_set_ptr->entropy_coding_in_progress == true) {
+        picture_control_set_ptr->entropy_coding_in_progress = false;
     }
 
     // Test if the picture is not already complete AND not currently being worked on by another ENCDEC process
     if (picture_control_set_ptr->entropy_coding_current_row < picture_control_set_ptr->entropy_coding_row_count &&
         picture_control_set_ptr->entropy_coding_row_array[picture_control_set_ptr->entropy_coding_current_row] ==
-            EB_TRUE &&
-        picture_control_set_ptr->entropy_coding_in_progress == EB_FALSE) {
+            true &&
+        picture_control_set_ptr->entropy_coding_in_progress == false) {
         // Test if the next LCU-row is ready to go
         if (picture_control_set_ptr->entropy_coding_current_row <=
             picture_control_set_ptr->entropy_coding_current_available_row) {
-            picture_control_set_ptr->entropy_coding_in_progress = EB_TRUE;
+            picture_control_set_ptr->entropy_coding_in_progress = true;
             *row_index                                          = picture_control_set_ptr->entropy_coding_current_row++;
-            process_next_row                                    = EB_TRUE;
+            process_next_row                                    = true;
         }
     }
 
-    *initial_process_call = EB_FALSE;
+    *initial_process_call = false;
 
     eb_vp9_release_mutex(picture_control_set_ptr->entropy_coding_mutex);
 
@@ -407,7 +407,7 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
     uint32_t ysb_index;
     uint32_t picture_width_in_sb;
     // Variables
-    EB_BOOL initial_process_call;
+    bool initial_process_call;
 
     for (;;) {
         // Get Mode Decision Results
@@ -420,18 +420,18 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
         // LCU Constants
         picture_width_in_sb = (sequence_control_set_ptr->luma_width + MAX_SB_SIZE_MINUS_1) >> LOG2F_MAX_SB_SIZE;
         {
-            initial_process_call = EB_TRUE;
+            initial_process_call = true;
             ysb_index            = enc_dec_results_ptr->completed_sb_row_index_start;
 
             // LCU-loops
             while (update_entropy_coding_rows(picture_control_set_ptr,
                                               &ysb_index,
                                               enc_dec_results_ptr->completed_sb_row_count,
-                                              &initial_process_call) == EB_TRUE) {
+                                              &initial_process_call) == true) {
                 uint32_t rowsb_total_bits = 0;
 
                 if (ysb_index == 0) {
-                    picture_control_set_ptr->entropy_coding_pic_done = EB_FALSE;
+                    picture_control_set_ptr->entropy_coding_pic_done = false;
                 }
 
                 for (xsb_index = 0; xsb_index < picture_width_in_sb; ++xsb_index) {
@@ -471,13 +471,13 @@ void *eb_vp9_entropy_coding_kernel(void *input_ptr) {
                 }
 
                 eb_vp9_block_on_mutex(picture_control_set_ptr->entropy_coding_mutex);
-                if (picture_control_set_ptr->entropy_coding_pic_done == EB_FALSE) {
+                if (picture_control_set_ptr->entropy_coding_pic_done == false) {
                     // If the picture is complete, terminate the slice
                     if (picture_control_set_ptr->entropy_coding_current_row ==
                         picture_control_set_ptr->entropy_coding_row_count) {
                         uint32_t ref_idx;
 
-                        picture_control_set_ptr->entropy_coding_pic_done = EB_TRUE;
+                        picture_control_set_ptr->entropy_coding_pic_done = true;
 
                         // Release the List 0 Reference Pictures
                         for (ref_idx = 0; ref_idx < picture_control_set_ptr->parent_pcs_ptr->ref_list0_count;

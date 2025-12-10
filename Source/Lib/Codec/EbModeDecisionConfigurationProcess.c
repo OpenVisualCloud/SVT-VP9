@@ -402,7 +402,7 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = (picture_control_set_ptr->parent_pcs_ptr->is_pan ||
                           picture_control_set_ptr->parent_pcs_ptr->is_tilt)
                     ? picture_control_set_ptr->sb_total_count * U_152
@@ -415,14 +415,14 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * AVC_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_134;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_132;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_121;
@@ -431,7 +431,7 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = (picture_control_set_ptr->parent_pcs_ptr->is_pan ||
                           picture_control_set_ptr->parent_pcs_ptr->is_tilt)
                     ? picture_control_set_ptr->sb_total_count * U_152
@@ -444,7 +444,7 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * AVC_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_134;
@@ -452,7 +452,7 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_125;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_121;
@@ -464,28 +464,28 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_133;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_120;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_113;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_112;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_130;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_120;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_125;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_115;
@@ -495,28 +495,28 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_133;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_120;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_113;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_112;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_130;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_120;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_125;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_115;
@@ -525,28 +525,28 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_115;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_114;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_112;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_111;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_116;
             else
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
         } else {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * AVC_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * LIGHT_BDP_COST;
             else
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * U_111;
@@ -555,28 +555,28 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_576p_RANGE_OR_LOWER) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_112;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_111;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * U_127;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_101;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_113;
             else
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
         } else {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * U_127;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * U_114;
             else
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * OPEN_LOOP_COST;
@@ -585,14 +585,14 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * U_127;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_101;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_104;
@@ -610,14 +610,14 @@ void SetTargetBudgetSq(SequenceControlSet *sequence_control_set_ptr, PictureCont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * U_127;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_101;
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->parent_pcs_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_104;
@@ -672,7 +672,7 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = (picture_control_set_ptr->parent_pcs_ptr->is_pan ||
                           picture_control_set_ptr->parent_pcs_ptr->is_tilt)
                     ? picture_control_set_ptr->sb_total_count * U_152
@@ -685,14 +685,14 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * AVC_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_134;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_109;
@@ -701,7 +701,7 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = (picture_control_set_ptr->parent_pcs_ptr->is_pan ||
                           picture_control_set_ptr->parent_pcs_ptr->is_tilt)
                     ? picture_control_set_ptr->sb_total_count * U_152
@@ -714,14 +714,14 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
         } else if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080p_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * AVC_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_134;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * U_125;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_121;
@@ -729,14 +729,14 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
     } else if (context_ptr->adp_level <= ENC_MODE_5) {
         if (picture_control_set_ptr->temporal_layer_index == 0)
             budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
             budget = picture_control_set_ptr->sb_total_count * AVC_COST;
         else
             budget = picture_control_set_ptr->sb_total_count * U_109;
     } else if (context_ptr->adp_level <= ENC_MODE_6) {
         if (picture_control_set_ptr->temporal_layer_index == 0)
             budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
             budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
         else
             budget = picture_control_set_ptr->sb_total_count * U_109;
@@ -757,7 +757,7 @@ void eb_vp9_set_target_budget_oq(SequenceControlSet               *sequence_cont
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_109;
@@ -793,7 +793,7 @@ void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, Pictur
     if (context_ptr->adp_level <= ENC_MODE_3) {
         if (picture_control_set_ptr->temporal_layer_index == 0)
             budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
             budget = picture_control_set_ptr->sb_total_count * AVC_COST;
         else
             budget = picture_control_set_ptr->sb_total_count * U_134;
@@ -801,14 +801,14 @@ void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, Pictur
         if (sequence_control_set_ptr->input_resolution == INPUT_SIZE_4K_RANGE) {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_109;
         } else {
             if (picture_control_set_ptr->temporal_layer_index == 0)
                 budget = picture_control_set_ptr->sb_total_count * FULL_SEARCH_COST;
-            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+            else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
                 budget = picture_control_set_ptr->sb_total_count * AVC_COST;
             else
                 budget = picture_control_set_ptr->sb_total_count * U_134;
@@ -816,7 +816,7 @@ void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, Pictur
     } else if (context_ptr->adp_level <= ENC_MODE_8) {
         if (picture_control_set_ptr->temporal_layer_index == 0)
             budget = picture_control_set_ptr->sb_total_count * BDP_COST;
-        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE)
+        else if (picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true)
             budget = picture_control_set_ptr->sb_total_count * OPEN_LOOP_COST;
         else
             budget = picture_control_set_ptr->sb_total_count * U_109;
@@ -847,8 +847,8 @@ void set_target_budget_vmaf(SequenceControlSet *sequence_control_set_ptr, Pictur
  * Input: Sharpe Edge, Potential Aura/Grass, B-Logo, S-Logo, Potential Blockiness Area signals
  * Output: TRUE if one of the above is TRUE
  ******************************************************/
-EB_BOOL is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr,
-                                 PictureControlSet *picture_control_set_ptr, SbUnit *sb_ptr) {
+bool is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
+                              SbUnit *sb_ptr) {
     const uint32_t sb_index       = sb_ptr->sb_index;
     SbParams      *sb_params      = &sequence_control_set_ptr->sb_params_array[sb_index];
     EB_SLICE       slice_type     = picture_control_set_ptr->slice_type;
@@ -860,14 +860,14 @@ EB_BOOL is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr,
     if (sequence_control_set_ptr->static_config.tune == TUNE_SQ) {
         // No refinment for sub-1080p
         if (sequence_control_set_ptr->input_resolution <= INPUT_SIZE_1080i_RANGE)
-            return EB_FALSE;
+            return false;
 
         // Sharpe Edge
         if (picture_control_set_ptr->parent_pcs_ptr->high_dark_low_light_area_density_flag &&
             picture_control_set_ptr->parent_pcs_ptr->temporal_layer_index > 0 &&
             picture_control_set_ptr->parent_pcs_ptr->sharp_edge_sb_flag[sb_index] &&
             !picture_control_set_ptr->parent_pcs_ptr->similar_colocated_sb_array_all_layers[sb_index]) {
-            return EB_TRUE;
+            return true;
         }
 
         // Potential Aura/Grass
@@ -875,25 +875,25 @@ EB_BOOL is_avc_partitioning_mode(SequenceControlSet *sequence_control_set_ptr,
             if (picture_control_set_ptr->parent_pcs_ptr->grass_percentage_in_picture > 60 &&
                 aura_status == AURA_STATUS_1) {
                 if (slice_type != I_SLICE && sb_params->is_complete_sb) {
-                    return EB_TRUE;
+                    return true;
                 }
             }
         }
 
         // B-Logo
         if (picture_control_set_ptr->parent_pcs_ptr->logo_pic_flag && edge_block_num)
-            return EB_TRUE;
+            return true;
 
         // S-Logo
         if (stationary_edge_over_time_flag > 0)
-            return EB_TRUE;
+            return true;
 
         // Potential Blockiness Area
         if (picture_control_set_ptr->parent_pcs_ptr->complex_sb_array[sb_index] == SB_COMPLEXITY_STATUS_2)
-            return EB_TRUE;
+            return true;
     }
 
-    return EB_FALSE;
+    return false;
 }
 
 /******************************************************
@@ -931,7 +931,7 @@ void eb_vp9_configure_adp(PictureControlSet *picture_control_set_ptr, ModeDecisi
     // Derive the sensitive picture flag
     context_ptr->adp_depth_sensitive_picture_class = DEPTH_SENSITIVE_PIC_CLASS_0;
 
-    EB_BOOL luminosity_change = EB_FALSE;
+    bool luminosity_change = false;
     // Derived for REF P & B & kept false otherwise (for temporal distance equal to 1 luminosity changes are easier to handle)
     // Derived for P & B
     if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -979,45 +979,45 @@ void eb_vp9_derive_search_method(SequenceControlSet               *sequence_cont
                                  ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
 
-    picture_control_set_ptr->bdp_present_flag = EB_FALSE;
-    picture_control_set_ptr->md_present_flag  = EB_FALSE;
+    picture_control_set_ptr->bdp_present_flag = false;
+    picture_control_set_ptr->md_present_flag  = false;
 
     for (sb_index = 0; sb_index < picture_control_set_ptr->parent_pcs_ptr->sb_total_count; sb_index++) {
         if (context_ptr->sb_cost_array[sb_index] ==
             context_ptr->cost_depth_mode[SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_PRED_OPEN_LOOP_1_NFL_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (context_ptr->sb_cost_array[sb_index] ==
                    context_ptr->cost_depth_mode[SB_PRED_OPEN_LOOP_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_PRED_OPEN_LOOP_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (context_ptr->sb_cost_array[sb_index] ==
                    context_ptr->cost_depth_mode[SB_LIGHT_OPEN_LOOP_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_LIGHT_OPEN_LOOP_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_OPEN_LOOP_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_OPEN_LOOP_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_LIGHT_BDP_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_LIGHT_BDP_DEPTH_MODE;
-            picture_control_set_ptr->bdp_present_flag                              = EB_TRUE;
+            picture_control_set_ptr->bdp_present_flag                              = true;
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_BDP_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_BDP_DEPTH_MODE;
-            picture_control_set_ptr->bdp_present_flag                              = EB_TRUE;
+            picture_control_set_ptr->bdp_present_flag                              = true;
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_AVC_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_AVC_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (context_ptr->sb_cost_array[sb_index] == context_ptr->cost_depth_mode[SB_LIGHT_AVC_DEPTH_MODE - 1]) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_LIGHT_AVC_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else if (picture_control_set_ptr->temporal_layer_index == 0 &&
                    (sequence_control_set_ptr->static_config.tune == TUNE_SQ ||
                     sequence_control_set_ptr->static_config.tune == TUNE_VMAF)) {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_FULL84_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         } else {
             picture_control_set_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_FULL85_DEPTH_MODE;
-            picture_control_set_ptr->md_present_flag                               = EB_TRUE;
+            picture_control_set_ptr->md_present_flag                               = true;
         }
     }
 }
@@ -1032,7 +1032,7 @@ void eb_vp9_set_sb_budget(SequenceControlSet *sequence_control_set_ptr, PictureC
     const uint32_t sb_index = sb_ptr->sb_index;
     uint32_t       max_to_min_score, score_to_min;
 
-    const EB_BOOL is_avc_partitioning_mode_flag = is_avc_partitioning_mode(
+    const bool is_avc_partitioning_mode_flag = is_avc_partitioning_mode(
         sequence_control_set_ptr, picture_control_set_ptr, sb_ptr);
 
     if (context_ptr->adp_refinement_mode == 2 && is_avc_partitioning_mode_flag) {
@@ -1205,7 +1205,7 @@ void compute_refinement_cost(SequenceControlSet *sequence_control_set_ptr, Pictu
         ((context_ptr->budget > (uint32_t)(LIGHT_BDP_COST * picture_control_set_ptr->parent_pcs_ptr->sb_total_count)) ||
          picture_control_set_ptr->temporal_layer_index == 0 ||
          (sequence_control_set_ptr->input_resolution < INPUT_SIZE_4K_RANGE &&
-          picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE))) {
+          picture_control_set_ptr->parent_pcs_ptr->is_used_as_reference_flag == true))) {
         context_ptr->adp_refinement_mode = ADP_MODE_1;
     } else if (light_avc_refinement_cost <= context_ptr->budget && picture_control_set_ptr->temporal_layer_index > 0) {
         context_ptr->adp_refinement_mode = ADP_MODE_0;
@@ -1233,7 +1233,7 @@ void eb_vp9_derive_sb_score(SequenceControlSet *sequence_control_set_ptr, Pictur
         if (picture_control_set_ptr->slice_type == I_SLICE) {
             assert(0);
         } else {
-            if (sb_params->pa_raster_scan_block_validity[PA_RASTER_SCAN_CU_INDEX_64x64] == EB_FALSE) {
+            if (sb_params->pa_raster_scan_block_validity[PA_RASTER_SCAN_CU_INDEX_64x64] == false) {
                 uint8_t cu8x8Index;
                 uint8_t validCu8x8Count = 0;
                 distortion              = 0;
@@ -1642,7 +1642,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
         depth_n_cost = (local_cu_array[depth_two_candidate_block_index]).early_cost + depth_n_part_cost;
 
         if (end_depth < 3) {
-            (local_cu_array[depth_two_candidate_block_index]).early_split_flag = EB_FALSE;
+            (local_cu_array[depth_two_candidate_block_index]).early_split_flag = false;
             (local_cu_array[depth_two_candidate_block_index]).early_cost       = depth_n_cost;
         } else {
             // Compute depth N+1 cost
@@ -1654,7 +1654,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
                 // If the cost is low enough to warrant not spliting further:
                 // 1. set the split flag of the candidate pu for merging to false
                 // 2. update the last pu index
-                (local_cu_array[depth_two_candidate_block_index]).early_split_flag = EB_FALSE;
+                (local_cu_array[depth_two_candidate_block_index]).early_split_flag = false;
                 (local_cu_array[depth_two_candidate_block_index]).early_cost       = depth_n_cost;
 
             } else {
@@ -1686,7 +1686,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
 
             depth_n_cost = local_cu_array[depth_one_candidate_block_index].early_cost + depth_n_part_cost;
             if (end_depth < 2) {
-                local_cu_array[depth_one_candidate_block_index].early_split_flag = EB_FALSE;
+                local_cu_array[depth_one_candidate_block_index].early_split_flag = false;
                 local_cu_array[depth_one_candidate_block_index].early_cost       = depth_n_cost;
 
             } else {
@@ -1700,7 +1700,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
                     // If the cost is low enough to warrant not spliting further:
                     // 1. set the split flag of the candidate pu for merging to false
                     // 2. update the last pu index
-                    local_cu_array[depth_one_candidate_block_index].early_split_flag = EB_FALSE;
+                    local_cu_array[depth_one_candidate_block_index].early_split_flag = false;
                     local_cu_array[depth_one_candidate_block_index].early_cost       = depth_n_cost;
                 } else {
                     // If the cost is not low enough:
@@ -1734,7 +1734,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
             depth_n_cost = (&local_cu_array[depth_zero_candidate_block_index])->early_cost + depth_n_part_cost;
 
             if (end_depth < 1) {
-                (&local_cu_array[depth_zero_candidate_block_index])->early_split_flag = EB_FALSE;
+                (&local_cu_array[depth_zero_candidate_block_index])->early_split_flag = false;
             } else {
                 // Compute depth N+1 cost
                 depth_n_plus_one_cost = local_cu_array[depth_one_candidate_block_index].early_cost +
@@ -1746,7 +1746,7 @@ void eb_vp9_MdcInterDepthDecision(ModeDecisionConfigurationContext *context_ptr,
                     // If the cost is low enough to warrant not spliting further:
                     // 1. set the split flag of the candidate pu for merging to false
                     // 2. update the last pu index
-                    (&local_cu_array[depth_zero_candidate_block_index])->early_split_flag = EB_FALSE;
+                    (&local_cu_array[depth_zero_candidate_block_index])->early_split_flag = false;
                 }
             }
         }
@@ -1779,8 +1779,8 @@ static void prediction_partition_loop(SequenceControlSet               *sequence
     for (block_index = 0; block_index < PA_BLOCK_MAX_COUNT; ++block_index) {
         block_ptr = &local_cu_array[block_index];
 
-        local_cu_array[block_index].slected_cu = EB_FALSE;
-        local_cu_array[block_index].stop_split = EB_FALSE;
+        local_cu_array[block_index].slected_cu = false;
+        local_cu_array[block_index].stop_split = false;
 
         block_index_in_rater_scan = MD_SCAN_TO_RASTER_SCAN[block_index];
 
@@ -1789,7 +1789,7 @@ static void prediction_partition_loop(SequenceControlSet               *sequence
             PaBlockStats *block_stats_ptr = pa_get_block_stats(block_index);
 
             depth                       = block_stats_ptr->depth;
-            block_ptr->early_split_flag = (depth < end_depth) ? EB_TRUE : EB_FALSE;
+            block_ptr->early_split_flag = (depth < end_depth) ? true : false;
 
             if (depth >= start_depth && depth <= end_depth) {
                 if (picture_control_set_ptr->slice_type != I_SLICE) {
@@ -1879,91 +1879,90 @@ static EbErrorType mdc_refinement(MdcpLocalCodingUnit *local_cu_array, uint32_t 
 
     if (refinement_level & REFINEMENT_P) {
         if (lowest_level == REFINEMENT_P) {
-            local_cu_array[block_index].stop_split = EB_TRUE;
+            local_cu_array[block_index].stop_split = true;
         }
 
     } else {
-        local_cu_array[block_index].slected_cu = EB_FALSE;
+        local_cu_array[block_index].slected_cu = false;
     }
 
     if (refinement_level & REFINEMENT_Pp1) {
         if (depth < 3 && block_index < 81) {
-            local_cu_array[block_index + 1].slected_cu                               = EB_TRUE;
-            local_cu_array[block_index + 1 + depth_offset[depth + 1]].slected_cu     = EB_TRUE;
-            local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1]].slected_cu = EB_TRUE;
-            local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1]].slected_cu = EB_TRUE;
+            local_cu_array[block_index + 1].slected_cu                               = true;
+            local_cu_array[block_index + 1 + depth_offset[depth + 1]].slected_cu     = true;
+            local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1]].slected_cu = true;
+            local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1]].slected_cu = true;
         }
         if (lowest_level == REFINEMENT_Pp1) {
             if (depth < 3 && block_index < 81) {
-                local_cu_array[block_index + 1].stop_split                               = EB_TRUE;
-                local_cu_array[block_index + 1 + depth_offset[depth + 1]].stop_split     = EB_TRUE;
-                local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1]].stop_split = EB_TRUE;
-                local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1]].stop_split = EB_TRUE;
+                local_cu_array[block_index + 1].stop_split                               = true;
+                local_cu_array[block_index + 1 + depth_offset[depth + 1]].stop_split     = true;
+                local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1]].stop_split = true;
+                local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1]].stop_split = true;
             }
         }
     }
 
     if (refinement_level & REFINEMENT_Pp2) {
         if (depth < 2 && block_index < 65) {
-            local_cu_array[block_index + 1 + 1].slected_cu                               = EB_TRUE;
-            local_cu_array[block_index + 1 + 1 + depth_offset[depth + 2]].slected_cu     = EB_TRUE;
-            local_cu_array[block_index + 1 + 1 + 2 * depth_offset[depth + 2]].slected_cu = EB_TRUE;
-            local_cu_array[block_index + 1 + 1 + 3 * depth_offset[depth + 2]].slected_cu = EB_TRUE;
+            local_cu_array[block_index + 1 + 1].slected_cu                               = true;
+            local_cu_array[block_index + 1 + 1 + depth_offset[depth + 2]].slected_cu     = true;
+            local_cu_array[block_index + 1 + 1 + 2 * depth_offset[depth + 2]].slected_cu = true;
+            local_cu_array[block_index + 1 + 1 + 3 * depth_offset[depth + 2]].slected_cu = true;
 
-            local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1].slected_cu = EB_TRUE;
-            local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+            local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1].slected_cu                           = true;
+            local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].slected_cu = true;
             local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
             local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
 
-            local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1].slected_cu = EB_TRUE;
+            local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1].slected_cu = true;
             local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
             local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
             local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
 
-            local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1].slected_cu = EB_TRUE;
+            local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1].slected_cu = true;
             local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
             local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
             local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]].slected_cu =
-                EB_TRUE;
+                true;
         }
         if (lowest_level == REFINEMENT_Pp2) {
             if (depth < 2 && block_index < 65) {
-                local_cu_array[block_index + 1 + 1].stop_split                               = EB_TRUE;
-                local_cu_array[block_index + 1 + 1 + depth_offset[depth + 2]].stop_split     = EB_TRUE;
-                local_cu_array[block_index + 1 + 1 + 2 * depth_offset[depth + 2]].stop_split = EB_TRUE;
-                local_cu_array[block_index + 1 + 1 + 3 * depth_offset[depth + 2]].stop_split = EB_TRUE;
+                local_cu_array[block_index + 1 + 1].stop_split                               = true;
+                local_cu_array[block_index + 1 + 1 + depth_offset[depth + 2]].stop_split     = true;
+                local_cu_array[block_index + 1 + 1 + 2 * depth_offset[depth + 2]].stop_split = true;
+                local_cu_array[block_index + 1 + 1 + 3 * depth_offset[depth + 2]].stop_split = true;
 
-                local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1].stop_split = EB_TRUE;
+                local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1].stop_split = true;
                 local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].stop_split =
-                    EB_TRUE;
+                    true;
                 local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]].stop_split =
-                    EB_TRUE;
+                    true;
                 local_cu_array[block_index + 1 + depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]].stop_split =
-                    EB_TRUE;
+                    true;
 
-                local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1].stop_split = EB_TRUE;
+                local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1].stop_split = true;
                 local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].stop_split =
-                    EB_TRUE;
+                    true;
                 local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]]
-                    .stop_split = EB_TRUE;
+                    .stop_split = true;
                 local_cu_array[block_index + 1 + 2 * depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]]
-                    .stop_split = EB_TRUE;
+                    .stop_split = true;
 
-                local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1].stop_split = EB_TRUE;
+                local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1].stop_split = true;
                 local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + depth_offset[depth + 2]].stop_split =
-                    EB_TRUE;
+                    true;
                 local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + 2 * depth_offset[depth + 2]]
-                    .stop_split = EB_TRUE;
+                    .stop_split = true;
                 local_cu_array[block_index + 1 + 3 * depth_offset[depth + 1] + 1 + 3 * depth_offset[depth + 2]]
-                    .stop_split = EB_TRUE;
+                    .stop_split = true;
             }
         }
     }
@@ -1974,13 +1973,13 @@ static EbErrorType mdc_refinement(MdcpLocalCodingUnit *local_cu_array, uint32_t 
         uint8_t block_index = 2;
         if (depth == 0) {
             for (out_loop = 0; out_loop < 16; ++out_loop) {
-                for (in_loop = 0; in_loop < 4; ++in_loop) { local_cu_array[++block_index].slected_cu = EB_TRUE; }
+                for (in_loop = 0; in_loop < 4; ++in_loop) { local_cu_array[++block_index].slected_cu = true; }
                 block_index += block_index == 21 ? 2 : block_index == 42 ? 2 : block_index == 63 ? 2 : 1;
             }
             if (lowest_level == REFINEMENT_Pp3) {
                 block_index = 2;
                 for (out_loop = 0; out_loop < 16; ++out_loop) {
-                    for (in_loop = 0; in_loop < 4; ++in_loop) { local_cu_array[++block_index].stop_split = EB_TRUE; }
+                    for (in_loop = 0; in_loop < 4; ++in_loop) { local_cu_array[++block_index].stop_split = true; }
                     block_index += block_index == 21 ? 2 : block_index == 42 ? 2 : block_index == 63 ? 2 : 1;
                 }
             }
@@ -1989,45 +1988,45 @@ static EbErrorType mdc_refinement(MdcpLocalCodingUnit *local_cu_array, uint32_t 
 
     if (refinement_level & REFINEMENT_Pm1) {
         if (depth > 0) {
-            local_cu_array[block_index - 1 - parentblock_index[block_index]].slected_cu = EB_TRUE;
+            local_cu_array[block_index - 1 - parentblock_index[block_index]].slected_cu = true;
         }
         if (lowest_level == REFINEMENT_Pm1) {
             if (depth > 0) {
-                local_cu_array[block_index - 1 - parentblock_index[block_index]].stop_split = EB_TRUE;
+                local_cu_array[block_index - 1 - parentblock_index[block_index]].stop_split = true;
             }
         }
     }
 
     if (refinement_level & REFINEMENT_Pm2) {
         if (depth == 2) {
-            local_cu_array[0].slected_cu = EB_TRUE;
+            local_cu_array[0].slected_cu = true;
         }
         if (depth == 3) {
-            local_cu_array[1].slected_cu  = EB_TRUE;
-            local_cu_array[22].slected_cu = EB_TRUE;
-            local_cu_array[43].slected_cu = EB_TRUE;
-            local_cu_array[64].slected_cu = EB_TRUE;
+            local_cu_array[1].slected_cu  = true;
+            local_cu_array[22].slected_cu = true;
+            local_cu_array[43].slected_cu = true;
+            local_cu_array[64].slected_cu = true;
         }
         if (lowest_level == REFINEMENT_Pm2) {
             if (depth == 2) {
-                local_cu_array[0].stop_split = EB_TRUE;
+                local_cu_array[0].stop_split = true;
             }
             if (depth == 3) {
-                local_cu_array[1].stop_split  = EB_TRUE;
-                local_cu_array[22].stop_split = EB_TRUE;
-                local_cu_array[43].stop_split = EB_TRUE;
-                local_cu_array[64].stop_split = EB_TRUE;
+                local_cu_array[1].stop_split  = true;
+                local_cu_array[22].stop_split = true;
+                local_cu_array[43].stop_split = true;
+                local_cu_array[64].stop_split = true;
             }
         }
     }
 
     if (refinement_level & REFINEMENT_Pm3) {
         if (depth == 3) {
-            local_cu_array[0].slected_cu = EB_TRUE;
+            local_cu_array[0].slected_cu = true;
         }
         if (lowest_level == REFINEMENT_Pm2) {
             if (depth == 3) {
-                local_cu_array[0].stop_split = EB_TRUE;
+                local_cu_array[0].stop_split = true;
             }
         }
     }
@@ -2045,13 +2044,13 @@ static void refinement_prediction_loop(SequenceControlSet *sequence_control_set_
     uint8_t              stationary_edge_over_time_flag =
         (&(picture_control_set_ptr->parent_pcs_ptr->sb_stat_array[sb_index]))->stationary_edge_over_time_flag;
 
-    sb_ptr->pred64 = EB_FALSE;
+    sb_ptr->pred64 = false;
 
     while (block_index < PA_BLOCK_MAX_COUNT) {
         if (sb_params->pa_raster_scan_block_validity[MD_SCAN_TO_RASTER_SCAN[block_index]] &&
-            (local_cu_array[block_index].early_split_flag == EB_FALSE)) {
-            local_cu_array[block_index].slected_cu = EB_TRUE;
-            sb_ptr->pred64                         = (block_index == 0) ? EB_TRUE : sb_ptr->pred64;
+            (local_cu_array[block_index].early_split_flag == false)) {
+            local_cu_array[block_index].slected_cu = true;
+            sb_ptr->pred64                         = (block_index == 0) ? true : sb_ptr->pred64;
 
             PaBlockStats *block_stats_ptr = pa_get_block_stats(block_index);
             uint32_t      depth           = block_stats_ptr->depth;
@@ -2137,7 +2136,7 @@ void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
                                  ModeDecisionConfigurationContext *context_ptr) {
     uint8_t              block_index    = 0;
     uint32_t             cu_class       = DO_NOT_ADD_CU_CONTINUE_SPLIT;
-    EB_BOOL              split_flag     = EB_TRUE;
+    bool                 split_flag     = true;
     MdcSbData           *results_ptr    = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
     SbParams            *sb_params      = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcpLocalCodingUnit *local_cu_array = context_ptr->local_cu_array;
@@ -2150,7 +2149,7 @@ void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
     while (block_index < PA_BLOCK_MAX_COUNT) {
         PaBlockStats *block_stats_ptr = pa_get_block_stats(block_index);
 
-        split_flag = EB_TRUE;
+        split_flag = true;
         if (sb_params->pa_raster_scan_block_validity[MD_SCAN_TO_RASTER_SCAN[block_index]]) {
             switch (block_stats_ptr->depth) {
             case 0:
@@ -2160,11 +2159,11 @@ void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
                 cu_class = DO_NOT_ADD_CU_CONTINUE_SPLIT;
 
                 if (slice_type == I_SLICE) {
-                    cu_class = local_cu_array[block_index].slected_cu == EB_TRUE ? ADD_CU_CONTINUE_SPLIT : cu_class;
-                    cu_class = local_cu_array[block_index].stop_split == EB_TRUE ? ADD_CU_STOP_SPLIT : cu_class;
+                    cu_class = local_cu_array[block_index].slected_cu == true ? ADD_CU_CONTINUE_SPLIT : cu_class;
+                    cu_class = local_cu_array[block_index].stop_split == true ? ADD_CU_STOP_SPLIT : cu_class;
                 } else {
-                    cu_class = local_cu_array[block_index].slected_cu == EB_TRUE ? ADD_CU_CONTINUE_SPLIT : cu_class;
-                    cu_class = local_cu_array[block_index].stop_split == EB_TRUE ? ADD_CU_STOP_SPLIT : cu_class;
+                    cu_class = local_cu_array[block_index].slected_cu == true ? ADD_CU_CONTINUE_SPLIT : cu_class;
+                    cu_class = local_cu_array[block_index].stop_split == true ? ADD_CU_STOP_SPLIT : cu_class;
                 }
 
                 // Take into account MAX_CU_SIZE
@@ -2184,7 +2183,7 @@ void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
                     // Stop
                     results_ptr->block_data_array[results_ptr->block_count].block_index =
                         pa_to_ep_block_index[block_index];
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
 
                     break;
 
@@ -2192,31 +2191,31 @@ void forward_cu_to_mode_decision(SequenceControlSet *sequence_control_set_ptr,
                     // Go Down + consider the current CU as candidate
                     results_ptr->block_data_array[results_ptr->block_count].block_index =
                         pa_to_ep_block_index[block_index];
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
 
                     break;
 
                 case DO_NOT_ADD_CU_CONTINUE_SPLIT:
                     // Go Down + do not consider the current CU as candidate
-                    split_flag = EB_TRUE;
+                    split_flag = true;
                     break;
                 }
 
                 break;
             case 3:
                 results_ptr->block_data_array[results_ptr->block_count].block_index = pa_to_ep_block_index[block_index];
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
 
                 break;
 
             default:
                 results_ptr->block_data_array[results_ptr->block_count].block_index = pa_to_ep_block_index[block_index];
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             }
         }
 
-        block_index += (split_flag == EB_TRUE) ? 1 : depth_offset[block_stats_ptr->depth];
+        block_index += (split_flag == true) ? 1 : depth_offset[block_stats_ptr->depth];
     }
 }
 
@@ -2272,7 +2271,7 @@ void sb_depth_open_loop(ModeDecisionConfigurationContext *context_ptr, SequenceC
 
 void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                        uint32_t sb_index) {
-    EB_BOOL    split_flag;
+    bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
 
@@ -2280,7 +2279,7 @@ void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
     uint16_t block_index     = 0;
 
     while (block_index < EP_BLOCK_MAX_COUNT) {
-        split_flag = EB_TRUE;
+        split_flag = true;
 
         const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
         uint8_t             depth              = ep_block_stats_ptr->depth;
@@ -2288,34 +2287,34 @@ void sb_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
             switch (depth) {
             case 0:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 1:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 2:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 3:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 4:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                 break;
             }
         }
 
-        block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+        block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
     }
 }
 
 void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                        uint32_t sb_index) {
-    EB_BOOL    split_flag;
+    bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
 
@@ -2323,39 +2322,39 @@ void sb_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureCont
     uint16_t block_index     = 0;
 
     while (block_index < EP_BLOCK_MAX_COUNT) {
-        split_flag = EB_TRUE;
+        split_flag = true;
 
         const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             switch (depth) {
-            case 0: split_flag = EB_TRUE; break;
+            case 0: split_flag = true; break;
             case 1:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 2:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 3:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 4:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                 break;
             }
         }
 
-        block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+        block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
     }
 }
 
 void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
-    EB_BOOL  split_flag;
+    bool     split_flag;
 
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
@@ -2365,7 +2364,7 @@ void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, Pictur
         uint16_t block_index     = 0;
 
         while (block_index < EP_BLOCK_MAX_COUNT) {
-            split_flag = EB_TRUE;
+            split_flag = true;
 
             const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
             uint8_t             depth              = ep_block_stats_ptr->depth;
@@ -2373,35 +2372,35 @@ void picture_depth_85_block(SequenceControlSet *sequence_control_set_ptr, Pictur
                 switch (depth) {
                 case 0:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 1:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 2:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 3:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 4:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                     break;
                 }
             }
 
-            block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+            block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
         }
     }
 }
 
 void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr) {
     uint32_t sb_index;
-    EB_BOOL  split_flag;
+    bool     split_flag;
 
     for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
         SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
@@ -2411,39 +2410,39 @@ void picture_depth_84_block(SequenceControlSet *sequence_control_set_ptr, Pictur
         uint16_t block_index     = 0;
 
         while (block_index < EP_BLOCK_MAX_COUNT) {
-            split_flag = EB_TRUE;
+            split_flag = true;
 
             const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
             uint8_t             depth              = ep_block_stats_ptr->depth;
             if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
                 switch (depth) {
-                case 0: split_flag = EB_TRUE; break;
+                case 0: split_flag = true; break;
                 case 1:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 2:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 3:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                     break;
                 case 4:
                     results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                    results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                     break;
                 }
             }
-            block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+            block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
         }
     }
 }
 
 void sb_depth_8x8_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                               uint32_t sb_index) {
-    EB_BOOL    split_flag;
+    bool       split_flag;
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
 
@@ -2451,32 +2450,32 @@ void sb_depth_8x8_16x16_block(SequenceControlSet *sequence_control_set_ptr, Pict
     uint16_t block_index     = 0;
 
     while (block_index < EP_BLOCK_MAX_COUNT) {
-        split_flag = EB_TRUE;
+        split_flag = true;
 
         const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             switch (depth) {
-            case 0: split_flag = EB_TRUE; break;
-            case 1: split_flag = EB_TRUE; break;
+            case 0: split_flag = true; break;
+            case 1: split_flag = true; break;
             case 2:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_TRUE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = true;
                 break;
             case 3:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                 break;
             }
         }
 
-        block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+        block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
     }
 }
 
 void sb_depth_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureControlSet *picture_control_set_ptr,
                           uint32_t sb_index) {
-    EB_BOOL split_flag;
+    bool split_flag;
 
     SbParams  *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
     MdcSbData *results_ptr = &picture_control_set_ptr->mdc_sb_data_array[sb_index];
@@ -2485,25 +2484,25 @@ void sb_depth_16x16_block(SequenceControlSet *sequence_control_set_ptr, PictureC
     uint16_t block_index     = 0;
 
     while (block_index < EP_BLOCK_MAX_COUNT) {
-        split_flag = EB_TRUE;
+        split_flag = true;
 
         const EpBlockStats *ep_block_stats_ptr = ep_get_block_stats(block_index);
         uint8_t             depth              = ep_block_stats_ptr->depth;
         if (sb_params->ep_scan_block_validity[block_index] && ep_block_stats_ptr->shape == PART_N) {
             switch (depth) {
-            case 0: split_flag = EB_TRUE; break;
-            case 1: split_flag = EB_TRUE; break;
+            case 0: split_flag = true; break;
+            case 1: split_flag = true; break;
             case 2:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                 break;
             case 3:
                 results_ptr->block_data_array[results_ptr->block_count].block_index  = block_index;
-                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = EB_FALSE;
+                results_ptr->block_data_array[results_ptr->block_count++].split_flag = split_flag = false;
                 break;
             }
         }
-        block_index += (split_flag == EB_FALSE) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
+        block_index += (split_flag == false) ? sq_depth_offset[depth] : nsq_depth_offset[depth];
     }
 }
 

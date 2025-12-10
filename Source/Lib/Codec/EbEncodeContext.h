@@ -44,7 +44,7 @@ typedef struct EncodeContext {
     EbCallback *app_callback_ptr;
 
     // Port Active
-    EB_BOOL recon_port_active;
+    bool recon_port_active;
 
     EbHandle total_number_of_recon_frame_mutex;
     uint64_t total_number_of_recon_frames;
@@ -110,20 +110,20 @@ typedef struct EncodeContext {
 
     uint32_t elapsed_non_idr_count;
     int64_t  current_input_poc;
-    EB_BOOL  initial_picture;
+    bool     initial_picture;
 
     uint64_t last_idr_picture; // the most recently occured IDR picture (in decode order)
 
     // Sequence Termination Flags
     uint64_t terminating_picture_number;
-    EB_BOOL  terminating_sequence_flag_received;
+    bool     terminating_sequence_flag_received;
 
     // Prediction Structure
     PredictionStructureGroup *prediction_structure_group_ptr;
 
     // Rate Control Bit Tables
     RateControlTables *rate_control_tables_array;
-    EB_BOOL            rate_control_tables_array_updated;
+    bool               rate_control_tables_array_updated;
     EbHandle           rate_table_update_mutex;
 
     // Speed Control
@@ -136,7 +136,7 @@ typedef struct EncodeContext {
 
     // Rate Control
     uint32_t available_target_bitrate;
-    EB_BOOL  available_target_bitrate_changed;
+    bool     available_target_bitrate_changed;
     uint32_t vbv_max_rate;
     uint32_t vbv_buf_size;
     uint64_t buffer_fill;

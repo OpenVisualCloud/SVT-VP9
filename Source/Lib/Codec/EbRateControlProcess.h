@@ -18,10 +18,10 @@
 #define RC_PRECISION 16
 #define RC_PRECISION_OFFSET (1 << (RC_PRECISION - 1))
 
-#define OVERSHOOT_STAT_PRINT                                                                         \
-    0 // Do not remove.                                                                  \ \ \ \ \ \ \
-        // For printing overshooting percentages for both RC and fixed QP.               \ \ \ \ \ \ \
-        // Target rate and and max buffer size should be set properly even for fixed QP. \ \ \ \ \ \ \
+#define OVERSHOOT_STAT_PRINT                                                                           \
+    0 // Do not remove.                                                                  \ \ \ \ \ \ \ \
+        // For printing overshooting percentages for both RC and fixed QP.               \ \ \ \ \ \ \ \
+        // Target rate and and max buffer size should be set properly even for fixed QP. \ \ \ \ \ \ \ \
         // Disabled by default.
 #if OVERSHOOT_STAT_PRINT
 #define CODED_FRAMES_STAT_QUEUE_MAX_DEPTH 10000
@@ -72,7 +72,7 @@ typedef struct RateControlPorts {
 typedef struct CodedFramesStatsEntry {
     uint64_t picture_number;
     int64_t  frame_total_bit_actual;
-    EB_BOOL  end_of_sequence_flag;
+    bool     end_of_sequence_flag;
 } CodedFramesStatsEntry;
 /**************************************
  * Context
@@ -81,7 +81,7 @@ typedef struct RateControlLayerContext {
     uint64_t previous_frame_distortion_me;
     uint64_t previous_frame_bit_actual;
     uint64_t previous_framequantized_coeff_bit_actual;
-    EB_BOOL  feedback_arrived;
+    bool     feedback_arrived;
 
     uint64_t target_bit_rate;
     uint64_t frame_rate;
@@ -130,10 +130,10 @@ typedef struct RateControlLayerContext {
 typedef struct RateControlIntervalParamContext {
     uint64_t                  first_poc;
     uint64_t                  last_poc;
-    EB_BOOL                   in_use;
-    EB_BOOL                   was_used;
+    bool                      in_use;
+    bool                      was_used;
     uint64_t                  processed_frames_number;
-    EB_BOOL                   last_gop;
+    bool                      last_gop;
     RateControlLayerContext **rate_control_layer_array;
 
     int64_t  virtual_buffer_level;
@@ -146,9 +146,9 @@ typedef struct RateControlIntervalParamContext {
     uint64_t first_pic_actual_bits;
     uint16_t first_pic_pred_qp;
     uint16_t first_pic_actual_qp;
-    EB_BOOL  first_pic_actual_qp_assigned;
-    EB_BOOL  scene_change_in_gop;
-    EB_BOOL  min_target_rate_assigned;
+    bool     first_pic_actual_qp_assigned;
+    bool     scene_change_in_gop;
+    bool     min_target_rate_assigned;
     int64_t  extra_ap_bit_ratio_i;
 
 } RateControlIntervalParamContext;
@@ -207,7 +207,7 @@ typedef struct RateControlContext {
     uint32_t base_layer_frames_avg_qp;
     uint32_t base_layer_intra_frames_avg_qp;
 
-    EB_BOOL end_of_sequence_region;
+    bool end_of_sequence_region;
 
     uint32_t intra_coef_rate;
 

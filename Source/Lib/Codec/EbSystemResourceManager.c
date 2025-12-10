@@ -4,6 +4,8 @@
 */
 
 #include <stdlib.h>
+#include "EbDefinitions.h"
+#include "EbThreads.h"
 #include "EbSystemResourceManager.h"
 
 /**************************************
@@ -97,11 +99,11 @@ static EbErrorType eb_circular_buffer_ctor(EbCircularBuffer **buffer_dbl_ptr, ui
 /**************************************
  * eb_circular_buffer_empty_check
  **************************************/
-static EB_BOOL eb_circular_buffer_empty_check(EbCircularBuffer *buffer_ptr) {
+static bool eb_circular_buffer_empty_check(EbCircularBuffer *buffer_ptr) {
     return ((buffer_ptr->head_index == buffer_ptr->tail_index) &&
             (buffer_ptr->array_ptr[buffer_ptr->head_index] == NULL))
-        ? EB_TRUE
-        : EB_FALSE;
+        ? true
+        : false;
 }
 
 /**************************************
@@ -225,8 +227,8 @@ static EbErrorType eb_muxing_queue_assignation(EbMuxingQueue *queue_ptr) {
     EbObjectWrapper *wrapper_ptr;
 
     // while loop
-    while ((eb_circular_buffer_empty_check(queue_ptr->object_queue) == EB_FALSE) &&
-           (eb_circular_buffer_empty_check(queue_ptr->process_queue) == EB_FALSE)) {
+    while ((eb_circular_buffer_empty_check(queue_ptr->object_queue) == false) &&
+           (eb_circular_buffer_empty_check(queue_ptr->process_queue) == false)) {
         // Get the next process
         eb_circular_buffer_pop_front(queue_ptr->process_queue, (void **)&process_fifo_ptr);
 
@@ -294,7 +296,7 @@ EbErrorType eb_vp9_object_release_enable(EbObjectWrapper *wrapper_ptr) {
 
     eb_vp9_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
-    wrapper_ptr->release_enable = EB_TRUE;
+    wrapper_ptr->release_enable = true;
 
     eb_vp9_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
@@ -320,7 +322,7 @@ EbErrorType eb_vp9_object_release_disable(EbObjectWrapper *wrapper_ptr) {
 
     eb_vp9_block_on_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
-    wrapper_ptr->release_enable = EB_FALSE;
+    wrapper_ptr->release_enable = false;
 
     eb_vp9_release_mutex(wrapper_ptr->system_resource_ptr->empty_queue->lockout_mutex);
 
@@ -384,7 +386,7 @@ EbErrorType eb_vp9_object_inc_live_count(EbObjectWrapper *wrapper_ptr, uint32_t 
 EbErrorType eb_vp9_system_resource_ctor(EbSystemResource **resource_dbl_ptr, uint32_t object_total_count,
                                         uint32_t producer_process_total_count, uint32_t consumer_process_total_count,
                                         EbFifo ***producer_fifo_ptr_array_ptr, EbFifo ***consumer_fifo_ptr_array_ptr,
-                                        EB_BOOL full_fifo_enabled, EB_CTOR object_ctor, EbPtr object_init_data_ptr) {
+                                        bool full_fifo_enabled, EB_CTOR object_ctor, EbPtr object_init_data_ptr) {
     uint32_t    wrapperIndex;
     EbErrorType return_error = EB_ErrorNone;
     // Allocate the System Resource
@@ -405,7 +407,7 @@ EbErrorType eb_vp9_system_resource_ctor(EbSystemResource **resource_dbl_ptr, uin
     for (wrapperIndex = 0; wrapperIndex < resource_ptr->object_total_count; ++wrapperIndex) {
         EB_MALLOC(EbObjectWrapper *, resource_ptr->wrapper_ptr_pool[wrapperIndex], sizeof(EbObjectWrapper), EB_N_PTR);
         resource_ptr->wrapper_ptr_pool[wrapperIndex]->live_count          = 0;
-        resource_ptr->wrapper_ptr_pool[wrapperIndex]->release_enable      = EB_TRUE;
+        resource_ptr->wrapper_ptr_pool[wrapperIndex]->release_enable      = true;
         resource_ptr->wrapper_ptr_pool[wrapperIndex]->system_resource_ptr = resource_ptr;
 
         // Call the Constructor for each element
@@ -431,7 +433,7 @@ EbErrorType eb_vp9_system_resource_ctor(EbSystemResource **resource_dbl_ptr, uin
     }
 
     // Initialize the Full Queue
-    if (full_fifo_enabled == EB_TRUE) {
+    if (full_fifo_enabled == true) {
         return_error = eb_muxing_queue_ctor(&resource_ptr->full_queue,
                                             resource_ptr->object_total_count,
                                             consumer_process_total_count,
@@ -508,7 +510,7 @@ EbErrorType eb_vp9_release_object(EbObjectWrapper *object_ptr) {
     // Decrement live_count
     object_ptr->live_count = (object_ptr->live_count == 0) ? object_ptr->live_count : object_ptr->live_count - 1;
 
-    if ((object_ptr->release_enable == EB_TRUE) && (object_ptr->live_count == 0)) {
+    if ((object_ptr->release_enable == true) && (object_ptr->live_count == 0)) {
         // Set live_count to EB_ObjectWrapperReleasedValue
         object_ptr->live_count = EB_ObjectWrapperReleasedValue;
 
@@ -554,7 +556,7 @@ EbErrorType eb_vp9_get_empty_object(EbFifo *empty_fifo_ptr, EbObjectWrapper **wr
     (*wrapper_dbl_ptr)->live_count = 0;
 
     // Object release enable
-    (*wrapper_dbl_ptr)->release_enable = EB_TRUE;
+    (*wrapper_dbl_ptr)->release_enable = true;
 
     // Release Mutex
     eb_vp9_release_mutex(empty_fifo_ptr->lockout_mutex);
@@ -599,17 +601,17 @@ EbErrorType eb_vp9_get_full_object(EbFifo *full_fifo_ptr, EbObjectWrapper **wrap
 /**************************************
 * EbFifoPopFront
 **************************************/
-static EB_BOOL eb_fifo_peak_front(EbFifo *fifo_ptr) {
+static bool eb_fifo_peak_front(EbFifo *fifo_ptr) {
     // Set wrapper_ptr to head of BufferPool
     if (fifo_ptr->first_ptr == (EbObjectWrapper *)NULL)
-        return EB_TRUE;
+        return true;
     else
-        return EB_FALSE;
+        return false;
 }
 
 EbErrorType eb_vp9_get_full_object_non_blocking(EbFifo *full_fifo_ptr, EbObjectWrapper **wrapper_dbl_ptr) {
     EbErrorType return_error = EB_ErrorNone;
-    EB_BOOL     fifo_empty;
+    bool        fifo_empty;
     // Queue the Fifo requesting the full fifo
     eb_release_process(full_fifo_ptr);
 
@@ -621,7 +623,7 @@ EbErrorType eb_vp9_get_full_object_non_blocking(EbFifo *full_fifo_ptr, EbObjectW
     // Release Mutex
     eb_vp9_release_mutex(full_fifo_ptr->lockout_mutex);
 
-    if (fifo_empty == EB_FALSE)
+    if (fifo_empty == false)
         eb_vp9_get_full_object(full_fifo_ptr, wrapper_dbl_ptr);
     else
         *wrapper_dbl_ptr = (EbObjectWrapper *)NULL;

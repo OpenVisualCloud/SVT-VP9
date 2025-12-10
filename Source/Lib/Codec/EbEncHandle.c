@@ -156,7 +156,7 @@ uint32_t lib_mutex_count     = 0;
 uint8_t eb_vp9_num_groups = 0;
 #ifdef _WIN32
 GROUP_AFFINITY eb_vp9_group_affinity;
-EbBool         eb_vp9_alternate_groups = 0;
+bool           eb_vp9_alternate_groups = 0;
 #elif defined(__linux__)
 cpu_set_t eb_vp9_group_affinity;
 typedef struct logicalProcessorGroup {
@@ -628,7 +628,7 @@ static void eb_set_thread_management_parameters(EbSvtVp9EncConfiguration *config
             uint32_t num_lp_per_group = num_logical_processors / eb_vp9_num_groups;
             if (config_ptr->target_socket == -1) {
                 if (config_ptr->logical_processors > num_lp_per_group) {
-                    eb_vp9_alternate_groups = EB_TRUE;
+                    eb_vp9_alternate_groups = true;
                     SVT_LOG("SVT [WARNING]: -lp(logical processors) setting is ignored. Run on both sockets. \n");
                 } else
                     eb_vp9_group_affinity.Mask = get_affinity_mask(config_ptr->logical_processors);
@@ -699,7 +699,7 @@ EbErrorType lib_allocate_frame_buffer(SequenceControlSet *sequence_control_set_p
     input_picture_buffer_desc_init_data.top_padding   = sequence_control_set_ptr->top_padding;
     input_picture_buffer_desc_init_data.bot_padding   = sequence_control_set_ptr->bot_padding;
 
-    input_picture_buffer_desc_init_data.split_mode = is16bit ? EB_TRUE : EB_FALSE;
+    input_picture_buffer_desc_init_data.split_mode = is16bit ? true : false;
 
     input_picture_buffer_desc_init_data.buffer_enable_mask = PICTURE_BUFFER_DESC_FULL_MASK;
 
@@ -791,7 +791,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     uint32_t            max_look_ahead_distance = 0;
     SequenceControlSet *scs_ptr = enc_handle_ptr->sequence_control_set_instance_array[0]->sequence_control_set_ptr;
 
-    EB_BOOL is16bit = (EB_BOOL)(scs_ptr->static_config.encoder_bit_depth > EB_8BIT);
+    bool is16bit = (bool)(scs_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
     /************************************
     * Platform detection
@@ -816,7 +816,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                0,
                                                &enc_handle_ptr->sequence_control_set_pool_producer_fifo_ptr_array,
                                                (EbFifo ***)NULL,
-                                               EB_FALSE,
+                                               false,
                                                eb_vp9_sequence_control_set_ctor,
                                                NULL);
 
@@ -860,7 +860,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         0,
         &enc_handle_ptr->picture_parent_control_set_pool_producer_fifo_ptr_dbl_array[0],
         (EbFifo ***)NULL,
-        EB_FALSE,
+        false,
         eb_vp9_picture_parent_control_set_ctor,
         &input_data);
     if (return_error == EB_ErrorInsufficientResources) {
@@ -913,7 +913,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             0,
             &enc_handle_ptr->picture_control_set_pool_producer_fifo_ptr_dbl_array[0],
             (EbFifo ***)NULL,
-            EB_FALSE,
+            false,
             eb_vp9_picture_control_set_ctor,
             &input_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -969,7 +969,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     reference_picture_buffer_desc_init_data.right_padding      = MAX_SB_SIZE + MCPXPaddingOffset;
     reference_picture_buffer_desc_init_data.top_padding        = MAX_SB_SIZE + MCPYPaddingOffset;
     reference_picture_buffer_desc_init_data.bot_padding        = MAX_SB_SIZE + MCPYPaddingOffset;
-    reference_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    reference_picture_buffer_desc_init_data.split_mode         = false;
 
     if (is16bit) {
         reference_picture_buffer_desc_init_data.bit_depth = EB_10BIT;
@@ -986,7 +986,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         0,
         &enc_handle_ptr->reference_picture_pool_producer_fifo_ptr_dbl_array[0],
         (EbFifo ***)NULL,
-        EB_FALSE,
+        false,
         eb_vp9_reference_object_ctor,
         &(eb_reference_object_desc_init_data_structure));
 
@@ -1004,7 +1004,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     reference_picture_buffer_desc_init_data.right_padding      = MAX_SB_SIZE + ME_FILTER_TAP;
     reference_picture_buffer_desc_init_data.top_padding        = MAX_SB_SIZE + ME_FILTER_TAP;
     reference_picture_buffer_desc_init_data.bot_padding        = MAX_SB_SIZE + ME_FILTER_TAP;
-    reference_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    reference_picture_buffer_desc_init_data.split_mode         = false;
 
     quarter_decim_picture_buffer_desc_init_data.max_width          = scs_ptr->max_input_luma_width >> 1;
     quarter_decim_picture_buffer_desc_init_data.max_height         = scs_ptr->max_input_luma_height >> 1;
@@ -1014,7 +1014,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     quarter_decim_picture_buffer_desc_init_data.right_padding      = MAX_SB_SIZE >> 1;
     quarter_decim_picture_buffer_desc_init_data.top_padding        = MAX_SB_SIZE >> 1;
     quarter_decim_picture_buffer_desc_init_data.bot_padding        = MAX_SB_SIZE >> 1;
-    quarter_decim_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    quarter_decim_picture_buffer_desc_init_data.split_mode         = false;
 
     sixteenth_decim_picture_buffer_desc_init_data.max_width          = scs_ptr->max_input_luma_width >> 2;
     sixteenth_decim_picture_buffer_desc_init_data.max_height         = scs_ptr->max_input_luma_height >> 2;
@@ -1024,7 +1024,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
     sixteenth_decim_picture_buffer_desc_init_data.right_padding      = MAX_SB_SIZE >> 2;
     sixteenth_decim_picture_buffer_desc_init_data.top_padding        = MAX_SB_SIZE >> 2;
     sixteenth_decim_picture_buffer_desc_init_data.bot_padding        = MAX_SB_SIZE >> 2;
-    sixteenth_decim_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    sixteenth_decim_picture_buffer_desc_init_data.split_mode         = false;
 
     eb_pa_reference_object_desc_init_data_structure.reference_picture_desc_init_data =
         reference_picture_buffer_desc_init_data;
@@ -1041,7 +1041,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         0,
         &enc_handle_ptr->pa_reference_picture_pool_producer_fifo_ptr_dbl_array[0],
         (EbFifo ***)NULL,
-        EB_FALSE,
+        false,
         eb_vp9_pa_reference_object_ctor,
         &(eb_pa_reference_object_desc_init_data_structure));
     if (return_error == EB_ErrorInsufficientResources) {
@@ -1065,7 +1065,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                EB_ResourceCoordinationProcessInitCount,
                                                &enc_handle_ptr->input_buffer_producer_fifo_ptr_array,
                                                &enc_handle_ptr->input_buffer_consumer_fifo_ptr_array,
-                                               EB_TRUE,
+                                               true,
                                                eb_input_buffer_header_ctor,
                                                scs_ptr);
 
@@ -1092,7 +1092,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                1,
                                                &enc_handle_ptr->output_stream_buffer_producer_fifo_ptr_dbl_array[0],
                                                &enc_handle_ptr->output_stream_buffer_consumer_fifo_ptr_dbl_array[0],
-                                               EB_TRUE,
+                                               true,
                                                eb_output_buffer_header_ctor,
                                                &scs_ptr->static_config);
 
@@ -1120,7 +1120,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    1,
                                                    &enc_handle_ptr->output_recon_buffer_producer_fifo_ptr_dbl_array[0],
                                                    &enc_handle_ptr->output_recon_buffer_consumer_fifo_ptr_dbl_array[0],
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_output_recon_buffer_header_ctor,
                                                    scs_ptr);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1139,7 +1139,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             scs_ptr->picture_analysis_process_init_count,
             &enc_handle_ptr->resource_coordination_results_producer_fifo_ptr_array,
             &enc_handle_ptr->resource_coordination_results_consumer_fifo_ptr_array,
-            EB_TRUE,
+            true,
             eb_vp9_resource_coordination_result_ctor,
             &resource_coordination_result_init_data);
 
@@ -1158,7 +1158,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    EB_PictureDecisionProcessInitCount,
                                                    &enc_handle_ptr->picture_analysis_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->picture_analysis_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_picture_analysis_result_ctor,
                                                    &picture_analysis_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1176,7 +1176,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    scs_ptr->motion_estimation_process_init_count,
                                                    &enc_handle_ptr->picture_decision_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->picture_decision_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_picture_decision_result_ctor,
                                                    &picture_decision_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1194,7 +1194,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    EB_InitialRateControlProcessInitCount,
                                                    &enc_handle_ptr->motion_estimation_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->motion_estimation_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_motion_estimation_results_ctor,
                                                    &motion_estimation_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1213,7 +1213,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             scs_ptr->source_based_operations_process_init_count,
             &enc_handle_ptr->initial_rate_control_results_producer_fifo_ptr_array,
             &enc_handle_ptr->initial_rate_control_results_consumer_fifo_ptr_array,
-            EB_TRUE,
+            true,
             eb_vp9_initial_eb_vp9_rate_control_results_ctor,
             &initial_rate_control_result_init_data);
 
@@ -1233,7 +1233,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
             EB_PictureManagerProcessInitCount,
             &enc_handle_ptr->picture_demux_results_producer_fifo_ptr_array,
             &enc_handle_ptr->picture_demux_results_consumer_fifo_ptr_array,
-            EB_TRUE,
+            true,
             eb_vp9_picture_results_ctor,
             &picture_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1251,7 +1251,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    EB_RateControlProcessInitCount,
                                                    &enc_handle_ptr->rate_control_tasks_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->rate_control_tasks_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_rate_control_tasks_ctor,
                                                    &rate_control_tasks_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1269,7 +1269,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    scs_ptr->mode_decision_configuration_process_init_count,
                                                    &enc_handle_ptr->rate_control_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->rate_control_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_rate_control_results_ctor,
                                                    &rate_control_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1295,7 +1295,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    scs_ptr->enc_dec_process_init_count,
                                                    &enc_handle_ptr->enc_dec_tasks_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->enc_dec_tasks_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_enc_dec_tasks_ctor,
                                                    &mode_decision_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1313,7 +1313,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    scs_ptr->entropy_coding_process_init_count,
                                                    &enc_handle_ptr->enc_dec_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->enc_dec_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_enc_dec_results_ctor,
                                                    &enc_dec_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1331,7 +1331,7 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
                                                    EB_PacketizationProcessInitCount,
                                                    &enc_handle_ptr->entropy_coding_results_producer_fifo_ptr_array,
                                                    &enc_handle_ptr->entropy_coding_results_consumer_fifo_ptr_array,
-                                                   EB_TRUE,
+                                                   true,
                                                    eb_vp9_entropy_coding_results_ctor,
                                                    &entropy_coding_result_init_data);
         if (return_error == EB_ErrorInsufficientResources) {
@@ -1386,11 +1386,11 @@ EB_API EbErrorType eb_vp9_init_encoder(EbComponentType *svt_enc_component) {
         picture_buffer_desc_conf.right_padding      = 0;
         picture_buffer_desc_conf.top_padding        = 0;
         picture_buffer_desc_conf.bot_padding        = 0;
-        picture_buffer_desc_conf.split_mode         = EB_FALSE;
+        picture_buffer_desc_conf.split_mode         = false;
 
         return_error = eb_vp9_picture_analysis_context_ctor(
             &picture_buffer_desc_conf,
-            EB_TRUE,
+            true,
             (PictureAnalysisContext **)&enc_handle_ptr->picture_analysis_context_ptr_array[process_index],
             enc_handle_ptr->resource_coordination_results_consumer_fifo_ptr_array[process_index],
             enc_handle_ptr->picture_analysis_results_producer_fifo_ptr_array[process_index],
@@ -1775,7 +1775,7 @@ EbErrorType eb_vp9_svt_enc_init_parameter(EbSvtVp9EncConfiguration *config_ptr) 
     config_ptr->source_height          = 0;
 
     config_ptr->qp                     = 50;
-    config_ptr->use_qp_file            = EB_FALSE;
+    config_ptr->use_qp_file            = false;
     config_ptr->rate_control_mode      = 0;
     config_ptr->target_bit_rate        = 7000000;
     config_ptr->max_qp_allowed         = MAX_QP_VALUE;
@@ -1784,9 +1784,9 @@ EbErrorType eb_vp9_svt_enc_init_parameter(EbSvtVp9EncConfiguration *config_ptr) 
     config_ptr->enc_mode               = 3;
     config_ptr->intra_period           = 31;
     config_ptr->pred_structure         = EB_PRED_RANDOM_ACCESS;
-    config_ptr->loop_filter            = EB_TRUE;
-    config_ptr->use_default_me_hme     = EB_TRUE;
-    config_ptr->enable_hme_flag        = EB_TRUE;
+    config_ptr->loop_filter            = true;
+    config_ptr->use_default_me_hme     = true;
+    config_ptr->enable_hme_flag        = true;
     config_ptr->search_area_width      = 16;
     config_ptr->search_area_height     = 7;
 
@@ -2031,10 +2031,10 @@ static void set_default_configuration_parameters(SequenceControlSet *sequence_co
     sequence_control_set_ptr->cropping_bottom_offset = 0;
 
     // Coding Structure
-    sequence_control_set_ptr->enable_qp_scaling_flag = EB_TRUE;
+    sequence_control_set_ptr->enable_qp_scaling_flag = true;
 
     //Denoise
-    sequence_control_set_ptr->enable_denoise_flag = EB_TRUE;
+    sequence_control_set_ptr->enable_denoise_flag = true;
 
     return;
 }
@@ -2059,8 +2059,8 @@ static void copy_api_from_app(SequenceControlSet       *sequence_control_set_ptr
     sequence_control_set_ptr->chroma_width  = sequence_control_set_ptr->max_input_luma_width >> 1;
     sequence_control_set_ptr->chroma_height = sequence_control_set_ptr->max_input_luma_height >> 1;
 
-    sequence_control_set_ptr->video_usability_info_ptr->field_seq_flag                = EB_FALSE;
-    sequence_control_set_ptr->video_usability_info_ptr->frame_field_info_present_flag = EB_FALSE;
+    sequence_control_set_ptr->video_usability_info_ptr->field_seq_flag                = false;
+    sequence_control_set_ptr->video_usability_info_ptr->frame_field_info_present_flag = false;
 
     // Coding Structure
     sequence_control_set_ptr->static_config.intra_period =
@@ -2101,7 +2101,7 @@ static void copy_api_from_app(SequenceControlSet       *sequence_control_set_ptr
     sequence_control_set_ptr->static_config.recon_file =
         ((EbSvtVp9EncConfiguration *)p_component_parameter_structure)->recon_file;
     sequence_control_set_ptr->encode_context_ptr->recon_port_active =
-        (EB_BOOL)sequence_control_set_ptr->static_config.recon_file;
+        (bool)sequence_control_set_ptr->static_config.recon_file;
 
     // Rate Control
     sequence_control_set_ptr->static_config.rate_control_mode =
@@ -2412,22 +2412,6 @@ static EbErrorType verify_settings(SequenceControlSet *sequence_control_set_ptr)
         return_error = EB_ErrorBadParameter;
     }
 
-    if (config->loop_filter > 1) {
-        SVT_LOG("Error Instance %u: Invalid LoopFilterDisable. LoopFilterDisable must be [0 - 1]\n",
-                channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-
-    if (config->use_default_me_hme > 1) {
-        SVT_LOG("Error Instance %u: invalid use_default_me_hme. use_default_me_hme must be [0 - 1]\n",
-                channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-    if (config->enable_hme_flag > 1) {
-        SVT_LOG("Error Instance %u: invalid HME. HME must be [0 - 1]\n", channel_number + 1);
-        return_error = EB_ErrorBadParameter;
-    }
-
     if ((config->search_area_width > 256) || (config->search_area_width == 0)) {
         SVT_LOG("Error Instance %u: Invalid search_area_width. search_area_width must be [1 - 256]\n",
                 channel_number + 1);
@@ -2723,7 +2707,7 @@ static EbErrorType copy_frame_buffer(SequenceControlSet *sequence_control_set_pt
     EbPictureBufferDesc *input_picture_ptr = (EbPictureBufferDesc *)dst;
     EbSvtEncInput       *input_ptr         = (EbSvtEncInput *)src;
     uint16_t             input_row_index;
-    EbBool               is16_bit_input = (EbBool)(config->encoder_bit_depth > EB_8BIT);
+    bool                 is16_bit_input = (bool)(config->encoder_bit_depth > EB_8BIT);
 
     // Need to include for Interlacing on the fly with pictureScanType = 1
 

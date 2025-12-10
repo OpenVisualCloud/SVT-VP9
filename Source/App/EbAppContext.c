@@ -167,17 +167,17 @@ EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callba
     callback_data->eb_enc_parameters.search_area_width      = config->search_area_width;
     callback_data->eb_enc_parameters.search_area_height     = config->search_area_height;
     callback_data->eb_enc_parameters.tune                   = config->tune;
-    callback_data->eb_enc_parameters.recon_file = (config->recon_file) ? (uint32_t)EB_TRUE : (uint32_t)EB_FALSE;
-    callback_data->eb_enc_parameters.channel_id = config->channel_id;
-    callback_data->eb_enc_parameters.active_channel_count = config->active_channel_count;
-    callback_data->eb_enc_parameters.encoder_bit_depth    = config->encoder_bit_depth;
-    callback_data->eb_enc_parameters.profile              = config->profile;
-    callback_data->eb_enc_parameters.level                = config->level;
-    callback_data->eb_enc_parameters.injector_frame_rate  = config->injector_frame_rate;
-    callback_data->eb_enc_parameters.speed_control_flag   = config->speed_control_flag;
-    callback_data->eb_enc_parameters.asm_type             = config->asm_type;
-    callback_data->eb_enc_parameters.logical_processors   = config->logical_processors;
-    callback_data->eb_enc_parameters.target_socket        = config->target_socket;
+    callback_data->eb_enc_parameters.recon_file             = (config->recon_file) ? (uint32_t)true : (uint32_t)false;
+    callback_data->eb_enc_parameters.channel_id             = config->channel_id;
+    callback_data->eb_enc_parameters.active_channel_count   = config->active_channel_count;
+    callback_data->eb_enc_parameters.encoder_bit_depth      = config->encoder_bit_depth;
+    callback_data->eb_enc_parameters.profile                = config->profile;
+    callback_data->eb_enc_parameters.level                  = config->level;
+    callback_data->eb_enc_parameters.injector_frame_rate    = config->injector_frame_rate;
+    callback_data->eb_enc_parameters.speed_control_flag     = config->speed_control_flag;
+    callback_data->eb_enc_parameters.asm_type               = config->asm_type;
+    callback_data->eb_enc_parameters.logical_processors     = config->logical_processors;
+    callback_data->eb_enc_parameters.target_socket          = config->target_socket;
 
     return return_error;
 }

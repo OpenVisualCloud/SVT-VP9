@@ -55,7 +55,7 @@ typedef struct EbPictureBufferDesc {
     // Buffer Parameters
     uint32_t luma_size; // Size of the luma buffer
     uint32_t chroma_size; // Size of the chroma buffers
-    EB_BOOL  packed_flag; // Indicates if sample buffers are packed or not
+    bool     packed_flag; // Indicates if sample buffers are packed or not
 
 } EbPictureBufferDesc;
 
@@ -71,7 +71,7 @@ typedef struct EbPictureBufferDescInitData {
     uint16_t   right_padding;
     uint16_t   top_padding;
     uint16_t   bot_padding;
-    EB_BOOL    split_mode; //ON: allocate 8bit data separately from nbit data
+    bool       split_mode; //ON: allocate 8bit data separately from nbit data
 
 } EbPictureBufferDescInitData;
 

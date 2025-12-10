@@ -1574,8 +1574,7 @@ void half_pel_search_sb(
         x_search_area_origin, // input parameter, search area origin in the horizontal direction, used to point to reference samples
     int16_t
         y_search_area_origin, // input parameter, search area origin in the vertical direction, used to point to reference samples
-    EB_BOOL disable8x8_cu_in_me_flag, EB_BOOL enable_half_pel32x32, EB_BOOL enable_half_pel16x16,
-    EB_BOOL enable_half_pel8x8) {
+    bool disable8x8_cu_in_me_flag, bool enable_half_pel32x32, bool enable_half_pel16x16, bool enable_half_pel8x8) {
     uint32_t idx;
     uint32_t pu_index;
     uint32_t pu_shift_x_index;
@@ -1752,7 +1751,7 @@ static void pu_quarter_pel_refinement_on_the_fly(
 
     uint64_t dist;
 
-    EB_BOOL valid_tl, valid_t, valid_tr, valid_r, valid_br, valid_b, valid_bl, valid_l;
+    bool valid_tl, valid_t, valid_tr, valid_r, valid_br, valid_b, valid_bl, valid_l;
 
     int16_t x_mv_quarter[8];
     int16_t y_mv_quarter[8];
@@ -1760,40 +1759,40 @@ static void pu_quarter_pel_refinement_on_the_fly(
     int32_t search_region_index2 = 0;
 
     if ((y_mv & 2) + ((x_mv & 2) >> 1)) {
-        valid_tl = (EB_BOOL)(sub_pel_direction == RIGHT_POSITION || sub_pel_direction == BOTTOM_RIGHT_POSITION ||
-                             sub_pel_direction == BOTTOM_POSITION);
-        valid_t  = (EB_BOOL)(sub_pel_direction == BOTTOM_RIGHT_POSITION || sub_pel_direction == BOTTOM_POSITION ||
-                            sub_pel_direction == BOTTOM_LEFT_POSITION);
-        valid_tr = (EB_BOOL)(sub_pel_direction == BOTTOM_POSITION || sub_pel_direction == BOTTOM_LEFT_POSITION ||
-                             sub_pel_direction == LEFT_POSITION);
-        valid_r  = (EB_BOOL)(sub_pel_direction == BOTTOM_LEFT_POSITION || sub_pel_direction == LEFT_POSITION ||
-                            sub_pel_direction == TOP_LEFT_POSITION);
-        valid_br = (EB_BOOL)(sub_pel_direction == LEFT_POSITION || sub_pel_direction == TOP_LEFT_POSITION ||
-                             sub_pel_direction == TOP_POSITION);
-        valid_b  = (EB_BOOL)(sub_pel_direction == TOP_LEFT_POSITION || sub_pel_direction == TOP_POSITION ||
-                            sub_pel_direction == TOP_RIGHT_POSITION);
-        valid_bl = (EB_BOOL)(sub_pel_direction == TOP_POSITION || sub_pel_direction == TOP_RIGHT_POSITION ||
-                             sub_pel_direction == RIGHT_POSITION);
-        valid_l  = (EB_BOOL)(sub_pel_direction == TOP_RIGHT_POSITION || sub_pel_direction == RIGHT_POSITION ||
-                            sub_pel_direction == BOTTOM_RIGHT_POSITION);
+        valid_tl = (bool)(sub_pel_direction == RIGHT_POSITION || sub_pel_direction == BOTTOM_RIGHT_POSITION ||
+                          sub_pel_direction == BOTTOM_POSITION);
+        valid_t  = (bool)(sub_pel_direction == BOTTOM_RIGHT_POSITION || sub_pel_direction == BOTTOM_POSITION ||
+                         sub_pel_direction == BOTTOM_LEFT_POSITION);
+        valid_tr = (bool)(sub_pel_direction == BOTTOM_POSITION || sub_pel_direction == BOTTOM_LEFT_POSITION ||
+                          sub_pel_direction == LEFT_POSITION);
+        valid_r  = (bool)(sub_pel_direction == BOTTOM_LEFT_POSITION || sub_pel_direction == LEFT_POSITION ||
+                         sub_pel_direction == TOP_LEFT_POSITION);
+        valid_br = (bool)(sub_pel_direction == LEFT_POSITION || sub_pel_direction == TOP_LEFT_POSITION ||
+                          sub_pel_direction == TOP_POSITION);
+        valid_b  = (bool)(sub_pel_direction == TOP_LEFT_POSITION || sub_pel_direction == TOP_POSITION ||
+                         sub_pel_direction == TOP_RIGHT_POSITION);
+        valid_bl = (bool)(sub_pel_direction == TOP_POSITION || sub_pel_direction == TOP_RIGHT_POSITION ||
+                          sub_pel_direction == RIGHT_POSITION);
+        valid_l  = (bool)(sub_pel_direction == TOP_RIGHT_POSITION || sub_pel_direction == RIGHT_POSITION ||
+                         sub_pel_direction == BOTTOM_RIGHT_POSITION);
 
     } else {
-        valid_tl = (EB_BOOL)(sub_pel_direction == LEFT_POSITION || sub_pel_direction == TOP_LEFT_POSITION ||
-                             sub_pel_direction == TOP_POSITION);
-        valid_t  = (EB_BOOL)(sub_pel_direction == TOP_LEFT_POSITION || sub_pel_direction == TOP_POSITION ||
-                            sub_pel_direction == TOP_RIGHT_POSITION);
-        valid_tr = (EB_BOOL)(sub_pel_direction == TOP_POSITION || sub_pel_direction == TOP_RIGHT_POSITION ||
-                             sub_pel_direction == RIGHT_POSITION);
-        valid_r  = (EB_BOOL)(sub_pel_direction == TOP_RIGHT_POSITION || sub_pel_direction == RIGHT_POSITION ||
-                            sub_pel_direction == BOTTOM_RIGHT_POSITION);
-        valid_br = (EB_BOOL)(sub_pel_direction == RIGHT_POSITION || sub_pel_direction == BOTTOM_RIGHT_POSITION ||
-                             sub_pel_direction == BOTTOM_POSITION);
-        valid_b  = (EB_BOOL)(sub_pel_direction == BOTTOM_RIGHT_POSITION || sub_pel_direction == BOTTOM_POSITION ||
-                            sub_pel_direction == BOTTOM_LEFT_POSITION);
-        valid_bl = (EB_BOOL)(sub_pel_direction == BOTTOM_POSITION || sub_pel_direction == BOTTOM_LEFT_POSITION ||
-                             sub_pel_direction == LEFT_POSITION);
-        valid_l  = (EB_BOOL)(sub_pel_direction == BOTTOM_LEFT_POSITION || sub_pel_direction == LEFT_POSITION ||
-                            sub_pel_direction == TOP_LEFT_POSITION);
+        valid_tl = (bool)(sub_pel_direction == LEFT_POSITION || sub_pel_direction == TOP_LEFT_POSITION ||
+                          sub_pel_direction == TOP_POSITION);
+        valid_t  = (bool)(sub_pel_direction == TOP_LEFT_POSITION || sub_pel_direction == TOP_POSITION ||
+                         sub_pel_direction == TOP_RIGHT_POSITION);
+        valid_tr = (bool)(sub_pel_direction == TOP_POSITION || sub_pel_direction == TOP_RIGHT_POSITION ||
+                          sub_pel_direction == RIGHT_POSITION);
+        valid_r  = (bool)(sub_pel_direction == TOP_RIGHT_POSITION || sub_pel_direction == RIGHT_POSITION ||
+                         sub_pel_direction == BOTTOM_RIGHT_POSITION);
+        valid_br = (bool)(sub_pel_direction == RIGHT_POSITION || sub_pel_direction == BOTTOM_RIGHT_POSITION ||
+                          sub_pel_direction == BOTTOM_POSITION);
+        valid_b  = (bool)(sub_pel_direction == BOTTOM_RIGHT_POSITION || sub_pel_direction == BOTTOM_POSITION ||
+                         sub_pel_direction == BOTTOM_LEFT_POSITION);
+        valid_bl = (bool)(sub_pel_direction == BOTTOM_POSITION || sub_pel_direction == BOTTOM_LEFT_POSITION ||
+                          sub_pel_direction == LEFT_POSITION);
+        valid_l  = (bool)(sub_pel_direction == BOTTOM_LEFT_POSITION || sub_pel_direction == LEFT_POSITION ||
+                         sub_pel_direction == TOP_LEFT_POSITION);
     }
 
     x_mv_quarter[0] = x_mv - 1; // L  position
@@ -2479,9 +2478,9 @@ static void quarter_pel_search_sb(
     int16_t
         x_search_area_origin, //[IN] search area origin in the horizontal direction, used to point to reference samples
     int16_t
-        y_search_area_origin, //[IN] search area origin in the vertical direction, used to point to reference samples
-    EB_BOOL disable8x8_cu_in_me_flag, EB_BOOL enable_half_pel32x32, EB_BOOL enable_half_pel16x16,
-    EB_BOOL enable_half_pel8x8, EB_BOOL enable_quarter_pel) {
+         y_search_area_origin, //[IN] search area origin in the vertical direction, used to point to reference samples
+    bool disable8x8_cu_in_me_flag, bool enable_half_pel32x32, bool enable_half_pel16x16, bool enable_half_pel8x8,
+    bool enable_quarter_pel) {
     uint32_t pu_index;
 
     uint32_t pu_shift_x_index;
@@ -3818,8 +3817,8 @@ EbErrorType check_zero_zero_center(EbPictureBufferDesc *ref_pic_ptr, MeContext *
 }
 
 EbErrorType su_pel_enable(MeContext *context_ptr, PictureParentControlSet *picture_control_set_ptr, uint32_t list_index,
-                          uint32_t ref_pic_index, EB_BOOL *enable_half_pel32x32, EB_BOOL *enable_half_pel16x16,
-                          EB_BOOL *enable_half_pel8x8) {
+                          uint32_t ref_pic_index, bool *enable_half_pel32x32, bool *enable_half_pel16x16,
+                          bool *enable_half_pel8x8) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t mv_mag32x32  = 0;
@@ -4106,33 +4105,33 @@ EbErrorType su_pel_enable(MeContext *context_ptr, PictureParentControlSet *pictu
     if (picture_control_set_ptr->temporal_layer_index == 0) {
         //32x32
         if ((mv_mag32x32 < SQR(48)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_0
+            *enable_half_pel32x32 = true; //CLASS_0
         } else if ((mv_mag32x32 < SQR(48)) && !(avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_1
+            *enable_half_pel32x32 = false; //CLASS_1
         } else if (!(mv_mag32x32 < SQR(48)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_2
+            *enable_half_pel32x32 = true; //CLASS_2
         } else {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_3
+            *enable_half_pel32x32 = false; //CLASS_3
         }
         //16x16
         if ((mv_mag16x16 < SQR(48)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_0
+            *enable_half_pel16x16 = false; //CLASS_0
         } else if ((mv_mag16x16 < SQR(48)) && !(avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_1
+            *enable_half_pel16x16 = true; //CLASS_1
         } else if (!(mv_mag16x16 < SQR(48)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_2
+            *enable_half_pel16x16 = false; //CLASS_2
         } else {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_3
+            *enable_half_pel16x16 = true; //CLASS_3
         }
         //8x8
         if ((mv_mag8x8 < SQR(48)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_0
+            *enable_half_pel8x8 = false; //CLASS_0
         } else if ((mv_mag8x8 < SQR(48)) && !(avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_1
+            *enable_half_pel8x8 = true; //CLASS_1
         } else if (!(mv_mag8x8 < SQR(48)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_2
+            *enable_half_pel8x8 = false; //CLASS_2
         } else {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_3
+            *enable_half_pel8x8 = true; //CLASS_3
         }
 
     }
@@ -4140,98 +4139,98 @@ EbErrorType su_pel_enable(MeContext *context_ptr, PictureParentControlSet *pictu
     else if (picture_control_set_ptr->temporal_layer_index == 1) {
         //32x32
         if ((mv_mag32x32 < SQR(32)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_0
+            *enable_half_pel32x32 = true; //CLASS_0
         } else if ((mv_mag32x32 < SQR(32)) && !(avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_1
+            *enable_half_pel32x32 = false; //CLASS_1
         } else if (!(mv_mag32x32 < SQR(32)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_2
+            *enable_half_pel32x32 = true; //CLASS_2
         } else {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_3
+            *enable_half_pel32x32 = true; //CLASS_3
         }
         //16x16
         if ((mv_mag16x16 < SQR(32)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_0
+            *enable_half_pel16x16 = false; //CLASS_0
         } else if ((mv_mag16x16 < SQR(32)) && !(avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_1
+            *enable_half_pel16x16 = true; //CLASS_1
         } else if (!(mv_mag16x16 < SQR(32)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_2
+            *enable_half_pel16x16 = false; //CLASS_2
         } else {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_3
+            *enable_half_pel16x16 = true; //CLASS_3
         }
         //8x8
         if ((mv_mag8x8 < SQR(32)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_0
+            *enable_half_pel8x8 = false; //CLASS_0
         } else if ((mv_mag8x8 < SQR(32)) && !(avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_1
+            *enable_half_pel8x8 = true; //CLASS_1
         } else if (!(mv_mag8x8 < SQR(32)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_2
+            *enable_half_pel8x8 = false; //CLASS_2
         } else {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_3
+            *enable_half_pel8x8 = true; //CLASS_3
         }
 
     } else if (picture_control_set_ptr->temporal_layer_index == 2) {
         //32x32
         if ((mv_mag32x32 < SQR(80)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_0
+            *enable_half_pel32x32 = true; //CLASS_0
         } else if ((mv_mag32x32 < SQR(80)) && !(avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_1
+            *enable_half_pel32x32 = false; //CLASS_1
 
         } else if (!(mv_mag32x32 < SQR(80)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_2
+            *enable_half_pel32x32 = true; //CLASS_2
         } else {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_3
+            *enable_half_pel32x32 = false; //CLASS_3
         }
         //16x16
         if ((mv_mag16x16 < SQR(80)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_0
+            *enable_half_pel16x16 = false; //CLASS_0
         } else if ((mv_mag16x16 < SQR(80)) && !(avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_1
+            *enable_half_pel16x16 = true; //CLASS_1
         } else if (!(mv_mag16x16 < SQR(80)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_2
+            *enable_half_pel16x16 = false; //CLASS_2
         } else {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_3
+            *enable_half_pel16x16 = true; //CLASS_3
         }
         //8x8
         if ((mv_mag8x8 < SQR(80)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_0
+            *enable_half_pel8x8 = false; //CLASS_0
         } else if ((mv_mag8x8 < SQR(80)) && !(avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_1
+            *enable_half_pel8x8 = true; //CLASS_1
         } else if (!(mv_mag8x8 < SQR(80)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_2
+            *enable_half_pel8x8 = false; //CLASS_2
         } else {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_3
+            *enable_half_pel8x8 = true; //CLASS_3
         }
 
     } else {
         //32x32
         if ((mv_mag32x32 < SQR(48)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_0
+            *enable_half_pel32x32 = true; //CLASS_0
         } else if ((mv_mag32x32 < SQR(48)) && !(avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_1
+            *enable_half_pel32x32 = true; //CLASS_1
         } else if (!(mv_mag32x32 < SQR(48)) && (avg_sad32x32 < 32 * 32 * 6)) {
-            *enable_half_pel32x32 = EB_TRUE; //CLASS_2
+            *enable_half_pel32x32 = true; //CLASS_2
         } else {
-            *enable_half_pel32x32 = EB_FALSE; //CLASS_3
+            *enable_half_pel32x32 = false; //CLASS_3
         }
         //16x16
         if ((mv_mag16x16 < SQR(48)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_0
+            *enable_half_pel16x16 = false; //CLASS_0
         } else if ((mv_mag16x16 < SQR(48)) && !(avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_1
+            *enable_half_pel16x16 = true; //CLASS_1
         } else if (!(mv_mag16x16 < SQR(48)) && (avg_sad16x16 < 16 * 16 * 2)) {
-            *enable_half_pel16x16 = EB_FALSE; //CLASS_2
+            *enable_half_pel16x16 = false; //CLASS_2
         } else {
-            *enable_half_pel16x16 = EB_TRUE; //CLASS_3
+            *enable_half_pel16x16 = true; //CLASS_3
         }
         //8x8
         if ((mv_mag8x8 < SQR(48)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_0
+            *enable_half_pel8x8 = false; //CLASS_0
         } else if ((mv_mag8x8 < SQR(48)) && !(avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_TRUE; //CLASS_1
+            *enable_half_pel8x8 = true; //CLASS_1
         } else if (!(mv_mag8x8 < SQR(48)) && (avg_sad8x8 < 8 * 8 * 2)) {
-            *enable_half_pel8x8 = EB_FALSE; //CLASS_2
+            *enable_half_pel8x8 = false; //CLASS_2
         } else {
-            *enable_half_pel8x8 = EB_FALSE; // EB_TRUE; //CLASS_3
+            *enable_half_pel8x8 = false; // true; //CLASS_3
         }
     }
 
@@ -4552,13 +4551,13 @@ EbErrorType motion_estimate_sb(
     int16_t hme_level1_search_area_in_height;
 
     // Configure HME level 0, level 1 and level 2 from static config parameters
-    EB_BOOL enable_hme_level_0_flag = picture_control_set_ptr->enable_hme_level_0_flag;
-    EB_BOOL enable_hme_level_1_flag = picture_control_set_ptr->enable_hme_level_1_flag;
-    EB_BOOL enable_hme_level_2_flag = picture_control_set_ptr->enable_hme_level_2_flag;
-    EB_BOOL enable_half_pel32x32    = EB_FALSE;
-    EB_BOOL enable_half_pel16x16    = EB_FALSE;
-    EB_BOOL enable_half_pel8x8      = EB_FALSE;
-    EB_BOOL enable_quarter_pel      = EB_FALSE;
+    bool enable_hme_level_0_flag = picture_control_set_ptr->enable_hme_level_0_flag;
+    bool enable_hme_level_1_flag = picture_control_set_ptr->enable_hme_level_1_flag;
+    bool enable_hme_level_2_flag = picture_control_set_ptr->enable_hme_level_2_flag;
+    bool enable_half_pel32x32    = false;
+    bool enable_half_pel16x16    = false;
+    bool enable_half_pel8x8      = false;
+    bool enable_quarter_pel      = false;
 
     num_of_list_to_search = (picture_control_set_ptr->slice_type == P_SLICE) ? (uint32_t)REF_LIST_0
                                                                              : (uint32_t)REF_LIST_1;
@@ -5026,10 +5025,10 @@ EbErrorType motion_estimate_sb(
                 }
 
                 if (context_ptr->fractional_search_model == 0) {
-                    enable_half_pel32x32 = EB_TRUE;
-                    enable_half_pel16x16 = EB_TRUE;
-                    enable_half_pel8x8   = EB_TRUE;
-                    enable_quarter_pel   = EB_TRUE;
+                    enable_half_pel32x32 = true;
+                    enable_half_pel16x16 = true;
+                    enable_half_pel8x8   = true;
+                    enable_quarter_pel   = true;
                 } else if (context_ptr->fractional_search_model == 1) {
                     su_pel_enable(context_ptr,
                                   picture_control_set_ptr,
@@ -5038,13 +5037,13 @@ EbErrorType motion_estimate_sb(
                                   &enable_half_pel32x32,
                                   &enable_half_pel16x16,
                                   &enable_half_pel8x8);
-                    enable_quarter_pel = EB_TRUE;
+                    enable_quarter_pel = true;
 
                 } else {
-                    enable_half_pel32x32 = EB_FALSE;
-                    enable_half_pel16x16 = EB_FALSE;
-                    enable_half_pel8x8   = EB_FALSE;
-                    enable_quarter_pel   = EB_FALSE;
+                    enable_half_pel32x32 = false;
+                    enable_half_pel16x16 = false;
+                    enable_half_pel8x8   = false;
+                    enable_quarter_pel   = false;
                 }
 
                 if (enable_half_pel32x32 || enable_half_pel16x16 || enable_half_pel8x8 || enable_quarter_pel) {
@@ -5118,8 +5117,8 @@ EbErrorType motion_estimate_sb(
         total_me_candidate_index = candidate_index;
 
         if (num_of_list_to_search) {
-            EB_BOOL condition = (EB_BOOL)((picture_control_set_ptr->cu8x8_mode == CU_8x8_MODE_0 || pu_index < 21) &&
-                                          (picture_control_set_ptr->cu16x16_mode == CU_16x16_MODE_0 || pu_index < 5));
+            bool condition = (bool)((picture_control_set_ptr->cu8x8_mode == CU_8x8_MODE_0 || pu_index < 21) &&
+                                    (picture_control_set_ptr->cu16x16_mode == CU_16x16_MODE_0 || pu_index < 5));
 
             if (condition) {
                 bi_prediction_search(

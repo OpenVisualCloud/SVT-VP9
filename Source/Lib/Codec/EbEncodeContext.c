@@ -22,7 +22,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     encode_context_ptr->app_callback_ptr = (EbCallback *)NULL;
 
     // Port Active State
-    encode_context_ptr->recon_port_active = EB_FALSE;
+    encode_context_ptr->recon_port_active = false;
 
     // Port Active State
     EB_CREATEMUTEX(EbHandle, encode_context_ptr->total_number_of_recon_frame_mutex, sizeof(EbHandle), EB_MUTEX);
@@ -72,7 +72,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     encode_context_ptr->pre_assignment_buffer_idr_count          = 0;
     encode_context_ptr->pre_assignment_buffer_scene_change_count = 0;
     encode_context_ptr->pre_assignment_buffer_scene_change_index = 0;
-    encode_context_ptr->pre_assignment_buffer_eos_flag           = EB_FALSE;
+    encode_context_ptr->pre_assignment_buffer_eos_flag           = false;
     encode_context_ptr->decode_base_number                       = 0;
 
     encode_context_ptr->pre_assignment_buffer_count = 0;
@@ -185,20 +185,20 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     encode_context_ptr->pred_struct_position  = 0;
     encode_context_ptr->current_input_poc     = -1;
     encode_context_ptr->elapsed_non_idr_count = 0;
-    encode_context_ptr->initial_picture       = EB_TRUE;
+    encode_context_ptr->initial_picture       = true;
 
     encode_context_ptr->last_idr_picture = 0;
 
     // Sequence Termination Flags
     encode_context_ptr->terminating_picture_number         = ~0u;
-    encode_context_ptr->terminating_sequence_flag_received = EB_FALSE;
+    encode_context_ptr->terminating_sequence_flag_received = false;
 
     // Prediction Structure Group
     encode_context_ptr->prediction_structure_group_ptr = (PredictionStructureGroup *)NULL;
 
     // Rate Control
     encode_context_ptr->available_target_bitrate         = 10000000;
-    encode_context_ptr->available_target_bitrate_changed = EB_FALSE;
+    encode_context_ptr->available_target_bitrate_changed = false;
     encode_context_ptr->buffer_fill                      = 0;
     encode_context_ptr->vbv_buf_size                     = 0;
     encode_context_ptr->vbv_max_rate                     = 0;
@@ -216,7 +216,7 @@ EbErrorType eb_vp9_encode_context_ctor(EbPtr *object_dbl_ptr, EbPtr object_init_
     // RC Rate Table Update Mutex
     EB_CREATEMUTEX(EbHandle, encode_context_ptr->rate_table_update_mutex, sizeof(EbHandle), EB_MUTEX);
 
-    encode_context_ptr->rate_control_tables_array_updated = EB_FALSE;
+    encode_context_ptr->rate_control_tables_array_updated = false;
 
     EB_CREATEMUTEX(EbHandle, encode_context_ptr->sc_buffer_mutex, sizeof(EbHandle), EB_MUTEX);
     encode_context_ptr->sc_buffer                     = 0;

@@ -86,7 +86,7 @@ EbErrorType eb_vp9_resource_coordination_context_ctor(
     context_ptr->prevs_time_seconds                 = 0;
     context_ptr->prevs_timeu_seconds                = 0;
     context_ptr->prev_frame_out                     = 0;
-    context_ptr->start_flag                         = EB_FALSE;
+    context_ptr->start_flag                         = false;
     context_ptr->previous_buffer_check1             = 0;
     context_ptr->prev_change_cond                   = 0;
 
@@ -120,7 +120,7 @@ void eb_vp9_SpeedBufferControl(ResourceCoordinationContext *context_ptr,
         svt_vp9_get_time(&context_ptr->first_in_pic_arrived_time_seconds,
                          &context_ptr->first_in_pic_arrived_timeu_seconds);
     } else if (sequence_control_set_ptr->encode_context_ptr->sc_frame_in == SC_FRAMES_TO_IGNORE) {
-        context_ptr->start_flag = EB_TRUE;
+        context_ptr->start_flag = true;
     }
 
     // Compute duration since the start of the encode and since the previous checkpoint
@@ -251,7 +251,7 @@ void eb_vp9_SpeedBufferControl(ResourceCoordinationContext *context_ptr,
                                                     context_ptr->prev_frame_out) *
                     1000 / (uint64_t)(inst_duration);
         }
-        context_ptr->start_flag = EB_FALSE;
+        context_ptr->start_flag = false;
 
         // Update previous stats
         context_ptr->previous_frame_in_check3 = sequence_control_set_ptr->encode_context_ptr->sc_frame_in;
@@ -312,7 +312,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(SequenceControlSet      *se
     } else {
         picture_control_set_ptr->noise_detection_method = NOISE_DETECT_FULL_PRECISION;
     }
-    picture_control_set_ptr->enable_denoise_src_flag = EB_FALSE;
+    picture_control_set_ptr->enable_denoise_src_flag = false;
 
     // Derive Noise Detection Threshold
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_8) {
@@ -334,7 +334,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_sq(SequenceControlSet      *se
                                                       : // 1080I
         4; // 4K
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-        picture_control_set_ptr->enable_hme_flag = EB_TRUE;
+        picture_control_set_ptr->enable_hme_flag = true;
 
     } else {
         picture_control_set_ptr->enable_hme_flag = sequence_control_set_ptr->static_config.enable_hme_flag;
@@ -399,7 +399,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_oq(SequenceControlSet      *se
                                                       : // 1080I
         4; // 4K
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-        picture_control_set_ptr->enable_hme_flag = EB_TRUE;
+        picture_control_set_ptr->enable_hme_flag = true;
 
     } else {
         picture_control_set_ptr->enable_hme_flag = sequence_control_set_ptr->static_config.enable_hme_flag;
@@ -408,7 +408,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_oq(SequenceControlSet      *se
     picture_control_set_ptr->enable_hme_level_1_flag = enable_hme_level1_flag_oq[resolution_index][hme_me_level];
     picture_control_set_ptr->enable_hme_level_2_flag = enable_hme_level2_flag_oq[resolution_index][hme_me_level];
 
-    picture_control_set_ptr->enable_denoise_src_flag = EB_FALSE;
+    picture_control_set_ptr->enable_denoise_src_flag = false;
 
     return return_error;
 }
@@ -443,7 +443,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_vmaf(SequenceControlSet      *
         4; // 4K
     resolution_index = 3;
     if (sequence_control_set_ptr->static_config.use_default_me_hme) {
-        picture_control_set_ptr->enable_hme_flag = EB_TRUE;
+        picture_control_set_ptr->enable_hme_flag = true;
 
     } else {
         picture_control_set_ptr->enable_hme_flag = sequence_control_set_ptr->static_config.enable_hme_flag;
@@ -452,7 +452,7 @@ EbErrorType eb_vp9_signal_derivation_pre_analysis_vmaf(SequenceControlSet      *
     picture_control_set_ptr->enable_hme_level_1_flag = enable_hme_level1_flag_vmaf[resolution_index][hme_me_level];
     picture_control_set_ptr->enable_hme_level_2_flag = enable_hme_level2_flag_vmaf[resolution_index][hme_me_level];
 
-    picture_control_set_ptr->enable_denoise_src_flag = EB_FALSE;
+    picture_control_set_ptr->enable_denoise_src_flag = false;
 
     return return_error;
 }
@@ -480,7 +480,7 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
     EbObjectWrapper *prev_picture_control_set_wrapper_ptr = NULL;
     uint32_t         instance_index;
 
-    EB_BOOL  end_of_sequence_flag = EB_FALSE;
+    bool     end_of_sequence_flag = false;
     uint32_t input_size           = 0;
 
     for (;;) {
@@ -680,7 +680,7 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         input_picture_wrapper_ptr                     = ebInputWrapperPtr;
         picture_control_set_ptr->enhanced_picture_ptr = (EbPictureBufferDesc *)eb_input_ptr->p_buffer;
         picture_control_set_ptr->eb_input_ptr         = eb_input_ptr;
-        end_of_sequence_flag = (picture_control_set_ptr->eb_input_ptr->flags & EB_BUFFERFLAG_EOS) ? EB_TRUE : EB_FALSE;
+        end_of_sequence_flag = (picture_control_set_ptr->eb_input_ptr->flags & EB_BUFFERFLAG_EOS) ? true : false;
         svt_vp9_get_time(&picture_control_set_ptr->start_time_seconds, &picture_control_set_ptr->start_timeu_seconds);
 
         picture_control_set_ptr->sequence_control_set_wrapper_ptr =
@@ -691,9 +691,9 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         // Set Picture Control Flags
         picture_control_set_ptr->idr_flag = sequence_control_set_ptr->encode_context_ptr->initial_picture ||
             (picture_control_set_ptr->eb_input_ptr->pic_type == EB_IDR_PICTURE);
-        picture_control_set_ptr->scene_change_flag = EB_FALSE;
+        picture_control_set_ptr->scene_change_flag = false;
 
-        picture_control_set_ptr->qp_on_the_fly = EB_FALSE;
+        picture_control_set_ptr->qp_on_the_fly = false;
 
         picture_control_set_ptr->sb_total_count = sequence_control_set_ptr->sb_total_count;
 
@@ -725,15 +725,15 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         picture_control_set_ptr->full_sb_count = 0;
 
         if (sequence_control_set_ptr->static_config.use_qp_file == 1) {
-            picture_control_set_ptr->qp_on_the_fly = EB_TRUE;
+            picture_control_set_ptr->qp_on_the_fly = true;
             if (picture_control_set_ptr->eb_input_ptr->qp > MAX_QP_VALUE) {
                 SVT_LOG("SVT [WARNING]: INPUT QP OUTSIDE OF RANGE\n");
-                picture_control_set_ptr->qp_on_the_fly = EB_FALSE;
+                picture_control_set_ptr->qp_on_the_fly = false;
                 picture_control_set_ptr->picture_qp    = (uint8_t)sequence_control_set_ptr->qp;
             }
             picture_control_set_ptr->picture_qp = (uint8_t)picture_control_set_ptr->eb_input_ptr->qp;
         } else {
-            picture_control_set_ptr->qp_on_the_fly = EB_FALSE;
+            picture_control_set_ptr->qp_on_the_fly = false;
             picture_control_set_ptr->picture_qp    = (uint8_t)sequence_control_set_ptr->qp;
         }
 
@@ -743,7 +743,7 @@ void *eb_vp9_resource_coordination_kernel(void *input_ptr) {
         // Set the picture structure: 0: progressive, 1: top, 2: bottom
         picture_control_set_ptr->pict_struct = PROGRESSIVE_PIC_STRUCT;
 
-        sequence_control_set_ptr->encode_context_ptr->initial_picture = EB_FALSE;
+        sequence_control_set_ptr->encode_context_ptr->initial_picture = false;
 
         // Get Empty Reference Picture Object
         eb_vp9_get_empty_object(sequence_control_set_ptr->encode_context_ptr->pa_reference_picture_pool_fifo_ptr,

@@ -22,7 +22,7 @@ typedef struct SourceBasedOperationsContext {
     uint32_t picture_num_grass_sb;
     uint32_t high_contrast_num;
 
-    EB_BOOL  high_dist;
+    bool     high_dist;
     uint8_t *y_mean_ptr;
     uint8_t *cr_mean_ptr;
     uint8_t *cb_mean_ptr;

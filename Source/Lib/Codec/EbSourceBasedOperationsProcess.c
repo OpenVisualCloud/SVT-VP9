@@ -97,7 +97,7 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
                    PictureParentControlSet *picture_control_set_ptr, uint32_t sb_index) {
     uint32_t child_index;
 
-    EB_BOOL sb_grass_flag = EB_FALSE;
+    bool sb_grass_flag = false;
 
     uint32_t raster_scan_block_index;
 
@@ -106,7 +106,7 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
 
     _mm_prefetch((const char *)sb_stat_ptr, _MM_HINT_T0);
 
-    sb_grass_flag = EB_FALSE;
+    sb_grass_flag = false;
 
     for (raster_scan_block_index = PA_RASTER_SCAN_CU_INDEX_16x16_0;
          raster_scan_block_index <= PA_RASTER_SCAN_CU_INDEX_16x16_15;
@@ -132,20 +132,20 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
             grass_condition += (cb_mean > CB_MEAN_RANGE_00 && cb_mean < CB_MEAN_RANGE_02) ? 2 : 0;
             grass_condition += (cr_mean > CR_MEAN_RANGE_00 && cr_mean < CR_MEAN_RANGE_02) ? 4 : 0;
 
-            sb_grass_flag = grass_condition == perfect_condition ? EB_TRUE : sb_grass_flag;
+            sb_grass_flag = grass_condition == perfect_condition ? true : sb_grass_flag;
 
-            cu_stat_ptr->grass_area = (EB_BOOL)(grass_condition == perfect_condition);
+            cu_stat_ptr->grass_area = (bool)(grass_condition == perfect_condition);
             // SKIN
             skin_condition += (y_mean > Y_MEAN_RANGE_03 && y_mean < Y_MEAN_RANGE_01) ? 1 : 0;
             skin_condition += (cb_mean > 100 && cb_mean < 120) ? 2 : 0;
             skin_condition += (cr_mean > 135 && cr_mean < 160) ? 4 : 0;
 
-            cu_stat_ptr->skin_area = (EB_BOOL)(skin_condition == perfect_condition);
+            cu_stat_ptr->skin_area = (bool)(skin_condition == perfect_condition);
 
             high_chroma_condition    = (cr_mean >= 127 || cb_mean > 150) ? 1 : 0;
             high_luma_condition      = (cr_mean >= 80 && y_mean > 180) ? 1 : 0;
-            cu_stat_ptr->high_luma   = (high_luma_condition == 1) ? EB_TRUE : EB_FALSE;
-            cu_stat_ptr->high_chroma = (high_chroma_condition == 1) ? EB_TRUE : EB_FALSE;
+            cu_stat_ptr->high_luma   = (high_luma_condition == 1) ? true : false;
+            cu_stat_ptr->high_chroma = (high_chroma_condition == 1) ? true : false;
 
             for (child_index = md_scan_block_index + 1; child_index < md_scan_block_index + 5; ++child_index) {
                 sb_stat_ptr->cu_stat_array[child_index].grass_area  = cu_stat_ptr->grass_area;
@@ -155,27 +155,27 @@ void grass_skin_sb(SourceBasedOperationsContext *context_ptr, SequenceControlSet
             }
 
             sb_stat_ptr->cu_stat_array[mdScanParentblock_index].grass_area  = cu_stat_ptr->grass_area
-                 ? EB_TRUE
+                 ? true
                  : sb_stat_ptr->cu_stat_array[mdScanParentblock_index].grass_area;
             sb_stat_ptr->cu_stat_array[0].grass_area                        = cu_stat_ptr->grass_area
-                                       ? EB_TRUE
+                                       ? true
                                        : sb_stat_ptr->cu_stat_array[0].grass_area;
             sb_stat_ptr->cu_stat_array[mdScanParentblock_index].skin_area   = cu_stat_ptr->skin_area
-                  ? EB_TRUE
+                  ? true
                   : sb_stat_ptr->cu_stat_array[mdScanParentblock_index].skin_area;
-            sb_stat_ptr->cu_stat_array[0].skin_area                         = cu_stat_ptr->skin_area ? EB_TRUE
+            sb_stat_ptr->cu_stat_array[0].skin_area                         = cu_stat_ptr->skin_area ? true
                                                                                                      : sb_stat_ptr->cu_stat_array[0].skin_area;
             sb_stat_ptr->cu_stat_array[mdScanParentblock_index].high_chroma = cu_stat_ptr->high_chroma
-                ? EB_TRUE
+                ? true
                 : sb_stat_ptr->cu_stat_array[mdScanParentblock_index].high_chroma;
             sb_stat_ptr->cu_stat_array[0].high_chroma                       = cu_stat_ptr->high_chroma
-                                      ? EB_TRUE
+                                      ? true
                                       : sb_stat_ptr->cu_stat_array[0].high_chroma;
 
             sb_stat_ptr->cu_stat_array[mdScanParentblock_index].high_luma = cu_stat_ptr->high_luma
-                ? EB_TRUE
+                ? true
                 : sb_stat_ptr->cu_stat_array[mdScanParentblock_index].high_luma;
-            sb_stat_ptr->cu_stat_array[0].high_luma                       = cu_stat_ptr->high_luma ? EB_TRUE
+            sb_stat_ptr->cu_stat_array[0].high_luma                       = cu_stat_ptr->high_luma ? true
                                                                                                    : sb_stat_ptr->cu_stat_array[0].high_luma;
         }
     }
@@ -203,7 +203,7 @@ static void determine_isolated_non_homogeneous_region_in_picture(SequenceControl
     for (sb_index = 0; sb_index < sb_total_count; ++sb_index) {
         SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
         // Initialize
-        picture_control_set_ptr->sb_isolated_non_homogeneous_area_array[sb_index] = EB_FALSE;
+        picture_control_set_ptr->sb_isolated_non_homogeneous_area_array[sb_index] = false;
         if ((sb_params->horizontal_index > 0) && (sb_params->horizontal_index < picture_width_in_sb - 1) &&
             (sb_params->vertical_index > 0) && (sb_params->vertical_index < picture_height_in_sb - 1)) {
             uint32_t count_of_med_variance_sb;
@@ -274,7 +274,7 @@ static void determine_isolated_non_homogeneous_region_in_picture(SequenceControl
                             if (sb_ver != 0 && sb_hor != 0)
                                 count_of_homogeneous_neighbor_sbs +=
                                     (picture_control_set_ptr
-                                         ->sb_homogeneous_area_array[sb_index + sb_ver_offset + sb_hor] == EB_TRUE);
+                                         ->sb_homogeneous_area_array[sb_index + sb_ver_offset + sb_hor] == true);
                         }
                     }
                 }
@@ -284,7 +284,7 @@ static void determine_isolated_non_homogeneous_region_in_picture(SequenceControl
                     for (cuu_index = 0; cuu_index < 4; cuu_index++) {
                         if (picture_control_set_ptr->var_of_var_32x32_based_sb_array[sb_index][cuu_index] >
                             VAR_BASED_DETAIL_PRESERVATION_SELECTOR_THRSLHD) {
-                            picture_control_set_ptr->sb_isolated_non_homogeneous_area_array[sb_index] = EB_TRUE;
+                            picture_control_set_ptr->sb_isolated_non_homogeneous_area_array[sb_index] = true;
                         }
                     }
                 }
@@ -362,8 +362,7 @@ void eb_vp9_derive_high_dark_area_density_flag(SequenceControlSet      *sequence
 
     black_area_percentage = (black_samples_count * 100) /
         (sequence_control_set_ptr->luma_width * sequence_control_set_ptr->luma_height);
-    picture_control_set_ptr->high_dark_area_density_flag = (EB_BOOL)(black_area_percentage >=
-                                                                     MIN_BLACK_AREA_PERCENTAGE);
+    picture_control_set_ptr->high_dark_area_density_flag = (bool)(black_area_percentage >= MIN_BLACK_AREA_PERCENTAGE);
 
     black_samples_count          = 0;
     uint32_t white_samples_count = 0;
@@ -397,8 +396,8 @@ void eb_vp9_derive_high_dark_area_density_flag(SequenceControlSet      *sequence
 
     picture_control_set_ptr->black_area_percentage = (uint8_t)black_area_percentage;
 
-    picture_control_set_ptr->high_dark_low_light_area_density_flag = (EB_BOOL)(black_area_percentage >=
-                                                                               MIN_BLACK_AREA_PERCENTAGE) &&
+    picture_control_set_ptr->high_dark_low_light_area_density_flag = (bool)(black_area_percentage >=
+                                                                            MIN_BLACK_AREA_PERCENTAGE) &&
         (white_area_percentage >= MIN_WHITE_AREA_PERCENTAGE);
 }
 #define NORM_FACTOR 10
@@ -433,7 +432,7 @@ void temporal_high_contrast_classifier(SourceBasedOperationsContext *context_ptr
                 me_dist++;
         }
     }
-    context_ptr->high_dist = me_dist > 0 ? EB_TRUE : EB_FALSE;
+    context_ptr->high_dist = me_dist > 0 ? true : false;
 }
 
 void spatial_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
@@ -464,9 +463,9 @@ void spatial_high_contrast_classifier(SourceBasedOperationsContext *context_ptr,
 Input   : current SB value
 Output  : populate to neighbor SBs
 ******************************************************/
-void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_control_set_ptr,
-                                              EB_BOOL input_to_populate, EB_BOOL *output_buffer, uint32_t sb_adrr,
-                                              uint32_t sb_origin_x, uint32_t sb_origin_y) {
+void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_control_set_ptr, bool input_to_populate,
+                                              bool *output_buffer, uint32_t sb_adrr, uint32_t sb_origin_x,
+                                              uint32_t sb_origin_y) {
     uint32_t picture_width_in_sbs = (picture_control_set_ptr->enhanced_picture_ptr->width + MAX_SB_SIZE_MINUS_1) /
         MAX_SB_SIZE;
 
@@ -518,7 +517,7 @@ void populate_from_current_sb_to_neighbor_sbs(PictureParentControlSet *picture_c
 Input   : variance
 Output  : true if current & neighbors are spatially complex
 ******************************************************/
-EB_BOOL is_spatially_complex_area(
+bool is_spatially_complex_area(
 
     PictureParentControlSet *picture_control_set_ptr, uint32_t sb_adrr, uint32_t sb_origin_x, uint32_t sb_origin_y) {
     uint32_t available_sbs_count     = 0;
@@ -606,10 +605,10 @@ EB_BOOL is_spatially_complex_area(
     }
 
     if (high_variance_sbs_count == available_sbs_count) {
-        return EB_TRUE;
+        return true;
     }
 
-    return EB_FALSE;
+    return false;
 }
 
 /******************************************************
@@ -689,7 +688,7 @@ static void stationary_edge_over_update_over_time_sb(SequenceControlSet      *se
         SbParams *sb_params   = &sequence_control_set_ptr->sb_params_array[sb_index];
         SbStat   *sb_stat_ptr = &picture_control_set_ptr->sb_stat_array[sb_index];
 
-        sb_stat_ptr->stationary_edge_over_time_flag = EB_FALSE;
+        sb_stat_ptr->stationary_edge_over_time_flag = false;
         if (sb_params->potential_logo_sb && sb_params->is_complete_sb &&
             sb_stat_ptr->check1_for_logo_stationary_edge_over_time_flag &&
             sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag) {
@@ -705,10 +704,10 @@ static void stationary_edge_over_update_over_time_sb(SequenceControlSet      *se
                     : 0;
             }
 
-            sb_stat_ptr->stationary_edge_over_time_flag = (similar_edge_count_sb >= 4) ? EB_TRUE : EB_FALSE;
+            sb_stat_ptr->stationary_edge_over_time_flag = (similar_edge_count_sb >= 4) ? true : false;
         }
 
-        sb_stat_ptr->pm_stationary_edge_over_time_flag = EB_FALSE;
+        sb_stat_ptr->pm_stationary_edge_over_time_flag = false;
         if (sb_params->potential_logo_sb && sb_params->is_complete_sb &&
             sb_stat_ptr->pm_check1_for_logo_stationary_edge_over_time_flag &&
             sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag) {
@@ -724,7 +723,7 @@ static void stationary_edge_over_update_over_time_sb(SequenceControlSet      *se
                     : 0;
             }
 
-            sb_stat_ptr->pm_stationary_edge_over_time_flag = (similar_edge_count_sb >= 4) ? EB_TRUE : EB_FALSE;
+            sb_stat_ptr->pm_stationary_edge_over_time_flag = (similar_edge_count_sb >= 4) ? true : false;
         }
     }
     {
@@ -957,7 +956,7 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
         sequence_control_set_ptr = (SequenceControlSet *)
                                        picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
 
-        picture_control_set_ptr->dark_background_light_foreground = EB_FALSE;
+        picture_control_set_ptr->dark_background_light_foreground = false;
         context_ptr->picture_num_grass_sb                         = 0;
         uint32_t sb_total_count                                   = picture_control_set_ptr->sb_total_count;
         uint32_t sb_index;
@@ -966,7 +965,7 @@ void *eb_vp9_source_based_operations_kernel(void *input_ptr) {
         for (sb_index = 0; sb_index < sb_total_count; ++sb_index) {
             SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
             picture_control_set_ptr->sb_cmplx_contrast_array[sb_index] = 0;
-            EB_BOOL  is_complete_sb                                    = sb_params->is_complete_sb;
+            bool     is_complete_sb                                    = sb_params->is_complete_sb;
             uint8_t *y_mean_ptr                                        = picture_control_set_ptr->y_mean[sb_index];
 
             _mm_prefetch((const char *)y_mean_ptr, _MM_HINT_T0);

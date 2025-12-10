@@ -44,7 +44,7 @@
 * Picture Analysis Context Constructor
 ************************************************/
 EbErrorType eb_vp9_picture_analysis_context_ctor(EbPictureBufferDescInitData *input_picture_buffer_desc_init_data,
-                                                 EB_BOOL denoise_flag, PictureAnalysisContext **context_dbl_ptr,
+                                                 bool denoise_flag, PictureAnalysisContext **context_dbl_ptr,
                                                  EbFifo  *resource_coordination_results_input_fifo_ptr,
                                                  EbFifo  *picture_analysis_results_output_fifo_ptr,
                                                  uint16_t sb_total_count) {
@@ -57,7 +57,7 @@ EbErrorType eb_vp9_picture_analysis_context_ctor(EbPictureBufferDescInitData *in
 
     EbErrorType return_error = EB_ErrorNone;
 
-    if (denoise_flag == EB_TRUE) {
+    if (denoise_flag == true) {
         //denoised
         return_error = eb_vp9_picture_buffer_desc_ctor((EbPtr *)&(context_ptr->denoised_picture_ptr),
                                                        (EbPtr)input_picture_buffer_desc_init_data);
@@ -3427,7 +3427,7 @@ static EbErrorType detect_input_picture_noise(PictureAnalysisContext  *context_p
 static EbErrorType full_sample_denoise(PictureAnalysisContext  *context_ptr,
                                        SequenceControlSet      *sequence_control_set_ptr,
                                        PictureParentControlSet *picture_control_set_ptr, uint32_t sb_total_count,
-                                       EB_BOOL denoise_flag) {
+                                       bool denoise_flag) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t             sb_index;
@@ -3449,7 +3449,7 @@ static EbErrorType full_sample_denoise(PictureAnalysisContext  *context_ptr,
                                noise_picture_ptr,
                                denoised_picture_ptr);
 
-    if (denoise_flag == EB_TRUE) {
+    if (denoise_flag == true) {
         denoise_input_picture(
             context_ptr, sequence_control_set_ptr, picture_control_set_ptr, input_picture_ptr, denoised_picture_ptr);
     }
@@ -3851,7 +3851,7 @@ static EbErrorType quarter_sample_denoise(PictureAnalysisContext  *context_ptr,
                                           SequenceControlSet      *sequence_control_set_ptr,
                                           PictureParentControlSet *picture_control_set_ptr,
                                           EbPictureBufferDesc *quarter_decimated_picture_ptr, uint32_t sb_total_count,
-                                          EB_BOOL denoise_flag, uint32_t picture_width_in_sb) {
+                                          bool denoise_flag, uint32_t picture_width_in_sb) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t             sb_index;
@@ -3885,7 +3885,7 @@ static EbErrorType quarter_sample_denoise(PictureAnalysisContext  *context_ptr,
                                 denoised_picture_ptr,
                                 picture_width_in_sb);
 
-    if (denoise_flag == EB_TRUE) {
+    if (denoise_flag == true) {
         // Turn OFF the de-noiser for Class 2 at QP=29 and lower (for Fixed_QP) and at the target rate of 14Mbps and higher (for RC=ON)
         if ((picture_control_set_ptr->pic_noise_class == PIC_NOISE_CLASS_3_1) ||
             ((picture_control_set_ptr->pic_noise_class == PIC_NOISE_CLASS_2) &&
@@ -3907,7 +3907,7 @@ static EbErrorType quarter_sample_denoise(PictureAnalysisContext  *context_ptr,
 EbErrorType half_sample_denoise(PictureAnalysisContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
                                 PictureParentControlSet *picture_control_set_ptr,
                                 EbPictureBufferDesc *sixteenth_decimated_picture_ptr, uint32_t sb_total_count,
-                                EB_BOOL denoise_flag, uint32_t picture_width_in_sb) {
+                                bool denoise_flag, uint32_t picture_width_in_sb) {
     EbErrorType return_error = EB_ErrorNone;
 
     uint32_t             sb_index;
@@ -3942,7 +3942,7 @@ EbErrorType half_sample_denoise(PictureAnalysisContext *context_ptr, SequenceCon
                             denoised_picture_ptr,
                             picture_width_in_sb);
 
-    if (denoise_flag == EB_TRUE) {
+    if (denoise_flag == true) {
         // Turn OFF the de-noiser for Class 2 at QP=29 and lower (for Fixed_QP) and at the target rate of 14Mbps and higher (for RC=ON)
         if ((picture_control_set_ptr->pic_noise_class == PIC_NOISE_CLASS_3_1) ||
             ((picture_control_set_ptr->pic_noise_class == PIC_NOISE_CLASS_2) &&
@@ -4340,10 +4340,10 @@ void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentC
     uint32_t  sb_x                 = 0;
     uint32_t  sb_y                 = 0;
     uint32_t  sb_index;
-    EB_BOOL   high_variance_sb_flag;
+    bool      high_variance_sb_flag;
 
     uint32_t raster_scan_block_index = 0;
-    EB_BOOL  high_intensity_sb_flag;
+    bool     high_intensity_sb_flag;
 
     uint64_t neighbour_sb_mean;
     int32_t  i, j;
@@ -4371,7 +4371,7 @@ void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentC
 
             similarity_count = 0;
 
-            high_variance_sb_flag = (variance_ptr[PA_RASTER_SCAN_CU_INDEX_64x64] > thrsld_level0) ? EB_TRUE : EB_FALSE;
+            high_variance_sb_flag = (variance_ptr[PA_RASTER_SCAN_CU_INDEX_64x64] > thrsld_level0) ? true : false;
             edge_results_ptr[sb_index].edge_block_num = high_variance_sb_flag;
             if (variance_ptr[0] > high_intensity_th1) {
                 uint8_t sharpEdge = 0;
@@ -4388,8 +4388,7 @@ void edge_detection(SequenceControlSet *sequence_control_set_ptr, PictureParentC
 
             if (sb_x > 3 && sb_x < (uint32_t)(picture_width_in_sb - 4) && sb_y > 3 &&
                 sb_y < (uint32_t)(picture_height_in_sb - 4)) {
-                high_intensity_sb_flag = (mean_ptr[PA_RASTER_SCAN_CU_INDEX_64x64] > high_intensity_th) ? EB_TRUE
-                                                                                                       : EB_FALSE;
+                high_intensity_sb_flag = (mean_ptr[PA_RASTER_SCAN_CU_INDEX_64x64] > high_intensity_th) ? true : false;
 
                 if (high_intensity_sb_flag) {
                     neighboursb_index = sb_index - 1;
@@ -4454,7 +4453,7 @@ static void determine_homogeneous_region_in_picture(SequenceControlSet      *seq
         SbParams *sb_params = &sequence_control_set_ptr->sb_params_array[sb_index];
 
         // Initialize
-        picture_control_set_ptr->sb_homogeneous_area_array[sb_index] = EB_TRUE;
+        picture_control_set_ptr->sb_homogeneous_area_array[sb_index] = true;
 
         variance_ptr = picture_control_set_ptr->variance[sb_index];
 
@@ -4526,7 +4525,7 @@ static void determine_homogeneous_region_in_picture(SequenceControlSet      *seq
 
                 // Turn off detail preservation if the varOfVar is greater than a threshold
                 if (var_of_var64x64_based > VAR_BASED_DETAIL_PRESERVATION_SELECTOR_THRSLHD) {
-                    picture_control_set_ptr->sb_homogeneous_area_array[sb_index] = EB_FALSE;
+                    picture_control_set_ptr->sb_homogeneous_area_array[sb_index] = false;
                 }
             }
 
@@ -4538,14 +4537,14 @@ static void determine_homogeneous_region_in_picture(SequenceControlSet      *seq
             picture_control_set_ptr->var_of_var_32x32_based_sb_array[sb_index][3] = 0xFFFFFFFFFFFFFFFF;
         }
     }
-    picture_control_set_ptr->very_low_var_pic_flag = EB_FALSE;
+    picture_control_set_ptr->very_low_var_pic_flag = false;
     if (var_sb_cnt > 0 && (((very_low_var_cnt * 100) / var_sb_cnt) > PIC_LOW_VAR_PERCENTAGE_TH)) {
-        picture_control_set_ptr->very_low_var_pic_flag = EB_TRUE;
+        picture_control_set_ptr->very_low_var_pic_flag = true;
     }
 
-    picture_control_set_ptr->logo_pic_flag = EB_FALSE;
+    picture_control_set_ptr->logo_pic_flag = false;
     if (var_sb_cnt > 0 && (((very_low_var_cnt * 100) / var_sb_cnt) > 80)) {
-        picture_control_set_ptr->logo_pic_flag = EB_TRUE;
+        picture_control_set_ptr->logo_pic_flag = true;
     }
 
     return;
@@ -4714,7 +4713,7 @@ static void gathering_picture_statistics(SequenceControlSet      *sequence_contr
  ************************************************/
 void pad_picture_to_multiple_of_min_cu_size_dimensions(SequenceControlSet  *sequence_control_set_ptr,
                                                        EbPictureBufferDesc *input_picture_ptr) {
-    EB_BOOL is_16bit_input = (EB_BOOL)(sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
+    bool is_16bit_input = (bool)(sequence_control_set_ptr->static_config.encoder_bit_depth > EB_8BIT);
 
     // Input Picture Padding
     eb_vp9_pad_input_picture(
@@ -4803,14 +4802,14 @@ void decimate_input_picture(SequenceControlSet      *sequence_control_set_ptr,
                             EbPictureBufferDesc     *quarter_decimated_picture_ptr,
                             EbPictureBufferDesc     *sixteenth_decimated_picture_ptr) {
     // Decimate input picture for HME L1
-    EB_BOOL preform_quarter_pell_decimation_flag;
+    bool preform_quarter_pell_decimation_flag;
     if (sequence_control_set_ptr->static_config.speed_control_flag) {
-        preform_quarter_pell_decimation_flag = EB_TRUE;
+        preform_quarter_pell_decimation_flag = true;
     } else {
         if (picture_control_set_ptr->enable_hme_level_1_flag == 1) {
-            preform_quarter_pell_decimation_flag = EB_TRUE;
+            preform_quarter_pell_decimation_flag = true;
         } else {
-            preform_quarter_pell_decimation_flag = EB_FALSE;
+            preform_quarter_pell_decimation_flag = false;
         }
     }
 

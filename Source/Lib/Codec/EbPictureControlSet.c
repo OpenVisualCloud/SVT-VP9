@@ -27,7 +27,7 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     uint16_t       sb_origin_y;
     EbErrorType    return_error = EB_ErrorNone;
 
-    EB_BOOL is16bit = init_data_ptr->is16bit;
+    bool is16bit = init_data_ptr->is16bit;
 
     EB_MALLOC(PictureControlSet *, object_ptr, sizeof(PictureControlSet), EB_N_PTR);
 
@@ -52,7 +52,7 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     input_picture_buffer_desc_init_data.right_padding      = 0;
     input_picture_buffer_desc_init_data.top_padding        = 0;
     input_picture_buffer_desc_init_data.bot_padding        = 0;
-    input_picture_buffer_desc_init_data.split_mode         = EB_FALSE;
+    input_picture_buffer_desc_init_data.split_mode         = false;
 
     coeff_buffer_desc_init_data.max_width          = init_data_ptr->picture_width;
     coeff_buffer_desc_init_data.max_height         = init_data_ptr->picture_height;
@@ -62,7 +62,7 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     coeff_buffer_desc_init_data.right_padding      = 0;
     coeff_buffer_desc_init_data.top_padding        = 0;
     coeff_buffer_desc_init_data.bot_padding        = 0;
-    coeff_buffer_desc_init_data.split_mode         = EB_FALSE;
+    coeff_buffer_desc_init_data.split_mode         = false;
 
     *object_dbl_ptr = (EbPtr)object_ptr;
 
@@ -72,7 +72,7 @@ EbErrorType eb_vp9_picture_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr object_
     object_ptr->recon_picture_ptr       = (EbPictureBufferDesc *)NULL;
 
     // Reconstructed Picture Buffer
-    if (init_data_ptr->is16bit == EB_TRUE) {
+    if (init_data_ptr->is16bit == true) {
         return_error = eb_vp9_recon_picture_buffer_desc_ctor((EbPtr *)&(object_ptr->recon_picture_16bit_ptr),
                                                              (EbPtr)&coeff_buffer_desc_init_data);
     } else {
@@ -355,7 +355,7 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
     // GOP
     object_ptr->pred_struct_index    = 0;
     object_ptr->picture_number       = 0;
-    object_ptr->idr_flag             = EB_FALSE;
+    object_ptr->idr_flag             = false;
     object_ptr->temporal_layer_index = 0;
 
     object_ptr->total_num_bits = 0;
@@ -439,14 +439,11 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
     EB_MALLOC(uint8_t *, object_ptr->non_moving_index_array, sizeof(uint8_t) * object_ptr->sb_total_count, EB_N_PTR);
 
     // similar Colocated Lcu array
-    EB_MALLOC(
-        EB_BOOL *, object_ptr->similar_colocated_sb_array, sizeof(EB_BOOL) * object_ptr->sb_total_count, EB_N_PTR);
+    EB_MALLOC(bool *, object_ptr->similar_colocated_sb_array, sizeof(bool) * object_ptr->sb_total_count, EB_N_PTR);
 
     // similar Colocated Lcu array
-    EB_MALLOC(EB_BOOL *,
-              object_ptr->similar_colocated_sb_array_all_layers,
-              sizeof(EB_BOOL) * object_ptr->sb_total_count,
-              EB_N_PTR);
+    EB_MALLOC(
+        bool *, object_ptr->similar_colocated_sb_array_all_layers, sizeof(bool) * object_ptr->sb_total_count, EB_N_PTR);
 
     // LCU noise variance array
     EB_MALLOC(uint8_t *, object_ptr->sb_flat_noise_array, sizeof(uint8_t) * object_ptr->sb_total_count, EB_N_PTR);
@@ -454,12 +451,11 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
               object_ptr->sb_variance_of_variance_over_time,
               sizeof(uint64_t) * object_ptr->sb_total_count,
               EB_N_PTR);
-    EB_MALLOC(
-        EB_BOOL *, object_ptr->is_sb_homogeneous_over_time, sizeof(EB_BOOL) * object_ptr->sb_total_count, EB_N_PTR);
+    EB_MALLOC(bool *, object_ptr->is_sb_homogeneous_over_time, sizeof(bool) * object_ptr->sb_total_count, EB_N_PTR);
     EB_MALLOC(
         EdgeSbResults *, object_ptr->edge_results_ptr, sizeof(EdgeSbResults) * object_ptr->sb_total_count, EB_N_PTR);
-    EB_MALLOC(uint8_t *, object_ptr->sharp_edge_sb_flag, sizeof(EB_BOOL) * object_ptr->sb_total_count, EB_N_PTR);
-    EB_MALLOC(EB_BOOL *, object_ptr->sb_homogeneous_area_array, sizeof(EB_BOOL) * object_ptr->sb_total_count, EB_N_PTR);
+    EB_MALLOC(uint8_t *, object_ptr->sharp_edge_sb_flag, sizeof(bool) * object_ptr->sb_total_count, EB_N_PTR);
+    EB_MALLOC(bool *, object_ptr->sb_homogeneous_area_array, sizeof(bool) * object_ptr->sb_total_count, EB_N_PTR);
 
     EB_MALLOC(uint64_t **,
               object_ptr->var_of_var_32x32_based_sb_array,
@@ -469,12 +465,15 @@ EbErrorType eb_vp9_picture_parent_control_set_ctor(EbPtr *object_dbl_ptr, EbPtr 
         EB_MALLOC(uint64_t *, object_ptr->var_of_var_32x32_based_sb_array[sb_index], sizeof(uint64_t) * 4, EB_N_PTR);
     }
 
-    EB_MALLOC(EB_BOOL *,
+    EB_MALLOC(bool *,
               object_ptr->sb_isolated_non_homogeneous_area_array,
-              sizeof(EB_BOOL) * object_ptr->sb_total_count,
+              sizeof(bool) * object_ptr->sb_total_count,
               EB_N_PTR);
 
-    EB_MALLOC(uint8_t *, object_ptr->sb_cmplx_contrast_array, sizeof(uint8_t) * object_ptr->sb_total_count, EB_N_PTR);
+    EB_MALLOC(bool *,
+              object_ptr->sb_cmplx_contrast_array,
+              sizeof(*object_ptr->sb_cmplx_contrast_array) * object_ptr->sb_total_count,
+              EB_N_PTR);
 
     EB_MALLOC(SbStat *, object_ptr->sb_stat_array, sizeof(SbStat) * object_ptr->sb_total_count, EB_N_PTR);
 

@@ -87,7 +87,7 @@ uint32_t eb_vp9_qp_scaling_calc(SequenceControlSet *sequence_control_set_ptr, EB
 void eb_vp9_rate_control_layer_reset(RateControlLayerContext *rate_control_layer_ptr,
                                      PictureControlSet       *picture_control_set_ptr,
                                      RateControlContext *rate_control_context_ptr, uint32_t picture_area_in_pixel,
-                                     EB_BOOL was_used) {
+                                     bool was_used) {
     SequenceControlSet *sequence_control_set_ptr =
         (SequenceControlSet *)picture_control_set_ptr->sequence_control_set_wrapper_ptr->object_ptr;
     uint32_t slice_num;
@@ -275,7 +275,7 @@ EbErrorType eb_vp9_rate_control_layer_context_ctor(RateControlLayerContext **ent
 
     entry_ptr->first_frame           = 1;
     entry_ptr->first_non_intra_frame = 1;
-    entry_ptr->feedback_arrived      = EB_FALSE;
+    entry_ptr->feedback_arrived      = false;
 
     return EB_ErrorNone;
 }
@@ -288,9 +288,9 @@ EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalP
 
     *entry_dbl_ptr = entry_ptr;
 
-    entry_ptr->in_use                  = EB_FALSE;
-    entry_ptr->was_used                = EB_FALSE;
-    entry_ptr->last_gop                = EB_FALSE;
+    entry_ptr->in_use                  = false;
+    entry_ptr->was_used                = false;
+    entry_ptr->last_gop                = false;
     entry_ptr->processed_frames_number = 0;
     EB_MALLOC(RateControlLayerContext **,
               entry_ptr->rate_control_layer_array,
@@ -306,7 +306,7 @@ EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalP
         }
     }
 
-    entry_ptr->min_target_rate_assigned = EB_FALSE;
+    entry_ptr->min_target_rate_assigned = false;
 
     entry_ptr->intra_frames_qp              = 0;
     entry_ptr->intra_frames_qp_bef_scal     = 0;
@@ -315,8 +315,8 @@ EbErrorType eb_vp9_rate_control_interval_param_context_ctor(RateControlIntervalP
     entry_ptr->first_pic_actual_bits        = 0;
     entry_ptr->first_pic_pred_qp            = 0;
     entry_ptr->first_pic_actual_qp          = 0;
-    entry_ptr->first_pic_actual_qp_assigned = EB_FALSE;
-    entry_ptr->scene_change_in_gop          = EB_FALSE;
+    entry_ptr->first_pic_actual_qp_assigned = false;
+    entry_ptr->scene_change_in_gop          = false;
     entry_ptr->extra_ap_bit_ratio_i         = 0;
 
     return EB_ErrorNone;
@@ -427,7 +427,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
                                             SequenceControlSet      *sequence_control_set_ptr,
                                             EncodeContext *encode_context_ptr, RateControlContext *context_ptr,
                                             HighLevelRateControlContext *high_level_rate_control_ptr) {
-    EB_BOOL end_of_sequence_flag = EB_TRUE;
+    bool end_of_sequence_flag = true;
 
     HlRateControlHistogramEntry *hl_rate_control_histogram_ptr_temp;
     // Queue variables
@@ -454,9 +454,9 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
     uint32_t qp_search_min;
     uint32_t qp_search_max;
     int32_t  qp_step = 1;
-    EB_BOOL  best_qp_found;
+    bool     best_qp_found;
     uint32_t temporal_layer_index;
-    EB_BOOL  tables_updated;
+    bool     tables_updated;
 
     uint64_t bit_constraint_per_sw = 0;
 
@@ -476,7 +476,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
     eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 
     tables_updated = sequence_control_set_ptr->encode_context_ptr->rate_control_tables_array_updated;
-    picture_control_set_ptr->percentage_updated = EB_FALSE;
+    picture_control_set_ptr->percentage_updated = false;
 
     if (sequence_control_set_ptr->look_ahead_distance != 0) {
         // Increamenting the head of the hl_rate_control_historgram_queue and clean up the entores
@@ -489,8 +489,8 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
             // Reset the Reorder Queue Entry
             hl_rate_control_histogram_ptr_temp->picture_number += INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH;
             hl_rate_control_histogram_ptr_temp->life_count          = -1;
-            hl_rate_control_histogram_ptr_temp->passed_to_hlrc      = EB_FALSE;
-            hl_rate_control_histogram_ptr_temp->is_coded            = EB_FALSE;
+            hl_rate_control_histogram_ptr_temp->passed_to_hlrc      = false;
+            hl_rate_control_histogram_ptr_temp->is_coded            = false;
             hl_rate_control_histogram_ptr_temp->total_num_bitsCoded = 0;
 
             // Increment the Reorder Queue head Ptr
@@ -646,7 +646,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
             ref_qp_table_index          = previous_selected_ref_qp;
             selected_ref_qp_table_index = ref_qp_table_index;
             selected_ref_qp             = selected_ref_qp_table_index;
-            best_qp_found               = EB_FALSE;
+            best_qp_found               = false;
             while (ref_qp_table_index >= qp_search_min && ref_qp_table_index <= qp_search_max && !best_qp_found) {
                 ref_qp_index = CLIP3(sequence_control_set_ptr->static_config.min_qp_allowed,
                                      sequence_control_set_ptr->static_config.max_qp_allowed,
@@ -668,7 +668,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
 
                 queue_entry_index_temp = queue_entry_index_head_temp;
                 // This is set to false, so the last frame would go inside the loop
-                end_of_sequence_flag = EB_FALSE;
+                end_of_sequence_flag = false;
 
                 while (!end_of_sequence_flag &&
                        queue_entry_index_temp <=
@@ -772,7 +772,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
                     selected_ref_qp_table_index = ref_qp_table_index;
                     selected_ref_qp             = ref_qp_index;
                 } else {
-                    best_qp_found = EB_TRUE;
+                    best_qp_found = true;
                 }
 
                 if (ref_qp_table_index == previous_selected_ref_qp) {
@@ -815,7 +815,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
                 queue_entry_index_temp = queue_entry_index_head_temp;
 
                 // This is set to false, so the last frame would go inside the loop
-                end_of_sequence_flag = EB_FALSE;
+                end_of_sequence_flag = false;
 
                 while (
                     !end_of_sequence_flag &&
@@ -915,7 +915,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
         }
 #endif
         picture_control_set_ptr->tables_updated = tables_updated;
-        EB_BOOL expensive_i_slice               = EB_FALSE;
+        bool expensive_i_slice                  = false;
         // Looping over the window to find the percentage of bit allocation in each layer
         if ((sequence_control_set_ptr->intra_period != -1) &&
             ((int32_t)picture_control_set_ptr->frames_in_sw > sequence_control_set_ptr->intra_period) &&
@@ -938,7 +938,7 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
                 queue_entry_index_temp = queue_entry_index_head_temp;
 
                 // This is set to false, so the last frame would go inside the loop
-                end_of_sequence_flag = EB_FALSE;
+                end_of_sequence_flag = false;
 
                 while (!end_of_sequence_flag &&
                        queue_entry_index_temp <= queue_entry_index_head_temp + sequence_control_set_ptr->intra_period) {
@@ -968,13 +968,13 @@ void eb_vp9_high_level_rc_input_picture_vbr(PictureParentControlSet *picture_con
                     picture_control_set_ptr
                         ->bits_per_sw_per_layer[hl_rate_control_histogram_ptr_temp->temporal_layer_index] +=
                         hl_rate_control_histogram_ptr_temp->pred_bits_ref_qp[ref_qp_index_temp];
-                    picture_control_set_ptr->percentage_updated = EB_TRUE;
+                    picture_control_set_ptr->percentage_updated = true;
 
                     end_of_sequence_flag = hl_rate_control_histogram_ptr_temp->end_of_sequence_flag;
                     queue_entry_index_temp++;
                 }
                 if (i_slice_bits * 100 > 85 * picture_control_set_ptr->sb_total_bits_per_gop) {
-                    expensive_i_slice = EB_TRUE;
+                    expensive_i_slice = true;
                 }
                 if (picture_control_set_ptr->sb_total_bits_per_gop == 0) {
                     for (temporal_layer_index = 0; temporal_layer_index < EB_MAX_TEMPORAL_LAYERS;
@@ -1121,7 +1121,7 @@ void eb_vp9_frame_level_rc_input_picture_vbr(PictureControlSet               *pi
                 rate_control_param_ptr->last_poc = MAX(
                     rate_control_param_ptr->first_poc + picture_control_set_ptr->parent_pcs_ptr->frames_in_sw - 1,
                     rate_control_param_ptr->first_poc);
-                rate_control_param_ptr->last_gop = EB_TRUE;
+                rate_control_param_ptr->last_gop = true;
             }
 
             if ((context_ptr->extra_bits > (int64_t)(context_ptr->virtual_buffer_size >> 8)) ||
@@ -1722,7 +1722,7 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
 
     rate_control_layer_ptr->max_qp = 0;
 
-    rate_control_layer_ptr->feedback_arrived = EB_TRUE;
+    rate_control_layer_ptr->feedback_arrived = true;
     rate_control_layer_ptr->max_qp = MAX(rate_control_layer_ptr->max_qp, parentpicture_control_set_ptr->picture_qp);
 
     rate_control_layer_ptr->previous_frame_qp         = parentpicture_control_set_ptr->picture_qp;
@@ -1813,13 +1813,13 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
 
     {
         uint64_t previous_frame_ec_bits                   = 0;
-        EB_BOOL  picture_min_qp_allowed                   = EB_TRUE;
+        bool     picture_min_qp_allowed                   = true;
         rate_control_layer_ptr->previous_frame_average_qp = 0;
         rate_control_layer_ptr->previous_frame_average_qp += rate_control_layer_ptr->previous_frame_qp;
         previous_frame_ec_bits += rate_control_layer_ptr->previous_frame_bit_actual;
         if (rate_control_layer_ptr->same_distortion_count == 0 ||
             parentpicture_control_set_ptr->picture_qp != sequence_control_set_ptr->static_config.min_qp_allowed) {
-            picture_min_qp_allowed = EB_FALSE;
+            picture_min_qp_allowed = false;
         }
         if (picture_min_qp_allowed)
             rate_control_layer_ptr->frame_same_distortion_min_qp_count++;
@@ -1933,8 +1933,7 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
             uint64_t bit_changes_rate;
             // Updating virtual buffer level and it can be negative
             if ((parentpicture_control_set_ptr->picture_number == rate_control_param_ptr->first_poc) &&
-                (parentpicture_control_set_ptr->slice_type == I_SLICE) &&
-                (rate_control_param_ptr->last_gop == EB_FALSE) &&
+                (parentpicture_control_set_ptr->slice_type == I_SLICE) && (rate_control_param_ptr->last_gop == false) &&
                 sequence_control_set_ptr->static_config.intra_period != -1) {
                 rate_control_param_ptr->virtual_buffer_level =
                     (int64_t)rate_control_param_ptr->previous_virtual_buffer_level;
@@ -1986,7 +1985,7 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
         }
 
         rate_control_param_ptr->processed_frames_number++;
-        rate_control_param_ptr->in_use = EB_TRUE;
+        rate_control_param_ptr->in_use = true;
         // check if all the frames in the interval have arrived
         if (rate_control_param_ptr->processed_frames_number ==
                 (rate_control_param_ptr->last_poc - rate_control_param_ptr->first_poc + 1) &&
@@ -1999,14 +1998,14 @@ void eb_vp9_frame_level_rc_feedback_picture_vbr(PictureParentControlSet *parentp
                 (uint32_t)(sequence_control_set_ptr->intra_period + 1);
             rate_control_param_ptr->processed_frames_number      = 0;
             rate_control_param_ptr->extra_ap_bit_ratio_i         = 0;
-            rate_control_param_ptr->in_use                       = EB_FALSE;
-            rate_control_param_ptr->was_used                     = EB_TRUE;
-            rate_control_param_ptr->last_gop                     = EB_FALSE;
-            rate_control_param_ptr->first_pic_actual_qp_assigned = EB_FALSE;
+            rate_control_param_ptr->in_use                       = false;
+            rate_control_param_ptr->was_used                     = true;
+            rate_control_param_ptr->last_gop                     = false;
+            rate_control_param_ptr->first_pic_actual_qp_assigned = false;
             for (temporal_index = 0; temporal_index < EB_MAX_TEMPORAL_LAYERS; temporal_index++) {
                 rate_control_param_ptr->rate_control_layer_array[temporal_index]->first_frame           = 1;
                 rate_control_param_ptr->rate_control_layer_array[temporal_index]->first_non_intra_frame = 1;
-                rate_control_param_ptr->rate_control_layer_array[temporal_index]->feedback_arrived      = EB_FALSE;
+                rate_control_param_ptr->rate_control_layer_array[temporal_index]->feedback_arrived      = false;
             }
             extra_bits = ((int64_t)context_ptr->virtual_buffer_size >> 1) -
                 (int64_t)rate_control_param_ptr->virtual_buffer_level;
@@ -2187,7 +2186,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
                                      SequenceControlSet *sequence_control_set_ptr, EncodeContext *encode_context_ptr,
                                      RateControlContext          *context_ptr,
                                      HighLevelRateControlContext *high_level_rate_control_ptr) {
-    EB_BOOL end_of_sequence_flag = EB_TRUE;
+    bool end_of_sequence_flag = true;
 
     HlRateControlHistogramEntry *hl_rate_control_histogram_ptr_temp;
     // Queue variables
@@ -2214,9 +2213,9 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
     uint32_t qp_search_min;
     uint32_t qp_search_max;
     int32_t  qp_step = 1;
-    EB_BOOL  best_qp_found;
+    bool     best_qp_found;
     uint32_t temporal_layer_index;
-    EB_BOOL  tables_updated;
+    bool     tables_updated;
 
     uint64_t bit_constraint_per_sw = 0;
 
@@ -2237,7 +2236,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
     eb_vp9_block_on_mutex(sequence_control_set_ptr->encode_context_ptr->rate_table_update_mutex);
 
     tables_updated = sequence_control_set_ptr->encode_context_ptr->rate_control_tables_array_updated;
-    picture_control_set_ptr->percentage_updated = EB_FALSE;
+    picture_control_set_ptr->percentage_updated = false;
 
     if (sequence_control_set_ptr->look_ahead_distance != 0) {
         // Increamenting the head of the hl_rate_control_historgram_queue and clean up the entores
@@ -2251,8 +2250,8 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
             // Reset the Reorder Queue Entry
             hl_rate_control_histogram_ptr_temp->picture_number += INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH;
             hl_rate_control_histogram_ptr_temp->life_count          = -1;
-            hl_rate_control_histogram_ptr_temp->passed_to_hlrc      = EB_FALSE;
-            hl_rate_control_histogram_ptr_temp->is_coded            = EB_FALSE;
+            hl_rate_control_histogram_ptr_temp->passed_to_hlrc      = false;
+            hl_rate_control_histogram_ptr_temp->is_coded            = false;
             hl_rate_control_histogram_ptr_temp->total_num_bitsCoded = 0;
 
             // Increment the Reorder Queue head Ptr
@@ -2412,7 +2411,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
             if (sequence_control_set_ptr->intra_period != -1 &&
                 picture_control_set_ptr->picture_number % (sequence_control_set_ptr->intra_period + 1) == 0 &&
                 (int32_t)picture_control_set_ptr->frames_in_sw > sequence_control_set_ptr->intra_period) {
-                best_qp_found = EB_FALSE;
+                best_qp_found = false;
                 while (ref_qp_table_index >= qp_search_min && ref_qp_table_index <= qp_search_max && !best_qp_found) {
                     ref_qp_index = CLIP3(sequence_control_set_ptr->static_config.min_qp_allowed,
                                          MAX_REF_QP_NUM, //sequence_control_set_ptr->static_config.max_qp_allowed,
@@ -2434,7 +2433,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
 
                     queue_entry_index_temp = queue_entry_index_head_temp;
                     // This is set to false, so the last frame would go inside the loop
-                    end_of_sequence_flag = EB_FALSE;
+                    end_of_sequence_flag = false;
 
                     while (!end_of_sequence_flag &&
                            queue_entry_index_temp <=
@@ -2540,7 +2539,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
                         selected_ref_qp_table_index = ref_qp_table_index;
                         selected_ref_qp             = ref_qp_index;
                     } else {
-                        best_qp_found = EB_TRUE;
+                        best_qp_found = true;
                     }
 
                     if (ref_qp_table_index == previous_selected_ref_qp) {
@@ -2593,7 +2592,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
                 queue_entry_index_temp = queue_entry_index_head_temp;
 
                 // This is set to false, so the last frame would go inside the loop
-                end_of_sequence_flag = EB_FALSE;
+                end_of_sequence_flag = false;
 
                 while (
                     !end_of_sequence_flag &&
@@ -2714,7 +2713,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
                 queue_entry_index_temp = queue_entry_index_head_temp;
 
                 // This is set to false, so the last frame would go inside the loop
-                end_of_sequence_flag = EB_FALSE;
+                end_of_sequence_flag = false;
 
                 while (!end_of_sequence_flag &&
                        queue_entry_index_temp <= queue_entry_index_head_temp + sequence_control_set_ptr->intra_period) {
@@ -2741,7 +2740,7 @@ void high_level_rc_input_picture_cbr(PictureParentControlSet *picture_control_se
                     picture_control_set_ptr
                         ->bits_per_sw_per_layer[hl_rate_control_histogram_ptr_temp->temporal_layer_index] +=
                         hl_rate_control_histogram_ptr_temp->pred_bits_ref_qp[ref_qp_index_temp];
-                    picture_control_set_ptr->percentage_updated = EB_TRUE;
+                    picture_control_set_ptr->percentage_updated = true;
 
                     end_of_sequence_flag = hl_rate_control_histogram_ptr_temp->end_of_sequence_flag;
                     queue_entry_index_temp++;
@@ -2883,7 +2882,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
                 rate_control_param_ptr->last_poc = MAX(
                     rate_control_param_ptr->first_poc + picture_control_set_ptr->parent_pcs_ptr->frames_in_sw - 1,
                     rate_control_param_ptr->first_poc);
-                rate_control_param_ptr->last_gop = EB_TRUE;
+                rate_control_param_ptr->last_gop = true;
             }
 
             for (temporal_layer_idex = 0; temporal_layer_idex < EB_MAX_TEMPORAL_LAYERS; temporal_layer_idex++) {
@@ -3066,7 +3065,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
         uint32_t qp_search_min;
         uint32_t qp_search_max;
         int32_t  qp_step = 1;
-        EB_BOOL  best_qp_found;
+        bool     best_qp_found;
 
         uint64_t bit_constraint_per_sw = 0;
 
@@ -3074,7 +3073,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
         EbBitNumber       *sad_bits_array_ptr;
         EbBitNumber       *intra_sad_bits_array_ptr;
         uint32_t           pred_bits_ref_qp;
-        EB_BOOL            end_of_sequence_flag = EB_TRUE;
+        bool               end_of_sequence_flag = true;
 
         // Loop over the QPs and find the best QP
         min_la_bit_distance = MAX_UNSIGNED_VALUE;
@@ -3118,7 +3117,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
         ref_qp_index                = ref_qp_table_index;
         selected_ref_qp_table_index = ref_qp_table_index;
         selected_ref_qp             = selected_ref_qp_table_index;
-        best_qp_found               = EB_FALSE;
+        best_qp_found               = false;
         while (ref_qp_table_index >= qp_search_min && ref_qp_table_index <= qp_search_max && !best_qp_found) {
             ref_qp_index = CLIP3(
                 sequence_control_set_ptr->static_config.min_qp_allowed, MAX_REF_QP_NUM, ref_qp_table_index);
@@ -3126,7 +3125,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
 
             queue_entry_index_temp = queue_entry_index_head_temp;
             // This is set to false, so the last frame would go inside the loop
-            end_of_sequence_flag = EB_FALSE;
+            end_of_sequence_flag = false;
 
             while (
                 !end_of_sequence_flag &&
@@ -3229,7 +3228,7 @@ void eb_vp9_frame_level_rc_input_picture_cbr(PictureControlSet               *pi
                 selected_ref_qp_table_index = ref_qp_table_index;
                 selected_ref_qp             = ref_qp_index;
             } else {
-                best_qp_found = EB_TRUE;
+                best_qp_found = true;
             }
 
             if (ref_qp_table_index == previous_selected_ref_qp) {
@@ -3598,7 +3597,7 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
 
     rate_control_layer_ptr->max_qp = 0;
 
-    rate_control_layer_ptr->feedback_arrived = EB_TRUE;
+    rate_control_layer_ptr->feedback_arrived = true;
     rate_control_layer_ptr->max_qp = MAX(rate_control_layer_ptr->max_qp, parentpicture_control_set_ptr->picture_qp);
 
     rate_control_layer_ptr->previous_frame_qp         = parentpicture_control_set_ptr->picture_qp;
@@ -3689,13 +3688,13 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
 
     {
         uint64_t previous_frame_ec_bits                   = 0;
-        EB_BOOL  picture_min_qp_allowed                   = EB_TRUE;
+        bool     picture_min_qp_allowed                   = true;
         rate_control_layer_ptr->previous_frame_average_qp = 0;
         rate_control_layer_ptr->previous_frame_average_qp += rate_control_layer_ptr->previous_frame_qp;
         previous_frame_ec_bits += rate_control_layer_ptr->previous_frame_bit_actual;
         if (rate_control_layer_ptr->same_distortion_count == 0 ||
             parentpicture_control_set_ptr->picture_qp != sequence_control_set_ptr->static_config.min_qp_allowed) {
-            picture_min_qp_allowed = EB_FALSE;
+            picture_min_qp_allowed = false;
         }
         if (picture_min_qp_allowed)
             rate_control_layer_ptr->frame_same_distortion_min_qp_count++;
@@ -3810,8 +3809,7 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
             uint64_t bit_changes_rate;
             // Updating virtual buffer level and it can be negative
             if ((parentpicture_control_set_ptr->picture_number == rate_control_param_ptr->first_poc) &&
-                (parentpicture_control_set_ptr->slice_type == I_SLICE) &&
-                (rate_control_param_ptr->last_gop == EB_FALSE) &&
+                (parentpicture_control_set_ptr->slice_type == I_SLICE) && (rate_control_param_ptr->last_gop == false) &&
                 sequence_control_set_ptr->static_config.intra_period != -1) {
                 rate_control_param_ptr->virtual_buffer_level =
                     (int64_t)rate_control_param_ptr->previous_virtual_buffer_level;
@@ -3867,7 +3865,7 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
         }
 
         rate_control_param_ptr->processed_frames_number++;
-        rate_control_param_ptr->in_use = EB_TRUE;
+        rate_control_param_ptr->in_use = true;
         // check if all the frames in the interval have arrived
         if (rate_control_param_ptr->processed_frames_number ==
                 (rate_control_param_ptr->last_poc - rate_control_param_ptr->first_poc + 1) &&
@@ -3880,14 +3878,14 @@ void eb_vp9_frame_level_rc_feedback_picture_cbr(PictureParentControlSet *parentp
                 (uint32_t)(sequence_control_set_ptr->intra_period + 1);
             rate_control_param_ptr->processed_frames_number      = 0;
             rate_control_param_ptr->extra_ap_bit_ratio_i         = 0;
-            rate_control_param_ptr->in_use                       = EB_FALSE;
-            rate_control_param_ptr->was_used                     = EB_TRUE;
-            rate_control_param_ptr->last_gop                     = EB_FALSE;
-            rate_control_param_ptr->first_pic_actual_qp_assigned = EB_FALSE;
+            rate_control_param_ptr->in_use                       = false;
+            rate_control_param_ptr->was_used                     = true;
+            rate_control_param_ptr->last_gop                     = false;
+            rate_control_param_ptr->first_pic_actual_qp_assigned = false;
             for (temporal_index = 0; temporal_index < EB_MAX_TEMPORAL_LAYERS; temporal_index++) {
                 rate_control_param_ptr->rate_control_layer_array[temporal_index]->first_frame           = 1;
                 rate_control_param_ptr->rate_control_layer_array[temporal_index]->first_non_intra_frame = 1;
-                rate_control_param_ptr->rate_control_layer_array[temporal_index]->feedback_arrived      = EB_FALSE;
+                rate_control_param_ptr->rate_control_layer_array[temporal_index]->feedback_arrived      = false;
             }
             extra_bits = ((int64_t)context_ptr->virtual_buffer_size >> 1) -
                 (int64_t)rate_control_param_ptr->virtual_buffer_level;
@@ -3933,7 +3931,7 @@ void eb_vp9_high_level_rc_feed_back_picture(PictureParentControlSet *picture_con
                 eb_vp9_block_on_mutex(
                     sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
                 hl_rate_control_histogram_ptr_temp->total_num_bitsCoded = picture_control_set_ptr->total_num_bits;
-                hl_rate_control_histogram_ptr_temp->is_coded            = EB_TRUE;
+                hl_rate_control_histogram_ptr_temp->is_coded            = true;
                 eb_vp9_release_mutex(
                     sequence_control_set_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
             }
@@ -4192,7 +4190,7 @@ uint8_t Vbv_Buf_Calc(PictureControlSet *picture_control_set_ptr, SequenceControl
     uint32_t                     queue_entry_index_temp2;
     uint32_t                     queue_entry_index_head_temp;
     HlRateControlHistogramEntry *hlRateControl_histogram_ptr_temp;
-    EB_BOOL                      bitrate_flag;
+    bool                         bitrate_flag;
 
     /* Lookahead VBV: If lookahead is done, raise the quantizer as necessary
     * such that no frames in the lookahead overflow and such that the buffer
@@ -4355,13 +4353,13 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 next_gop_rate_control_param_ptr = context_ptr->rate_control_param_queue[0];
             } else {
                 uint32_t interval_index_temp = 0;
-                EB_BOOL  intervalFound       = EB_FALSE;
+                bool     intervalFound       = false;
                 while ((interval_index_temp < PARALLEL_GOP_MAX_NUMBER) && !intervalFound) {
                     if (picture_control_set_ptr->picture_number >=
                             context_ptr->rate_control_param_queue[interval_index_temp]->first_poc &&
                         picture_control_set_ptr->picture_number <=
                             context_ptr->rate_control_param_queue[interval_index_temp]->last_poc) {
-                        intervalFound = EB_TRUE;
+                        intervalFound = true;
                     } else {
                         interval_index_temp++;
                     }
@@ -4388,7 +4386,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 // QP scaling based on POC number for Flat IPPP structure
 
                 if (sequence_control_set_ptr->enable_qp_scaling_flag &&
-                    picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == EB_FALSE) {
+                    picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == false) {
                     int          qindex = eb_vp9_quantizer_to_qindex(sequence_control_set_ptr->qp);
                     RATE_CONTROL rc;
                     rc.worst_quality = MAXQ;
@@ -4516,7 +4514,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                                 picture_control_set_ptr->base_qindex = VPXMAX(qindex + delta_qindex, rc.best_quality);
                         }
                     }
-                } else if (picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == EB_TRUE) {
+                } else if (picture_control_set_ptr->parent_pcs_ptr->qp_on_the_fly == true) {
                     picture_control_set_ptr->picture_qp = (uint8_t)CLIP3(
                         (int32_t)sequence_control_set_ptr->static_config.min_qp_allowed,
                         (int32_t)sequence_control_set_ptr->static_config.max_qp_allowed,
@@ -4578,7 +4576,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                     rate_control_param_ptr->first_pic_actual_qp = (uint16_t)picture_control_set_ptr->picture_qp;
                     rate_control_param_ptr->scene_change_in_gop =
                         picture_control_set_ptr->parent_pcs_ptr->scene_change_in_gop;
-                    rate_control_param_ptr->first_pic_actual_qp_assigned = EB_TRUE;
+                    rate_control_param_ptr->first_pic_actual_qp_assigned = true;
                 }
                 {
                     if (picture_control_set_ptr->picture_number == rate_control_param_ptr->first_poc) {
@@ -4645,7 +4643,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
 
                     if (reference_entry_ptr->picture_number == parentpicture_control_set_ptr->picture_number) {
                         // Set the feedback arrived
-                        reference_entry_ptr->feedback_arrived = EB_TRUE;
+                        reference_entry_ptr->feedback_arrived = true;
                     }
 
                     // Increment the reference_queue_index Iterator
@@ -4673,13 +4671,13 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 }
             } else {
                 uint32_t interval_index_temp = 0;
-                EB_BOOL  intervalFound       = EB_FALSE;
+                bool     intervalFound       = false;
                 while ((interval_index_temp < PARALLEL_GOP_MAX_NUMBER) && !intervalFound) {
                     if (parentpicture_control_set_ptr->picture_number >=
                             context_ptr->rate_control_param_queue[interval_index_temp]->first_poc &&
                         parentpicture_control_set_ptr->picture_number <=
                             context_ptr->rate_control_param_queue[interval_index_temp]->last_poc) {
-                        intervalFound = EB_TRUE;
+                        intervalFound = true;
                     } else {
                         interval_index_temp++;
                     }
@@ -4734,8 +4732,8 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                 uint32_t               queue_entry_index_temp;
                 uint32_t               queue_entry_index_temp2;
                 CodedFramesStatsEntry *queue_entry_ptr;
-                EB_BOOL                move_slide_wondow_flag = EB_TRUE;
-                EB_BOOL                end_of_sequence_flag   = EB_TRUE;
+                bool                   move_slide_wondow_flag = true;
+                bool                   end_of_sequence_flag   = true;
                 uint32_t               frames_in_sw;
 
                 // Determine offset from the Head Ptr
@@ -4757,7 +4755,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
 
                 //SVT_LOG("\n0_POC: %d\n",
                 //    queue_entry_ptr->picture_number);
-                move_slide_wondow_flag = EB_TRUE;
+                move_slide_wondow_flag = true;
                 while (move_slide_wondow_flag) {
                     //  SVT_LOG("\n1_POC: %d\n",
                     //      queue_entry_ptr->picture_number);
@@ -4767,7 +4765,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                         end_of_sequence_flag =
                             context_ptr->coded_frames_stat_queue[queue_entry_index_temp]->end_of_sequence_flag;
                     } else {
-                        end_of_sequence_flag = EB_FALSE;
+                        end_of_sequence_flag = false;
                     }
                     while (move_slide_wondow_flag && !end_of_sequence_flag &&
                            queue_entry_index_temp < context_ptr->coded_frames_stat_queue_head_index +
@@ -4779,10 +4777,9 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                             ? queue_entry_index_temp - CODED_FRAMES_STAT_QUEUE_MAX_DEPTH
                             : queue_entry_index_temp;
 
-                        move_slide_wondow_flag = (EB_BOOL)(move_slide_wondow_flag &&
-                                                           (context_ptr
-                                                                ->coded_frames_stat_queue[queue_entry_index_temp2]
-                                                                ->frame_total_bit_actual != -1));
+                        move_slide_wondow_flag = (bool)(move_slide_wondow_flag &&
+                                                        (context_ptr->coded_frames_stat_queue[queue_entry_index_temp2]
+                                                             ->frame_total_bit_actual != -1));
 
                         if (context_ptr->coded_frames_stat_queue[queue_entry_index_temp2]->frame_total_bit_actual !=
                             -1) {
@@ -4790,7 +4787,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                             end_of_sequence_flag =
                                 context_ptr->coded_frames_stat_queue[queue_entry_index_temp]->end_of_sequence_flag;
                         } else {
-                            end_of_sequence_flag = EB_FALSE;
+                            end_of_sequence_flag = false;
                         }
                         queue_entry_index_temp = (queue_entry_index_temp == CODED_FRAMES_STAT_QUEUE_MAX_DEPTH - 1)
                             ? 0
@@ -4803,7 +4800,7 @@ void *eb_vp9_rate_control_kernel(void *input_ptr) {
                             (context_ptr->coded_frames_stat_queue[context_ptr->coded_frames_stat_queue_head_index]);
                         queue_entry_index_temp = context_ptr->coded_frames_stat_queue_head_index;
                         // This is set to false, so the last frame would go inside the loop
-                        end_of_sequence_flag                 = EB_FALSE;
+                        end_of_sequence_flag                 = false;
                         frames_in_sw                         = 0;
                         context_ptr->total_bit_actual_per_sw = 0;
 

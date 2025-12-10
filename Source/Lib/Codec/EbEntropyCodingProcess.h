@@ -36,7 +36,7 @@ typedef struct EntropyCodingContext {
     uint32_t block_origin_x;
     uint32_t block_origin_y;
 
-    EB_BOOL is16bit;
+    bool is16bit;
 
     int mi_row;
     int mi_col;
@@ -55,7 +55,7 @@ typedef struct EntropyCodingContext {
 extern EbErrorType eb_vp9_entropy_coding_context_ctor(EntropyCodingContext **context_dbl_ptr,
                                                       EbFifo                *enc_dec_input_fifo_ptr,
                                                       EbFifo                *packetization_output_fifo_ptr,
-                                                      EbFifo *rate_control_output_fifo_ptr, EB_BOOL is16bit);
+                                                      EbFifo *rate_control_output_fifo_ptr, bool is16bit);
 
 extern void *eb_vp9_entropy_coding_kernel(void *input_ptr);
 

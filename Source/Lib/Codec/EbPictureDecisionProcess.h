@@ -18,7 +18,7 @@ typedef struct PictureDecisionContext {
 
     uint64_t last_solid_color_frame_poc;
 
-    EB_BOOL reset_running_avg;
+    bool reset_running_avg;
 
     uint32_t **ahd_running_avg_cb;
     uint32_t **ahd_running_avg_cr;
@@ -35,8 +35,8 @@ typedef struct PictureDecisionContext {
     uint32_t mini_gop_intra_count[MINI_GOP_WINDOW_MAX_COUNT];
     uint32_t mini_gop_idr_count[MINI_GOP_WINDOW_MAX_COUNT];
     uint32_t mini_gop_hierarchical_levels[MINI_GOP_WINDOW_MAX_COUNT];
-    EB_BOOL  mini_gop_activity_array[MINI_GOP_MAX_COUNT];
-    EB_BOOL  mini_gop_toggle; // mini GOP toggling since last Key Frame  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
+    bool     mini_gop_activity_array[MINI_GOP_MAX_COUNT];
+    bool     mini_gop_toggle; // mini GOP toggling since last Key Frame  K-0-1-0-1-0-K-0-1-0-1-K-0-1.....
 
 } PictureDecisionContext;
 

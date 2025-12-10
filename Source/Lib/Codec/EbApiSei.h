@@ -35,14 +35,14 @@ typedef struct RegistedUserData {
 
 // SEI structures
 typedef struct AppHrdParameters {
-    EB_BOOL nal_hrd_parameters_present_flag;
-    EB_BOOL vcl_hrd_parameters_present_flag;
-    EB_BOOL sub_pic_cpb_params_present_flag;
+    bool nal_hrd_parameters_present_flag;
+    bool vcl_hrd_parameters_present_flag;
+    bool sub_pic_cpb_params_present_flag;
 
     uint32_t tick_divisor_minus2;
     uint32_t du_cpb_removal_delay_length_minus1;
 
-    EB_BOOL sub_pic_cpb_params_pic_timing_sei_flag;
+    bool sub_pic_cpb_params_pic_timing_sei_flag;
 
     uint32_t dpb_output_delay_du_length_minus1;
 
@@ -54,12 +54,12 @@ typedef struct AppHrdParameters {
     uint32_t au_cpb_removal_delay_length_minus1;
     uint32_t dpb_output_delay_length_minus1;
 
-    EB_BOOL fixed_pic_rate_general_flag[MAX_TEMPORAL_LAYERS];
-    EB_BOOL fixed_pic_rate_within_cvs_flag[MAX_TEMPORAL_LAYERS];
+    bool fixed_pic_rate_general_flag[MAX_TEMPORAL_LAYERS];
+    bool fixed_pic_rate_within_cvs_flag[MAX_TEMPORAL_LAYERS];
 
     uint32_t elemental_duration_tc_minus1[MAX_TEMPORAL_LAYERS];
 
-    EB_BOOL low_delay_hrd_flag[MAX_TEMPORAL_LAYERS];
+    bool low_delay_hrd_flag[MAX_TEMPORAL_LAYERS];
 
     uint32_t cpb_count_minus1[MAX_TEMPORAL_LAYERS];
 
@@ -68,57 +68,57 @@ typedef struct AppHrdParameters {
     uint32_t bit_rate_du_value_minus1[MAX_TEMPORAL_LAYERS][2][MAX_CPB_COUNT];
     uint32_t cpb_size_du_value_minus1[MAX_TEMPORAL_LAYERS][2][MAX_CPB_COUNT];
 
-    EB_BOOL cbr_flag[MAX_TEMPORAL_LAYERS][2][MAX_CPB_COUNT];
+    bool cbr_flag[MAX_TEMPORAL_LAYERS][2][MAX_CPB_COUNT];
 
-    EB_BOOL cpb_dpb_delays_present_flag;
+    bool cpb_dpb_delays_present_flag;
 
 } AppHrdParameters;
 
 typedef struct AppVideoUsabilityInfo {
-    EB_BOOL  aspect_ratio_info_present_flag;
+    bool     aspect_ratio_info_present_flag;
     uint32_t aspect_ratio_idc;
     uint32_t sar_width;
     uint32_t sar_height;
 
-    EB_BOOL overscan_info_present_flag;
-    EB_BOOL overscan_approriate_flag;
-    EB_BOOL video_signal_type_present_flag;
+    bool overscan_info_present_flag;
+    bool overscan_approriate_flag;
+    bool video_signal_type_present_flag;
 
     uint32_t video_format;
-    EB_BOOL  video_full_range_flag;
-    EB_BOOL  color_description_present_flag;
+    bool     video_full_range_flag;
+    bool     color_description_present_flag;
 
     uint32_t color_primaries;
     uint32_t transfer_characteristics;
     uint32_t matrix_coeffs;
 
-    EB_BOOL  chroma_loc_info_present_flag;
+    bool     chroma_loc_info_present_flag;
     uint32_t chroma_sample_loc_type_top_field;
     uint32_t chroma_sample_loc_type_bottom_field;
 
-    EB_BOOL neutral_chroma_indication_flag;
-    EB_BOOL field_seq_flag;
-    EB_BOOL frame_field_info_present_flag;
+    bool neutral_chroma_indication_flag;
+    bool field_seq_flag;
+    bool frame_field_info_present_flag;
 
-    EB_BOOL  default_display_window_flag;
+    bool     default_display_window_flag;
     uint32_t default_display_win_left_offset;
     uint32_t default_display_win_right_offset;
     uint32_t default_display_win_top_offset;
     uint32_t default_display_win_bottom_offset;
 
-    EB_BOOL  vui_timing_info_present_flag;
+    bool     vui_timing_info_present_flag;
     uint32_t vui_num_units_in_tick;
     uint32_t vui_time_scale;
 
-    EB_BOOL  vui_poc_propotional_timing_flag;
+    bool     vui_poc_propotional_timing_flag;
     uint32_t vui_num_ticks_poc_diff_one_minus1;
 
-    EB_BOOL vui_hrd_parameters_present_flag;
+    bool vui_hrd_parameters_present_flag;
 
-    EB_BOOL bitstream_restriction_flag;
+    bool bitstream_restriction_flag;
 
-    EB_BOOL motion_vectors_over_pic_boundaries_flag;
-    EB_BOOL restricted_ref_pic_lists_flag;
+    bool motion_vectors_over_pic_boundaries_flag;
+    bool restricted_ref_pic_lists_flag;
 
     uint32_t min_spatial_segmentation_idc;
     uint32_t max_bytes_per_pic_denom;
@@ -133,12 +133,12 @@ typedef struct AppVideoUsabilityInfo {
 typedef struct AppPictureTimingSei {
     uint32_t pic_struct;
     uint32_t source_scan_type;
-    EB_BOOL  duplicate_flag;
+    bool     duplicate_flag;
     uint32_t au_cpb_removal_delay_minus1;
     uint32_t pic_dpb_output_delay;
     uint32_t pic_dpb_output_du_delay;
     uint32_t num_decoding_units_minus1;
-    EB_BOOL  du_common_cpb_removal_delay_flag;
+    bool     du_common_cpb_removal_delay_flag;
     uint32_t du_common_cpb_removal_delay_minus1;
     uint32_t num_nalus_in_du_minus1;
     uint32_t du_cpb_removal_delay_minus1[MAX_DECODING_UNIT_COUNT];
@@ -147,8 +147,8 @@ typedef struct AppPictureTimingSei {
 
 typedef struct AppBufferingPeriodSei {
     uint32_t bp_seq_parameter_set_id;
-    EB_BOOL  rap_cpb_params_present_flag;
-    EB_BOOL  concatenation_flag;
+    bool     rap_cpb_params_present_flag;
+    bool     concatenation_flag;
     uint32_t au_cpb_removal_delay_delta_minus1;
     uint32_t cpb_delay_offset;
     uint32_t dpb_delay_offset;
@@ -161,8 +161,8 @@ typedef struct AppBufferingPeriodSei {
 
 typedef struct AppRecoveryPoint {
     uint32_t recovery_poc_cnt;
-    EB_BOOL  exact_matching_flag;
-    EB_BOOL  broken_link_flag;
+    bool     exact_matching_flag;
+    bool     broken_link_flag;
 
 } AppRecoveryPoint;
 
@@ -186,7 +186,7 @@ typedef struct EbPredStructureCfg {
     uint32_t nal_unit_type; // Pictures NAL Unit Type
     uint32_t ref_list0_count; // A count of zero indicates the list is inactive
     uint32_t ref_list1_count; // A count of zero indicates the list is inactive
-    EB_BOOL  is_referenced; // Indicates whether or not the picture is used as
+    bool     is_referenced; // Indicates whether or not the picture is used as
     //   future reference.
     //   be saved for future reference.  This signalling must
     //   be done with respect to decode picture order. Must
@@ -207,7 +207,7 @@ typedef struct EbPicturePlane {
 } EbPicturePlane;
 
 typedef struct EbEosDataDef {
-    EB_BOOL data_valid; // Indicates if the data attached with the last frame in the bitstream is valid or not.
+    bool data_valid; // Indicates if the data attached with the last frame in the bitstream is valid or not.
     //   If the last frame is valid, the data will be included in the bistream
     //   If the last frame is NOT valid, the frame will be coded as IDR in the encoder, but
     //   not included in the bitstream.

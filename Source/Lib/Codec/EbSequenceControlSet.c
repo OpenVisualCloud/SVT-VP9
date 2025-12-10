@@ -358,8 +358,8 @@ extern EbErrorType eb_vp9_sb_params_init(SequenceControlSet *sequence_control_se
                  (sequence_control_set_ptr->sb_params_array[sb_index].origin_y +
                       pa_raster_scan_cu_y[raster_scan_block_index] + pa_raster_scan_cu_size[raster_scan_block_index] >
                   sequence_control_set_ptr->luma_height))
-                ? EB_FALSE
-                : EB_TRUE;
+                ? false
+                : true;
         }
 
         for (md_scan_block_index = 0; md_scan_block_index < EP_BLOCK_MAX_COUNT; md_scan_block_index++) {
@@ -369,8 +369,8 @@ extern EbErrorType eb_vp9_sb_params_init(SequenceControlSet *sequence_control_se
                    ep_block_stats_ptr->bwidth) > sequence_control_set_ptr->luma_width) ||
                  ((sequence_control_set_ptr->sb_params_array[sb_index].origin_y + ep_block_stats_ptr->origin_y +
                    ep_block_stats_ptr->bheight) > sequence_control_set_ptr->luma_height))
-                ? EB_FALSE
-                : EB_TRUE;
+                ? false
+                : true;
 
             sequence_control_set_ptr->sb_params_array[sb_index].ec_scan_block_valid_block[md_scan_block_index] =
                 (uint16_t)~0;
@@ -385,8 +385,7 @@ extern EbErrorType eb_vp9_sb_params_init(SequenceControlSet *sequence_control_se
                 (uint16_t)~0;
 
             // If this block is valid, set it as the valid block.
-            if (sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_validity[md_scan_block_index] ==
-                EB_TRUE)
+            if (sequence_control_set_ptr->sb_params_array[sb_index].ep_scan_block_validity[md_scan_block_index] == true)
                 sequence_control_set_ptr->sb_params_array[sb_index].ec_scan_block_valid_block[md_scan_block_index] =
                     md_scan_block_index;
             else {

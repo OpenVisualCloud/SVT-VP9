@@ -316,7 +316,7 @@ void eb_config_ctor(EbConfig *config_ptr) {
     config_ptr->sequence_buffer      = 0;
 
     config_ptr->qp          = 45;
-    config_ptr->use_qp_file = EB_FALSE;
+    config_ptr->use_qp_file = false;
 
     config_ptr->rate_control_mode      = 0;
     config_ptr->target_bit_rate        = 7000000;
@@ -331,9 +331,9 @@ void eb_config_ctor(EbConfig *config_ptr) {
 
     config_ptr->pred_structure = 2;
 
-    config_ptr->loop_filter        = EB_TRUE;
-    config_ptr->use_default_me_hme = EB_TRUE;
-    config_ptr->enable_hme_flag    = EB_TRUE;
+    config_ptr->loop_filter        = true;
+    config_ptr->use_default_me_hme = true;
+    config_ptr->enable_hme_flag    = true;
     config_ptr->search_area_width  = 16;
     config_ptr->search_area_height = 7;
 
@@ -349,7 +349,7 @@ void eb_config_ctor(EbConfig *config_ptr) {
     config_ptr->speed_control_flag  = 0;
 
     // Testing
-    config_ptr->eos_flag = EB_FALSE;
+    config_ptr->eos_flag = false;
 
     // Computational Performance Parameters
     config_ptr->performance_context.frame_count   = 0;
@@ -363,7 +363,7 @@ void eb_config_ctor(EbConfig *config_ptr) {
     // ASM Type
     config_ptr->asm_type = 1;
 
-    config_ptr->stop_encoder       = EB_FALSE;
+    config_ptr->stop_encoder       = false;
     config_ptr->target_socket      = -1;
     config_ptr->logical_processors = 0;
 
@@ -630,7 +630,7 @@ static EbErrorType verify_settings(EbConfig *config, uint32_t channel_number) {
         return_error = EB_ErrorBadParameter;
     }
 
-    if (config->use_qp_file == EB_TRUE && config->qp_file == NULL) {
+    if (config->use_qp_file == true && config->qp_file == NULL) {
         fprintf(config->error_log_file,
                 "Error instance %u: Could not find QP file, use_qp_file is set to 1\n",
                 channel_number + 1);

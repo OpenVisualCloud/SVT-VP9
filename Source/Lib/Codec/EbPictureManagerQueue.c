@@ -29,7 +29,7 @@ EbErrorType eb_vp9_reference_queue_entry_ctor(ReferenceQueueEntry **entry_dbl_pt
     entry_ptr->reference_object_ptr = (EbObjectWrapper *)NULL;
     entry_ptr->picture_number       = ~0u;
     entry_ptr->dependent_count      = 0;
-    entry_ptr->reference_available  = EB_FALSE;
+    entry_ptr->reference_available  = false;
 
     EB_MALLOC(int32_t *, entry_ptr->list0.list, sizeof(int32_t) * (1 << MAX_TEMPORAL_LAYERS), EB_N_PTR);
 

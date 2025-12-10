@@ -92,14 +92,13 @@ EbErrorType eb_vp9_picture_decision_context_ctor(PictureDecisionContext **contex
         }
     }
 
-    context_ptr->reset_running_avg = EB_TRUE;
+    context_ptr->reset_running_avg = true;
 
     return EB_ErrorNone;
 }
 
-EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
-                                       SequenceControlSet       *sequence_control_set_ptr,
-                                       PictureParentControlSet **parent_pcs_window, uint32_t window_width_future) {
+bool eb_vp9_SceneTransitionDetector(PictureDecisionContext *context_ptr, SequenceControlSet *sequence_control_set_ptr,
+                                    PictureParentControlSet **parent_pcs_window, uint32_t window_width_future) {
     PictureParentControlSet *previouspicture_control_set_ptr = parent_pcs_window[0];
     PictureParentControlSet *currentpicture_control_set_ptr  = parent_pcs_window[1];
     PictureParentControlSet *futurepicture_control_set_ptr   = parent_pcs_window[2];
@@ -108,14 +107,14 @@ EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
     uint32_t region_thresh_hold;
     uint32_t region_thresh_hold_chroma;
     // this variable determines whether the running average should be reset to equal the ahd or not after detecting a scene change.
-    //EB_BOOL reset_running_avg = context_ptr->reset_running_avg;
+    //bool reset_running_avg = context_ptr->reset_running_avg;
 
-    EB_BOOL is_abrupt_change; // this variable signals an abrubt change (scene change or flash)
-    EB_BOOL is_scene_change; // this variable signals a frame representing a scene change
-    EB_BOOL is_flash; // this variable signals a frame that contains a flash
-    EB_BOOL is_fade; // this variable signals a frame that contains a fade
-    EB_BOOL
-    gradual_change; // this signals the detection of a light scene change a small/localized flash or the start of a fade
+    bool is_abrupt_change; // this variable signals an abrubt change (scene change or flash)
+    bool is_scene_change; // this variable signals a frame representing a scene change
+    bool is_flash; // this variable signals a frame that contains a flash
+    bool is_fade; // this variable signals a frame that contains a fade
+    bool
+        gradual_change; // this signals the detection of a light scene change a small/localized flash or the start of a fade
 
     uint32_t ahd; // accumulative histogram (absolute) differences between the past and current frame
 
@@ -174,10 +173,10 @@ EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
              region_in_picture_height_index < sequence_control_set_ptr->picture_analysis_number_of_regions_per_height;
              region_in_picture_height_index++) { // loop over vertical regions
 
-            is_abrupt_change = EB_FALSE;
-            is_scene_change  = EB_FALSE;
-            is_flash         = EB_FALSE;
-            gradual_change   = EB_FALSE;
+            is_abrupt_change = false;
+            is_scene_change  = false;
+            is_flash         = false;
+            gradual_change   = false;
 
             // Reset accumulative histogram (absolute) differences between the past and current frame
             ahd    = 0;
@@ -248,10 +247,10 @@ EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
             if ((ahd_error > region_thresh_hold && ahd >= ahd_error) ||
                 (ahd_error_cb > region_thresh_hold_chroma && ahd_cb >= ahd_error_cb) ||
                 (ahd_error_cr > region_thresh_hold_chroma && ahd_cr >= ahd_error_cr)) {
-                is_abrupt_change = EB_TRUE;
+                is_abrupt_change = true;
 
             } else if ((ahd_error > (region_thresh_hold >> 1)) && ahd >= ahd_error) {
-                gradual_change = EB_TRUE;
+                gradual_change = true;
             }
 
             if (is_abrupt_change) {
@@ -276,13 +275,13 @@ EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
                                                                                   [region_in_picture_height_index][0]);
 
                 if (aid_future_past < FLASH_TH && aid_future_present >= FLASH_TH && aid_present_past >= FLASH_TH) {
-                    is_flash = EB_TRUE;
+                    is_flash = true;
                     //SVT_LOG ("\nFlash in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
                 } else if (aid_future_present < FADE_TH && aid_present_past < FADE_TH) {
-                    is_fade = EB_TRUE;
+                    is_fade = true;
                     //SVT_LOG ("\nFlash in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
                 } else {
-                    is_scene_change = EB_TRUE;
+                    is_scene_change = true;
                     //SVT_LOG ("\nScene Change in frame# %i , %i\n", currentpicture_control_set_ptr->picture_number,aid_future_past);
                 }
 
@@ -320,15 +319,15 @@ EB_BOOL eb_vp9_SceneTransitionDetector(PictureDecisionContext   *context_ptr,
     (void)is_fade;
 
     if (is_abrupt_change_count >= region_count_threshold) {
-        context_ptr->reset_running_avg = EB_TRUE;
+        context_ptr->reset_running_avg = true;
     } else {
-        context_ptr->reset_running_avg = EB_FALSE;
+        context_ptr->reset_running_avg = false;
     }
 
     if (is_scene_change_count >= region_count_threshold) {
-        return (EB_TRUE);
+        return (true);
     } else {
-        return (EB_FALSE);
+        return (false);
     }
 }
 
@@ -371,8 +370,7 @@ EbErrorType eb_vp9_initialize_mini_gop_activity_array(PictureDecisionContext *co
     // Loop over all mini GOPs
     for (mini_gop_index = 0; mini_gop_index < MINI_GOP_MAX_COUNT; ++mini_gop_index) {
         context_ptr->mini_gop_activity_array[mini_gop_index] =
-            (eb_vp9_get_mini_gop_stats(mini_gop_index)->hierarchical_levels == MIN_HIERARCHICAL_LEVEL) ? EB_FALSE
-                                                                                                       : EB_TRUE;
+            (eb_vp9_get_mini_gop_stats(mini_gop_index)->hierarchical_levels == MIN_HIERARCHICAL_LEVEL) ? false : true;
     }
 
     return return_error;
@@ -396,7 +394,7 @@ EbErrorType eb_vp9_generate_picture_window_split(PictureDecisionContext *context
     while (mini_gop_index < MINI_GOP_MAX_COUNT) {
         // Only for a valid mini GOP
         if (eb_vp9_get_mini_gop_stats(mini_gop_index)->end_index < encode_context_ptr->pre_assignment_buffer_count &&
-            context_ptr->mini_gop_activity_array[mini_gop_index] == EB_FALSE) {
+            context_ptr->mini_gop_activity_array[mini_gop_index] == false) {
             context_ptr->mini_gop_start_index[context_ptr->total_number_of_mini_gops] =
                 eb_vp9_get_mini_gop_stats(mini_gop_index)->start_index;
             context_ptr->mini_gop_end_index[context_ptr->total_number_of_mini_gops] =
@@ -509,8 +507,8 @@ static EbErrorType update_base_layer_reference_queue_dependent_count(PictureDeci
 
     // Set init_pred_struct_position_flag to TRUE if mini GOP switch
     picture_control_set_ptr->init_pred_struct_position_flag = (picture_control_set_ptr->hierarchical_layers_diff != 0)
-        ? EB_TRUE
-        : EB_FALSE;
+        ? true
+        : false;
 
     // If the current mini GOP is different than the previous mini GOP update then update the positive dependant counts of the reference entry separating the 2 mini GOPs
     if (picture_control_set_ptr->hierarchical_layers_diff != 0) {
@@ -677,7 +675,7 @@ static EbErrorType generate_mini_gop_rps(PictureDecisionContext *context_ptr, En
 ****************************************************************************/
 
 uint8_t picture_level_sub_pel_settings_oq(uint8_t input_resolution, uint8_t enc_mode, uint8_t temporal_layer_index,
-                                          EB_BOOL is_used_as_reference_flag) {
+                                          bool is_used_as_reference_flag) {
     uint8_t sub_pel_mode;
 
     if (enc_mode <= ENC_MODE_8) {
@@ -716,7 +714,7 @@ uint8_t picture_level_sub_pel_settings_vmaf(uint8_t input_resolution, uint8_t en
 }
 
 uint8_t picture_level_sub_pel_settings_sq(uint8_t input_resolution, uint8_t enc_mode, uint8_t temporal_layer_index,
-                                          EB_BOOL is_used_as_reference_flag) {
+                                          bool is_used_as_reference_flag) {
     uint8_t sub_pel_mode;
 
     if (input_resolution >= INPUT_SIZE_4K_RANGE) {
@@ -942,7 +940,7 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
     RpsNode *rps = &picture_control_set_ptr->ref_signal;
 
     // Set restrictRefMvsDerivation
-    picture_control_set_ptr->cpi->common.use_prev_frame_mvs = EB_TRUE;
+    picture_control_set_ptr->cpi->common.use_prev_frame_mvs = true;
 
     // Set Frame Type
     if (picture_control_set_ptr->slice_type == I_SLICE) {
@@ -957,16 +955,16 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
     if (picture_control_set_ptr->hierarchical_levels == 0) {
         memset(rps->ref_dpb_index, 0, 3);
         rps->refresh_frame_mask                                  = 1;
-        picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+        picture_control_set_ptr->cpi->common.show_frame          = true;
+        picture_control_set_ptr->cpi->common.show_existing_frame = false;
 
     } else if (picture_control_set_ptr->hierarchical_levels == 3) //RPS for 4L GOP
     {
         //Reset miniGop Toggling. The first miniGop after a KEY frame has toggle=0
         if (picture_control_set_ptr->cpi->common.frame_type == KEY_FRAME) {
             context_ptr->mini_gop_toggle                             = 0;
-            picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-            picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+            picture_control_set_ptr->cpi->common.show_frame          = true;
+            picture_control_set_ptr->cpi->common.show_existing_frame = false;
             return;
         }
 
@@ -1039,13 +1037,13 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
             break;
         default: SVT_LOG("Error: unexpected picture mini Gop number\n"); break;
         }
-        picture_control_set_ptr->cpi->common.use_prev_frame_mvs = EB_FALSE;
+        picture_control_set_ptr->cpi->common.use_prev_frame_mvs = false;
 
         if (picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_LOW_DELAY_P) {
             //P frames.
             rps->ref_dpb_index[1]                                    = rps->ref_dpb_index[0];
-            picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-            picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+            picture_control_set_ptr->cpi->common.show_frame          = true;
+            picture_control_set_ptr->cpi->common.show_existing_frame = false;
         } else if (picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_RANDOM_ACCESS) {
             rps->ref_dpb_index[1] = rps->ref_dpb_index[0];
 
@@ -1055,11 +1053,11 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
                 if (context_ptr->mini_gop_length[mini_gop_index] <
                     picture_control_set_ptr->pred_struct_ptr->pred_struct_period) {
                     //Scene Change that breaks the mini gop and switch to LDP (if I scene change happens to be aligned with a complete miniGop, then we do not break the pred structure)
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = true;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 } else {
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_FALSE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = false;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 }
             } else //B pic
             {
@@ -1067,22 +1065,22 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
                     SVT_LOG("Error in GOp indexing3\n");
 
                 if (picture_control_set_ptr->is_used_as_reference_flag) {
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_FALSE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = false;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 } else {
-                    picture_control_set_ptr->cpi->common.show_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame = false;
                     if (picture_index == 0) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 2) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer3_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer2_idx;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer3_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[3] = layer1_idx;
                     } else if (picture_index == 4) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 6) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer3_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer2_idx;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer3_idx2;
@@ -1111,8 +1109,8 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
         //Reset miniGop Toggling. The first miniGop after a KEY frame has toggle=0
         if (picture_control_set_ptr->cpi->common.frame_type == KEY_FRAME) {
             context_ptr->mini_gop_toggle                             = 0;
-            picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-            picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+            picture_control_set_ptr->cpi->common.show_frame          = true;
+            picture_control_set_ptr->cpi->common.show_existing_frame = false;
             return;
         }
 
@@ -1232,13 +1230,13 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
             break;
         default: SVT_LOG("Error: unexpected picture mini Gop number\n"); break;
         }
-        picture_control_set_ptr->cpi->common.use_prev_frame_mvs = EB_FALSE;
+        picture_control_set_ptr->cpi->common.use_prev_frame_mvs = false;
 
         if (picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_LOW_DELAY_P) {
             //P frames.
             rps->ref_dpb_index[1]                                    = rps->ref_dpb_index[0];
-            picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-            picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+            picture_control_set_ptr->cpi->common.show_frame          = true;
+            picture_control_set_ptr->cpi->common.show_existing_frame = false;
         } else if (picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_RANDOM_ACCESS) {
             rps->ref_dpb_index[1] = rps->ref_dpb_index[0];
 
@@ -1247,11 +1245,11 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
                 //3 cases for I slice:  1:Key Frame treated above.  2: broken MiniGop due to sc or intra refresh  3: complete miniGop due to sc or intra refresh
                 if (context_ptr->mini_gop_length[0] < picture_control_set_ptr->pred_struct_ptr->pred_struct_period) {
                     //Scene Change that breaks the mini gop and switch to LDP (if I scene change happens to be aligned with a complete miniGop, then we do not break the pred structure)
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_TRUE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = true;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 } else {
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_FALSE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = false;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 }
             } else //B pic
             {
@@ -1259,38 +1257,38 @@ void generate_rps_info(PictureParentControlSet *picture_control_set_ptr, Picture
                     SVT_LOG("Error in GOp indexing3\n");
 
                 if (picture_control_set_ptr->is_used_as_reference_flag) {
-                    picture_control_set_ptr->cpi->common.show_frame          = EB_FALSE;
-                    picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame          = false;
+                    picture_control_set_ptr->cpi->common.show_existing_frame = false;
                 } else {
-                    picture_control_set_ptr->cpi->common.show_frame = EB_FALSE;
+                    picture_control_set_ptr->cpi->common.show_frame = false;
                     if (picture_index == 0) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 2) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer4_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer3_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer4_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[3] = layer2_idx;
                     } else if (picture_index == 4) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 6) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer4_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer3_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer4_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[3] = layer1_idx;
                     } else if (picture_index == 8) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 10) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer4_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer3_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer4_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[3] = layer2_idx;
                     } else if (picture_index == 12) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame = EB_FALSE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame = false;
                     } else if (picture_index == 14) {
-                        picture_control_set_ptr->cpi->common.show_existing_frame    = EB_TRUE;
+                        picture_control_set_ptr->cpi->common.show_existing_frame    = true;
                         picture_control_set_ptr->show_existing_frame_index_array[0] = layer4_idx1;
                         picture_control_set_ptr->show_existing_frame_index_array[1] = layer3_idx2;
                         picture_control_set_ptr->show_existing_frame_index_array[2] = layer4_idx2;
@@ -1428,7 +1426,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
     PredictionStructureEntry *pred_position_ptr;
 
-    EB_BOOL  pre_assignment_buffer_first_pass_flag;
+    bool     pre_assignment_buffer_first_pass_flag;
     EB_SLICE picture_type;
 
     PictureDecisionReorderEntry *queue_entry_ptr;
@@ -1453,7 +1451,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
     uint32_t mini_gop_index;
     uint32_t picture_index;
 
-    EB_BOOL                  window_avail, frame_passe_thru;
+    bool                     window_avail, frame_passe_thru;
     uint32_t                 window_index;
     uint32_t                 entry_index;
     PictureParentControlSet *parent_pcs_window[FUTURE_WINDOW_WIDTH + 2];
@@ -1501,18 +1499,18 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
         while (queue_entry_ptr->parent_pcs_wrapper_ptr != NULL) {
             if (queue_entry_ptr->picture_number == 0 ||
                 ((PictureParentControlSet *)(queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr))
-                        ->end_of_sequence_flag == EB_TRUE) {
-                frame_passe_thru = EB_TRUE;
+                        ->end_of_sequence_flag == true) {
+                frame_passe_thru = true;
             } else {
-                frame_passe_thru = EB_FALSE;
+                frame_passe_thru = false;
             }
-            window_avail         = EB_TRUE;
+            window_avail         = true;
             previous_entry_index = QUEUE_GET_PREVIOUS_SPOT(
                 encode_context_ptr->picture_decision_reorder_queue_head_index);
 
             if (encode_context_ptr->picture_decision_reorder_queue[previous_entry_index]->parent_pcs_wrapper_ptr ==
                 NULL) {
-                window_avail = EB_FALSE;
+                window_avail = false;
             } else {
                 parent_pcs_window[0] = (PictureParentControlSet *)encode_context_ptr
                                            ->picture_decision_reorder_queue[previous_entry_index]
@@ -1527,14 +1525,14 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                     if (encode_context_ptr->picture_decision_reorder_queue[entry_index]->parent_pcs_wrapper_ptr ==
                         NULL) {
-                        window_avail = EB_FALSE;
+                        window_avail = false;
                         break;
                     } else if (((PictureParentControlSet *)(encode_context_ptr
                                                                 ->picture_decision_reorder_queue[entry_index]
                                                                 ->parent_pcs_wrapper_ptr->object_ptr))
-                                   ->end_of_sequence_flag == EB_TRUE) {
-                        window_avail     = EB_FALSE;
-                        frame_passe_thru = EB_TRUE;
+                                   ->end_of_sequence_flag == true) {
+                        window_avail     = false;
+                        frame_passe_thru = true;
                         break;
                     } else {
                         parent_pcs_window[2 + window_index] = (PictureParentControlSet *)encode_context_ptr
@@ -1545,14 +1543,14 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
             }
             picture_control_set_ptr = (PictureParentControlSet *)queue_entry_ptr->parent_pcs_wrapper_ptr->object_ptr;
 
-            if (picture_control_set_ptr->idr_flag == EB_TRUE)
+            if (picture_control_set_ptr->idr_flag == true)
                 context_ptr->last_solid_color_frame_poc = 0xFFFFFFFF;
 
-            if (window_avail == EB_TRUE) {
-                picture_control_set_ptr->scene_change_flag = EB_FALSE;
+            if (window_avail == true) {
+                picture_control_set_ptr->scene_change_flag = false;
             }
 
-            if (window_avail == EB_TRUE || frame_passe_thru == EB_TRUE) {
+            if (window_avail == true || frame_passe_thru == true) {
                 // Place the PCS into the Pre-Assignment Buffer
                 // P.S. The Pre-Assignment Buffer is used to store a whole pre-structure
                 encode_context_ptr->pre_assignment_buffer[encode_context_ptr->pre_assignment_buffer_count] =
@@ -1573,7 +1571,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                 picture_control_set_ptr->hierarchical_layers_diff = 0;
 
-                picture_control_set_ptr->init_pred_struct_position_flag = EB_FALSE;
+                picture_control_set_ptr->init_pred_struct_position_flag = false;
 
                 picture_control_set_ptr->target_bit_rate = sequence_control_set_ptr->static_config.target_bit_rate;
 
@@ -1581,19 +1579,19 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                 // If the Intra period length is 0, then introduce an intra for every picture
                 if (sequence_control_set_ptr->intra_period == 0 || picture_control_set_ptr->picture_number == 0) {
-                    picture_control_set_ptr->idr_flag = EB_TRUE;
+                    picture_control_set_ptr->idr_flag = true;
                 }
                 // If an #IntraPeriodLength has passed since the last Intra, then introduce a CRA or IDR based on Intra Refresh type
                 else if (sequence_control_set_ptr->intra_period != -1) {
                     if ((encode_context_ptr->intra_period_position ==
                          (uint32_t)sequence_control_set_ptr->intra_period) ||
-                        (picture_control_set_ptr->scene_change_flag == EB_TRUE)) {
-                        picture_control_set_ptr->idr_flag = EB_TRUE;
+                        (picture_control_set_ptr->scene_change_flag == true)) {
+                        picture_control_set_ptr->idr_flag = true;
                     }
                 }
 
                 encode_context_ptr->pre_assignment_buffer_eos_flag = (picture_control_set_ptr->end_of_sequence_flag)
-                    ? (uint32_t)EB_TRUE
+                    ? (uint32_t)true
                     : encode_context_ptr->pre_assignment_buffer_eos_flag;
 
                 // Increment the Pre-Assignment Buffer Intra Count
@@ -1609,27 +1607,18 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                         : encode_context_ptr->intra_period_position + 1;
                 } else {
                     // Increment the Intra Period Position
-#if BEA_SCENE_CHANGE
-                    encode_context_ptr->intra_period_position = (encode_context_ptr->intra_period_position ==
-                                                                 (uint32_t)sequence_control_set_ptr->intra_period)
-                        ? 0
-                        : encode_context_ptr->intra_period_position + 1;
-
-#else
                     encode_context_ptr->intra_period_position = ((encode_context_ptr->intra_period_position ==
                                                                   (uint32_t)sequence_control_set_ptr->intra_period) ||
-                                                                 (picture_control_set_ptr->scene_change_flag ==
-                                                                  EB_TRUE))
+                                                                 (picture_control_set_ptr->scene_change_flag == true))
                         ? 0
                         : encode_context_ptr->intra_period_position + 1;
-#endif
                 }
 
                 // Determine if Pictures can be released from the Pre-Assignment Buffer
                 if ((encode_context_ptr->pre_assignment_buffer_intra_count > 0) ||
                     (encode_context_ptr->pre_assignment_buffer_count ==
                      (uint32_t)(1 << sequence_control_set_ptr->hierarchical_levels)) ||
-                    (encode_context_ptr->pre_assignment_buffer_eos_flag == EB_TRUE) ||
+                    (encode_context_ptr->pre_assignment_buffer_eos_flag == true) ||
                     (picture_control_set_ptr->pred_structure == EB_PRED_LOW_DELAY_P) ||
                     (picture_control_set_ptr->pred_structure == EB_PRED_LOW_DELAY_B)) {
                     // Initialize Picture Block Params
@@ -1652,10 +1641,10 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             eb_vp9_initialize_mini_gop_activity_array(context_ptr);
 
                             if (encode_context_ptr->pre_assignment_buffer_count == 16)
-                                context_ptr->mini_gop_activity_array[L5_0_INDEX] = EB_FALSE;
+                                context_ptr->mini_gop_activity_array[L5_0_INDEX] = false;
                             else {
-                                context_ptr->mini_gop_activity_array[L4_0_INDEX] = EB_FALSE;
-                                context_ptr->mini_gop_activity_array[L4_1_INDEX] = EB_FALSE;
+                                context_ptr->mini_gop_activity_array[L4_0_INDEX] = false;
+                                context_ptr->mini_gop_activity_array[L4_1_INDEX] = false;
                             }
                             eb_vp9_generate_picture_window_split(context_ptr, encode_context_ptr);
 
@@ -1668,7 +1657,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
 
                     for (mini_gop_index = 0; mini_gop_index < context_ptr->total_number_of_mini_gops;
                          ++mini_gop_index) {
-                        pre_assignment_buffer_first_pass_flag = EB_TRUE;
+                        pre_assignment_buffer_first_pass_flag = true;
                         {
                             update_base_layer_reference_queue_dependent_count(
                                 context_ptr, encode_context_ptr, mini_gop_index);
@@ -1697,9 +1686,9 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                  context_ptr->mini_gop_idr_count[mini_gop_index] > 0) &&
 
                                 picture_control_set_ptr->pred_struct_ptr->pred_type == EB_PRED_RANDOM_ACCESS &&
-                                picture_control_set_ptr->idr_flag == EB_FALSE) {
+                                picture_control_set_ptr->idr_flag == false) {
                                 // Correct the Pred Index before switching structures
-                                if (pre_assignment_buffer_first_pass_flag == EB_TRUE) {
+                                if (pre_assignment_buffer_first_pass_flag == true) {
                                     encode_context_ptr->pred_struct_position -=
                                         picture_control_set_ptr->pred_struct_ptr->init_pic_index;
                                 }
@@ -1711,12 +1700,12 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                     picture_control_set_ptr->hierarchical_levels);
 
                                 // Set the RPS Override Flag - this current only will convert a Random Access structure to a Low Delay structure
-                                picture_control_set_ptr->use_rps_in_sps = EB_FALSE;
+                                picture_control_set_ptr->use_rps_in_sps = false;
 
                                 picture_type = P_SLICE;
 
                             } else {
-                                picture_control_set_ptr->use_rps_in_sps = EB_FALSE;
+                                picture_control_set_ptr->use_rps_in_sps = false;
 
                                 // Set the Picture Type
                                 picture_type = (picture_control_set_ptr->idr_flag)                     ? I_SLICE
@@ -1739,7 +1728,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                 ? picture_control_set_ptr->pred_struct_ptr->init_pic_index
                                 : encode_context_ptr->pred_struct_position;
                             // If Intra, reset position
-                            if (picture_control_set_ptr->idr_flag == EB_TRUE) {
+                            if (picture_control_set_ptr->idr_flag == true) {
                                 encode_context_ptr->pred_struct_position =
                                     picture_control_set_ptr->pred_struct_ptr->init_pic_index;
                             } else if (encode_context_ptr->elapsed_non_idr_count == 0) {
@@ -1766,7 +1755,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             // The last_idr_picture is used in reseting the poc (in entropy coding) whenever IDR is encountered.
                             // Note IMP: This logic only works when display and decode order are the same. Currently for Random Access, IDR is inserted (similar to CRA) by using trailing P pictures (low delay fashion) and breaking prediction structure.
                             // Note: When leading P pictures are implemented, this logic has to change..
-                            if (picture_control_set_ptr->idr_flag == EB_TRUE) {
+                            if (picture_control_set_ptr->idr_flag == true) {
                                 encode_context_ptr->last_idr_picture = picture_control_set_ptr->picture_number;
                             } else {
                                 picture_control_set_ptr->last_idr_picture = encode_context_ptr->last_idr_picture;
@@ -1801,7 +1790,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                 //-------------------------------
                                 // IDR
                                 //-------------------------------
-                                if (picture_control_set_ptr->idr_flag == EB_TRUE) {
+                                if (picture_control_set_ptr->idr_flag == true) {
                                     // Reset the pictures since last IDR counter
                                     encode_context_ptr->elapsed_non_idr_count = 0;
                                 }
@@ -1811,7 +1800,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             case B_SLICE:
 
                                 // Reset IDR Flag
-                                picture_control_set_ptr->idr_flag = EB_FALSE;
+                                picture_control_set_ptr->idr_flag = false;
 
                                 // Increment & Clip the elapsed Non-IDR Counter. This is clipped rather than allowed to free-run
                                 // inorder to avoid rollover issues.  This assumes that any the GOP period is less than MAX_ELAPSED_IDR_COUNT
@@ -1850,16 +1839,16 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             }
 
                             encode_context_ptr->terminating_sequence_flag_received =
-                                (picture_control_set_ptr->end_of_sequence_flag == EB_TRUE)
-                                ? EB_TRUE
+                                (picture_control_set_ptr->end_of_sequence_flag == true)
+                                ? true
                                 : encode_context_ptr->terminating_sequence_flag_received;
 
                             encode_context_ptr->terminating_picture_number =
-                                (picture_control_set_ptr->end_of_sequence_flag == EB_TRUE)
+                                (picture_control_set_ptr->end_of_sequence_flag == true)
                                 ? picture_control_set_ptr->picture_number
                                 : encode_context_ptr->terminating_picture_number;
 
-                            pre_assignment_buffer_first_pass_flag = EB_FALSE;
+                            pre_assignment_buffer_first_pass_flag = false;
 
                             generate_rps_info(picture_control_set_ptr,
                                               context_ptr,
@@ -1892,8 +1881,8 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                             picture_control_set_ptr->use_src_ref = (sequence_control_set_ptr->input_resolution ==
                                                                         INPUT_SIZE_4K_RANGE &&
                                                                     picture_control_set_ptr->temporal_layer_index > 0)
-                                ? EB_TRUE
-                                : EB_FALSE;
+                                ? true
+                                : false;
 
                             // Set QP Scaling Mode
                             picture_control_set_ptr->qp_scaling_mode = (picture_control_set_ptr->slice_type == I_SLICE)
@@ -1961,7 +1950,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                         if (((dep_poc >= picture_control_set_ptr->picture_number) ||
                                              (((picture_control_set_ptr->pre_assignment_buffer_count !=
                                                 picture_control_set_ptr->pred_struct_ptr->pred_struct_period) ||
-                                               (picture_control_set_ptr->idr_flag == EB_TRUE)) &&
+                                               (picture_control_set_ptr->idr_flag == true)) &&
                                               (dep_poc > (picture_control_set_ptr->picture_number -
                                                           picture_control_set_ptr->pre_assignment_buffer_count)))) &&
                                             input_entry_ptr->list1.list[dep_idx]) {
@@ -1983,7 +1972,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                         : input_queue_index + 1;
                                 }
 
-                            } else if (picture_control_set_ptr->idr_flag == EB_TRUE) {
+                            } else if (picture_control_set_ptr->idr_flag == true) {
                                 // Set the Picture Decision PA Reference Entry pointer
                                 input_entry_ptr = (PaReferenceQueueEntry *)NULL;
                             }
@@ -2238,7 +2227,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                                 encode_context_ptr->pre_assignment_buffer_idr_count          = 0;
                                 encode_context_ptr->pre_assignment_buffer_intra_count        = 0;
                                 encode_context_ptr->pre_assignment_buffer_scene_change_count = 0;
-                                encode_context_ptr->pre_assignment_buffer_eos_flag           = EB_FALSE;
+                                encode_context_ptr->pre_assignment_buffer_eos_flag           = false;
                                 encode_context_ptr->number_of_active_pictures                = 0;
                             }
                         }
@@ -2299,7 +2288,7 @@ void *eb_vp9_picture_decision_kernel(void *input_ptr) {
                     encode_context_ptr
                         ->picture_decision_reorder_queue[encode_context_ptr->picture_decision_reorder_queue_head_index];
             }
-            if (window_avail == EB_FALSE && frame_passe_thru == EB_FALSE)
+            if (window_avail == false && frame_passe_thru == false)
                 break;
         }
 

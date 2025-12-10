@@ -75,7 +75,7 @@ void eb_vp9_update_rc_rate_tables(PictureControlSet  *picture_control_set_ptr,
         uint64_t sadBits[NUMBER_OF_SAD_INTERVALS] = {0};
         uint32_t count[NUMBER_OF_SAD_INTERVALS]   = {0};
 
-        encode_context_ptr->rate_control_tables_array_updated = EB_TRUE;
+        encode_context_ptr->rate_control_tables_array_updated = true;
 
         for (sb_index = 0; sb_index < picture_control_set_ptr->sb_total_count; ++sb_index) {
             sb_ptr        = picture_control_set_ptr->sb_ptr_array[sb_index];
@@ -348,7 +348,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
         output_stream_ptr         = (EbBufferHeaderType *)output_stream_wrapper_ptr->object_ptr;
         output_stream_ptr         = (EbBufferHeaderType *)output_stream_wrapper_ptr->object_ptr;
         output_stream_ptr->flags  = 0;
-        output_stream_ptr->flags |= (encode_context_ptr->terminating_sequence_flag_received == EB_TRUE &&
+        output_stream_ptr->flags |= (encode_context_ptr->terminating_sequence_flag_received == true &&
                                      picture_control_set_ptr->parent_pcs_ptr->decode_order ==
                                          encode_context_ptr->terminating_picture_number)
             ? EB_BUFFERFLAG_EOS
@@ -566,7 +566,7 @@ void *eb_vp9_packetization_kernel(void *input_ptr) {
                         }
                     }
 #if !VP9_RC_PRINTS && PKT_PRINT
-                    if (queue_entry_ptr->frame_type == INTER_FRAME && queue_entry_ptr->intra_only == EB_FALSE) {
+                    if (queue_entry_ptr->frame_type == INTER_FRAME && queue_entry_ptr->intra_only == false) {
                         if (queue_entry_ptr->show_existing_frame)
                             SVT_LOG(
                                 "%i (%i  %i)    %i  (%i  %i)   %c  showEx: %i %i %i %i  %i frames\n",

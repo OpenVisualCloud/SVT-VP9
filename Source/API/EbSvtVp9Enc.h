@@ -7,6 +7,7 @@
 #define EbSvtVp9Enc_h
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <EbApiVersion.h>
 
 #ifdef __cplusplus
@@ -25,10 +26,6 @@ extern "C" {
 #define EB_ENCODERSTREAMPORT 1
 #define EB_ENCODERRECONPORT 2
 #define EB_ENCODERSTATISTICSPORT 3
-
-#define EbBool uint8_t
-#define EB_FALSE 0
-#define EB_TRUE 1
 
 #define EB_BUFFERFLAG_EOS 0x00000001 // signals the last packet of the stream
 #define EB_BUFFERFLAG_SHOW_EXT 0x00000002 // signals that the packet contains a show existing frame at the end
@@ -222,7 +219,7 @@ typedef struct EbSvtVp9EncConfiguration {
 
     /* force qp values for every picture that are passed in the header pointer
     * Default is 0.*/
-    EbBool use_qp_file;
+    bool use_qp_file;
 
     /* Enable picture QP scaling between hierarchical levels
     * Default is null.*/
@@ -231,15 +228,15 @@ typedef struct EbSvtVp9EncConfiguration {
     // Deblock Filter
     /* Flag to enable the Deblocking Loop Filtering.
     * Default is 1. */
-    EbBool loop_filter;
+    bool loop_filter;
 
     /* Flag to enable the use of default ME HME parameters.
     * Default is 1. */
-    EbBool use_default_me_hme;
+    bool use_default_me_hme;
 
     /* Flag to enable Hierarchical Motion Estimation.
     * Default is 1. */
-    EbBool enable_hme_flag;
+    bool enable_hme_flag;
 
     // ME Parameters
     /* Number of search positions in the horizontal direction.

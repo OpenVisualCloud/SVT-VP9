@@ -466,12 +466,12 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_sq(SequenceControlSet      *seque
 
     // Set number of quadrant(s)
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_7) {
-        context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+        context_ptr->me_context_ptr->single_hme_quadrant = false;
     } else {
         if (sequence_control_set_ptr->input_resolution >= INPUT_SIZE_4K_RANGE) {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_TRUE;
+            context_ptr->me_context_ptr->single_hme_quadrant = true;
         } else {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+            context_ptr->me_context_ptr->single_hme_quadrant = false;
         }
     }
 
@@ -484,9 +484,9 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_sq(SequenceControlSet      *seque
 
     // Set 64x64 Fractional Search Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_TRUE;
+        context_ptr->me_context_ptr->fractional_search64x64 = true;
     } else {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_FALSE;
+        context_ptr->me_context_ptr->fractional_search64x64 = false;
     }
 
     // Set fractional search model
@@ -528,12 +528,12 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_oq(SequenceControlSet      *seque
 
     // Set number of quadrant(s)
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_7) {
-        context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+        context_ptr->me_context_ptr->single_hme_quadrant = false;
     } else {
         if (sequence_control_set_ptr->input_resolution >= INPUT_SIZE_4K_RANGE) {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_TRUE;
+            context_ptr->me_context_ptr->single_hme_quadrant = true;
         } else {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+            context_ptr->me_context_ptr->single_hme_quadrant = false;
         }
     }
 
@@ -546,9 +546,9 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_oq(SequenceControlSet      *seque
 
     // Set 64x64 Fractional Search Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_TRUE;
+        context_ptr->me_context_ptr->fractional_search64x64 = true;
     } else {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_FALSE;
+        context_ptr->me_context_ptr->fractional_search64x64 = false;
     }
 
     // Set fractional search model
@@ -590,12 +590,12 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(SequenceControlSet      *seq
 
     // Set number of quadrant(s)
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_7) {
-        context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+        context_ptr->me_context_ptr->single_hme_quadrant = false;
     } else {
         if (sequence_control_set_ptr->input_resolution >= INPUT_SIZE_4K_RANGE) {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_TRUE;
+            context_ptr->me_context_ptr->single_hme_quadrant = true;
         } else {
-            context_ptr->me_context_ptr->single_hme_quadrant = EB_FALSE;
+            context_ptr->me_context_ptr->single_hme_quadrant = false;
         }
     }
 
@@ -608,9 +608,9 @@ EbErrorType eb_vp9_signal_derivation_me_kernel_vmaf(SequenceControlSet      *seq
 
     // Set 64x64 Fractional Search Flag
     if (picture_control_set_ptr->enc_mode <= ENC_MODE_2) {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_TRUE;
+        context_ptr->me_context_ptr->fractional_search64x64 = true;
     } else {
-        context_ptr->me_context_ptr->fractional_search64x64 = EB_FALSE;
+        context_ptr->me_context_ptr->fractional_search64x64 = false;
     }
 
     // Set fractional search model
@@ -659,10 +659,10 @@ void eb_vp9_derive_similar_collocated_flag(PictureParentControlSet *picture_cont
 
 {
     // Similairty detector for collocated LCU
-    picture_control_set_ptr->similar_colocated_sb_array[sb_index] = EB_FALSE;
+    picture_control_set_ptr->similar_colocated_sb_array[sb_index] = false;
 
     // Similairty detector for collocated LCU -- all layers
-    picture_control_set_ptr->similar_colocated_sb_array_all_layers[sb_index] = EB_FALSE;
+    picture_control_set_ptr->similar_colocated_sb_array_all_layers[sb_index] = false;
 
     if (picture_control_set_ptr->slice_type != I_SLICE) {
         uint8_t  ref_mean, cur_mean;
@@ -684,9 +684,9 @@ void eb_vp9_derive_similar_collocated_flag(PictureParentControlSet *picture_cont
             ((ABS((int64_t)cur_var * 100 / (int64_t)ref_var - 100) < VAR_DIFF_THRSHOLD) ||
              (ABS((int64_t)cur_var - (int64_t)ref_var) < VAR_DIFF_THRSHOLD))) {
             if (picture_control_set_ptr->is_used_as_reference_flag) {
-                picture_control_set_ptr->similar_colocated_sb_array[sb_index] = EB_TRUE;
+                picture_control_set_ptr->similar_colocated_sb_array[sb_index] = true;
             }
-            picture_control_set_ptr->similar_colocated_sb_array_all_layers[sb_index] = EB_TRUE;
+            picture_control_set_ptr->similar_colocated_sb_array_all_layers[sb_index] = true;
         }
     }
 
@@ -707,9 +707,9 @@ static void stationary_edge_over_update_over_time_sb_part1(SequenceControlSet   
         if (picture_control_set_ptr->temporal_layer_index > 0)
             eb_vp9_get_mv(picture_control_set_ptr, sb_index, &x_current_mv, &y_current_mv);
 
-        EB_BOOL   lowMotion    = picture_control_set_ptr->temporal_layer_index == 0 ? EB_TRUE
-                 : (ABS(x_current_mv) < 16) && (ABS(y_current_mv) < 16)             ? EB_TRUE
-                                                                                    : EB_FALSE;
+        bool      lowMotion    = picture_control_set_ptr->temporal_layer_index == 0 ? true
+                    : (ABS(x_current_mv) < 16) && (ABS(y_current_mv) < 16)          ? true
+                                                                                    : false;
         uint16_t *yVariancePtr = picture_control_set_ptr->variance[sb_index];
         uint64_t  var0         = yVariancePtr[ME_TIER_ZERO_PU_32x32_0];
         uint64_t  var1         = yVariancePtr[ME_TIER_ZERO_PU_32x32_1];
@@ -752,16 +752,15 @@ static void stationary_edge_over_update_over_time_sb_part2(SequenceControlSet   
     if (sb_params->potential_logo_sb && sb_params->is_complete_sb) {
         uint32_t me_dist = 0;
 
-        EB_BOOL lowSad = EB_FALSE;
+        bool lowSad = false;
 
         if (picture_control_set_ptr->slice_type == B_SLICE) {
             get_me_dist(picture_control_set_ptr, sb_index, &me_dist);
         }
-        lowSad = (picture_control_set_ptr->slice_type != B_SLICE)
-            ?
+        lowSad = (picture_control_set_ptr->slice_type != B_SLICE) ?
 
-            EB_FALSE
-            : (me_dist < 64 * 64 * low_sad_th) ? EB_TRUE : EB_FALSE;
+                                                                  false
+                                                                  : (me_dist < 64 * 64 * low_sad_th) ? true : false;
 
         if (lowSad) {
             sb_stat_ptr->check2_for_logo_stationary_edge_over_time_flag = 0;
