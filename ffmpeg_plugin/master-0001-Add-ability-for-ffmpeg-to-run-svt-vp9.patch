@@ -1,4 +1,4 @@
-From e532d4b233046eb70bdfc8484634d5ba1c521e77 Mon Sep 17 00:00:00 2001
+From 98be4204bcf12c89c9056ae9e26980228b704056 Mon Sep 17 00:00:00 2001
 From: hassene <hassene.tmar@intel.com>
 Date: Fri, 15 Feb 2019 17:43:54 -0800
 Subject: [PATCH] Add ability for ffmpeg to run svt vp9
@@ -17,18 +17,18 @@ Signed-off-by: Guo Jiansheng <jiansheng.guo@intel.com>
  create mode 100644 libavcodec/libsvt_vp9.c
 
 diff --git a/configure b/configure
-index 727c3daea8..1da8f40bff 100755
+index 083a30972a..7fcb8474cd 100755
 --- a/configure
 +++ b/configure
-@@ -278,6 +278,7 @@ External library support:
-   --enable-libsrt          enable Haivision SRT protocol via libsrt [no]
+@@ -282,6 +282,7 @@ External library support:
    --enable-libssh          enable SFTP protocol via libssh [no]
    --enable-libsvtav1       enable AV1 encoding via SVT [no]
+   --enable-libsvtjpegxs    enable JPEGXS encoding/decoding via SVT [no]
 +  --enable-libsvtvp9       enable VP9 encoding via svt [no]
    --enable-libtensorflow   enable TensorFlow as a DNN module backend
                             for DNN based filters like sr [no]
    --enable-libtesseract    enable Tesseract, needed for ocr filter [no]
-@@ -1973,6 +1974,7 @@ EXTERNAL_LIBRARY_LIST="
+@@ -2008,6 +2009,7 @@ EXTERNAL_LIBRARY_LIST="
      libshaderc
      libshine
      libsmbclient
@@ -36,7 +36,7 @@ index 727c3daea8..1da8f40bff 100755
      libsnappy
      libsoxr
      libspeex
-@@ -3658,6 +3660,7 @@ libvpx_vp8_decoder_deps="libvpx"
+@@ -3726,6 +3728,7 @@ libvpx_vp8_decoder_deps="libvpx"
  libvpx_vp8_encoder_deps="libvpx"
  libvpx_vp9_decoder_deps="libvpx"
  libvpx_vp9_encoder_deps="libvpx"
@@ -44,7 +44,7 @@ index 727c3daea8..1da8f40bff 100755
  libvvenc_encoder_deps="libvvenc"
  libwebp_encoder_deps="libwebp"
  libwebp_anim_encoder_deps="libwebp"
-@@ -7160,6 +7163,7 @@ enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame
+@@ -7272,6 +7275,7 @@ enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame
                                 die "ERROR: libtwolame must be installed and version must be >= 0.3.10"; }
  enabled libuavs3d         && require_pkg_config libuavs3d "uavs3d >= 1.1.41" uavs3d.h uavs3d_decode
  enabled libv4l2           && require_pkg_config libv4l2 libv4l2 libv4l2.h v4l2_ioctl
@@ -53,10 +53,10 @@ index 727c3daea8..1da8f40bff 100755
  enabled libvmaf           && require_pkg_config libvmaf "libvmaf >= 2.0.0" libvmaf.h vmaf_init
  enabled libvmaf           && check_pkg_config libvmaf_cuda "libvmaf >= 2.0.0" libvmaf_cuda.h vmaf_cuda_state_init
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 83ef92963a..d63ec14d84 100644
+index 28ad85afb4..f1e3b4d3ca 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -1191,6 +1191,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
+@@ -1215,6 +1215,7 @@ OBJS-$(CONFIG_LIBVO_AMRWBENC_ENCODER)     += libvo-amrwbenc.o
  OBJS-$(CONFIG_LIBVORBIS_DECODER)          += libvorbisdec.o
  OBJS-$(CONFIG_LIBVORBIS_ENCODER)          += libvorbisenc.o \
                                               vorbis_data.o
@@ -65,10 +65,10 @@ index 83ef92963a..d63ec14d84 100644
  OBJS-$(CONFIG_LIBVPX_VP8_ENCODER)         += libvpxenc.o
  OBJS-$(CONFIG_LIBVPX_VP9_DECODER)         += libvpxdec.o
 diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
-index f5ec2e01e8..11928d7afa 100644
+index 042b07c895..9a3e0cbc06 100644
 --- a/libavcodec/allcodecs.c
 +++ b/libavcodec/allcodecs.c
-@@ -809,6 +809,7 @@ extern const FFCodec ff_libuavs3d_decoder;
+@@ -823,6 +823,7 @@ extern const FFCodec ff_libuavs3d_decoder;
  extern const FFCodec ff_libvo_amrwbenc_encoder;
  extern const FFCodec ff_libvorbis_encoder;
  extern const FFCodec ff_libvorbis_decoder;
@@ -784,5 +784,5 @@ index 0000000000..90ed5cbff2
 +    .p.wrapper_name   = "libsvt_vp9",
 +};
 -- 
-2.50.1
+2.52.0
 
