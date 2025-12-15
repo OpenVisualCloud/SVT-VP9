@@ -1,0 +1,210 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    name: Linux - ${{ matrix.compiler }} - ${{ matrix.build_type }} - ${{ matrix.lib_type }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Release, Debug]
+        lib_type: [shared, static]
+        exclude:
+          # Reduce matrix: only test Debug with gcc
+          - compiler: clang
+            build_type: Debug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: echo "CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake yasm pkg-config ninja-build
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.lib_type }}
+          variant: ccache
+
+      - name: Configure CMake
+        run: cmake
+          -B "Build/native/${{ matrix.build_type }}"
+          -GNinja
+          -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"
+          -DBUILD_SHARED_LIBS="${{ matrix.lib_type == 'shared' && 'ON' || 'OFF' }}"
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DCMAKE_C_COMPILER="${{ matrix.compiler }}"
+          -DCMAKE_CXX_COMPILER="${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}"
+
+      - name: Build
+        run: cmake --build "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Install
+        run: sudo cmake --install "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.lib_type }}
+          path: |
+            Bin/
+            Build/native/${{ matrix.build_type }}/
+          retention-days: 5
+
+  build-windows-msvc:
+    name: Windows (MSVC) - ${{ matrix.build_type }}
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release, Debug]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: choco install -y cmake yasm ninja
+        shell: powershell
+
+      - name: Configure CMake
+        run: cmake -B "Build/native/${{ matrix.build_type }}" -GNinja -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" -DBUILD_SHARED_LIBS=ON
+
+      - name: Build
+        run: cmake --build "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Install
+        run: cmake --install "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-windows-msvc-${{ matrix.build_type }}
+          path: |
+            Bin/
+            Build/native/${{ matrix.build_type }}/
+          retention-days: 5
+
+  build-windows-mingw:
+    name: Windows (${{ matrix.msys2_env }})
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        msys2_env: [ucrt64, clang64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msys2_env }}
+          update: true
+          install: >-
+            base-devel
+          pacboy: >-
+            ccache
+            clang
+            cmake
+            gcc
+            ninja
+            pkgconf
+            yasm
+
+      - name: Set up environment variables
+        run: echo "CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)" >> $GITHUB_ENV
+
+      - name: Configure CMake
+        run: cmake
+          -B Build/native/Release
+          -GNinja
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_SHARED_LIBS=ON
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build Build/native/Release --config Release
+
+      - name: Install
+        run: cmake --install Build/native/Release --config Release
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-windows-mingw-${{ matrix.msys2_env }}-${{ matrix.compiler }}
+          path: |
+            Bin/
+            Build/native/Release/
+          retention-days: 5
+
+  build-macos:
+    name: macOS - ${{ matrix.build_type }}
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release, Debug]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: echo "CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: brew install cmake yasm pkg-config ninja
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: macos-clang-${{ matrix.build_type }}
+          variant: ccache
+
+      - name: Configure CMake
+        run: cmake
+          -B "Build/native/${{ matrix.build_type }}"
+          -GNinja
+          -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"
+          -DBUILD_SHARED_LIBS=ON
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Install
+        run: cmake --install "Build/native/${{ matrix.build_type }}" --config "${{ matrix.build_type }}"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-macos-${{ matrix.build_type }}
+          path: |
+            Bin/
+            Build/native/${{ matrix.build_type }}/
+          retention-days: 5
